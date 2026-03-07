@@ -28,14 +28,18 @@ def request_with_xparams(url: str, x_params: dict):
     return response.json()
 
 
+def extract_rows(data: dict):
+    return data.get("response", {}).get("data", [])
+
+
 def extract_latest_value(data: dict):
-    rows = data.get("response", {}).get("data", [])
+    rows = extract_rows(data)
     if not rows:
         return None
     return rows[0].get("value")
 
 
-def fetch_eia_price(product_code: str):
+def fetch_eia_price(product_code: str, length: int = 1):
     x_params = {
         "frequency": "daily",
         "data": ["value"],
@@ -49,11 +53,11 @@ def fetch_eia_price(product_code: str):
             }
         ],
         "offset": 0,
-        "length": 1
+        "length": length
     }
 
     data = request_with_xparams(SPOT_URL, x_params)
-    return extract_latest_value(data)
+    return extract_rows(data)
 
 
 def fetch_inventory():
@@ -78,10 +82,6 @@ def fetch_inventory():
 
 
 def fetch_global_supply():
-    """
-    STEO: World petroleum and other liquid fuels production
-    Series ID: PAPR_WORLD
-    """
     x_params = {
         "frequency": "monthly",
         "data": ["value"],
@@ -123,13 +123,46 @@ def fmt_supply(value):
         return "102 millió hordó/nap"
 
 
-try:
-    brent_value = fetch_eia_price("EPCBRENT")
-except Exception:
-    brent_value = None
+def calculate_trend_percent(rows):
+    try:
+        if not rows or len(rows) < 2:
+            return None
+
+        latest = float(rows[0]["value"])
+        oldest = float(rows[-1]["value"])
+
+        if oldest == 0:
+            return None
+
+        change_pct = ((latest - oldest) / oldest) * 100
+        return change_pct
+    except Exception:
+        return None
+
+
+def fmt_trend(value):
+    try:
+        if value is None:
+            return "nincs adat"
+
+        sign = "+" if value > 0 else ""
+        return f"{sign}{value:.2f}%"
+    except Exception:
+        return "nincs adat"
+
 
 try:
-    wti_value = fetch_eia_price("EPCWTI")
+    brent_rows = fetch_eia_price("EPCBRENT", length=30)
+    brent_value = brent_rows[0].get("value") if brent_rows else None
+    brent_trend = calculate_trend_percent(brent_rows)
+except Exception:
+    brent_rows = []
+    brent_value = None
+    brent_trend = None
+
+try:
+    wti_rows = fetch_eia_price("EPCWTI", length=1)
+    wti_value = wti_rows[0].get("value") if wti_rows else None
 except Exception:
     wti_value = None
 
@@ -149,7 +182,8 @@ oil_data = {
         "brent": fmt_price(brent_value),
         "wti": fmt_price(wti_value),
         "inventory": fmt_inventory(inventory_value),
-        "supply": fmt_supply(supply_value)
+        "supply": fmt_supply(supply_value),
+        "brent_30d_trend": fmt_trend(brent_trend)
     },
     "meta": {
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
@@ -174,4 +208,4 @@ oil_data = {
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (Brent + WTI + USA inventory + globális kínálat).")
+print("oil-data.json frissítve (Brent + WTI + USA inventory + globális kínálat + 30 napos Brent trend).")
