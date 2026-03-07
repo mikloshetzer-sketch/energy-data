@@ -110,12 +110,21 @@ def fetch_geo_risk():
 
     text = response.text
 
-    match = re.search(r"Total window risk:\s*([0-9]+(?:\.[0-9]+)?)", text, re.IGNORECASE)
+    # Markdown tisztítás
+    cleaned = text.replace("**", "")
 
-    if not match:
-        return None
+    patterns = [
+        r"Total\s+window\s+risk:\s*([0-9]+(?:\.[0-9]+)?)",
+        r"cumulative\s+risk\s+index\s+of\s+([0-9]+(?:\.[0-9]+)?)",
+        r"risk\s+index\s+of\s+([0-9]+(?:\.[0-9]+)?)"
+    ]
 
-    return float(match.group(1))
+    for pattern in patterns:
+        match = re.search(pattern, cleaned, re.IGNORECASE)
+        if match:
+            return float(match.group(1))
+
+    return None
 
 
 def classify_risk(score):
