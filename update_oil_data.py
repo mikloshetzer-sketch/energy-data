@@ -16,15 +16,11 @@ BRIEF_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-m
 
 
 def request_with_xparams(url: str, x_params: dict):
-    params = {
-        "api_key": API_KEY
-    }
-
+    params = {"api_key": API_KEY}
     headers = {
         "X-Params": json.dumps(x_params),
         "User-Agent": "energy-dashboard-bot"
     }
-
     response = requests.get(url, params=params, headers=headers, timeout=30)
     response.raise_for_status()
     return response.json()
@@ -109,8 +105,6 @@ def fetch_geo_risk():
     response.raise_for_status()
 
     text = response.text
-
-    # Markdown tisztítás
     cleaned = text.replace("**", "")
 
     patterns = [
@@ -129,39 +123,21 @@ def fetch_geo_risk():
 
 def classify_risk(score):
     if score is None:
-        return {
-            "level": "elevated",
-            "label": "Emelkedett"
-        }
+        return {"level": "elevated", "label": "Emelkedett"}
 
     if score < 100:
-        return {
-            "level": "low",
-            "label": "Alacsony"
-        }
+        return {"level": "low", "label": "Alacsony"}
 
     if score < 180:
-        return {
-            "level": "moderate",
-            "label": "Mérsékelt"
-        }
+        return {"level": "moderate", "label": "Mérsékelt"}
 
     if score < 250:
-        return {
-            "level": "elevated",
-            "label": "Emelkedett"
-        }
+        return {"level": "elevated", "label": "Emelkedett"}
 
     if score < 350:
-        return {
-            "level": "high",
-            "label": "Magas"
-        }
+        return {"level": "high", "label": "Magas"}
 
-    return {
-        "level": "extreme",
-        "label": "Extrém"
-    }
+    return {"level": "extreme", "label": "Extrém"}
 
 
 def fmt_price(value):
@@ -196,8 +172,7 @@ def calculate_trend_percent(rows):
         if oldest == 0:
             return None
 
-        change_pct = ((latest - oldest) / oldest) * 100
-        return change_pct
+        return ((latest - oldest) / oldest) * 100
     except Exception:
         return None
 
@@ -206,11 +181,114 @@ def fmt_trend(value):
     try:
         if value is None:
             return "nincs adat"
-
         sign = "+" if value > 0 else ""
         return f"{sign}{value:.2f}%"
     except Exception:
         return "nincs adat"
+
+
+def to_float(value):
+    try:
+        return float(value)
+    except Exception:
+        return None
+
+
+def generate_status_text(brent_trend, risk_score):
+    if brent_trend is None and risk_score is None:
+        return "A globális olajpiacon jelenleg vegyes jelzések láthatók, ezért az irányadó folyamatok csak korlátozottan értékelhetők."
+
+    if risk_score is not None and risk_score >= 350:
+        return "A globális olajpiacot extrém geopolitikai kockázati környezet terheli, ami az árak gyors és érzékeny reakcióját vetíti előre."
+
+    if risk_score is not None and risk_score >= 250 and brent_trend is not None and brent_trend > 3:
+        return "A globális olajpiacon emelkedő árnyomás és magas geopolitikai kockázat figyelhető meg, ami feszesebb piaci környezetre utal."
+
+    if risk_score is not None and risk_score >= 250:
+        return "A globális olajpiacot magas geopolitikai kockázat terheli, miközben a befektetői és ellátásbiztonsági érzékenység is erős maradt."
+
+    if brent_trend is not None and brent_trend >= 5:
+        return "Az olajpiacon rövid távon erősebb emelkedő árnyomás érzékelhető, amit a piaci szereplők fokozott óvatossága is kísérhet."
+
+    if brent_trend is not None and brent_trend <= -5:
+        return "Az olajpiac rövid távon enyhülő árnyomást mutat, ami kiegyensúlyozottabb piaci környezetre utalhat."
+
+    return "A globális olajpiac jelenleg kiegyensúlyozottabb képet mutat, de a geopolitikai és kínálati tényezők továbbra is érdemben befolyásolják a kilátásokat."
+
+
+def generate_supply_note(inventory_value, supply_value):
+    inventory = to_float(inventory_value)
+    supply = to_float(supply_value)
+
+    if inventory is not None and inventory < 420:
+        return "Az amerikai készletszint viszonylag alacsonyabb, ami érzékenyebbé teheti a piacot az ellátási zavarokra."
+
+    if inventory is not None and inventory > 460:
+        return "Az amerikai készletszint viszonylag magasabb, ami rövid távon részben tompíthatja az árakra nehezedő felfelé mutató nyomást."
+
+    if supply is not None and supply >= 103:
+        return "A globális kínálat jelenleg viszonylag stabil, ami részben ellensúlyozhatja a geopolitikai bizonytalanságok árnövelő hatását."
+
+    if supply is not None and supply < 101:
+        return "A globális kínálat mérsékeltebb szintje feszesebb piaci egyensúlyt vetíthet előre, különösen geopolitikai zavarok esetén."
+
+    return "A kínálati oldalt egyszerre befolyásolja a globális termelés szintje, az amerikai készlethelyzet és a fő exportőrök piaci magatartása."
+
+
+def generate_risk_note(risk_score):
+    if risk_score is None:
+        return "A geopolitikai kockázatok jelenleg is érdemi tényezőt jelentenek, de a pontos kockázati szint nem áll rendelkezésre."
+
+    if risk_score >= 350:
+        return "A közel-keleti kockázati környezet extrém szintre emelkedett, ami már közvetlen ellátásbiztonsági és szállítási aggodalmakat is felvethet."
+
+    if risk_score >= 250:
+        return "A Közel-Kelethez kapcsolódó geopolitikai kockázatok magas szinten maradtak, ami érzékenyen érintheti a fő energiaszállítási útvonalakat."
+
+    if risk_score >= 180:
+        return "A térségben emelkedett kockázati környezet figyelhető meg, ami továbbra is támogatja a geopolitikai kockázati prémium fennmaradását."
+
+    if risk_score >= 100:
+        return "A térségben mérsékelt, de figyelmet igénylő geopolitikai kockázatok maradtak fenn."
+
+    return "A geopolitikai kockázatok jelenleg alacsonyabb szinten állnak, bár a stratégiai szűk keresztmetszetek továbbra is érzékeny pontok maradnak."
+
+
+def generate_drivers_text(brent_trend, risk_score, inventory_value):
+    inventory = to_float(inventory_value)
+
+    parts = []
+
+    if risk_score is not None and risk_score >= 250:
+        parts.append("A jelenlegi ármozgásokat erősen befolyásolja a közel-keleti geopolitikai kockázatok magas szintje")
+
+    elif risk_score is not None and risk_score >= 180:
+        parts.append("A jelenlegi ármozgásokat érezhetően befolyásolja a közel-keleti geopolitikai feszültség")
+
+    else:
+        parts.append("A jelenlegi ármozgásokat elsősorban a keresleti és kínálati fundamentumok alakítják")
+
+    if brent_trend is not None and brent_trend >= 5:
+        parts.append("miközben a Brent ár elmúlt 30 napos emelkedése is felfelé mutató piaci nyomást jelez")
+
+    elif brent_trend is not None and brent_trend <= -5:
+        parts.append("miközben a Brent ár 30 napos csökkenése mérsékeltebb piaci hangulatra utal")
+
+    else:
+        parts.append("miközben a Brent ár 30 napos mozgása inkább mérsékelt irányt mutat")
+
+    if inventory is not None and inventory < 420:
+        parts.append("és az amerikai készletszint sem nyújt erős puffert az esetleges ellátási zavarokkal szemben")
+
+    elif inventory is not None and inventory > 460:
+        parts.append("miközben a magasabb amerikai készletszint részben csökkentheti a rövid távú árnyomást")
+
+    else:
+        parts.append("miközben az amerikai készletszint önmagában nem utal szélsőséges piaci helyzetre")
+
+    text = ", ".join(parts)
+    text = text[0].upper() + text[1:] + "."
+    return text
 
 
 try:
@@ -245,6 +323,11 @@ except Exception:
 
 risk_info = classify_risk(geo_risk_score)
 
+summary_status = generate_status_text(brent_trend, geo_risk_score)
+summary_supply = generate_supply_note(inventory_value, supply_value)
+summary_risk = generate_risk_note(geo_risk_score)
+drivers_text = generate_drivers_text(brent_trend, geo_risk_score, inventory_value)
+
 oil_data = {
     "market": {
         "brent": fmt_price(brent_value),
@@ -268,13 +351,16 @@ oil_data = {
         "twelve_months": "75–95 USD/hordó"
     },
     "summary": {
-        "status": "A globális olajpiac jelenleg kiegyensúlyozott, de geopolitikai kockázatokkal terhelt környezetben működik.",
-        "supply_note": "A kínálatot jelentősen befolyásolja a Közel-Kelet kitermelése, az amerikai palaolaj-termelés és az orosz export alakulása.",
-        "risk_note": "A Perzsa-öböl, a Vörös-tenger és a Szuezi-csatorna térsége továbbra is kritikus pont a globális energiaszállítás szempontjából."
+        "status": summary_status,
+        "supply_note": summary_supply,
+        "risk_note": summary_risk
+    },
+    "drivers": {
+        "text": drivers_text
     }
 }
 
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (Brent + WTI + USA inventory + globális kínálat + 30 napos Brent trend + geopolitikai risk index).")
+print("oil-data.json frissítve (automatikus summary és drivers szöveggel).")
