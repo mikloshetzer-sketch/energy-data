@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from datetime import datetime, timezone
 import requests
 
@@ -11,6 +12,7 @@ if not API_KEY:
 SPOT_URL = "https://api.eia.gov/v2/petroleum/pri/spt/data/"
 INVENTORY_URL = "https://api.eia.gov/v2/petroleum/stoc/wstk/data/"
 STEO_URL = "https://api.eia.gov/v2/steo/data/"
+BRIEF_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/brief.md"
 
 
 def request_with_xparams(url: str, x_params: dict):
@@ -102,6 +104,57 @@ def fetch_global_supply():
     return extract_latest_value(data)
 
 
+def fetch_geo_risk():
+    response = requests.get(BRIEF_URL, timeout=30)
+    response.raise_for_status()
+
+    text = response.text
+
+    match = re.search(r"Total window risk:\s*([0-9]+(?:\.[0-9]+)?)", text, re.IGNORECASE)
+
+    if not match:
+        return None
+
+    return float(match.group(1))
+
+
+def classify_risk(score):
+    if score is None:
+        return {
+            "level": "elevated",
+            "label": "Emelkedett"
+        }
+
+    if score < 100:
+        return {
+            "level": "low",
+            "label": "Alacsony"
+        }
+
+    if score < 180:
+        return {
+            "level": "moderate",
+            "label": "Mérsékelt"
+        }
+
+    if score < 250:
+        return {
+            "level": "elevated",
+            "label": "Emelkedett"
+        }
+
+    if score < 350:
+        return {
+            "level": "high",
+            "label": "Magas"
+        }
+
+    return {
+        "level": "extreme",
+        "label": "Extrém"
+    }
+
+
 def fmt_price(value):
     try:
         return f"{float(value):.2f} USD/hordó"
@@ -176,6 +229,12 @@ try:
 except Exception:
     supply_value = None
 
+try:
+    geo_risk_score = fetch_geo_risk()
+except Exception:
+    geo_risk_score = None
+
+risk_info = classify_risk(geo_risk_score)
 
 oil_data = {
     "market": {
@@ -187,11 +246,12 @@ oil_data = {
     },
     "meta": {
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
-        "source": "EIA + GitHub Actions"
+        "source": "EIA + GitHub Actions + ME Security Monitor"
     },
     "risk": {
-        "level": "elevated",
-        "label": "Emelkedett"
+        "score": geo_risk_score,
+        "level": risk_info["level"],
+        "label": risk_info["label"]
     },
     "forecast": {
         "one_month": "80–85 USD/hordó",
@@ -208,4 +268,4 @@ oil_data = {
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (Brent + WTI + USA inventory + globális kínálat + 30 napos Brent trend).")
+print("oil-data.json frissítve (Brent + WTI + USA inventory + globális kínálat + 30 napos Brent trend + geopolitikai risk index).")
