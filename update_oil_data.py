@@ -29,7 +29,7 @@ def fetch_eia_value(product_code: str):
             }
         ],
         "offset": 0,
-        "length": 1
+        "length": 5
     }
 
     headers = {
@@ -38,6 +38,9 @@ def fetch_eia_value(product_code: str):
     }
 
     response = requests.get(BASE_URL, params=params, headers=headers, timeout=30)
+    print(f"\n=== {product_code} HTTP {response.status_code} ===")
+    print(response.text[:1200])  # első 1200 karakter a logba
+
     response.raise_for_status()
 
     data = response.json()
