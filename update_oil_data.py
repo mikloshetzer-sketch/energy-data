@@ -8,7 +8,9 @@ API_KEY = os.environ.get("EIA_API_KEY")
 if not API_KEY:
     raise RuntimeError("Hiányzik az EIA_API_KEY secret.")
 
-BASE_URL = "https://api.eia.gov/v2/petroleum/pri/spt/data/"
+SPOT_URL = "https://api.eia.gov/v2/petroleum/pri/spt/data/"
+INVENTORY_URL = "https://api.eia.gov/v2/petroleum/stoc/wstk/data/"
+
 
 def fetch_eia_value(product_code: str):
 
@@ -37,7 +39,46 @@ def fetch_eia_value(product_code: str):
         "User-Agent": "energy-dashboard-bot"
     }
 
-    response = requests.get(BASE_URL, params=params, headers=headers, timeout=30)
+    response = requests.get(SPOT_URL, params=params, headers=headers, timeout=30)
+    response.raise_for_status()
+
+    data = response.json()
+    rows = data.get("response", {}).get("data", [])
+
+    if not rows:
+        return None
+
+    return rows[0].get("value")
+
+
+def fetch_inventory():
+
+    params = {
+        "api_key": API_KEY
+    }
+
+    x_params = {
+        "frequency": "weekly",
+        "data": ["value"],
+        "facets": {
+            "product": ["EPC0"]
+        },
+        "sort": [
+            {
+                "column": "period",
+                "direction": "desc"
+            }
+        ],
+        "offset": 0,
+        "length": 1
+    }
+
+    headers = {
+        "X-Params": json.dumps(x_params),
+        "User-Agent": "energy-dashboard-bot"
+    }
+
+    response = requests.get(INVENTORY_URL, params=params, headers=headers, timeout=30)
     response.raise_for_status()
 
     data = response.json()
@@ -56,6 +97,13 @@ def fmt_price(value):
         return "nincs adat"
 
 
+def fmt_inventory(value):
+    try:
+        return f"{float(value):.0f} millió hordó"
+    except Exception:
+        return "nincs adat"
+
+
 try:
     brent_value = fetch_eia_value("EPCBRENT")
 except Exception:
@@ -66,12 +114,17 @@ try:
 except Exception:
     wti_value = None
 
+try:
+    inventory_value = fetch_inventory()
+except Exception:
+    inventory_value = None
+
 
 oil_data = {
     "market": {
         "brent": fmt_price(brent_value),
         "wti": fmt_price(wti_value),
-        "inventory": "445 millió hordó",
+        "inventory": fmt_inventory(inventory_value),
         "supply": "102 millió hordó/nap"
     },
     "meta": {
@@ -94,7 +147,9 @@ oil_data = {
     }
 }
 
+
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve.")
+
+print("oil-data.json frissítve (Brent + WTI + USA inventory).")
