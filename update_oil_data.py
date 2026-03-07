@@ -1,7 +1,6 @@
 import json
 import os
 from datetime import datetime, timezone
-
 import requests
 
 API_KEY = os.environ.get("EIA_API_KEY")
@@ -12,6 +11,7 @@ if not API_KEY:
 BASE_URL = "https://api.eia.gov/v2/petroleum/pri/spt/data/"
 
 def fetch_eia_value(product_code: str):
+
     params = {
         "api_key": API_KEY
     }
@@ -29,18 +29,15 @@ def fetch_eia_value(product_code: str):
             }
         ],
         "offset": 0,
-        "length": 5
+        "length": 1
     }
 
     headers = {
         "X-Params": json.dumps(x_params),
-        "User-Agent": "energy-data-bot/1.0"
+        "User-Agent": "energy-dashboard-bot"
     }
 
     response = requests.get(BASE_URL, params=params, headers=headers, timeout=30)
-    print(f"\n=== {product_code} HTTP {response.status_code} ===")
-    print(response.text[:1200])  # első 1200 karakter a logba
-
     response.raise_for_status()
 
     data = response.json()
@@ -61,14 +58,12 @@ def fmt_price(value):
 
 try:
     brent_value = fetch_eia_value("EPCBRENT")
-except Exception as e:
-    print("Brent hiba:", e)
+except Exception:
     brent_value = None
 
 try:
     wti_value = fetch_eia_value("EPCWTI")
-except Exception as e:
-    print("WTI hiba:", e)
+except Exception:
     wti_value = None
 
 
