@@ -1,69 +1,73 @@
 import json
 import os
 from datetime import datetime, timezone
-from urllib.request import urlopen
-from urllib.parse import urlencode
+
+import requests
 
 API_KEY = os.environ.get("EIA_API_KEY")
 
 if not API_KEY:
     raise RuntimeError("Hiányzik az EIA_API_KEY secret.")
 
-def fetch_json(url: str) -> dict:
-    with urlopen(url) as response:
-        return json.load(response)
+BASE_URL = "https://api.eia.gov/v2/petroleum/pri/spt/data/"
 
-def latest_value_from_response(data: dict, fallback="nincs adat"):
-    try:
-        rows = data["response"]["data"]
-        if not rows:
-            return fallback
-        return rows[0].get("value", fallback)
-    except Exception:
-        return fallback
+def fetch_eia_value(product_code: str):
+    params = {
+        "api_key": API_KEY
+    }
+
+    x_params = {
+        "frequency": "daily",
+        "data": ["value"],
+        "facets": {
+            "product": [product_code]
+        },
+        "sort": [
+            {
+                "column": "period",
+                "direction": "desc"
+            }
+        ],
+        "offset": 0,
+        "length": 1
+    }
+
+    headers = {
+        "X-Params": json.dumps(x_params),
+        "User-Agent": "energy-data-bot/1.0"
+    }
+
+    response = requests.get(BASE_URL, params=params, headers=headers, timeout=30)
+    response.raise_for_status()
+
+    data = response.json()
+    rows = data.get("response", {}).get("data", [])
+
+    if not rows:
+        return None
+
+    return rows[0].get("value")
+
 
 def fmt_price(value):
     try:
-        num = float(value)
-        return f"{num:.2f} USD/hordó"
+        return f"{float(value):.2f} USD/hordó"
     except Exception:
         return "nincs adat"
 
-# EIA spot prices – Brent
-brent_url = (
-    "https://api.eia.gov/v2/petroleum/pri/spt/data/?"
-    + urlencode({
-        "api_key": API_KEY,
-        "frequency": "daily",
-        "data[0]": "value",
-        "sort[0][column]": "period",
-        "sort[0][direction]": "desc",
-        "offset": 0,
-        "length": 1,
-        "facets[product][]": "EPCBRENT"
-    })
-)
 
-# EIA spot prices – WTI
-wti_url = (
-    "https://api.eia.gov/v2/petroleum/pri/spt/data/?"
-    + urlencode({
-        "api_key": API_KEY,
-        "frequency": "daily",
-        "data[0]": "value",
-        "sort[0][column]": "period",
-        "sort[0][direction]": "desc",
-        "offset": 0,
-        "length": 1,
-        "facets[product][]": "EPCWTI"
-    })
-)
+try:
+    brent_value = fetch_eia_value("EPCBRENT")
+except Exception as e:
+    print("Brent hiba:", e)
+    brent_value = None
 
-brent_data = fetch_json(brent_url)
-wti_data = fetch_json(wti_url)
+try:
+    wti_value = fetch_eia_value("EPCWTI")
+except Exception as e:
+    print("WTI hiba:", e)
+    wti_value = None
 
-brent_value = latest_value_from_response(brent_data)
-wti_value = latest_value_from_response(wti_data)
 
 oil_data = {
     "market": {
@@ -95,4 +99,4 @@ oil_data = {
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve valódi Brent és WTI adatokkal.")
+print("oil-data.json frissítve.")
