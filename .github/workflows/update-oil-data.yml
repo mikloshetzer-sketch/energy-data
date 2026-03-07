@@ -1,0 +1,33 @@
+name: Update oil data
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repo letöltése
+        uses: actions/checkout@v4
+
+      - name: Python beállítása
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Adatfájl frissítése
+        env:
+          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+        run: python update_oil_data.py
+
+      - name: Commit és push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add oil-data.json
+          git diff --cached --quiet || git commit -m "Automatikus oil-data frissítés"
+          git push
