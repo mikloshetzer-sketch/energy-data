@@ -10,14 +10,32 @@ if not API_KEY:
 
 SPOT_URL = "https://api.eia.gov/v2/petroleum/pri/spt/data/"
 INVENTORY_URL = "https://api.eia.gov/v2/petroleum/stoc/wstk/data/"
+STEO_URL = "https://api.eia.gov/v2/steo/data/"
 
 
-def fetch_eia_value(product_code: str):
-
+def request_with_xparams(url: str, x_params: dict):
     params = {
         "api_key": API_KEY
     }
 
+    headers = {
+        "X-Params": json.dumps(x_params),
+        "User-Agent": "energy-dashboard-bot"
+    }
+
+    response = requests.get(url, params=params, headers=headers, timeout=30)
+    response.raise_for_status()
+    return response.json()
+
+
+def extract_latest_value(data: dict):
+    rows = data.get("response", {}).get("data", [])
+    if not rows:
+        return None
+    return rows[0].get("value")
+
+
+def fetch_eia_price(product_code: str):
     x_params = {
         "frequency": "daily",
         "data": ["value"],
@@ -34,29 +52,11 @@ def fetch_eia_value(product_code: str):
         "length": 1
     }
 
-    headers = {
-        "X-Params": json.dumps(x_params),
-        "User-Agent": "energy-dashboard-bot"
-    }
-
-    response = requests.get(SPOT_URL, params=params, headers=headers, timeout=30)
-    response.raise_for_status()
-
-    data = response.json()
-    rows = data.get("response", {}).get("data", [])
-
-    if not rows:
-        return None
-
-    return rows[0].get("value")
+    data = request_with_xparams(SPOT_URL, x_params)
+    return extract_latest_value(data)
 
 
 def fetch_inventory():
-
-    params = {
-        "api_key": API_KEY
-    }
-
     x_params = {
         "frequency": "weekly",
         "data": ["value"],
@@ -73,21 +73,33 @@ def fetch_inventory():
         "length": 1
     }
 
-    headers = {
-        "X-Params": json.dumps(x_params),
-        "User-Agent": "energy-dashboard-bot"
+    data = request_with_xparams(INVENTORY_URL, x_params)
+    return extract_latest_value(data)
+
+
+def fetch_global_supply():
+    """
+    STEO: World petroleum and other liquid fuels production
+    Series ID: PAPR_WORLD
+    """
+    x_params = {
+        "frequency": "monthly",
+        "data": ["value"],
+        "facets": {
+            "seriesId": ["PAPR_WORLD"]
+        },
+        "sort": [
+            {
+                "column": "period",
+                "direction": "desc"
+            }
+        ],
+        "offset": 0,
+        "length": 1
     }
 
-    response = requests.get(INVENTORY_URL, params=params, headers=headers, timeout=30)
-    response.raise_for_status()
-
-    data = response.json()
-    rows = data.get("response", {}).get("data", [])
-
-    if not rows:
-        return None
-
-    return rows[0].get("value")
+    data = request_with_xparams(STEO_URL, x_params)
+    return extract_latest_value(data)
 
 
 def fmt_price(value):
@@ -104,13 +116,20 @@ def fmt_inventory(value):
         return "nincs adat"
 
 
+def fmt_supply(value):
+    try:
+        return f"{float(value):.1f} millió hordó/nap"
+    except Exception:
+        return "102 millió hordó/nap"
+
+
 try:
-    brent_value = fetch_eia_value("EPCBRENT")
+    brent_value = fetch_eia_price("EPCBRENT")
 except Exception:
     brent_value = None
 
 try:
-    wti_value = fetch_eia_value("EPCWTI")
+    wti_value = fetch_eia_price("EPCWTI")
 except Exception:
     wti_value = None
 
@@ -119,13 +138,18 @@ try:
 except Exception:
     inventory_value = None
 
+try:
+    supply_value = fetch_global_supply()
+except Exception:
+    supply_value = None
+
 
 oil_data = {
     "market": {
         "brent": fmt_price(brent_value),
         "wti": fmt_price(wti_value),
         "inventory": fmt_inventory(inventory_value),
-        "supply": "102 millió hordó/nap"
+        "supply": fmt_supply(supply_value)
     },
     "meta": {
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
@@ -147,9 +171,7 @@ oil_data = {
     }
 }
 
-
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-
-print("oil-data.json frissítve (Brent + WTI + USA inventory).")
+print("oil-data.json frissítve (Brent + WTI + USA inventory + globális kínálat).")
