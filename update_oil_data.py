@@ -212,6 +212,64 @@ def classify_market_stress(risk_level, brent_1d_change, brent_7d_change, wti_1d_
     }
 
 
+def assess_production_impact(risk_level, market_stress_level, current_supply, production_2026, production_2027):
+    supply = to_float(current_supply)
+
+    avg_2026 = average_year_values(production_2026)
+    avg_2027 = average_year_values(production_2027)
+
+    delta = None
+    if avg_2026 is not None and avg_2027 is not None:
+        delta = avg_2027 - avg_2026
+
+    if risk_level == "extreme" or market_stress_level == "shock":
+        return {
+            "level": "critical",
+            "label": "Súlyos lefelé mutató kockázat",
+            "direction": "negatív",
+            "text": "A jelenlegi helyzet tartós fennmaradása már érdemben zavarhatja a termelési és exportpályát, különösen a Közel-Kelethez kapcsolódó ellátási csomópontokon."
+        }
+
+    if risk_level == "high" and market_stress_level in ["severe", "shock"]:
+        return {
+            "level": "high",
+            "label": "Jelentős kockázat",
+            "direction": "negatív",
+            "text": "A magas geopolitikai kockázat és a feszült piaci reakciók növelik annak esélyét, hogy a termelési pálya lefelé módosuljon vagy az exportfolyamatok sérüljenek."
+        }
+
+    if risk_level == "high":
+        return {
+            "level": "elevated",
+            "label": "Érdemi lefelé mutató kockázat",
+            "direction": "negatív",
+            "text": "A jelenlegi geopolitikai környezet önmagában is emeli a termelési kilátások sérülékenységét, még akkor is, ha a globális kínálati pálya egyelőre stabil marad."
+        }
+
+    if delta is not None and delta > 0.3 and market_stress_level in ["normal", "watch"]:
+        return {
+            "level": "stable",
+            "label": "Korlátozott hatás",
+            "direction": "semleges",
+            "text": "A havi termelési pálya alapján a globális kínálat jelenleg viszonylag stabil, így a mostani helyzet inkább kockázatként, mint azonnali termelési kiesésként jelenik meg."
+        }
+
+    if supply is not None and supply >= 103:
+        return {
+            "level": "stable",
+            "label": "Korlátozott hatás",
+            "direction": "semleges",
+            "text": "A jelenlegi globális termelési szint alapján a piac egyelőre rendelkezik bizonyos kínálati pufferekkel, ezért a helyzet rövid távon inkább sérülékenységet, mint közvetlen visszaesést jelez."
+        }
+
+    return {
+        "level": "watch",
+        "label": "Mérsékelt kockázat",
+        "direction": "vegyes",
+        "text": "A jelenlegi helyzet a termelési pályára még nem gyakorol egyértelmű azonnali törést, de a kockázati környezet romlása gyorsan lefelé mutató hatássá alakulhat."
+    }
+
+
 def fmt_price(value):
     try:
         return f"{float(value):.2f} USD/hordó"
@@ -327,6 +385,13 @@ def build_year_series(series, year):
         })
 
     return result
+
+
+def average_year_values(year_series):
+    values = [item["value"] for item in year_series if item.get("value") is not None]
+    if not values:
+        return None
+    return sum(values) / len(values)
 
 
 def generate_status_text(brent_trend, risk_score):
@@ -482,6 +547,14 @@ drivers_text = generate_drivers_text(brent_trend, geo_risk_score, inventory_valu
 production_2026 = build_year_series(production_series, 2026)
 production_2027 = build_year_series(production_series, 2027)
 
+production_impact = assess_production_impact(
+    risk_info["level"],
+    market_stress["level"],
+    supply_value,
+    production_2026,
+    production_2027
+)
+
 oil_data = {
     "market": {
         "brent": fmt_price(brent_value),
@@ -501,6 +574,12 @@ oil_data = {
             "2026": production_2026,
             "2027": production_2027
         }
+    },
+    "production_impact": {
+        "level": production_impact["level"],
+        "label": production_impact["label"],
+        "direction": production_impact["direction"],
+        "text": production_impact["text"]
     },
     "meta": {
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
@@ -539,4 +618,4 @@ oil_data = {
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (összes meglévő funkció + piaci feszültség + 2026/2027 termelési görbék).")
+print("oil-data.json frissítve (összes meglévő funkció + termelési hatás blokk).")
