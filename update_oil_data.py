@@ -142,6 +142,53 @@ def classify_risk(score):
     return {"level": "extreme", "label": "Extrém"}
 
 
+def classify_market_stress(risk_level, brent_1d_change, brent_7d_change, wti_1d_change):
+    b1 = brent_1d_change if brent_1d_change is not None else 0
+    b7 = brent_7d_change if brent_7d_change is not None else 0
+    w1 = wti_1d_change if wti_1d_change is not None else 0
+
+    if risk_level == "extreme":
+        return {
+            "level": "shock",
+            "label": "Sokkhelyzet",
+            "note": "Az ármozgások és a geopolitikai háttér rendkívül feszült piaci környezetre utalnak."
+        }
+
+    if risk_level == "high" and (b1 >= 10 or w1 >= 10):
+        return {
+            "level": "shock",
+            "label": "Sokkhelyzet",
+            "note": "A magas geopolitikai kockázat és a hirtelen napi árugrások sokkszerű piaci reakciót jeleznek."
+        }
+
+    if risk_level == "high" and (b1 >= 5 or b7 >= 10):
+        return {
+            "level": "severe",
+            "label": "Erősen feszült",
+            "note": "A piac intenzíven reagál a geopolitikai kockázatokra, az árak rövid távon erősen volatilisek."
+        }
+
+    if risk_level == "high" or b7 >= 7 or w1 >= 5:
+        return {
+            "level": "tense",
+            "label": "Feszült",
+            "note": "A piaci környezet feszült, az árak emelkedése és a kockázati háttér együtt növeli a bizonytalanságot."
+        }
+
+    if risk_level == "elevated" or b1 >= 3 or b7 >= 3:
+        return {
+            "level": "watch",
+            "label": "Mérsékelten feszült",
+            "note": "A piacon emelkedő érzékenység látható, de még nem alakult ki szélsőséges sokkhelyzet."
+        }
+
+    return {
+        "level": "normal",
+        "label": "Normál",
+        "note": "A piaci reakciók jelenleg nem utalnak szélsőséges rövid távú feszültségre."
+    }
+
+
 def fmt_price(value):
     try:
         return f"{float(value):.2f} USD/hordó"
@@ -152,11 +199,7 @@ def fmt_price(value):
 def fmt_inventory(value):
     try:
         num = float(value)
-
-        # Az EIA készletadat gyakran ezer hordóban jön.
-        # Ezt millió hordóra váltjuk, hogy értelmesen jelenjen meg.
         million_barrels = num / 1000
-
         return f"{million_barrels:.1f} millió hordó"
     except Exception:
         return "nincs adat"
@@ -350,6 +393,13 @@ except Exception:
 
 risk_info = classify_risk(geo_risk_score)
 
+market_stress = classify_market_stress(
+    risk_info["level"],
+    brent_1d_change,
+    brent_7d_change,
+    wti_1d_change
+)
+
 summary_status = generate_status_text(brent_trend, geo_risk_score)
 summary_supply = generate_supply_note(inventory_value, supply_value)
 summary_risk = generate_risk_note(geo_risk_score)
@@ -376,6 +426,11 @@ oil_data = {
         "level": risk_info["level"],
         "label": risk_info["label"]
     },
+    "market_stress": {
+        "level": market_stress["level"],
+        "label": market_stress["label"],
+        "note": market_stress["note"]
+    },
     "forecast": {
         "one_month": "80–85 USD/hordó",
         "three_months": "78–90 USD/hordó",
@@ -398,4 +453,4 @@ oil_data = {
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (összes régi és új funkcióval).")
+print("oil-data.json frissítve (barométer + piaci feszültség együtt).")
