@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           persist-credentials: true
@@ -33,10 +33,10 @@ jobs:
           AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
         run: python update_tanker_data.py
 
-      - name: Commit tanker data
+      - name: Commit updated data files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tanker-data.json
+          git add tanker-data.json tanker-static-cache.json
           git diff --cached --quiet || git commit -m "Update tanker data"
           git push
