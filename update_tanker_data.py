@@ -178,7 +178,7 @@ def merge_vessel(static_info, pos_info):
     }
 
 
-def collect_tankers(duration_seconds=240, connect_timeout=60, max_retries=3):
+def collect_tankers(duration_seconds=300, connect_timeout=60, max_retries=3):
     last_error = None
     static_cache = load_static_cache()
 
@@ -193,8 +193,7 @@ def collect_tankers(duration_seconds=240, connect_timeout=60, max_retries=3):
             subscribe_message = {
                 "APIKey": API_KEY,
                 "BoundingBoxes": [
-                    [[11.0, 28.5], [41.5, 58.8]],
-                    [[40.5, 28.5], [41.5, 29.5]],
+                    [[10.0, -6.0], [47.0, 65.0]]
                 ],
                 "FilterMessageTypes": [
                     "PositionReport",
@@ -243,6 +242,13 @@ def collect_tankers(duration_seconds=240, connect_timeout=60, max_retries=3):
                 vessel = merge_vessel(static_info, pos_info)
                 if vessel:
                     vessels.append(vessel)
+
+            vessels.sort(
+                key=lambda v: (
+                    0 if v["zone"] != "other" else 1,
+                    v.get("name") or ""
+                )
+            )
 
             return vessels
 
