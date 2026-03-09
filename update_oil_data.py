@@ -102,6 +102,27 @@ def fetch_global_supply():
     return extract_latest_value(data)
 
 
+def fetch_global_supply_series(length: int = 12):
+    x_params = {
+        "frequency": "monthly",
+        "data": ["value"],
+        "facets": {
+            "seriesId": ["PAPR_WORLD"]
+        },
+        "sort": [
+            {
+                "column": "period",
+                "direction": "desc"
+            }
+        ],
+        "offset": 0,
+        "length": length
+    }
+
+    data = request_with_xparams(STEO_URL, x_params)
+    return extract_rows(data)
+
+
 def fetch_geo_risk():
     response = requests.get(BRIEF_URL, timeout=30)
     response.raise_for_status()
@@ -249,7 +270,7 @@ def calculate_change_from_index(rows, compare_index):
         if previous == 0:
             return None
 
-        return ((latest - previous) / previous) * 100
+            return ((latest - previous) / previous) * 100
     except Exception:
         return None
 
@@ -259,6 +280,36 @@ def to_float(value):
         return float(value)
     except Exception:
         return None
+
+
+def format_production_series(rows):
+    series = []
+
+    try:
+        # a lekérés desc sorrendben jön, a grafikonhoz fordítsuk meg
+        ordered = list(reversed(rows))
+
+        for row in ordered:
+            period = row.get("period")
+            value = row.get("value")
+
+            if period is None or value is None:
+                continue
+
+            try:
+                num_value = round(float(value), 1)
+            except Exception:
+                continue
+
+            series.append({
+                "date": period,
+                "value": num_value
+            })
+
+    except Exception:
+        return []
+
+    return series
 
 
 def generate_status_text(brent_trend, risk_score):
@@ -387,6 +438,12 @@ except Exception:
     supply_value = None
 
 try:
+    production_rows = fetch_global_supply_series(length=12)
+    production_series = format_production_series(production_rows)
+except Exception:
+    production_series = []
+
+try:
     geo_risk_score = fetch_geo_risk()
 except Exception:
     geo_risk_score = None
@@ -416,6 +473,10 @@ oil_data = {
         "brent_7d_change": fmt_percent(brent_7d_change),
         "wti_1d_change": fmt_percent(wti_1d_change),
         "wti_7d_change": fmt_percent(wti_7d_change)
+    },
+    "production": {
+        "current": fmt_supply(supply_value),
+        "series": production_series
     },
     "meta": {
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
@@ -453,4 +514,4 @@ oil_data = {
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (barométer + piaci feszültség együtt).")
+print("oil-data.json frissítve (összes meglévő funkció + piaci feszültség + termelési idősor).")
