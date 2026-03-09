@@ -219,25 +219,60 @@
     "direction": "semleges",
     "text": "A jelenlegi globális termelési szint alapján a piac egyelőre rendelkezik bizonyos kínálati pufferekkel, ezért a helyzet rövid távon inkább sérülékenységet, mint közvetlen visszaesést jelez."
   },
-  "regional_impact": {
+  "regional_dependency": {
     "europe": {
-      "level": "moderate",
-      "label": "Mérsékelt hatás",
-      "text": "Az európai piacokon emelkedő árnyomás és importköltség-kitettség figyelhető meg, de a hatás egyelőre nem extrém."
+      "factor": 1.0,
+      "label": "Közepes kitettség",
+      "icon": "🇪🇺",
+      "note": "Európa importfüggő, ezért az ár- és ellátási sokkok gyorsan átgyűrűzhetnek az inflációba és az üzemanyagköltségekbe."
+    },
+    "america": {
+      "factor": 0.6,
+      "label": "Alacsonyabb közvetlen kitettség",
+      "icon": "🇺🇸",
+      "note": "Az USA termelői háttere erősebb, ezért közvetlenül kevésbé sérülékeny, bár a globális árak a hazai üzemanyagpiacon is megjelennek."
     },
     "asia": {
-      "level": "moderate",
-      "label": "Mérsékelt hatás",
-      "text": "Az ázsiai piacok továbbra is érzékenyek a közel-keleti fejleményekre, de a jelenlegi ármozgás még nem utal szélsőséges régiós sokkra."
+      "factor": 1.55,
+      "label": "Nagyon magas kitettség",
+      "icon": "🌏",
+      "note": "Ázsia erősen függ a közel-keleti importtól, ezért a Hormuzi-szoroshoz és a tankerforgalomhoz kapcsolódó zavarok itt csapódnak le legerősebben."
+    }
+  },
+  "regional_impact": {
+    "europe": {
+      "level": "extreme",
+      "label": "Nagyon magas hatás",
+      "score": 13.2,
+      "factor": 1.0,
+      "icon": "🇪🇺",
+      "dependency_label": "Közepes kitettség",
+      "dependency_note": "Európa importfüggő, ezért az ár- és ellátási sokkok gyorsan átgyűrűzhetnek az inflációba és az üzemanyagköltségekbe.",
+      "text": "Az európai piacokon az importköltségek, finomított termékárak és inflációs kockázatok rendkívül erősen emelkedhetnek."
     },
     "america": {
       "level": "moderate",
       "label": "Mérsékelt hatás",
-      "text": "Az USA közvetlen ellátási kitettsége kisebb, de a globális árugrás a hazai üzemanyagpiacon és a finomítói árakban is megjelenhet."
+      "score": 7.9,
+      "factor": 0.6,
+      "icon": "🇺🇸",
+      "dependency_label": "Alacsonyabb közvetlen kitettség",
+      "dependency_note": "Az USA termelői háttere erősebb, ezért közvetlenül kevésbé sérülékeny, bár a globális árak a hazai üzemanyagpiacon is megjelennek.",
+      "text": "Az amerikai piacra a globális olajár-sokk mérsékelt, de jól érzékelhető üzemanyag- és piaci hangulati hatással járhat."
+    },
+    "asia": {
+      "level": "extreme",
+      "label": "Nagyon magas hatás",
+      "score": 20.5,
+      "factor": 1.55,
+      "icon": "🌏",
+      "dependency_label": "Nagyon magas kitettség",
+      "dependency_note": "Ázsia erősen függ a közel-keleti importtól, ezért a Hormuzi-szoroshoz és a tankerforgalomhoz kapcsolódó zavarok itt csapódnak le legerősebben.",
+      "text": "Ázsia a közel-keleti importfüggőség miatt jelenleg a legsérülékenyebb régió, ezért a szállítási zavarok, biztosítási költségek és importárak gyorsan felerősödhetnek."
     }
   },
   "meta": {
-    "updated": "2026-03-09 10:50 UTC",
+    "updated": "2026-03-09 11:47 UTC",
     "source": "EIA + GitHub Actions + ME Security Monitor"
   },
   "risk": {
@@ -266,6 +301,7 @@
   "notes": {
     "price_basis": "Az árak EIA napi spot adatok, nem valós idejű futures jegyzések.",
     "chart_basis": "A diagram valós idejű vagy közel valós idejű piaci jegyzést mutathat, ezért eltérhet a napi spot adatoktól.",
-    "production_basis": "A termelési görbe havi, részben előretekintő EIA STEO adatsor, ezért jövőbeli hónapokat is tartalmazhat."
+    "production_basis": "A termelési görbe havi, részben előretekintő EIA STEO adatsor, ezért jövőbeli hónapokat is tartalmazhat.",
+    "regional_basis": "A regionális hatásmodell a geopolitikai kockázatot, a rövid távú ármozgást és a régiós strukturális olajfüggőséget együtt értékeli."
   }
 }
