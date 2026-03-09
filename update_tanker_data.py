@@ -4,6 +4,7 @@ import time
 from datetime import datetime, timezone
 from websocket import create_connection
 
+
 API_KEY = os.getenv("AISSTREAM_API_KEY")
 STREAM_URL = "wss://stream.aisstream.io/v0/stream"
 OUTPUT_FILE = "tanker-data.json"
@@ -12,11 +13,8 @@ if not API_KEY:
     raise RuntimeError("Hiányzik az AISSTREAM_API_KEY környezeti változó.")
 
 
-# tanker ship type kódok
 TANKER_TYPES = {80, 81, 82, 83, 84}
 
-
-# choke point bounding boxok
 CHOKEPOINTS = {
     "hormuz": {
         "min_lat": 24.0,
@@ -71,11 +69,10 @@ def safe_get_position(message):
         return None
 
     ship_type = meta.get("ShipType")
-
     if ship_type not in TANKER_TYPES:
         return None
 
-    vessel = {
+    return {
         "name": meta.get("ShipName"),
         "mmsi": meta.get("MMSI"),
         "imo": meta.get("IMO"),
@@ -89,15 +86,11 @@ def safe_get_position(message):
         "zone": classify_zone(lat, lon),
     }
 
-    return vessel
-
 
 def collect_tankers(duration_seconds=45, connect_timeout=60, max_retries=3):
-
     last_error = None
 
     for attempt in range(1, max_retries + 1):
-
         ws = None
 
         try:
@@ -118,20 +111,17 @@ def collect_tankers(duration_seconds=45, connect_timeout=60, max_retries=3):
             }
 
             ws.send(json.dumps(subscribe_message))
-
             print("Kapcsolódva. Adatgyűjtés indul.")
 
             vessels = {}
             end_time = time.time() + duration_seconds
 
             while time.time() < end_time:
-
                 try:
                     raw = ws.recv()
                     data = json.loads(raw)
 
                     vessel = safe_get_position(data)
-
                     if not vessel:
                         continue
 
@@ -140,19 +130,17 @@ def collect_tankers(duration_seconds=45, connect_timeout=60, max_retries=3):
                         or vessel.get("imo")
                         or vessel.get("name")
                     )
-
                     vessels[key] = vessel
 
                 except Exception as inner_error:
-                    print("Üzenet feldolgozási hiba:", inner_error)
+                    print(f"Üzenet feldolgozási hiba: {inner_error}")
                     continue
 
             return list(vessels.values())
 
         except Exception as e:
-
             last_error = e
-            print("Kapcsolódási hiba:", e)
+            print(f"Kapcsolódási hiba: {e}")
             time.sleep(10)
 
         finally:
@@ -162,13 +150,10 @@ def collect_tankers(duration_seconds=45, connect_timeout=60, max_retries=3):
                 except Exception:
                     pass
 
-    raise RuntimeError(
-        f"Nem sikerült kapcsolódni az AISStreamhez: {last_error}"
-    )
+    raise RuntimeError(f"Nem sikerült kapcsolódni az AISStreamhez: {last_error}")
 
 
 def build_summary(vessels):
-
     return {
         "tracked_tankers": len(vessels),
         "in_hormuz": sum(1 for v in vessels if v["zone"] == "hormuz"),
@@ -179,7 +164,6 @@ def build_summary(vessels):
 
 
 def main():
-
     vessels = collect_tankers()
 
     payload = {
@@ -192,7 +176,7 @@ def main():
     }
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+        json.dump(payload, f, ensure_ascii=False, indent=2)
 
     print(f"{OUTPUT_FILE} frissítve. Tankerek száma: {len(vessels)}")
 
