@@ -8,12 +8,12 @@ from websocket import create_connection
 API_KEY = os.getenv("AISSTREAM_API_KEY")
 STREAM_URL = "wss://stream.aisstream.io/v0/stream"
 OUTPUT_FILE = "tanker-data.json"
+STATIC_CACHE_FILE = "tanker-static-cache.json"
 
 if not API_KEY:
     raise RuntimeError("Hiányzik az AISSTREAM_API_KEY környezeti változó.")
 
 
-# AIS ship type tanker tartományok / tipikus tanker kódok
 TANKER_TYPES = {80, 81, 82, 83, 84}
 
 CHOKEPOINTS = {
@@ -44,6 +44,21 @@ CHOKEPOINTS = {
 }
 
 
+def load_static_cache():
+    if not os.path.exists(STATIC_CACHE_FILE):
+        return {}
+    try:
+        with open(STATIC_CACHE_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def save_static_cache(cache):
+    with open(STATIC_CACHE_FILE, "w", encoding="utf-8") as f:
+        json.dump(cache, f, ensure_ascii=False, indent=2)
+
+
 def in_bbox(lat, lon, box):
     return (
         box["min_lat"] <= lat <= box["max_lat"]
@@ -58,11 +73,23 @@ def classify_zone(lat, lon):
     return "other"
 
 
+def clean_value(value):
+    if isinstance(value, str):
+        value = value.strip()
+        return value if value else None
+    return value
+
+
+def merge_non_empty(old, new):
+    result = dict(old)
+    for k, v in new.items():
+        v = clean_value(v)
+        if v not in (None, "", {}, []):
+            result[k] = v
+    return result
+
+
 def extract_static_info(data):
-    """
-    Kinyeri a statikus hajóadatokat ShipStaticData vagy StaticDataReport üzenetből.
-    Kulcs: UserID (gyakorlatilag MMSI)
-    """
     msg = data.get("Message", {}) or {}
 
     if "ShipStaticData" in msg:
@@ -78,7 +105,7 @@ def extract_static_info(data):
             "destination": s.get("Destination"),
             "ship_type": s.get("Type"),
         }
-        return user_id, static_info
+        return str(user_id), static_info
 
     if "StaticDataReport" in msg:
         s = msg["StaticDataReport"] or {}
@@ -96,18 +123,13 @@ def extract_static_info(data):
             "destination": None,
             "ship_type": report_b.get("ShipType"),
         }
-        return user_id, static_info
+        return str(user_id), static_info
 
     return None, None
 
 
 def extract_position_info(data):
-    """
-    Kinyeri a pozíciót PositionReport / StandardClassBPositionReport üzenetből.
-    """
     msg = data.get("Message", {}) or {}
-
-    position = None
 
     if "PositionReport" in msg:
         position = msg["PositionReport"] or {}
@@ -132,7 +154,7 @@ def extract_position_info(data):
         "heading": position.get("TrueHeading"),
         "zone": classify_zone(lat, lon),
     }
-    return user_id, pos_info
+    return str(user_id), pos_info
 
 
 def merge_vessel(static_info, pos_info):
@@ -142,7 +164,7 @@ def merge_vessel(static_info, pos_info):
         return None
 
     return {
-        "name": static_info.get("name"),
+        "name": clean_value(static_info.get("name")),
         "mmsi": pos_info.get("mmsi"),
         "imo": static_info.get("imo"),
         "ship_type": ship_type,
@@ -151,13 +173,14 @@ def merge_vessel(static_info, pos_info):
         "speed": pos_info.get("speed"),
         "course": pos_info.get("course"),
         "heading": pos_info.get("heading"),
-        "destination": static_info.get("destination"),
+        "destination": clean_value(static_info.get("destination")),
         "zone": pos_info.get("zone"),
     }
 
 
-def collect_tankers(duration_seconds=90, connect_timeout=60, max_retries=3):
+def collect_tankers(duration_seconds=240, connect_timeout=60, max_retries=3):
     last_error = None
+    static_cache = load_static_cache()
 
     for attempt in range(1, max_retries + 1):
         ws = None
@@ -184,9 +207,7 @@ def collect_tankers(duration_seconds=90, connect_timeout=60, max_retries=3):
             ws.send(json.dumps(subscribe_message))
             print("Kapcsolódva. Adatgyűjtés indul.")
 
-            static_cache = {}
             position_cache = {}
-
             end_time = time.time() + duration_seconds
 
             while time.time() < end_time:
@@ -196,9 +217,10 @@ def collect_tankers(duration_seconds=90, connect_timeout=60, max_retries=3):
 
                     user_id, static_info = extract_static_info(data)
                     if user_id is not None and static_info is not None:
-                        existing = static_cache.get(user_id, {})
-                        merged = {**existing, **{k: v for k, v in static_info.items() if v not in (None, "", {})}}
-                        static_cache[user_id] = merged
+                        static_cache[user_id] = merge_non_empty(
+                            static_cache.get(user_id, {}),
+                            static_info
+                        )
                         continue
 
                     user_id, pos_info = extract_position_info(data)
@@ -209,6 +231,8 @@ def collect_tankers(duration_seconds=90, connect_timeout=60, max_retries=3):
                 except Exception as inner_error:
                     print(f"Üzenet feldolgozási hiba: {inner_error}")
                     continue
+
+            save_static_cache(static_cache)
 
             vessels = []
             for user_id, pos_info in position_cache.items():
