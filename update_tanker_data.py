@@ -2,6 +2,7 @@ import os
 import json
 import time
 from datetime import datetime, timezone
+
 from websocket import create_connection
 
 
@@ -178,40 +179,53 @@ def merge_vessel(static_info, pos_info):
     }
 
 
-def collect_tankers(duration_seconds=300, connect_timeout=60, max_retries=3):
-    last_error = None
-    static_cache = load_static_cache()
+def open_stream():
+    ws = create_connection(STREAM_URL, timeout=60)
 
-    for attempt in range(1, max_retries + 1):
+    subscribe_message = {
+        "APIKey": API_KEY,
+        "BoundingBoxes": [
+            [[10.0, -6.0], [47.0, 65.0]]
+        ],
+        "FilterMessageTypes": [
+            "PositionReport",
+            "StandardClassBPositionReport",
+            "ShipStaticData",
+            "StaticDataReport"
+        ],
+    }
+
+    ws.send(json.dumps(subscribe_message))
+    return ws
+
+
+def collect_tankers(duration_seconds=180, max_reconnects=5):
+    static_cache = load_static_cache()
+    position_cache = {}
+
+    end_time = time.time() + duration_seconds
+    reconnect_count = 0
+
+    while time.time() < end_time:
         ws = None
 
         try:
-            print(f"AISStream kapcsolat próbálkozás {attempt}/{max_retries}")
+            reconnect_count += 1
+            if reconnect_count > max_reconnects:
+                print("Elérve a maximális újracsatlakozási számot.")
+                break
 
-            ws = create_connection(STREAM_URL, timeout=connect_timeout)
-
-            subscribe_message = {
-                "APIKey": API_KEY,
-                "BoundingBoxes": [
-                    [[10.0, -6.0], [47.0, 65.0]]
-                ],
-                "FilterMessageTypes": [
-                    "PositionReport",
-                    "StandardClassBPositionReport",
-                    "ShipStaticData",
-                    "StaticDataReport"
-                ],
-            }
-
-            ws.send(json.dumps(subscribe_message))
+            print(f"AISStream csatlakozás {reconnect_count}/{max_reconnects}")
+            ws = open_stream()
             print("Kapcsolódva. Adatgyűjtés indul.")
-
-            position_cache = {}
-            end_time = time.time() + duration_seconds
 
             while time.time() < end_time:
                 try:
                     raw = ws.recv()
+                    if not raw:
+                        print("Üres üzenet érkezett, újracsatlakozás.")
+                        break
+
                     data = json.loads(raw)
 
                     user_id, static_info = extract_static_info(data)
@@ -227,35 +241,15 @@ def collect_tankers(duration_seconds=300, connect_timeout=60, max_retries=3):
                         position_cache[user_id] = pos_info
                         continue
 
+                except json.JSONDecodeError:
+                    continue
+
                 except Exception as inner_error:
-                    print(f"Üzenet feldolgozási hiba: {inner_error}")
-                    continue
+                    print(f"Kapcsolat megszakadt vagy recv hiba: {inner_error}")
+                    break
 
-            save_static_cache(static_cache)
-
-            vessels = []
-            for user_id, pos_info in position_cache.items():
-                static_info = static_cache.get(user_id)
-                if not static_info:
-                    continue
-
-                vessel = merge_vessel(static_info, pos_info)
-                if vessel:
-                    vessels.append(vessel)
-
-            vessels.sort(
-                key=lambda v: (
-                    0 if v["zone"] != "other" else 1,
-                    v.get("name") or ""
-                )
-            )
-
-            return vessels
-
-        except Exception as e:
-            last_error = e
-            print(f"Kapcsolódási hiba: {e}")
-            time.sleep(10)
+        except Exception as outer_error:
+            print(f"Kapcsolódási hiba: {outer_error}")
 
         finally:
             if ws is not None:
@@ -264,7 +258,30 @@ def collect_tankers(duration_seconds=300, connect_timeout=60, max_retries=3):
                 except Exception:
                     pass
 
-    raise RuntimeError(f"Nem sikerült kapcsolódni az AISStreamhez: {last_error}")
+        if time.time() < end_time:
+            print("Újracsatlakozás 5 másodperc múlva...")
+            time.sleep(5)
+
+    save_static_cache(static_cache)
+
+    vessels = []
+    for user_id, pos_info in position_cache.items():
+        static_info = static_cache.get(user_id)
+        if not static_info:
+            continue
+
+        vessel = merge_vessel(static_info, pos_info)
+        if vessel:
+            vessels.append(vessel)
+
+    vessels.sort(
+        key=lambda v: (
+            0 if v["zone"] != "other" else 1,
+            v.get("name") or ""
+        )
+    )
+
+    return vessels
 
 
 def build_summary(vessels):
