@@ -2,6 +2,7 @@ import json
 import os
 import re
 from datetime import datetime, timezone
+
 import requests
 
 API_KEY = os.environ.get("EIA_API_KEY")
@@ -21,6 +22,7 @@ def request_with_xparams(url: str, x_params: dict):
         "X-Params": json.dumps(x_params),
         "User-Agent": "energy-dashboard-bot"
     }
+
     response = requests.get(url, params=params, headers=headers, timeout=30)
     response.raise_for_status()
     return response.json()
@@ -149,7 +151,13 @@ def fmt_price(value):
 
 def fmt_inventory(value):
     try:
-        return f"{float(value):.0f} millió hordó"
+        num = float(value)
+
+        # Az EIA készletadat gyakran ezer hordóban jön.
+        # Ezt millió hordóra váltjuk, hogy értelmesen jelenjen meg.
+        million_barrels = num / 1000
+
+        return f"{million_barrels:.1f} millió hordó"
     except Exception:
         return "nincs adat"
 
@@ -380,10 +388,14 @@ oil_data = {
     },
     "drivers": {
         "text": drivers_text
+    },
+    "notes": {
+        "price_basis": "Az árak EIA napi spot adatok, nem valós idejű futures jegyzések.",
+        "chart_basis": "A diagram valós idejű vagy közel valós idejű piaci jegyzést mutathat, ezért eltérhet a napi spot adatoktól."
     }
 }
 
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (rövid távú ármozgásokkal együtt).")
+print("oil-data.json frissítve (összes régi és új funkcióval).")
