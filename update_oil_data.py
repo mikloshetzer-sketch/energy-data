@@ -212,6 +212,87 @@ def classify_market_stress(risk_level, brent_1d_change, brent_7d_change, wti_1d_
     }
 
 
+def classify_regional_impact(brent_value, wti_value, brent_1d_change, brent_7d_change, risk_level):
+    brent = brent_value if brent_value is not None else 0
+    wti = wti_value if wti_value is not None else 0
+    b1 = brent_1d_change if brent_1d_change is not None else 0
+    b7 = brent_7d_change if brent_7d_change is not None else 0
+    spread = (brent - wti) if (brent_value is not None and wti_value is not None) else 0
+
+    def make_region(level, label, text):
+        return {
+            "level": level,
+            "label": label,
+            "text": text
+        }
+
+    # Ázsia
+    if risk_level in ["extreme"] or b1 >= 10:
+        asia = make_region(
+            "extreme",
+            "Nagyon magas hatás",
+            "Ázsia a közel-keleti importfüggőség miatt a legsérülékenyebb régió, ezért a Hormuzi-szoroshoz kapcsolódó zavarok gyorsan átgyűrűzhetnek az árakba és az ellátásbiztonságba."
+        )
+    elif risk_level == "high" or b7 >= 7:
+        asia = make_region(
+            "high",
+            "Magas hatás",
+            "Az ázsiai piacokat erősen érintheti a közel-keleti feszültség, különösen az importköltségek, a finomított termékárak és a hajózási kockázatok oldalán."
+        )
+    else:
+        asia = make_region(
+            "moderate",
+            "Mérsékelt hatás",
+            "Az ázsiai piacok továbbra is érzékenyek a közel-keleti fejleményekre, de a jelenlegi ármozgás még nem utal szélsőséges régiós sokkra."
+        )
+
+    # Európa
+    if risk_level == "high" and b7 >= 5:
+        europe = make_region(
+            "high",
+            "Magas hatás",
+            "Európában az importköltségek emelkedése gyorsan megjelenhet az inflációs nyomásban, valamint a közlekedési és ipari energiaárakban."
+        )
+    elif b1 >= 3 or b7 >= 3:
+        europe = make_region(
+            "moderate",
+            "Mérsékelt hatás",
+            "Az európai piacokon emelkedő árnyomás és importköltség-kitettség figyelhető meg, de a hatás egyelőre nem extrém."
+        )
+    else:
+        europe = make_region(
+            "low",
+            "Korlátozott hatás",
+            "Az európai piacok érzékenyek az olajárakra, de a jelenlegi hatás még inkább költségoldali kockázatként jelenik meg."
+        )
+
+    # Amerika / USA
+    if spread >= 6 or brent >= 90:
+        america = make_region(
+            "moderate",
+            "Mérsékelt hatás",
+            "Az USA közvetlen ellátási kitettsége kisebb, de a globális árugrás a hazai üzemanyagpiacon és a finomítói árakban is megjelenhet."
+        )
+    elif b1 >= 5:
+        america = make_region(
+            "moderate",
+            "Mérsékelt hatás",
+            "Az amerikai piacra a globális ármozgás főként üzemanyagár-emelkedésen és finomítói csatornákon keresztül gyűrűzhet át."
+        )
+    else:
+        america = make_region(
+            "low",
+            "Korlátozott hatás",
+            "Az amerikai piac termelői háttere miatt kevésbé sérülékeny, bár a globális ártrendek a fogyasztói árakban így is megjelenhetnek."
+        )
+
+    return {
+        "europe": europe,
+        "asia": asia,
+        "america": america
+    }
+
+
 def assess_production_impact(risk_level, market_stress_level, current_supply, production_2026, production_2027):
     supply = to_float(current_supply)
 
@@ -555,6 +636,14 @@ production_impact = assess_production_impact(
     production_2027
 )
 
+regional_impact = classify_regional_impact(
+    brent_value=to_float(brent_value),
+    wti_value=to_float(wti_value),
+    brent_1d_change=brent_1d_change,
+    brent_7d_change=brent_7d_change,
+    risk_level=risk_info["level"]
+)
+
 oil_data = {
     "market": {
         "brent": fmt_price(brent_value),
@@ -581,6 +670,7 @@ oil_data = {
         "direction": production_impact["direction"],
         "text": production_impact["text"]
     },
+    "regional_impact": regional_impact,
     "meta": {
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "source": "EIA + GitHub Actions + ME Security Monitor"
@@ -618,4 +708,4 @@ oil_data = {
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (összes meglévő funkció + termelési hatás blokk).")
+print("oil-data.json frissítve (regionális hatásokkal együtt).")
