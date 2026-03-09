@@ -161,6 +161,16 @@ def fmt_supply(value):
         return "102 millió hordó/nap"
 
 
+def fmt_percent(value):
+    try:
+        if value is None:
+            return "nincs adat"
+        sign = "+" if value > 0 else ""
+        return f"{sign}{value:.2f}%"
+    except Exception:
+        return "nincs adat"
+
+
 def calculate_trend_percent(rows):
     try:
         if not rows or len(rows) < 2:
@@ -177,14 +187,20 @@ def calculate_trend_percent(rows):
         return None
 
 
-def fmt_trend(value):
+def calculate_change_from_index(rows, compare_index):
     try:
-        if value is None:
-            return "nincs adat"
-        sign = "+" if value > 0 else ""
-        return f"{sign}{value:.2f}%"
+        if not rows or len(rows) <= compare_index:
+            return None
+
+        latest = float(rows[0]["value"])
+        previous = float(rows[compare_index]["value"])
+
+        if previous == 0:
+            return None
+
+        return ((latest - previous) / previous) * 100
     except Exception:
-        return "nincs adat"
+        return None
 
 
 def to_float(value):
@@ -261,28 +277,22 @@ def generate_drivers_text(brent_trend, risk_score, inventory_value):
 
     if risk_score is not None and risk_score >= 250:
         parts.append("A jelenlegi ármozgásokat erősen befolyásolja a közel-keleti geopolitikai kockázatok magas szintje")
-
     elif risk_score is not None and risk_score >= 180:
         parts.append("A jelenlegi ármozgásokat érezhetően befolyásolja a közel-keleti geopolitikai feszültség")
-
     else:
         parts.append("A jelenlegi ármozgásokat elsősorban a keresleti és kínálati fundamentumok alakítják")
 
     if brent_trend is not None and brent_trend >= 5:
         parts.append("miközben a Brent ár elmúlt 30 napos emelkedése is felfelé mutató piaci nyomást jelez")
-
     elif brent_trend is not None and brent_trend <= -5:
         parts.append("miközben a Brent ár 30 napos csökkenése mérsékeltebb piaci hangulatra utal")
-
     else:
         parts.append("miközben a Brent ár 30 napos mozgása inkább mérsékelt irányt mutat")
 
     if inventory is not None and inventory < 420:
         parts.append("és az amerikai készletszint sem nyújt erős puffert az esetleges ellátási zavarokkal szemben")
-
     elif inventory is not None and inventory > 460:
         parts.append("miközben a magasabb amerikai készletszint részben csökkentheti a rövid távú árnyomást")
-
     else:
         parts.append("miközben az amerikai készletszint önmagában nem utal szélsőséges piaci helyzetre")
 
@@ -295,16 +305,25 @@ try:
     brent_rows = fetch_eia_price("EPCBRENT", length=30)
     brent_value = brent_rows[0].get("value") if brent_rows else None
     brent_trend = calculate_trend_percent(brent_rows)
+    brent_1d_change = calculate_change_from_index(brent_rows, 1)
+    brent_7d_change = calculate_change_from_index(brent_rows, 6)
 except Exception:
     brent_rows = []
     brent_value = None
     brent_trend = None
+    brent_1d_change = None
+    brent_7d_change = None
 
 try:
-    wti_rows = fetch_eia_price("EPCWTI", length=1)
+    wti_rows = fetch_eia_price("EPCWTI", length=10)
     wti_value = wti_rows[0].get("value") if wti_rows else None
+    wti_1d_change = calculate_change_from_index(wti_rows, 1)
+    wti_7d_change = calculate_change_from_index(wti_rows, 6)
 except Exception:
+    wti_rows = []
     wti_value = None
+    wti_1d_change = None
+    wti_7d_change = None
 
 try:
     inventory_value = fetch_inventory()
@@ -334,7 +353,11 @@ oil_data = {
         "wti": fmt_price(wti_value),
         "inventory": fmt_inventory(inventory_value),
         "supply": fmt_supply(supply_value),
-        "brent_30d_trend": fmt_trend(brent_trend)
+        "brent_30d_trend": fmt_percent(brent_trend),
+        "brent_1d_change": fmt_percent(brent_1d_change),
+        "brent_7d_change": fmt_percent(brent_7d_change),
+        "wti_1d_change": fmt_percent(wti_1d_change),
+        "wti_7d_change": fmt_percent(wti_7d_change)
     },
     "meta": {
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
@@ -363,4 +386,4 @@ oil_data = {
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (automatikus summary és drivers szöveggel).")
+print("oil-data.json frissítve (rövid távú ármozgásokkal együtt).")
