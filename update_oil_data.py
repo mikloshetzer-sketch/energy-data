@@ -15,6 +15,8 @@ INVENTORY_URL = "https://api.eia.gov/v2/petroleum/stoc/wstk/data/"
 STEO_URL = "https://api.eia.gov/v2/steo/data/"
 BRIEF_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/brief.md"
 
+MONTHS = ["Jan", "Feb", "Már", "Ápr", "Máj", "Jún", "Júl", "Aug", "Szept", "Okt", "Nov", "Dec"]
+
 
 def request_with_xparams(url: str, x_params: dict):
     params = {"api_key": API_KEY}
@@ -102,7 +104,7 @@ def fetch_global_supply():
     return extract_latest_value(data)
 
 
-def fetch_global_supply_series(length: int = 12):
+def fetch_global_supply_series(length: int = 24):
     x_params = {
         "frequency": "monthly",
         "data": ["value"],
@@ -259,18 +261,19 @@ def calculate_trend_percent(rows):
         return None
 
 
-def calculate_change_from_index(rows, compare_index):
+def calculate_change_from_days(rows, days_back):
     try:
-        if not rows or len(rows) <= compare_index:
+        if not rows or len(rows) < 2:
             return None
 
         latest = float(rows[0]["value"])
+        compare_index = min(days_back, len(rows) - 1)
         previous = float(rows[compare_index]["value"])
 
         if previous == 0:
             return None
 
-            return ((latest - previous) / previous) * 100
+        return ((latest - previous) / previous) * 100
     except Exception:
         return None
 
@@ -286,7 +289,6 @@ def format_production_series(rows):
     series = []
 
     try:
-        # a lekérés desc sorrendben jön, a grafikonhoz fordítsuk meg
         ordered = list(reversed(rows))
 
         for row in ordered:
@@ -310,6 +312,21 @@ def format_production_series(rows):
         return []
 
     return series
+
+
+def build_year_series(series, year):
+    result = []
+
+    for month_index in range(1, 13):
+        date_key = f"{year}-{month_index:02d}"
+        found = next((item for item in series if item["date"] == date_key), None)
+
+        result.append({
+            "month": MONTHS[month_index - 1],
+            "value": found["value"] if found else None
+        })
+
+    return result
 
 
 def generate_status_text(brent_trend, risk_score):
@@ -404,11 +421,11 @@ def generate_drivers_text(brent_trend, risk_score, inventory_value):
 
 
 try:
-    brent_rows = fetch_eia_price("EPCBRENT", length=30)
+    brent_rows = fetch_eia_price("EPCBRENT", length=35)
     brent_value = brent_rows[0].get("value") if brent_rows else None
     brent_trend = calculate_trend_percent(brent_rows)
-    brent_1d_change = calculate_change_from_index(brent_rows, 1)
-    brent_7d_change = calculate_change_from_index(brent_rows, 6)
+    brent_1d_change = calculate_change_from_days(brent_rows, 1)
+    brent_7d_change = calculate_change_from_days(brent_rows, 7)
 except Exception:
     brent_rows = []
     brent_value = None
@@ -417,10 +434,10 @@ except Exception:
     brent_7d_change = None
 
 try:
-    wti_rows = fetch_eia_price("EPCWTI", length=10)
+    wti_rows = fetch_eia_price("EPCWTI", length=15)
     wti_value = wti_rows[0].get("value") if wti_rows else None
-    wti_1d_change = calculate_change_from_index(wti_rows, 1)
-    wti_7d_change = calculate_change_from_index(wti_rows, 6)
+    wti_1d_change = calculate_change_from_days(wti_rows, 1)
+    wti_7d_change = calculate_change_from_days(wti_rows, 7)
 except Exception:
     wti_rows = []
     wti_value = None
@@ -438,7 +455,7 @@ except Exception:
     supply_value = None
 
 try:
-    production_rows = fetch_global_supply_series(length=12)
+    production_rows = fetch_global_supply_series(length=24)
     production_series = format_production_series(production_rows)
 except Exception:
     production_series = []
@@ -462,6 +479,9 @@ summary_supply = generate_supply_note(inventory_value, supply_value)
 summary_risk = generate_risk_note(geo_risk_score)
 drivers_text = generate_drivers_text(brent_trend, geo_risk_score, inventory_value)
 
+production_2026 = build_year_series(production_series, 2026)
+production_2027 = build_year_series(production_series, 2027)
+
 oil_data = {
     "market": {
         "brent": fmt_price(brent_value),
@@ -476,7 +496,11 @@ oil_data = {
     },
     "production": {
         "current": fmt_supply(supply_value),
-        "series": production_series
+        "series": production_series,
+        "by_year": {
+            "2026": production_2026,
+            "2027": production_2027
+        }
     },
     "meta": {
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
@@ -507,11 +531,12 @@ oil_data = {
     },
     "notes": {
         "price_basis": "Az árak EIA napi spot adatok, nem valós idejű futures jegyzések.",
-        "chart_basis": "A diagram valós idejű vagy közel valós idejű piaci jegyzést mutathat, ezért eltérhet a napi spot adatoktól."
+        "chart_basis": "A diagram valós idejű vagy közel valós idejű piaci jegyzést mutathat, ezért eltérhet a napi spot adatoktól.",
+        "production_basis": "A termelési görbe havi, részben előretekintő EIA STEO adatsor, ezért jövőbeli hónapokat is tartalmazhat."
     }
 }
 
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (összes meglévő funkció + piaci feszültség + termelési idősor).")
+print("oil-data.json frissítve (összes meglévő funkció + piaci feszültség + 2026/2027 termelési görbék).")
