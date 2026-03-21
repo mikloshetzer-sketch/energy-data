@@ -97,11 +97,19 @@ AIS_SIGNAL_MULTIPLIER = {
 }
 
 
-def load_json(path, default=None):
+def safe_load_json(path, default):
     if not os.path.exists(path):
         return default
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+
+    try:
+        with open(path, "r", encoding="utf-8-sig") as f:
+            content = f.read().strip()
+            if not content:
+                return default
+            return json.loads(content)
+    except Exception as e:
+        print(f"Figyelmeztetés: hibás vagy üres JSON fájl ({path}), alapérték használata. Hiba: {e}")
+        return default
 
 
 def save_json(path, payload):
@@ -247,10 +255,13 @@ def top_risk_summary(items, limit=5):
 
 
 def append_history(history, timestamp, global_index_value, me_impact, items):
-    if history is None:
+    if history is None or not isinstance(history, dict):
         history = {"snapshots": []}
 
     snapshots = history.get("snapshots", [])
+    if not isinstance(snapshots, list):
+        snapshots = []
+
     today = timestamp[:10]
 
     snapshots.append({
@@ -261,15 +272,19 @@ def append_history(history, timestamp, global_index_value, me_impact, items):
         "top_risks": top_risk_summary(items, limit=5),
     })
 
-    # csak az utolsó 120 snapshot maradjon
     history["snapshots"] = snapshots[-120:]
     return history
 
 
 def find_previous_day_snapshot(history, today):
-    snapshots = history.get("snapshots", []) if history else []
-    candidates = [s for s in snapshots if s.get("date") != today]
+    if not history or not isinstance(history, dict):
+        return None
 
+    snapshots = history.get("snapshots", [])
+    if not isinstance(snapshots, list):
+        return None
+
+    candidates = [s for s in snapshots if s.get("date") != today]
     if not candidates:
         return None
 
@@ -304,8 +319,8 @@ def main():
     timestamp = now.strftime("%Y-%m-%d %H:%M UTC")
     today = now.strftime("%Y-%m-%d")
 
-    tanker_data = load_json(TANKER_INPUT_FILE, default=None)
-    history = load_json(HISTORY_FILE, default={"snapshots": []})
+    tanker_data = safe_load_json(TANKER_INPUT_FILE, default=None)
+    history = safe_load_json(HISTORY_FILE, default={"snapshots": []})
 
     items, zone_counts = build_items(tanker_data)
     global_index_value = global_trade_risk_index(items)
