@@ -1,14 +1,14 @@
 {
   "meta": {
-    "updated": null,
+    "updated": "2026-03-21 20:11 UTC",
     "method": "chokepoint structural impact model v2",
     "uses_tanker_signal": true,
     "tanker_input_source": "tanker-data.json"
   },
-  "global_trade_risk_index": 0,
+  "global_trade_risk_index": 26.7,
   "middle_east_conflict_impact": {
-    "label": "unknown",
-    "score": 0
+    "label": "medium",
+    "score": 47.9
   },
   "tracked_zone_counts": {
     "hormuz": 0,
@@ -16,6 +16,145 @@
     "bab_el_mandeb": 0,
     "bosporus": 0
   },
-  "top_risks": [],
-  "chokepoints": []
+  "top_risks": [
+    {
+      "name": "Hormuzi-szoros",
+      "estimated_impact": 0.1889,
+      "status": "severe"
+    },
+    {
+      "name": "Bab el-Mandeb",
+      "estimated_impact": 0.0607,
+      "status": "medium"
+    },
+    {
+      "name": "Szuezi térség",
+      "estimated_impact": 0.0375,
+      "status": "low"
+    },
+    {
+      "name": "Malaka-szoros",
+      "estimated_impact": 0.0191,
+      "status": "low"
+    },
+    {
+      "name": "Boszporusz",
+      "estimated_impact": 0.0067,
+      "status": "low"
+    }
+  ],
+  "chokepoints": [
+    {
+      "key": "hormuz",
+      "name": "Hormuzi-szoros",
+      "region": "middle_east",
+      "trade_share": 0.16,
+      "energy_share": 0.3,
+      "combined_weight": 0.244,
+      "substitution_penalty": 0.95,
+      "disruption_level": 0.78,
+      "regional_adjustment": 1.1,
+      "ais_count_signal": 0,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.1889,
+      "status": "severe",
+      "notes": "Kiemelten fontos olaj- és energiatranzit pont."
+    },
+    {
+      "key": "bab_el_mandeb",
+      "name": "Bab el-Mandeb",
+      "region": "middle_east",
+      "trade_share": 0.1,
+      "energy_share": 0.12,
+      "combined_weight": 0.112,
+      "substitution_penalty": 0.72,
+      "disruption_level": 0.72,
+      "regional_adjustment": 1.1,
+      "ais_count_signal": 0,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.0607,
+      "status": "medium",
+      "notes": "Vörös-tengeri és Szuez felé irányuló forgalom kulcspontja."
+    },
+    {
+      "key": "suez",
+      "name": "Szuezi térség",
+      "region": "middle_east",
+      "trade_share": 0.12,
+      "energy_share": 0.08,
+      "combined_weight": 0.096,
+      "substitution_penalty": 0.68,
+      "disruption_level": 0.55,
+      "regional_adjustment": 1.1,
+      "ais_count_signal": 0,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.0375,
+      "status": "low",
+      "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
+    },
+    {
+      "key": "malacca",
+      "name": "Malaka-szoros",
+      "region": "asia",
+      "trade_share": 0.24,
+      "energy_share": 0.22,
+      "combined_weight": 0.228,
+      "substitution_penalty": 0.88,
+      "disruption_level": 0.1,
+      "regional_adjustment": 1.0,
+      "ais_count_signal": 0,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.0191,
+      "status": "low",
+      "notes": "Ázsiai tengeri kereskedelem és energiaáramlás egyik fő útvonala."
+    },
+    {
+      "key": "bosporus",
+      "name": "Boszporusz",
+      "region": "black_sea",
+      "trade_share": 0.04,
+      "energy_share": 0.05,
+      "combined_weight": 0.046,
+      "substitution_penalty": 0.7,
+      "disruption_level": 0.22,
+      "regional_adjustment": 1.0,
+      "ais_count_signal": 0,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.0067,
+      "status": "low",
+      "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
+    },
+    {
+      "key": "panama",
+      "name": "Panama-csatorna",
+      "region": "americas",
+      "trade_share": 0.06,
+      "energy_share": 0.03,
+      "combined_weight": 0.042,
+      "substitution_penalty": 0.62,
+      "disruption_level": 0.18,
+      "regional_adjustment": 1.0,
+      "ais_count_signal": 0,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.0045,
+      "status": "low",
+      "notes": "Főként globális logisztikai és konténerforgalmi jelentőség."
+    },
+    {
+      "key": "gibraltar",
+      "name": "Gibraltári-szoros",
+      "region": "europe",
+      "trade_share": 0.08,
+      "energy_share": 0.06,
+      "combined_weight": 0.068,
+      "substitution_penalty": 0.55,
+      "disruption_level": 0.08,
+      "regional_adjustment": 1.0,
+      "ais_count_signal": 0,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.0028,
+      "status": "low",
+      "notes": "Atlanti–mediterrán átjáró, magas általános tengeri jelentőséggel."
+    }
+  ]
 }
