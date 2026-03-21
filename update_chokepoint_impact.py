@@ -4,22 +4,7 @@ from datetime import datetime, timezone
 
 TANKER_INPUT_FILE = "tanker-data.json"
 OUTPUT_FILE = "chokepoint-impact.json"
-
-# --------------------------------------------------
-# V2 MODEL CONFIG
-# --------------------------------------------------
-# Ezek V1/V2 elemzői baseline értékek.
-# Nem "hard truth", hanem tudatos modellparaméterek,
-# amelyeket később finomíthatsz saját módszertan szerint.
-#
-# trade_share: az adott chokepoint szerepe a tengeri kereskedelemben
-# energy_share: az adott chokepoint szerepe az energiakereskedelemben
-# substitution_penalty: mennyire nehéz helyettesíteni / megkerülni
-# disruption_level: aktuális kockázati szint 0-1 skálán
-#
-# combined_weight = 0.4 * trade_share + 0.6 * energy_share
-# estimated_impact = combined_weight * disruption_level * substitution_penalty
-# --------------------------------------------------
+HISTORY_FILE = "chokepoint-impact-history.json"
 
 CHOKEPOINTS = {
     "hormuz": {
@@ -87,7 +72,6 @@ CHOKEPOINTS = {
     },
 }
 
-# Opcionális regionális korrekció
 REGIONAL_ADJUSTMENT = {
     "middle_east": 1.10,
     "black_sea": 1.00,
@@ -96,7 +80,6 @@ REGIONAL_ADJUSTMENT = {
     "europe": 1.00,
 }
 
-# AIS csak kiegészítő jelzésként szerepel.
 DYNAMIC_ZONE_MAP = {
     "hormuz": "hormuz",
     "bab_el_mandeb": "bab_el_mandeb",
@@ -104,7 +87,6 @@ DYNAMIC_ZONE_MAP = {
     "bosporus": "bosporus",
 }
 
-# Ezek csak soft jelzésként módosítják az impactet, nem dominálják.
 AIS_SIGNAL_MULTIPLIER = {
     0: 0.95,
     1: 1.00,
@@ -115,11 +97,16 @@ AIS_SIGNAL_MULTIPLIER = {
 }
 
 
-def load_json(path):
+def load_json(path, default=None):
     if not os.path.exists(path):
-        return None
+        return default
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def save_json(path, payload):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
 
 
 def clamp(value, min_value, max_value):
@@ -130,8 +117,11 @@ def round4(value):
     return round(value, 4)
 
 
+def round2(value):
+    return round(value, 2)
+
+
 def combined_weight(trade_share, energy_share):
-    # Energia-orientált súlyozás
     return round4((0.4 * trade_share) + (0.6 * energy_share))
 
 
@@ -217,8 +207,6 @@ def global_trade_risk_index(items):
         return 0
 
     total = sum(item["estimated_impact"] for item in items)
-
-    # Skálázott 0-100 index
     scaled = total / 1.2 * 100
     return round(clamp(scaled, 0, 100), 1)
 
@@ -246,7 +234,7 @@ def middle_east_conflict_impact(items):
     }
 
 
-def top_risk_summary(items, limit=3):
+def top_risk_summary(items, limit=5):
     top_items = items[:limit]
     return [
         {
@@ -258,28 +246,106 @@ def top_risk_summary(items, limit=3):
     ]
 
 
+def append_history(history, timestamp, global_index_value, me_impact, items):
+    if history is None:
+        history = {"snapshots": []}
+
+    snapshots = history.get("snapshots", [])
+    today = timestamp[:10]
+
+    snapshots.append({
+        "timestamp": timestamp,
+        "date": today,
+        "global_trade_risk_index": global_index_value,
+        "middle_east_conflict_impact_score": me_impact["score"],
+        "top_risks": top_risk_summary(items, limit=5),
+    })
+
+    # csak az utolsó 120 snapshot maradjon
+    history["snapshots"] = snapshots[-120:]
+    return history
+
+
+def find_previous_day_snapshot(history, today):
+    snapshots = history.get("snapshots", []) if history else []
+    candidates = [s for s in snapshots if s.get("date") != today]
+
+    if not candidates:
+        return None
+
+    return candidates[-1]
+
+
+def compute_daily_change(current_global_index, current_me_score, previous_snapshot):
+    if not previous_snapshot:
+        return {
+            "global_trade_risk_index_change": None,
+            "middle_east_conflict_impact_change": None,
+            "direction_global": "n/a",
+            "direction_middle_east": "n/a",
+        }
+
+    prev_global = previous_snapshot.get("global_trade_risk_index", 0)
+    prev_me = previous_snapshot.get("middle_east_conflict_impact_score", 0)
+
+    global_change = round2(current_global_index - prev_global)
+    me_change = round2(current_me_score - prev_me)
+
+    return {
+        "global_trade_risk_index_change": global_change,
+        "middle_east_conflict_impact_change": me_change,
+        "direction_global": "up" if global_change > 0 else "down" if global_change < 0 else "flat",
+        "direction_middle_east": "up" if me_change > 0 else "down" if me_change < 0 else "flat",
+    }
+
+
 def main():
-    tanker_data = load_json(TANKER_INPUT_FILE)
+    now = datetime.now(timezone.utc)
+    timestamp = now.strftime("%Y-%m-%d %H:%M UTC")
+    today = now.strftime("%Y-%m-%d")
+
+    tanker_data = load_json(TANKER_INPUT_FILE, default=None)
+    history = load_json(HISTORY_FILE, default={"snapshots": []})
+
     items, zone_counts = build_items(tanker_data)
+    global_index_value = global_trade_risk_index(items)
+    me_impact = middle_east_conflict_impact(items)
+
+    previous_snapshot = find_previous_day_snapshot(history, today)
+    daily_change = compute_daily_change(
+        global_index_value,
+        me_impact["score"],
+        previous_snapshot
+    )
 
     payload = {
         "meta": {
-            "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+            "updated": timestamp,
             "method": "chokepoint structural impact model v2",
             "uses_tanker_signal": True,
             "tanker_input_source": TANKER_INPUT_FILE,
         },
-        "global_trade_risk_index": global_trade_risk_index(items),
-        "middle_east_conflict_impact": middle_east_conflict_impact(items),
+        "global_trade_risk_index": global_index_value,
+        "middle_east_conflict_impact": me_impact,
+        "daily_change": daily_change,
         "tracked_zone_counts": zone_counts,
         "top_risks": top_risk_summary(items, limit=5),
         "chokepoints": items,
     }
 
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(payload, f, ensure_ascii=False, indent=2)
+    history = append_history(
+        history,
+        timestamp=timestamp,
+        global_index_value=global_index_value,
+        me_impact=me_impact,
+        items=items
+    )
+
+    save_json(OUTPUT_FILE, payload)
+    save_json(HISTORY_FILE, history)
 
     print(f"{OUTPUT_FILE} frissítve.")
+    print(f"{HISTORY_FILE} frissítve.")
 
 
 if __name__ == "__main__":
