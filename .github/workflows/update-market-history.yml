@@ -23,11 +23,6 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install requests; fi
-
       - name: Run market history updater
         run: python update_market_history.py
 
@@ -35,9 +30,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           git add market-history.json
-
           git diff --cached --quiet || git commit -m "Update market history"
-
           git push
