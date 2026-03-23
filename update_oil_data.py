@@ -15,7 +15,7 @@ INVENTORY_URL = "https://api.eia.gov/v2/petroleum/stoc/wstk/data/"
 STEO_URL = "https://api.eia.gov/v2/steo/data/"
 BRIEF_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/brief.md"
 
-# Unofficial live / market quote source
+# Piaci / futures jellegű árforrás
 YAHOO_BRENT_URL = "https://query1.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=5d"
 YAHOO_WTI_URL = "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?interval=1d&range=5d"
 
@@ -152,8 +152,7 @@ def fetch_geo_risk():
 
 def fetch_yahoo_last_price(url: str):
     """
-    Unofficial market/futures quote source.
-    Returns the latest close/market price from Yahoo chart JSON.
+    Piaci / futures jellegű utolsó ár Yahoo chart JSON-ból.
     """
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -169,8 +168,9 @@ def fetch_yahoo_last_price(url: str):
         return None
 
     meta = result[0].get("meta", {}) or {}
-    if meta.get("regularMarketPrice") is not None:
-        return float(meta["regularMarketPrice"])
+    regular_market = meta.get("regularMarketPrice")
+    if regular_market is not None:
+        return float(regular_market)
 
     closes = result[0].get("indicators", {}).get("quote", [{}])[0].get("close", [])
     closes = [x for x in closes if x is not None]
@@ -642,6 +642,24 @@ except Exception:
     wti_1d_change = None
     wti_7d_change = None
 
+# ÚJ: piaci / futures jellegű árak
+try:
+    market_brent_value = fetch_yahoo_last_price(YAHOO_BRENT_URL)
+except Exception:
+    market_brent_value = None
+
+try:
+    market_wti_value = fetch_yahoo_last_price(YAHOO_WTI_URL)
+except Exception:
+    market_wti_value = None
+
+# Ha a market ár nem jön meg, fallback a spot árra
+if market_brent_value is None:
+    market_brent_value = to_float(brent_value)
+
+if market_wti_value is None:
+    market_wti_value = to_float(wti_value)
+
 try:
     inventory_value = fetch_inventory()
 except Exception:
@@ -689,8 +707,8 @@ production_impact = assess_production_impact(
 )
 
 regional_impact = classify_regional_impact(
-    brent_value=to_float(brent_value),
-    wti_value=to_float(wti_value),
+    brent_value=market_brent_value,
+    wti_value=market_wti_value,
     brent_1d_change=brent_1d_change,
     brent_7d_change=brent_7d_change,
     risk_score=geo_risk_score,
@@ -699,68 +717,6 @@ regional_impact = classify_regional_impact(
 
 oil_data = {
     "market": {
-        "brent": fmt_price(brent_value),
-        "wti": fmt_price(wti_value),
-        "inventory": fmt_inventory(inventory_value),
-        "supply": fmt_supply(supply_value),
-        "brent_30d_trend": fmt_percent(brent_trend),
-        "brent_1d_change": fmt_percent(brent_1d_change),
-        "brent_7d_change": fmt_percent(brent_7d_change),
-        "wti_1d_change": fmt_percent(wti_1d_change),
-        "wti_7d_change": fmt_percent(wti_7d_change)
-    },
-    "production": {
-        "current": fmt_supply(supply_value),
-        "series": production_series,
-        "by_year": {
-            "2026": production_2026,
-            "2027": production_2027
-        }
-    },
-    "production_impact": {
-        "level": production_impact["level"],
-        "label": production_impact["label"],
-        "direction": production_impact["direction"],
-        "text": production_impact["text"]
-    },
-    "regional_dependency": regional_dependency_model(),
-    "regional_impact": regional_impact,
-    "meta": {
-        "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
-        "source": "EIA + GitHub Actions + ME Security Monitor"
-    },
-    "risk": {
-        "score": geo_risk_score,
-        "level": risk_info["level"],
-        "label": risk_info["label"]
-    },
-    "market_stress": {
-        "level": market_stress["level"],
-        "label": market_stress["label"],
-        "note": market_stress["note"]
-    },
-    "forecast": {
-        "one_month": "80–85 USD/hordó",
-        "three_months": "78–90 USD/hordó",
-        "twelve_months": "75–95 USD/hordó"
-    },
-    "summary": {
-        "status": summary_status,
-        "supply_note": summary_supply,
-        "risk_note": summary_risk
-    },
-    "drivers": {
-        "text": drivers_text
-    },
-    "notes": {
-        "price_basis": "Az árak EIA napi spot adatok, nem valós idejű futures jegyzések.",
-        "chart_basis": "A diagram valós idejű vagy közel valós idejű piaci jegyzést mutathat, ezért eltérhet a napi spot adatoktól.",
-        "production_basis": "A termelési görbe havi, részben előretekintő EIA STEO adatsor, ezért jövőbeli hónapokat is tartalmazhat.",
-        "regional_basis": "A regionális hatásmodell a geopolitikai kockázatot, a rövid távú ármozgást és a régiós strukturális olajfüggőséget együtt értékeli."
-    }
-}
-
-with open("oil-data.json", "w", encoding="utf-8") as f:
-    json.dump(oil_data, f, ensure_ascii=False, indent=2)
-
-print("oil-data.json frissítve (szigorúbb regionális modellel)") 
+        "brent": fmt_price(market_brent_value),
+        "wti": fmt_price(market_wti_value),
+       
