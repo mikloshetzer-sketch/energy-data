@@ -15,6 +15,10 @@ INVENTORY_URL = "https://api.eia.gov/v2/petroleum/stoc/wstk/data/"
 STEO_URL = "https://api.eia.gov/v2/steo/data/"
 BRIEF_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/brief.md"
 
+# Unofficial live / market quote source
+YAHOO_BRENT_URL = "https://query1.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=5d"
+YAHOO_WTI_URL = "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?interval=1d&range=5d"
+
 MONTHS = ["Jan", "Feb", "Már", "Ápr", "Máj", "Jún", "Júl", "Aug", "Szept", "Okt", "Nov", "Dec"]
 
 
@@ -142,6 +146,36 @@ def fetch_geo_risk():
         match = re.search(pattern, cleaned, re.IGNORECASE)
         if match:
             return float(match.group(1))
+
+    return None
+
+
+def fetch_yahoo_last_price(url: str):
+    """
+    Unofficial market/futures quote source.
+    Returns the latest close/market price from Yahoo chart JSON.
+    """
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/json,text/plain,*/*"
+    }
+
+    response = requests.get(url, headers=headers, timeout=30)
+    response.raise_for_status()
+    data = response.json()
+
+    result = data.get("chart", {}).get("result", [])
+    if not result:
+        return None
+
+    meta = result[0].get("meta", {}) or {}
+    if meta.get("regularMarketPrice") is not None:
+        return float(meta["regularMarketPrice"])
+
+    closes = result[0].get("indicators", {}).get("quote", [{}])[0].get("close", [])
+    closes = [x for x in closes if x is not None]
+    if closes:
+        return float(closes[-1])
 
     return None
 
@@ -279,7 +313,6 @@ def classify_regional_impact(brent_value, wti_value, brent_1d_change, brent_7d_c
     spread = (brent - wti) if (brent_value is not None and wti_value is not None) else 0
     risk = risk_score if risk_score is not None else 180
 
-    # Alapnyomás: geopolitikai kockázat + napi/heti ármozgás + spread
     base_pressure = (
         (risk / 70.0) +
         max(b1, 0) * 0.80 +
@@ -287,7 +320,6 @@ def classify_regional_impact(brent_value, wti_value, brent_1d_change, brent_7d_c
         max(spread, 0) * 0.20
     )
 
-    # Ha a geopolitikai háttér eleve magas, plusz szigorítás
     if risk_level == "high":
         base_pressure += 1.2
     elif risk_level == "extreme":
@@ -731,4 +763,5 @@ oil_data = {
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (szigorúbb regionális modellel).")
+print("oil-data.json frissítve (szigorúbb regionális modellel)")  ეს a kód, szerintem itt az a gonfd, hogy nem használ olyan forrsát ami a napi 112-es árat tölti be csak a 101-es árral dolgozik, ami nem baj mert maradhat de kellene a 112-es napi is
+::contentReference[oaicite:1]{index=1}
