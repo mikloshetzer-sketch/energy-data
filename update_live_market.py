@@ -56,9 +56,13 @@ def parse_number(value):
     return None
 
 
-def extract_live_prices(oil_data):
+def extract_spot_prices(oil_data):
+    """
+    A meglévő oil-data.json-ból kinyeri a spot / EIA jellegű árakat.
+    Több lehetséges JSON szerkezetet próbál.
+    """
     if not isinstance(oil_data, dict):
-        return {"brent": None, "wti": None}
+        return {"spot_brent": None, "spot_wti": None}
 
     candidates = []
 
@@ -78,13 +82,60 @@ def extract_live_prices(oil_data):
 
         if brent is not None or wti is not None:
             return {
-                "brent": brent,
-                "wti": wti,
+                "spot_brent": brent,
+                "spot_wti": wti,
             }
 
     return {
-        "brent": None,
-        "wti": None,
+        "spot_brent": None,
+        "spot_wti": None,
+    }
+
+
+def extract_live_prices(oil_data, spot_prices):
+    """
+    Jelenlegi verzió:
+    - ha az oil-data.json tartalmazna külön live mezőket, azokat használnánk
+    - ha nincs ilyen, fallbackként a spot árakat tesszük a live mezőbe is
+
+    Később itt lehet bekötni külön valódi live forrást.
+    """
+    if not isinstance(oil_data, dict):
+        return {
+            "live_brent": spot_prices["spot_brent"],
+            "live_wti": spot_prices["spot_wti"],
+            "live_source": "spot_fallback"
+        }
+
+    # opcionális jövőbeli szerkezetek
+    live = oil_data.get("live")
+    if isinstance(live, dict):
+        live_brent = parse_number(live.get("brent"))
+        live_wti = parse_number(live.get("wti"))
+
+        if live_brent is not None or live_wti is not None:
+            return {
+                "live_brent": live_brent,
+                "live_wti": live_wti,
+                "live_source": "oil_data_live"
+            }
+
+    realtime = oil_data.get("realtime")
+    if isinstance(realtime, dict):
+        live_brent = parse_number(realtime.get("brent"))
+        live_wti = parse_number(realtime.get("wti"))
+
+        if live_brent is not None or live_wti is not None:
+            return {
+                "live_brent": live_brent,
+                "live_wti": live_wti,
+                "live_source": "oil_data_realtime"
+            }
+
+    return {
+        "live_brent": spot_prices["spot_brent"],
+        "live_wti": spot_prices["spot_wti"],
+        "live_source": "spot_fallback"
     }
 
 
@@ -94,7 +145,7 @@ def extract_chokepoint_values(cp_data):
             "global_trade_risk_index": None,
             "middle_east_conflict_impact": None,
             "daily_change": {},
-            "top_risks": [],
+            "top_risks": []
         }
 
     me = cp_data.get("middle_east_conflict_impact", {}) or {}
@@ -103,7 +154,7 @@ def extract_chokepoint_values(cp_data):
         "global_trade_risk_index": parse_number(cp_data.get("global_trade_risk_index")),
         "middle_east_conflict_impact": parse_number(me.get("score")),
         "daily_change": cp_data.get("daily_change", {}) or {},
-        "top_risks": cp_data.get("top_risks", []) or [],
+        "top_risks": cp_data.get("top_risks", []) or []
     }
 
 
@@ -114,29 +165,39 @@ def main():
     now = datetime.now(timezone.utc)
     updated_str = now.strftime("%Y-%m-%d %H:%M UTC")
 
-    prices = extract_live_prices(oil_data)
+    spot_prices = extract_spot_prices(oil_data)
+    live_prices = extract_live_prices(oil_data, spot_prices)
     cp_values = extract_chokepoint_values(cp_data)
 
     payload = {
         "meta": {
             "updated": updated_str,
-            "source_mode": "live",
+            "source_mode": "live"
         },
         "prices": {
-            "brent": prices["brent"],
-            "wti": prices["wti"],
+            "live_brent": live_prices["live_brent"],
+            "live_wti": live_prices["live_wti"],
+            "live_source": live_prices["live_source"],
+            "spot_brent": spot_prices["spot_brent"],
+            "spot_wti": spot_prices["spot_wti"],
+            "spot_source": "oil_data_spot"
         },
         "risk": {
             "global_trade_risk_index": cp_values["global_trade_risk_index"],
             "middle_east_conflict_impact": cp_values["middle_east_conflict_impact"],
             "daily_change": cp_values["daily_change"],
-            "top_risks": cp_values["top_risks"],
+            "top_risks": cp_values["top_risks"]
         }
     }
 
     save_json(OUTPUT_FILE, payload)
+
     print(f"{OUTPUT_FILE} frissítve.")
-    print(f"Live Brent: {prices['brent']} | Live WTI: {prices['wti']}")
+    print(
+        f"Live Brent: {live_prices['live_brent']} | "
+        f"Spot Brent: {spot_prices['spot_brent']} | "
+        f"Live source: {live_prices['live_source']}"
+    )
 
 
 if __name__ == "__main__":
