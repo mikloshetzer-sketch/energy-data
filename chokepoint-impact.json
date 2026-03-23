@@ -1,31 +1,31 @@
 {
   "meta": {
-    "updated": "2026-03-23 01:01 UTC",
+    "updated": "2026-03-23 04:01 UTC",
     "method": "chokepoint structural impact model v2",
     "uses_tanker_signal": true,
     "tanker_input_source": "tanker-data.json"
   },
-  "global_trade_risk_index": 26.7,
+  "global_trade_risk_index": 27.6,
   "middle_east_conflict_impact": {
     "label": "medium",
-    "score": 47.9
+    "score": 49.5
   },
   "daily_change": {
-    "global_trade_risk_index_change": 0.0,
-    "middle_east_conflict_impact_change": 0.0,
-    "direction_global": "flat",
-    "direction_middle_east": "flat"
+    "global_trade_risk_index_change": 0.9,
+    "middle_east_conflict_impact_change": 1.6,
+    "direction_global": "up",
+    "direction_middle_east": "up"
   },
   "tracked_zone_counts": {
-    "hormuz": 0,
+    "hormuz": 1,
     "suez": 0,
     "bab_el_mandeb": 0,
-    "bosporus": 0
+    "bosporus": 1
   },
   "top_risks": [
     {
       "name": "Hormuzi-szoros",
-      "estimated_impact": 0.1889,
+      "estimated_impact": 0.1989,
       "status": "severe"
     },
     {
@@ -45,7 +45,7 @@
     },
     {
       "name": "Boszporusz",
-      "estimated_impact": 0.0067,
+      "estimated_impact": 0.0071,
       "status": "low"
     }
   ],
@@ -60,9 +60,9 @@
       "substitution_penalty": 0.95,
       "disruption_level": 0.78,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 0,
-      "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.1889,
+      "ais_count_signal": 1,
+      "ais_signal_multiplier": 1.0,
+      "estimated_impact": 0.1989,
       "status": "severe",
       "notes": "Kiemelten fontos olaj- és energiatranzit pont."
     },
@@ -124,9 +124,9 @@
       "substitution_penalty": 0.7,
       "disruption_level": 0.22,
       "regional_adjustment": 1.0,
-      "ais_count_signal": 0,
-      "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.0067,
+      "ais_count_signal": 1,
+      "ais_signal_multiplier": 1.0,
+      "estimated_impact": 0.0071,
       "status": "low",
       "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
     },
