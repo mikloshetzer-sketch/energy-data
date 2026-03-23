@@ -1,17 +1,16 @@
 import json
 import os
-import csv
-from io import StringIO
 from datetime import datetime, timedelta
 import requests
 
 OUTPUT_FILE = "market-history.json"
 
 START_DATE = datetime(2026, 2, 1)
-END_DATE = datetime(2026, 3, 22)
+END_DATE = datetime(2026, 3, 23)
 
-FRED_BRENT_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DCOILBRENTEU"
-FRED_WTI_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DCOILWTICO"
+# Piaci / futures historikus sorok
+YAHOO_BRENT_URL = "https://query1.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=6mo"
+YAHOO_WTI_URL = "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?interval=1d&range=6mo"
 
 REGIMES = [
     {
@@ -56,7 +55,7 @@ REGIMES = [
     },
     {
         "start": "2026-03-15",
-        "end": "2026-03-22",
+        "end": "2026-03-23",
         "global_trade_risk_index": 64.0,
         "middle_east_conflict_impact": 60.0,
         "hormuz_impact": 0.1860,
@@ -104,33 +103,35 @@ def daily_offset(day_index):
     return pattern[day_index % len(pattern)]
 
 
-def fetch_fred_series(csv_url):
+def fetch_yahoo_series(url):
     """
-    FRED CSV letöltése és {date: value} formára alakítása.
+    Yahoo chart JSON -> {YYYY-MM-DD: close}
     """
-    response = requests.get(csv_url, timeout=30)
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/json,text/plain,*/*",
+    }
+
+    response = requests.get(url, headers=headers, timeout=30)
     response.raise_for_status()
+    data = response.json()
 
-    result = {}
-    reader = csv.DictReader(StringIO(response.text))
+    result = data.get("chart", {}).get("result", [])
+    if not result:
+        return {}
 
-    for row in reader:
-        keys = list(row.keys())
-        if len(keys) < 2:
+    item = result[0]
+    timestamps = item.get("timestamp", []) or []
+    closes = item.get("indicators", {}).get("quote", [{}])[0].get("close", []) or []
+
+    series = {}
+    for ts, close in zip(timestamps, closes):
+        if close is None:
             continue
+        date_str = datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d")
+        series[date_str] = float(close)
 
-        date_str = row[keys[0]]
-        value_str = row[keys[1]]
-
-        if value_str in (None, "", ".", "nan"):
-            continue
-
-        try:
-            result[date_str] = float(value_str)
-        except ValueError:
-            continue
-
-    return result
+    return series
 
 
 def fill_forward(series_map, start_date, end_date):
@@ -154,8 +155,8 @@ def fill_forward(series_map, start_date, end_date):
 
 
 def build_backfill_rows():
-    brent_raw = fetch_fred_series(FRED_BRENT_CSV)
-    wti_raw = fetch_fred_series(FRED_WTI_CSV)
+    brent_raw = fetch_yahoo_series(YAHOO_BRENT_URL)
+    wti_raw = fetch_yahoo_series(YAHOO_WTI_URL)
 
     brent_daily = fill_forward(brent_raw, START_DATE, END_DATE)
     wti_daily = fill_forward(wti_raw, START_DATE, END_DATE)
@@ -169,12 +170,20 @@ def build_backfill_rows():
         offset = daily_offset(idx)
         date_str = current.strftime("%Y-%m-%d")
 
+        market_brent = brent_daily.get(date_str)
+        market_wti = wti_daily.get(date_str)
+
         row = {
             "date": date_str,
             "updated": current.strftime("%Y-%m-%d 12:00 UTC"),
             "source_mode": "backfilled",
-            "brent": brent_daily.get(date_str),
-            "wti": wti_daily.get(date_str),
+            "market_brent": market_brent,
+            "market_wti": market_wti,
+
+            # kompatibilitási fallback a régebbi blokkokhoz
+            "brent": market_brent,
+            "wti": market_wti,
+
             "global_trade_risk_index": round(regime["global_trade_risk_index"] + (offset * 1.4), 2),
             "middle_east_conflict_impact": round(regime["middle_east_conflict_impact"] + (offset * 1.2), 2),
             "hormuz_impact": round(regime["hormuz_impact"] + (offset * 0.0040), 4),
@@ -216,6 +225,7 @@ def merge_rows(existing_rows, new_rows):
     for row in new_rows:
         existing = merged.get(row["date"])
 
+        # live sort nem írunk felül
         if existing and existing.get("source_mode") == "live":
             continue
 
