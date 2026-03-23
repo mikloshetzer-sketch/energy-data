@@ -1,7 +1,7 @@
 {
   "market": {
-    "brent": "101.04 USD/hordó",
-    "wti": "93.39 USD/hordó",
+    "brent": "99.97 USD/hordó",
+    "wti": "88.15 USD/hordó",
     "inventory": "864.7 millió hordó",
     "supply": "110.2 millió hordó/nap",
     "brent_30d_trend": "+43.77%",
@@ -9,6 +9,10 @@
     "brent_7d_change": "+14.05%",
     "wti_1d_change": "-5.17%",
     "wti_7d_change": "+15.47%"
+  },
+  "spot": {
+    "brent": "101.04 USD/hordó",
+    "wti": "93.39 USD/hordó"
   },
   "production": {
     "current": "110.2 millió hordó/nap",
@@ -243,7 +247,7 @@
     "europe": {
       "level": "high",
       "label": "Magas hatás",
-      "score": 9.7,
+      "score": 10.5,
       "factor": 1.0,
       "icon": "🇪🇺",
       "dependency_label": "Közepes kitettség",
@@ -253,7 +257,7 @@
     "america": {
       "level": "moderate",
       "label": "Mérsékelt hatás",
-      "score": 5.8,
+      "score": 6.3,
       "factor": 0.6,
       "icon": "🇺🇸",
       "dependency_label": "Alacsonyabb közvetlen kitettség",
@@ -263,7 +267,7 @@
     "asia": {
       "level": "extreme",
       "label": "Nagyon magas hatás",
-      "score": 15.1,
+      "score": 16.4,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
@@ -272,8 +276,8 @@
     }
   },
   "meta": {
-    "updated": "2026-03-23 18:12 UTC",
-    "source": "EIA + GitHub Actions + ME Security Monitor"
+    "updated": "2026-03-23 18:40 UTC",
+    "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
     "score": 228.7,
@@ -299,9 +303,9 @@
     "text": "A jelenlegi ármozgásokat érezhetően befolyásolja a közel-keleti geopolitikai feszültség, miközben a Brent ár elmúlt 30 napos emelkedése is felfelé mutató piaci nyomást jelez, miközben a magasabb amerikai készletszint részben csökkentheti a rövid távú árnyomást."
   },
   "notes": {
-    "price_basis": "Az árak EIA napi spot adatok, nem valós idejű futures jegyzések.",
-    "chart_basis": "A diagram valós idejű vagy közel valós idejű piaci jegyzést mutathat, ezért eltérhet a napi spot adatoktól.",
-    "production_basis": "A termelési görbe havi, részben előretekintő EIA STEO adatsor, ezért jövőbeli hónapokat is tartalmazhat.",
-    "regional_basis": "A regionális hatásmodell a geopolitikai kockázatot, a rövid távú ármozgást és a régiós strukturális olajfüggőséget együtt értékeli."
+    "price_basis": "A market blokk piaci (futures) árakat használ, a spot blokk EIA napi spot adatokat tartalmaz.",
+    "chart_basis": "A diagram piaci napi jegyzést követ, ezért eltérhet a spot adatoktól.",
+    "production_basis": "A termelési görbe havi EIA STEO adatsor.",
+    "regional_basis": "A modell a geopolitikai kockázatot és ármozgást együtt értékeli."
   }
 }
