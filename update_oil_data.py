@@ -719,4 +719,71 @@ oil_data = {
     "market": {
         "brent": fmt_price(market_brent_value),
         "wti": fmt_price(market_wti_value),
+        "inventory": fmt_inventory(inventory_value),
+        "supply": fmt_supply(supply_value),
+        "brent_30d_trend": fmt_percent(brent_trend),
+        "brent_1d_change": fmt_percent(brent_1d_change),
+        "brent_7d_change": fmt_percent(brent_7d_change),
+        "wti_1d_change": fmt_percent(wti_1d_change),
+        "wti_7d_change": fmt_percent(wti_7d_change)
+    },
+    "spot": {
+        "brent": fmt_price(brent_value),
+        "wti": fmt_price(wti_value)
+    },
+    "production": {
+        "current": fmt_supply(supply_value),
+        "series": production_series,
+        "by_year": {
+            "2026": production_2026,
+            "2027": production_2027
+        }
+    },
+    "production_impact": {
+        "level": production_impact["level"],
+        "label": production_impact["label"],
+        "direction": production_impact["direction"],
+        "text": production_impact["text"]
+    },
+    "regional_dependency": regional_dependency_model(),
+    "regional_impact": regional_impact,
+    "meta": {
+        "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        "source": "EIA + Yahoo Finance + ME Security Monitor"
+    },
+    "risk": {
+        "score": geo_risk_score,
+        "level": risk_info["level"],
+        "label": risk_info["label"]
+    },
+    "market_stress": {
+        "level": market_stress["level"],
+        "label": market_stress["label"],
+        "note": market_stress["note"]
+    },
+    "forecast": {
+        "one_month": "80–85 USD/hordó",
+        "three_months": "78–90 USD/hordó",
+        "twelve_months": "75–95 USD/hordó"
+    },
+    "summary": {
+        "status": summary_status,
+        "supply_note": summary_supply,
+        "risk_note": summary_risk
+    },
+    "drivers": {
+        "text": drivers_text
+    },
+    "notes": {
+        "price_basis": "A market blokk piaci (futures) árakat használ, a spot blokk EIA napi spot adatokat tartalmaz.",
+        "chart_basis": "A diagram piaci napi jegyzést követ, ezért eltérhet a spot adatoktól.",
+        "production_basis": "A termelési görbe havi EIA STEO adatsor.",
+        "regional_basis": "A modell a geopolitikai kockázatot és ármozgást együtt értékeli."
+    }
+}
+
+with open("oil-data.json", "w", encoding="utf-8") as f:
+    json.dump(oil_data, f, ensure_ascii=False, indent=2)
+
+print("oil-data.json frissítve (market + spot árakkal)")
        
