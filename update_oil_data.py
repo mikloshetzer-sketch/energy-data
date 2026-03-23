@@ -763,5 +763,4 @@ oil_data = {
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (szigorúbb regionális modellel)")  ეს a kód, szerintem itt az a gonfd, hogy nem használ olyan forrsát ami a napi 112-es árat tölti be csak a 101-es árral dolgozik, ami nem baj mert maradhat de kellene a 112-es napi is
-::contentReference[oaicite:1]{index=1}
+print("oil-data.json frissítve (szigorúbb regionális modellel)") 
