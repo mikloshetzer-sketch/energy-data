@@ -1,0 +1,35 @@
+name: Update live market
+
+on:
+  schedule:
+    - cron: "27,57 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-live-market:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run live market updater
+        run: python update_live_market.py
+
+      - name: Commit updated live market
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add live-market.json
+          git diff --cached --quiet || git commit -m "Update live market"
+          git push
