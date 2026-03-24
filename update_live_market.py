@@ -107,7 +107,6 @@ def extract_live_prices(oil_data, spot_prices):
             "live_source": "spot_fallback"
         }
 
-    # opcionális jövőbeli szerkezetek
     live = oil_data.get("live")
     if isinstance(live, dict):
         live_brent = parse_number(live.get("brent"))
@@ -144,17 +143,31 @@ def extract_chokepoint_values(cp_data):
         return {
             "global_trade_risk_index": None,
             "middle_east_conflict_impact": None,
+            "middle_east_conflict_label": None,
             "daily_change": {},
-            "top_risks": []
+            "top_risks": [],
+            "me_components": {},
+            "risk_meta": {},
         }
 
     me = cp_data.get("middle_east_conflict_impact", {}) or {}
+    meta = cp_data.get("meta", {}) or {}
 
     return {
         "global_trade_risk_index": parse_number(cp_data.get("global_trade_risk_index")),
         "middle_east_conflict_impact": parse_number(me.get("score")),
+        "middle_east_conflict_label": me.get("label"),
         "daily_change": cp_data.get("daily_change", {}) or {},
-        "top_risks": cp_data.get("top_risks", []) or []
+        "top_risks": cp_data.get("top_risks", []) or [],
+        "me_components": me.get("components", {}) or {},
+        "risk_meta": {
+            "updated": meta.get("updated"),
+            "method": meta.get("method"),
+            "uses_tanker_signal": meta.get("uses_tanker_signal"),
+            "uses_me_security_signal": meta.get("uses_me_security_signal"),
+            "tanker_input_source": meta.get("tanker_input_source"),
+            "me_security_input_source": meta.get("me_security_input_source"),
+        },
     }
 
 
@@ -185,8 +198,11 @@ def main():
         "risk": {
             "global_trade_risk_index": cp_values["global_trade_risk_index"],
             "middle_east_conflict_impact": cp_values["middle_east_conflict_impact"],
+            "middle_east_conflict_label": cp_values["middle_east_conflict_label"],
             "daily_change": cp_values["daily_change"],
-            "top_risks": cp_values["top_risks"]
+            "top_risks": cp_values["top_risks"],
+            "me_components": cp_values["me_components"],
+            "risk_meta": cp_values["risk_meta"],
         }
     }
 
@@ -197,6 +213,11 @@ def main():
         f"Live Brent: {live_prices['live_brent']} | "
         f"Spot Brent: {spot_prices['spot_brent']} | "
         f"Live source: {live_prices['live_source']}"
+    )
+    print(
+        f"Risk index: {cp_values['global_trade_risk_index']} | "
+        f"ME impact: {cp_values['middle_east_conflict_impact']} "
+        f"({cp_values['middle_east_conflict_label']})"
     )
 
 
