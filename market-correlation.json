@@ -1,31 +1,71 @@
 {
   "meta": {
-    "updated": "2026-03-24 13:51 UTC",
+    "updated": "2026-03-24 13:59 UTC",
     "source_file": "market-history.json",
-    "method": "rolling pearson correlation",
-    "window_days": 7
+    "method": "rolling pearson correlation + lead-lag scan",
+    "window_days": 7,
+    "max_lag_days": 3
   },
   "latest": {
     "leader": "hormuz_impact",
+    "leader_label": "Hormuz",
     "leader_correlation": 0.386,
     "ranked": [
       {
         "key": "hormuz_impact",
+        "label": "Hormuz",
         "correlation": 0.386
       },
       {
         "key": "suez_impact",
+        "label": "Suez",
         "correlation": -0.135
       },
       {
         "key": "bosporus_impact",
+        "label": "Bosporus",
         "correlation": -0.134
       },
       {
         "key": "bab_el_mandeb_impact",
+        "label": "Bab el-Mandeb",
         "correlation": -0.129
       }
     ]
+  },
+  "leader_signal": {
+    "hormuz_impact": {
+      "label": "Hormuz",
+      "lag_days": 0,
+      "correlation": 0.83,
+      "signal": "synchronous"
+    },
+    "suez_impact": {
+      "label": "Suez",
+      "lag_days": 3,
+      "correlation": 0.888,
+      "signal": "lagging"
+    },
+    "bab_el_mandeb_impact": {
+      "label": "Bab el-Mandeb",
+      "lag_days": 3,
+      "correlation": 0.88,
+      "signal": "lagging"
+    },
+    "bosporus_impact": {
+      "label": "Bosporus",
+      "lag_days": 2,
+      "correlation": 0.892,
+      "signal": "lagging"
+    }
+  },
+  "leader_summary": {
+    "key": "bosporus_impact",
+    "label": "Bosporus",
+    "lag_days": 2,
+    "correlation": 0.892,
+    "signal": "lagging",
+    "text": "Bosporus lags Brent by 2 day(s)"
   },
   "rows": [
     {
