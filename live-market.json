@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-03-24 07:33 UTC",
+    "updated": "2026-03-24 08:23 UTC",
     "source_mode": "live"
   },
   "prices": {
@@ -12,13 +12,14 @@
     "spot_source": "oil_data_spot"
   },
   "risk": {
-    "global_trade_risk_index": 26.7,
-    "middle_east_conflict_impact": 47.9,
+    "global_trade_risk_index": 43.0,
+    "middle_east_conflict_impact": 62.8,
+    "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": 0.0,
-      "middle_east_conflict_impact_change": 0.0,
-      "direction_global": "flat",
-      "direction_middle_east": "flat"
+      "global_trade_risk_index_change": 16.3,
+      "middle_east_conflict_impact_change": 14.9,
+      "direction_global": "up",
+      "direction_middle_east": "up"
     },
     "top_risks": [
       {
@@ -46,6 +47,46 @@
         "estimated_impact": 0.0067,
         "status": "low"
       }
-    ]
+    ],
+    "me_components": {
+      "structural_score": 47.9,
+      "osint_signal_score": 80.9,
+      "osint_raw_total_risk": 202.35,
+      "osint_risk_level": "MEDIUM",
+      "osint_confidence": "HIGH",
+      "osint_total_events": 179,
+      "osint_top_locations": [
+        {
+          "name": "Israel",
+          "risk": 98.15
+        },
+        {
+          "name": "Iran",
+          "risk": 70.5
+        },
+        {
+          "name": "Middle East",
+          "risk": 7.45
+        },
+        {
+          "name": "Bahrain",
+          "risk": 5.1
+        },
+        {
+          "name": "West Bank",
+          "risk": 3.9
+        }
+      ],
+      "osint_updated": "2026-03-24 08:05 UTC",
+      "osint_available": true
+    },
+    "risk_meta": {
+      "updated": "2026-03-24 08:18 UTC",
+      "method": "chokepoint structural impact model v2 + me osint signal v1",
+      "uses_tanker_signal": true,
+      "uses_me_security_signal": true,
+      "tanker_input_source": "tanker-data.json",
+      "me_security_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/security-signal.json"
+    }
   }
 }
