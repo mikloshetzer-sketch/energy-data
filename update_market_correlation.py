@@ -22,7 +22,18 @@ DISPLAY_NAMES = {
     "bosporus_impact": "Bosporus",
 }
 
+# stratégiai súlyok: a valós piaci jelentőséghez igazítva
+STRATEGIC_WEIGHTS = {
+    "hormuz_impact": 1.50,
+    "bab_el_mandeb_impact": 1.30,
+    "suez_impact": 1.10,
+    "bosporus_impact": 0.70,
+}
+
 MAX_LAG_DAYS = 3
+
+# ez alatt nem nevezünk ki "erős" vezető indikátort
+MIN_LEADER_CORRELATION = 0.20
 
 
 def load_json(path, default):
@@ -98,6 +109,12 @@ def compute_rolling(rows):
     return result
 
 
+def weighted_strength(key, corr_value):
+    if corr_value is None:
+        return None
+    return abs(corr_value) * STRATEGIC_WEIGHTS.get(key, 1.0)
+
+
 def build_latest(rows):
     if not rows:
         return {}
@@ -111,16 +128,22 @@ def build_latest(rows):
             ranked.append({
                 "key": key,
                 "label": DISPLAY_NAMES.get(key, key),
-                "correlation": val
+                "correlation": val,
+                "strategic_weight": STRATEGIC_WEIGHTS.get(key, 1.0),
+                "weighted_strength": round(weighted_strength(key, val), 3)
             })
 
-    ranked.sort(key=lambda x: abs(x["correlation"]), reverse=True)
+    ranked.sort(key=lambda x: x["weighted_strength"], reverse=True)
     leader = ranked[0] if ranked else None
+
+    if leader and abs(leader["correlation"]) < MIN_LEADER_CORRELATION:
+        leader = None
 
     return {
         "leader": leader["key"] if leader else None,
         "leader_label": leader["label"] if leader else None,
         "leader_correlation": leader["correlation"] if leader else None,
+        "leader_weighted_strength": leader["weighted_strength"] if leader else None,
         "ranked": ranked
     }
 
@@ -150,7 +173,7 @@ def compute_series_correlation(history_rows, key, lag_days):
 def classify_signal(best_lag, best_corr):
     strength = abs(best_corr) if best_corr is not None else 0.0
 
-    if strength < 0.15:
+    if strength < MIN_LEADER_CORRELATION:
         return "weak"
 
     if best_lag < 0:
@@ -168,13 +191,17 @@ def build_leader_signal(history_rows):
     for key in CHOKEPOINT_KEYS:
         best_lag = 0
         best_corr = None
+        best_weighted_strength = None
 
         for lag in range(-MAX_LAG_DAYS, MAX_LAG_DAYS + 1):
             c = compute_series_correlation(history_rows, key, lag)
             if c is None:
                 continue
 
-            if best_corr is None or abs(c) > abs(best_corr):
+            w = weighted_strength(key, c)
+
+            if best_weighted_strength is None or w > best_weighted_strength:
+                best_weighted_strength = w
                 best_corr = c
                 best_lag = lag
 
@@ -185,6 +212,8 @@ def build_leader_signal(history_rows):
             "label": label,
             "lag_days": best_lag,
             "correlation": round(best_corr, 3) if best_corr is not None else None,
+            "strategic_weight": STRATEGIC_WEIGHTS.get(key, 1.0),
+            "weighted_strength": round(best_weighted_strength, 3) if best_weighted_strength is not None else None,
             "signal": signal
         }
 
@@ -197,16 +226,27 @@ def build_leader_summary(leader_signal):
 
     ranked = sorted(
         leader_signal.items(),
-        key=lambda item: abs(item[1].get("correlation") or 0),
+        key=lambda item: item[1].get("weighted_strength") or 0,
         reverse=True
     )
 
     top_key, top_val = ranked[0]
-
     lag = top_val.get("lag_days")
     signal = top_val.get("signal")
     label = top_val.get("label")
     corr = top_val.get("correlation")
+    weighted = top_val.get("weighted_strength")
+
+    if corr is None or abs(corr) < MIN_LEADER_CORRELATION:
+        return {
+            "key": None,
+            "label": None,
+            "lag_days": None,
+            "correlation": corr,
+            "weighted_strength": weighted,
+            "signal": "weak",
+            "text": "No strong leading indicator is currently visible."
+        }
 
     if signal == "leading":
         text = f"{label} leads Brent by {abs(lag)} day(s)"
@@ -222,6 +262,7 @@ def build_leader_summary(leader_signal):
         "label": label,
         "lag_days": lag,
         "correlation": corr,
+        "weighted_strength": weighted,
         "signal": signal,
         "text": text
     }
@@ -243,9 +284,10 @@ def main():
         "meta": {
             "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
             "source_file": INPUT_FILE,
-            "method": "rolling pearson correlation + lead-lag scan",
+            "method": "rolling pearson correlation + weighted lead-lag scan",
             "window_days": WINDOW,
-            "max_lag_days": MAX_LAG_DAYS
+            "max_lag_days": MAX_LAG_DAYS,
+            "min_leader_correlation": MIN_LEADER_CORRELATION
         },
         "latest": latest,
         "leader_signal": leader_signal,
