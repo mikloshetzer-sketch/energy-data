@@ -1,33 +1,54 @@
 {
   "meta": {
-    "updated": "2026-03-24 08:14 UTC",
+    "updated": "2026-03-24 08:18 UTC",
     "method": "chokepoint structural impact model v2 + me osint signal v1",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
     "tanker_input_source": "tanker-data.json",
     "me_security_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/security-signal.json"
   },
-  "global_trade_risk_index": 18.7,
+  "global_trade_risk_index": 43.0,
   "middle_east_conflict_impact": {
-    "label": "low",
-    "score": 26.3,
+    "label": "high",
+    "score": 62.8,
     "components": {
       "structural_score": 47.9,
-      "osint_signal_score": 0.0,
-      "osint_raw_total_risk": 0.0,
-      "osint_risk_level": "UNKNOWN",
-      "osint_confidence": "LOW",
-      "osint_total_events": 0,
-      "osint_top_locations": [],
-      "osint_updated": null,
-      "osint_available": false
+      "osint_signal_score": 80.9,
+      "osint_raw_total_risk": 202.35,
+      "osint_risk_level": "MEDIUM",
+      "osint_confidence": "HIGH",
+      "osint_total_events": 179,
+      "osint_top_locations": [
+        {
+          "name": "Israel",
+          "risk": 98.15
+        },
+        {
+          "name": "Iran",
+          "risk": 70.5
+        },
+        {
+          "name": "Middle East",
+          "risk": 7.45
+        },
+        {
+          "name": "Bahrain",
+          "risk": 5.1
+        },
+        {
+          "name": "West Bank",
+          "risk": 3.9
+        }
+      ],
+      "osint_updated": "2026-03-24 08:05 UTC",
+      "osint_available": true
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -8.0,
-    "middle_east_conflict_impact_change": -21.6,
-    "direction_global": "down",
-    "direction_middle_east": "down"
+    "global_trade_risk_index_change": 16.3,
+    "middle_east_conflict_impact_change": 14.9,
+    "direction_global": "up",
+    "direction_middle_east": "up"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
