@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import requests
 
 OUTPUT_FILE = "market-history.json"
-EVENTS_FILE = "me-security-events.json"
+EVENTS_FILE = "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/events.json"
 
 START_DATE = datetime(2026, 2, 1)
 END_DATE = datetime(2026, 3, 23)
@@ -84,16 +84,22 @@ def save_json(path, payload):
 
 
 def load_json(path, default):
-    if not os.path.exists(path):
-        return default
-
     try:
+        if isinstance(path, str) and path.startswith("http"):
+            response = requests.get(path, timeout=30)
+            response.raise_for_status()
+            return response.json()
+
+        if not os.path.exists(path):
+            return default
+
         with open(path, "r", encoding="utf-8-sig") as f:
             content = f.read().strip()
             if not content:
                 return default
             return json.loads(content)
-    except Exception:
+    except Exception as e:
+        print(f"Figyelmeztetés: nem sikerült beolvasni: {path} | Hiba: {e}")
         return default
 
 
