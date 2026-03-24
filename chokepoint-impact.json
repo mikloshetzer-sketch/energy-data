@@ -1,20 +1,33 @@
 {
   "meta": {
-    "updated": "2026-03-24 07:33 UTC",
-    "method": "chokepoint structural impact model v2",
+    "updated": "2026-03-24 08:14 UTC",
+    "method": "chokepoint structural impact model v2 + me osint signal v1",
     "uses_tanker_signal": true,
-    "tanker_input_source": "tanker-data.json"
+    "uses_me_security_signal": true,
+    "tanker_input_source": "tanker-data.json",
+    "me_security_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/security-signal.json"
   },
-  "global_trade_risk_index": 26.7,
+  "global_trade_risk_index": 18.7,
   "middle_east_conflict_impact": {
-    "label": "medium",
-    "score": 47.9
+    "label": "low",
+    "score": 26.3,
+    "components": {
+      "structural_score": 47.9,
+      "osint_signal_score": 0.0,
+      "osint_raw_total_risk": 0.0,
+      "osint_risk_level": "UNKNOWN",
+      "osint_confidence": "LOW",
+      "osint_total_events": 0,
+      "osint_top_locations": [],
+      "osint_updated": null,
+      "osint_available": false
+    }
   },
   "daily_change": {
-    "global_trade_risk_index_change": 0.0,
-    "middle_east_conflict_impact_change": 0.0,
-    "direction_global": "flat",
-    "direction_middle_east": "flat"
+    "global_trade_risk_index_change": -8.0,
+    "middle_east_conflict_impact_change": -21.6,
+    "direction_global": "down",
+    "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
