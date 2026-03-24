@@ -183,16 +183,54 @@ def compute_osint_total_risk(events, target_date, window_days):
     }
 
 
-def blend_middle_east_score(structural_score, osint_score, osint_events):
+def osint_weight_from_events(event_count):
+    """
+    Adaptív súlyozás:
+    - 0 esemény: 0%
+    - 1-4 esemény: 10%
+    - 5-9 esemény: 20%
+    - 10-19 esemény: 30%
+    - 20+ esemény: 45%
+    """
+    if event_count <= 0:
+        return 0.0
+    if event_count <= 4:
+        return 0.10
+    if event_count <= 9:
+        return 0.20
+    if event_count <= 19:
+        return 0.30
+    return 0.45
+
+
+def blend_score(structural_score, osint_score, osint_events, max_osint_weight):
     if osint_events <= 0:
         return round(structural_score, 2)
-    return round(clamp((0.55 * structural_score) + (0.45 * osint_score), 0, 100), 2)
+
+    event_weight = osint_weight_from_events(osint_events)
+    osint_weight = min(event_weight, max_osint_weight)
+    structural_weight = 1.0 - osint_weight
+
+    blended = (structural_weight * structural_score) + (osint_weight * osint_score)
+    return round(clamp(blended, 0, 100), 2)
+
+
+def blend_middle_east_score(structural_score, osint_score, osint_events):
+    return blend_score(
+        structural_score=structural_score,
+        osint_score=osint_score,
+        osint_events=osint_events,
+        max_osint_weight=0.45,
+    )
 
 
 def blend_global_trade_score(structural_score, osint_score, osint_events):
-    if osint_events <= 0:
-        return round(structural_score, 2)
-    return round(clamp((0.70 * structural_score) + (0.30 * osint_score), 0, 100), 2)
+    return blend_score(
+        structural_score=structural_score,
+        osint_score=osint_score,
+        osint_events=osint_events,
+        max_osint_weight=0.30,
+    )
 
 
 def fetch_yahoo_series(url):
@@ -292,6 +330,8 @@ def build_backfill_rows(events):
             "osint_signal_score": osint["normalized_risk_score"],
             "osint_total_risk": round(osint["total_risk"], 2),
             "osint_total_events": osint["total_events"],
+            "osint_weight_global": min(osint_weight_from_events(osint["total_events"]), 0.30),
+            "osint_weight_middle_east": min(osint_weight_from_events(osint["total_events"]), 0.45),
             "structural_global_trade_risk_index": structural_global,
             "structural_middle_east_conflict_impact": structural_me,
         }
