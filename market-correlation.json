@@ -1,13 +1,38 @@
-{
-  "updated": "2026-03-24 13:25 UTC",
-  "correlations": {
-    "hormuz": 0.103,
-    "suez": 0.135,
-    "bab_el_mandeb": 0.153
-  },
-  "leader_lag_days": {
-    "hormuz": 0,
-    "suez": 0,
-    "bab_el_mandeb": 0
-  }
-}
+name: Update market correlation
+
+on:
+  schedule:
+    - cron: "30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-correlation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run correlation script
+        run: python update_market_correlation.py
+
+      - name: Commit updated correlation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add market-correlation.json
+          git diff --cached --quiet || git commit -m "Update market correlation"
+          git push
