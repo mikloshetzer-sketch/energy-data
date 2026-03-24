@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 import requests
 
@@ -143,7 +143,7 @@ def recency_weight(age_days, window_days):
     if window_days <= 1:
         return 1.0
     ratio = age_days / (window_days - 1)
-    return 1.0 - 0.6 * ratio  # newest=1.0, oldest=0.4
+    return 1.0 - 0.6 * ratio
 
 
 def event_risk_score(event, age_days, window_days):
@@ -183,11 +183,15 @@ def compute_osint_total_risk(events, target_date, window_days):
     }
 
 
-def blend_middle_east_score(structural_score, osint_score):
+def blend_middle_east_score(structural_score, osint_score, osint_events):
+    if osint_events <= 0:
+        return round(structural_score, 2)
     return round(clamp((0.55 * structural_score) + (0.45 * osint_score), 0, 100), 2)
 
 
-def blend_global_trade_score(structural_score, osint_score):
+def blend_global_trade_score(structural_score, osint_score, osint_events):
+    if osint_events <= 0:
+        return round(structural_score, 2)
     return round(clamp((0.70 * structural_score) + (0.30 * osint_score), 0, 100), 2)
 
 
@@ -213,7 +217,7 @@ def fetch_yahoo_series(url):
     for ts, close in zip(timestamps, closes):
         if close is None:
             continue
-        date_str = datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d")
+        date_str = datetime.fromtimestamp(ts, UTC).strftime("%Y-%m-%d")
         series[date_str] = float(close)
 
     return series
@@ -260,8 +264,16 @@ def build_backfill_rows(events):
 
         osint = compute_osint_total_risk(events, current, WINDOW_DAYS)
 
-        blended_global = blend_global_trade_score(structural_global, osint["normalized_risk_score"])
-        blended_me = blend_middle_east_score(structural_me, osint["normalized_risk_score"])
+        blended_global = blend_global_trade_score(
+            structural_global,
+            osint["normalized_risk_score"],
+            osint["total_events"],
+        )
+        blended_me = blend_middle_east_score(
+            structural_me,
+            osint["normalized_risk_score"],
+            osint["total_events"],
+        )
 
         row = {
             "date": date_str,
@@ -269,26 +281,17 @@ def build_backfill_rows(events):
             "source_mode": "backfilled_osint",
             "market_brent": market_brent,
             "market_wti": market_wti,
-
-            # kompatibilitási fallback a régebbi blokkokhoz
             "brent": market_brent,
             "wti": market_wti,
-
             "global_trade_risk_index": blended_global,
             "middle_east_conflict_impact": blended_me,
-
-            # struktúrális chokepoint komponensek maradnak historikus proxyként
             "hormuz_impact": round(regime["hormuz_impact"] + (offset * 0.0040), 4),
             "suez_impact": round(regime["suez_impact"] + (offset * 0.0020), 4),
             "bab_el_mandeb_impact": round(regime["bab_el_mandeb_impact"] + (offset * 0.0030), 4),
             "bosporus_impact": round(regime["bosporus_impact"] + (offset * 0.0010), 4),
-
-            # új OSINT historikus mezők
             "osint_signal_score": osint["normalized_risk_score"],
             "osint_total_risk": round(osint["total_risk"], 2),
             "osint_total_events": osint["total_events"],
-
-            # opcionális transzparencia
             "structural_global_trade_risk_index": structural_global,
             "structural_middle_east_conflict_impact": structural_me,
         }
@@ -326,7 +329,6 @@ def merge_rows(existing_rows, new_rows):
     for row in new_rows:
         existing = merged.get(row["date"])
 
-        # élő sort nem írunk felül
         if existing and existing.get("source_mode") == "live":
             continue
 
