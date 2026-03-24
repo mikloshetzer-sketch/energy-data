@@ -2,7 +2,7 @@ name: Update market correlation
 
 on:
   schedule:
-    - cron: "30 * * * *"   # minden órában xx:30-kor
+    - cron: "35 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -24,15 +24,23 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install requests
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests numpy
 
-      - name: Run correlation script
-        run: python update_market_correlation.py
+      - name: Rebuild historical market history
+        run: python backfill_market_history.py
 
-      - name: Commit updated correlation
+      - name: Update today's market history row
+        run: python update_market_history.py
+
+      - name: Generate market correlation
+        run: python generate_market_correlation.py
+
+      - name: Commit updated files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add market-correlation.json
-          git diff --cached --quiet || git commit -m "Update market correlation"
+          git add market-history.json market-correlation.json
+          git diff --cached --quiet || git commit -m "Update market history and correlation"
           git push
