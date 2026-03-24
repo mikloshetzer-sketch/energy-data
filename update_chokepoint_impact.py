@@ -2,9 +2,16 @@ import json
 import os
 from datetime import datetime, timezone
 
+import requests
+
 TANKER_INPUT_FILE = "tanker-data.json"
 OUTPUT_FILE = "chokepoint-impact.json"
 HISTORY_FILE = "chokepoint-impact-history.json"
+
+ME_SECURITY_SIGNAL_URL = (
+    "https://raw.githubusercontent.com/"
+    "mikloshetzer-sketch/me-security-monitor/main/security-signal.json"
+)
 
 CHOKEPOINTS = {
     "hormuz": {
@@ -108,7 +115,10 @@ def safe_load_json(path, default):
                 return default
             return json.loads(content)
     except Exception as e:
-        print(f"Figyelmeztetés: hibás vagy üres JSON fájl ({path}), alapérték használata. Hiba: {e}")
+        print(
+            f"Figyelmeztetés: hibás vagy üres JSON fájl ({path}), "
+            f"alapérték használata. Hiba: {e}"
+        )
         return default
 
 
@@ -127,6 +137,19 @@ def round4(value):
 
 def round2(value):
     return round(value, 2)
+
+
+def parse_number(value):
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value.replace(",", ".").strip())
+        except Exception:
+            return None
+    return None
 
 
 def combined_weight(trade_share, energy_share):
@@ -254,6 +277,57 @@ def top_risk_summary(items, limit=5):
     ]
 
 
+def fetch_me_security_signal():
+    try:
+        response = requests.get(ME_SECURITY_SIGNAL_URL, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+    except Exception as e:
+        print(f"Figyelmeztetés: me-security signal letöltése sikertelen: {e}")
+        return {
+            "normalized_risk_score": 0.0,
+            "raw_total_risk": 0.0,
+            "risk_level": "UNKNOWN",
+            "confidence": "LOW",
+            "total_events": 0,
+            "top_locations": [],
+            "available": False,
+            "updated": None,
+        }
+
+    summary = data.get("summary", {}) or {}
+    meta = data.get("meta", {}) or {}
+
+    return {
+        "normalized_risk_score": parse_number(summary.get("normalized_risk_score")) or 0.0,
+        "raw_total_risk": parse_number(summary.get("total_risk")) or 0.0,
+        "risk_level": summary.get("risk_level") or "UNKNOWN",
+        "confidence": summary.get("confidence") or "LOW",
+        "total_events": int(summary.get("total_events", 0) or 0),
+        "top_locations": data.get("top_locations", []) or [],
+        "available": True,
+        "updated": meta.get("updated"),
+    }
+
+
+def blend_middle_east_score(structural_score, me_signal_score):
+    return round(clamp((0.55 * structural_score) + (0.45 * me_signal_score), 0, 100), 1)
+
+
+def blend_global_trade_score(structural_global_score, me_signal_score):
+    return round(clamp((0.70 * structural_global_score) + (0.30 * me_signal_score), 0, 100), 1)
+
+
+def impact_label_from_score(score):
+    if score >= 75:
+        return "severe"
+    if score >= 55:
+        return "high"
+    if score >= 30:
+        return "medium"
+    return "low"
+
+
 def append_history(history, timestamp, global_index_value, me_impact, items):
     if history is None or not isinstance(history, dict):
         history = {"snapshots": []}
@@ -323,8 +397,36 @@ def main():
     history = safe_load_json(HISTORY_FILE, default={"snapshots": []})
 
     items, zone_counts = build_items(tanker_data)
-    global_index_value = global_trade_risk_index(items)
-    me_impact = middle_east_conflict_impact(items)
+
+    structural_global_index = global_trade_risk_index(items)
+    structural_me_impact = middle_east_conflict_impact(items)
+    me_signal = fetch_me_security_signal()
+
+    global_index_value = blend_global_trade_score(
+        structural_global_index,
+        me_signal["normalized_risk_score"]
+    )
+
+    blended_me_score = blend_middle_east_score(
+        structural_me_impact["score"],
+        me_signal["normalized_risk_score"]
+    )
+
+    me_impact = {
+        "label": impact_label_from_score(blended_me_score),
+        "score": blended_me_score,
+        "components": {
+            "structural_score": structural_me_impact["score"],
+            "osint_signal_score": me_signal["normalized_risk_score"],
+            "osint_raw_total_risk": me_signal["raw_total_risk"],
+            "osint_risk_level": me_signal["risk_level"],
+            "osint_confidence": me_signal["confidence"],
+            "osint_total_events": me_signal["total_events"],
+            "osint_top_locations": me_signal["top_locations"],
+            "osint_updated": me_signal["updated"],
+            "osint_available": me_signal["available"],
+        }
+    }
 
     previous_snapshot = find_previous_day_snapshot(history, today)
     daily_change = compute_daily_change(
@@ -336,9 +438,11 @@ def main():
     payload = {
         "meta": {
             "updated": timestamp,
-            "method": "chokepoint structural impact model v2",
+            "method": "chokepoint structural impact model v2 + me osint signal v1",
             "uses_tanker_signal": True,
+            "uses_me_security_signal": True,
             "tanker_input_source": TANKER_INPUT_FILE,
+            "me_security_input_source": ME_SECURITY_SIGNAL_URL,
         },
         "global_trade_risk_index": global_index_value,
         "middle_east_conflict_impact": me_impact,
@@ -361,6 +465,12 @@ def main():
 
     print(f"{OUTPUT_FILE} frissítve.")
     print(f"{HISTORY_FILE} frissítve.")
+    print(
+        "ME security signal | "
+        f"available={me_signal['available']} | "
+        f"score={me_signal['normalized_risk_score']} | "
+        f"events={me_signal['total_events']}"
+    )
 
 
 if __name__ == "__main__":
