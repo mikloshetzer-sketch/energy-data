@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 HISTORY_FILE = "market-history.json"
 OUTPUT_FILE = "market-history.json"
-EVENTS_FILE = "me-security-events.json"
+EVENTS_FILE = "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/events.json"
 
 WINDOW_DAYS = 7
 
@@ -19,15 +19,21 @@ ISW_MULT = 1.3
 
 
 def safe_load_json(path, default):
-    if not os.path.exists(path):
-        return default
-
     try:
+        if path.startswith("http"):
+            response = requests.get(path, timeout=30)
+            response.raise_for_status()
+            return response.json()
+
+        if not os.path.exists(path):
+            return default
+
         with open(path, "r", encoding="utf-8-sig") as f:
             content = f.read().strip()
             if not content:
                 return default
             return json.loads(content)
+
     except Exception as e:
         print(f"Figyelmeztetés: nem sikerült beolvasni: {path} | Hiba: {e}")
         return default
