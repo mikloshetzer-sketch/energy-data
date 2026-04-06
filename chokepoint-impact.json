@@ -1,18 +1,18 @@
 {
   "meta": {
-    "updated": "2026-04-05 23:55 UTC",
+    "updated": "2026-04-06 03:43 UTC",
     "method": "chokepoint structural impact model v2 + me osint signal v1",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
     "tanker_input_source": "tanker-data.json",
     "me_security_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/security-signal.json"
   },
-  "global_trade_risk_index": 43.0,
+  "global_trade_risk_index": 43.5,
   "middle_east_conflict_impact": {
     "label": "high",
-    "score": 62.8,
+    "score": 63.6,
     "components": {
-      "structural_score": 47.9,
+      "structural_score": 49.5,
       "osint_signal_score": 80.9,
       "osint_raw_total_risk": 202.35,
       "osint_risk_level": "MEDIUM",
@@ -45,13 +45,13 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": 0.0,
-    "middle_east_conflict_impact_change": 0.0,
-    "direction_global": "flat",
-    "direction_middle_east": "flat"
+    "global_trade_risk_index_change": 0.5,
+    "middle_east_conflict_impact_change": 0.8,
+    "direction_global": "up",
+    "direction_middle_east": "up"
   },
   "tracked_zone_counts": {
-    "hormuz": 0,
+    "hormuz": 1,
     "suez": 0,
     "bab_el_mandeb": 0,
     "bosporus": 0
@@ -59,7 +59,7 @@
   "top_risks": [
     {
       "name": "Hormuzi-szoros",
-      "estimated_impact": 0.1889,
+      "estimated_impact": 0.1989,
       "status": "severe"
     },
     {
@@ -94,9 +94,9 @@
       "substitution_penalty": 0.95,
       "disruption_level": 0.78,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 0,
-      "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.1889,
+      "ais_count_signal": 1,
+      "ais_signal_multiplier": 1.0,
+      "estimated_impact": 0.1989,
       "status": "severe",
       "notes": "Kiemelten fontos olaj- és energiatranzit pont."
     },
