@@ -1,16 +1,35 @@
 {
   "meta": {
-    "updated": "2026-04-07 13:12 UTC",
-    "method": "chokepoint structural impact model v2 + me osint signal v1",
+    "updated": "2026-04-07 13:32 UTC",
+    "method": "chokepoint structural impact model v3 + me osint signal v1 + conflict end matrix signal v1",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
+    "uses_conflict_end_matrix_signal": true,
     "tanker_input_source": "tanker-data.json",
-    "me_security_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/security-signal.json"
+    "me_security_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/security-signal.json",
+    "conflict_end_matrix_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/conflict-end-matrix/main/dashboard_data.json",
+    "stale_input_flags": {
+      "all_tracked_zone_counts_zero": true,
+      "me_security_signal_stale": false,
+      "conflict_end_matrix_signal_stale": true
+    },
+    "blend_weights": {
+      "middle_east": {
+        "structural_score": 0.5,
+        "me_security_signal": 0.3,
+        "conflict_end_matrix_signal": 0.2
+      },
+      "global": {
+        "structural_global_score": 0.75,
+        "me_security_signal": 0.15,
+        "conflict_end_matrix_signal": 0.1
+      }
+    }
   },
-  "global_trade_risk_index": 40.4,
+  "global_trade_risk_index": 30.9,
   "middle_east_conflict_impact": {
-    "label": "high",
-    "score": 58.9,
+    "label": "medium",
+    "score": 45.7,
     "components": {
       "structural_score": 47.9,
       "osint_signal_score": 72.4,
@@ -41,12 +60,26 @@
         }
       ],
       "osint_updated": "2026-04-07 11:15 UTC",
-      "osint_available": true
+      "osint_available": true,
+      "osint_stale": false,
+      "osint_age_hours": 2.3,
+      "osint_used_in_blend": true,
+      "conflict_signal_score": 0.0,
+      "conflict_signal_raw_index": null,
+      "conflict_signal_assessment": "unknown",
+      "conflict_signal_trajectory": "unknown",
+      "conflict_signal_outlook": "unknown",
+      "conflict_signal_article_count": 0,
+      "conflict_signal_updated": null,
+      "conflict_signal_available": false,
+      "conflict_signal_stale": true,
+      "conflict_signal_age_hours": null,
+      "conflict_signal_used_in_blend": false
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -2.6,
-    "middle_east_conflict_impact_change": -3.9,
+    "global_trade_risk_index_change": -12.1,
+    "middle_east_conflict_impact_change": -17.1,
     "direction_global": "down",
     "direction_middle_east": "down"
   },
