@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-04-07 12:46 UTC",
+    "updated": "2026-04-07 14:21 UTC",
     "source_mode": "live"
   },
   "prices": {
@@ -12,12 +12,12 @@
     "spot_source": "oil_data_spot"
   },
   "risk": {
-    "global_trade_risk_index": 40.9,
-    "middle_east_conflict_impact": 59.6,
-    "middle_east_conflict_label": "high",
+    "global_trade_risk_index": 30.9,
+    "middle_east_conflict_impact": 45.7,
+    "middle_east_conflict_label": "medium",
     "daily_change": {
-      "global_trade_risk_index_change": -2.1,
-      "middle_east_conflict_impact_change": -3.2,
+      "global_trade_risk_index_change": -12.1,
+      "middle_east_conflict_impact_change": -17.1,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
@@ -50,19 +50,19 @@
     ],
     "me_components": {
       "structural_score": 47.9,
-      "osint_signal_score": 73.9,
-      "osint_raw_total_risk": 184.7,
+      "osint_signal_score": 72.4,
+      "osint_raw_total_risk": 181.1,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 186,
+      "osint_total_events": 183,
       "osint_top_locations": [
         {
           "name": "Israel",
-          "risk": 75.6
+          "risk": 78.1
         },
         {
           "name": "Iran",
-          "risk": 75.6
+          "risk": 73.4
         },
         {
           "name": "Gaza Strip",
@@ -73,16 +73,30 @@
           "risk": 5.05
         },
         {
-          "name": "Kuwait",
-          "risk": 3.6
+          "name": "Syria",
+          "risk": 3.4
         }
       ],
-      "osint_updated": "2026-04-07 10:05 UTC",
-      "osint_available": true
+      "osint_updated": "2026-04-07 11:15 UTC",
+      "osint_available": true,
+      "osint_stale": false,
+      "osint_age_hours": 2.3,
+      "osint_used_in_blend": true,
+      "conflict_signal_score": 0.0,
+      "conflict_signal_raw_index": null,
+      "conflict_signal_assessment": "unknown",
+      "conflict_signal_trajectory": "unknown",
+      "conflict_signal_outlook": "unknown",
+      "conflict_signal_article_count": 0,
+      "conflict_signal_updated": null,
+      "conflict_signal_available": false,
+      "conflict_signal_stale": true,
+      "conflict_signal_age_hours": null,
+      "conflict_signal_used_in_blend": false
     },
     "risk_meta": {
-      "updated": "2026-04-07 10:43 UTC",
-      "method": "chokepoint structural impact model v2 + me osint signal v1",
+      "updated": "2026-04-07 13:32 UTC",
+      "method": "chokepoint structural impact model v3 + me osint signal v1 + conflict end matrix signal v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
       "tanker_input_source": "tanker-data.json",
