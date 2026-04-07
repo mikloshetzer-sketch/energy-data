@@ -13,9 +13,12 @@ ME_SECURITY_SIGNAL_URL = (
     "mikloshetzer-sketch/me-security-monitor/main/security-signal.json"
 )
 
+# FONTOS:
+# A conflict-end-matrix repo tényleges output fájlját ide állítsd.
+# Ez a mostani legjobb tipp a repo logikája alapján.
 CONFLICT_END_MATRIX_URL = (
     "https://raw.githubusercontent.com/"
-    "mikloshetzer-sketch/conflict-end-matrix/main/dashboard_data.json"
+    "mikloshetzer-sketch/conflict-end-matrix/main/docs/latest_summary.json"
 )
 
 CHOKEPOINTS = {
@@ -108,7 +111,6 @@ AIS_SIGNAL_MULTIPLIER = {
     5: 1.10,
 }
 
-# Frissességi küszöbök órában
 ME_SIGNAL_MAX_AGE_HOURS = 48
 CONFLICT_SIGNAL_MAX_AGE_HOURS = 48
 
@@ -287,7 +289,7 @@ def global_trade_risk_index(items):
     return round(clamp(scaled, 0, 100), 1)
 
 
-def middle_east_conflict_impact(items):
+def middle_east_conflict_structural_impact(items):
     me_items = [x for x in items if x["region"] == "middle_east"]
     if not me_items:
         return {"label": "unknown", "score": 0}
@@ -367,17 +369,26 @@ def fetch_me_security_signal(now):
 
 def normalize_conflict_index(value):
     """
-    A conflict-end-matrix numerikus indexét 0-100 skálára húzza.
-    Konzervatív skála:
-      -100 vagy alacsonyabb -> 100
-      0 vagy magasabb       -> 0
+    conflict-end-matrix logika:
+    - negatívabb érték = rosszabb / erősebb eszkaláció
+    - 0 vagy pozitív = alacsony vagy enyhülő kockázat
+
+    Skála:
+    0 vagy nagyobb -> 0
+    -1             -> 20
+    -2             -> 40
+    -3             -> 60
+    -4             -> 80
+    -5 vagy kisebb -> 100
     """
     num = parse_number(value)
     if num is None:
         return 0.0
 
-    normalized = abs(num)
-    normalized = clamp(normalized, 0, 100)
+    if num >= 0:
+        return 0.0
+
+    normalized = min(abs(num) / 5.0 * 100.0, 100.0)
     return round(normalized, 1)
 
 
@@ -400,41 +411,36 @@ def fetch_conflict_end_matrix_signal(now):
             "trajectory": "unknown",
             "outlook": "unknown",
             "article_count": 0,
+            "interpretation": "more_negative_is_worse",
         }
 
     updated = (
         data.get("updated")
         or data.get("meta", {}).get("updated")
         or data.get("generated_at")
+        or data.get("last_updated")
     )
 
-    conflict_index_raw = (
-        data.get("conflict_index")
-        if "conflict_index" in data
-        else data.get("summary", {}).get("conflict_index")
-    )
+    # Többféle lehetséges mezőnév kezelése
+    conflict_index_raw = None
+    article_count = 0
+    assessment = "unknown"
+    trajectory = "unknown"
+    outlook = "unknown"
 
-    article_count = (
-        data.get("article_count")
-        if "article_count" in data
-        else data.get("summary", {}).get("article_count", 0)
-    )
+    if isinstance(data.get("summary"), dict):
+        summary = data.get("summary", {})
+        conflict_index_raw = summary.get("conflict_index", conflict_index_raw)
+        article_count = summary.get("article_count", article_count)
+        assessment = summary.get("assessment", assessment)
+        trajectory = summary.get("trajectory", trajectory)
+        outlook = summary.get("outlook", outlook)
 
-    assessment = (
-        data.get("assessment")
-        or data.get("summary", {}).get("assessment")
-        or "unknown"
-    )
-    trajectory = (
-        data.get("trajectory")
-        or data.get("summary", {}).get("trajectory")
-        or "unknown"
-    )
-    outlook = (
-        data.get("outlook")
-        or data.get("summary", {}).get("outlook")
-        or "unknown"
-    )
+    conflict_index_raw = data.get("conflict_index", conflict_index_raw)
+    article_count = data.get("article_count", article_count)
+    assessment = data.get("assessment", assessment)
+    trajectory = data.get("trajectory", trajectory)
+    outlook = data.get("outlook", outlook)
 
     stale = is_stale(updated, now, CONFLICT_SIGNAL_MAX_AGE_HOURS)
     age_hours = hours_since(updated, now)
@@ -451,13 +457,11 @@ def fetch_conflict_end_matrix_signal(now):
         "trajectory": trajectory,
         "outlook": outlook,
         "article_count": int(article_count or 0),
+        "interpretation": "more_negative_is_worse",
     }
 
 
 def effective_signal_score(signal_dict, key_name):
-    """
-    Ha a jel nem elérhető vagy stale, akkor 0-val vesszük figyelembe.
-    """
     if not signal_dict.get("available"):
         return 0.0
     if signal_dict.get("stale"):
@@ -578,7 +582,7 @@ def main():
     items, zone_counts = build_items(tanker_data)
 
     structural_global_index = global_trade_risk_index(items)
-    structural_me_impact = middle_east_conflict_impact(items)
+    structural_me_impact = middle_east_conflict_structural_impact(items)
 
     me_signal = fetch_me_security_signal(now)
     conflict_signal = fetch_conflict_end_matrix_signal(now)
@@ -627,6 +631,7 @@ def main():
             "conflict_signal_stale": conflict_signal["stale"],
             "conflict_signal_age_hours": conflict_signal["age_hours"],
             "conflict_signal_used_in_blend": conflict_signal["used_in_blend"],
+            "conflict_signal_interpretation": conflict_signal["interpretation"],
         }
     }
 
@@ -643,8 +648,8 @@ def main():
         "meta": {
             "updated": timestamp,
             "method": (
-                "chokepoint structural impact model v3 + "
-                "me osint signal v1 + conflict end matrix signal v1"
+                "chokepoint structural impact model v4 + "
+                "me osint signal v1 + conflict end matrix signal v2"
             ),
             "uses_tanker_signal": True,
             "uses_me_security_signal": True,
@@ -669,6 +674,7 @@ def main():
                     "conflict_end_matrix_signal": 0.10,
                 },
             },
+            "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk",
         },
         "global_trade_risk_index": global_index_value,
         "middle_east_conflict_impact": me_impact,
@@ -702,6 +708,7 @@ def main():
         "Conflict end matrix signal | "
         f"available={conflict_signal['available']} | "
         f"stale={conflict_signal['stale']} | "
+        f"raw_index={conflict_signal['conflict_index_raw']} | "
         f"normalized_score={conflict_signal['conflict_index_normalized']} | "
         f"articles={conflict_signal['article_count']}"
     )
