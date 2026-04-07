@@ -13,6 +13,11 @@ ME_SECURITY_SIGNAL_URL = (
     "mikloshetzer-sketch/me-security-monitor/main/security-signal.json"
 )
 
+CONFLICT_END_MATRIX_URL = (
+    "https://raw.githubusercontent.com/"
+    "mikloshetzer-sketch/conflict-end-matrix/main/dashboard_data.json"
+)
+
 CHOKEPOINTS = {
     "hormuz": {
         "name": "Hormuzi-szoros",
@@ -103,6 +108,10 @@ AIS_SIGNAL_MULTIPLIER = {
     5: 1.10,
 }
 
+# Frissességi küszöbök órában
+ME_SIGNAL_MAX_AGE_HOURS = 48
+CONFLICT_SIGNAL_MAX_AGE_HOURS = 48
+
 
 def safe_load_json(path, default):
     if not os.path.exists(path):
@@ -150,6 +159,42 @@ def parse_number(value):
         except Exception:
             return None
     return None
+
+
+def parse_datetime_utc(value):
+    if not value or not isinstance(value, str):
+        return None
+
+    candidates = [
+        "%Y-%m-%d %H:%M UTC",
+        "%Y-%m-%d %H:%M:%S UTC",
+        "%Y-%m-%dT%H:%M:%SZ",
+        "%Y-%m-%dT%H:%M:%S.%fZ",
+        "%Y-%m-%d",
+    ]
+
+    for fmt in candidates:
+        try:
+            dt = datetime.strptime(value.strip(), fmt)
+            return dt.replace(tzinfo=timezone.utc)
+        except Exception:
+            continue
+
+    return None
+
+
+def hours_since(timestamp_str, now):
+    dt = parse_datetime_utc(timestamp_str)
+    if not dt:
+        return None
+    return (now - dt).total_seconds() / 3600.0
+
+
+def is_stale(timestamp_str, now, max_age_hours):
+    age = hours_since(timestamp_str, now)
+    if age is None:
+        return True
+    return age > max_age_hours
 
 
 def combined_weight(trade_share, energy_share):
@@ -277,7 +322,7 @@ def top_risk_summary(items, limit=5):
     ]
 
 
-def fetch_me_security_signal():
+def fetch_me_security_signal(now):
     try:
         response = requests.get(ME_SECURITY_SIGNAL_URL, timeout=30)
         response.raise_for_status()
@@ -293,10 +338,17 @@ def fetch_me_security_signal():
             "top_locations": [],
             "available": False,
             "updated": None,
+            "stale": True,
+            "age_hours": None,
+            "used_in_blend": False,
         }
 
     summary = data.get("summary", {}) or {}
     meta = data.get("meta", {}) or {}
+
+    updated = meta.get("updated")
+    stale = is_stale(updated, now, ME_SIGNAL_MAX_AGE_HOURS)
+    age_hours = hours_since(updated, now)
 
     return {
         "normalized_risk_score": parse_number(summary.get("normalized_risk_score")) or 0.0,
@@ -306,16 +358,137 @@ def fetch_me_security_signal():
         "total_events": int(summary.get("total_events", 0) or 0),
         "top_locations": data.get("top_locations", []) or [],
         "available": True,
-        "updated": meta.get("updated"),
+        "updated": updated,
+        "stale": stale,
+        "age_hours": round2(age_hours) if age_hours is not None else None,
+        "used_in_blend": not stale,
     }
 
 
-def blend_middle_east_score(structural_score, me_signal_score):
-    return round(clamp((0.55 * structural_score) + (0.45 * me_signal_score), 0, 100), 1)
+def normalize_conflict_index(value):
+    """
+    A conflict-end-matrix numerikus indexét 0-100 skálára húzza.
+    Konzervatív skála:
+      -100 vagy alacsonyabb -> 100
+      0 vagy magasabb       -> 0
+    """
+    num = parse_number(value)
+    if num is None:
+        return 0.0
+
+    normalized = abs(num)
+    normalized = clamp(normalized, 0, 100)
+    return round(normalized, 1)
 
 
-def blend_global_trade_score(structural_global_score, me_signal_score):
-    return round(clamp((0.70 * structural_global_score) + (0.30 * me_signal_score), 0, 100), 1)
+def fetch_conflict_end_matrix_signal(now):
+    try:
+        response = requests.get(CONFLICT_END_MATRIX_URL, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+    except Exception as e:
+        print(f"Figyelmeztetés: conflict-end-matrix letöltése sikertelen: {e}")
+        return {
+            "available": False,
+            "updated": None,
+            "age_hours": None,
+            "stale": True,
+            "used_in_blend": False,
+            "conflict_index_raw": None,
+            "conflict_index_normalized": 0.0,
+            "assessment": "unknown",
+            "trajectory": "unknown",
+            "outlook": "unknown",
+            "article_count": 0,
+        }
+
+    updated = (
+        data.get("updated")
+        or data.get("meta", {}).get("updated")
+        or data.get("generated_at")
+    )
+
+    conflict_index_raw = (
+        data.get("conflict_index")
+        if "conflict_index" in data
+        else data.get("summary", {}).get("conflict_index")
+    )
+
+    article_count = (
+        data.get("article_count")
+        if "article_count" in data
+        else data.get("summary", {}).get("article_count", 0)
+    )
+
+    assessment = (
+        data.get("assessment")
+        or data.get("summary", {}).get("assessment")
+        or "unknown"
+    )
+    trajectory = (
+        data.get("trajectory")
+        or data.get("summary", {}).get("trajectory")
+        or "unknown"
+    )
+    outlook = (
+        data.get("outlook")
+        or data.get("summary", {}).get("outlook")
+        or "unknown"
+    )
+
+    stale = is_stale(updated, now, CONFLICT_SIGNAL_MAX_AGE_HOURS)
+    age_hours = hours_since(updated, now)
+
+    return {
+        "available": True,
+        "updated": updated,
+        "age_hours": round2(age_hours) if age_hours is not None else None,
+        "stale": stale,
+        "used_in_blend": not stale,
+        "conflict_index_raw": parse_number(conflict_index_raw),
+        "conflict_index_normalized": normalize_conflict_index(conflict_index_raw),
+        "assessment": assessment,
+        "trajectory": trajectory,
+        "outlook": outlook,
+        "article_count": int(article_count or 0),
+    }
+
+
+def effective_signal_score(signal_dict, key_name):
+    """
+    Ha a jel nem elérhető vagy stale, akkor 0-val vesszük figyelembe.
+    """
+    if not signal_dict.get("available"):
+        return 0.0
+    if signal_dict.get("stale"):
+        return 0.0
+    return parse_number(signal_dict.get(key_name)) or 0.0
+
+
+def blend_middle_east_score(structural_score, me_signal_score, conflict_score):
+    return round(
+        clamp(
+            (0.50 * structural_score) +
+            (0.30 * me_signal_score) +
+            (0.20 * conflict_score),
+            0,
+            100,
+        ),
+        1,
+    )
+
+
+def blend_global_trade_score(structural_global_score, me_signal_score, conflict_score):
+    return round(
+        clamp(
+            (0.75 * structural_global_score) +
+            (0.15 * me_signal_score) +
+            (0.10 * conflict_score),
+            0,
+            100,
+        ),
+        1,
+    )
 
 
 def impact_label_from_score(score):
@@ -388,6 +561,12 @@ def compute_daily_change(current_global_index, current_me_score, previous_snapsh
     }
 
 
+def all_zone_counts_zero(zone_counts):
+    if not isinstance(zone_counts, dict):
+        return True
+    return all(int(v or 0) == 0 for v in zone_counts.values())
+
+
 def main():
     now = datetime.now(timezone.utc)
     timestamp = now.strftime("%Y-%m-%d %H:%M UTC")
@@ -400,16 +579,23 @@ def main():
 
     structural_global_index = global_trade_risk_index(items)
     structural_me_impact = middle_east_conflict_impact(items)
-    me_signal = fetch_me_security_signal()
+
+    me_signal = fetch_me_security_signal(now)
+    conflict_signal = fetch_conflict_end_matrix_signal(now)
+
+    me_signal_score = effective_signal_score(me_signal, "normalized_risk_score")
+    conflict_signal_score = effective_signal_score(conflict_signal, "conflict_index_normalized")
 
     global_index_value = blend_global_trade_score(
         structural_global_index,
-        me_signal["normalized_risk_score"]
+        me_signal_score,
+        conflict_signal_score,
     )
 
     blended_me_score = blend_middle_east_score(
         structural_me_impact["score"],
-        me_signal["normalized_risk_score"]
+        me_signal_score,
+        conflict_signal_score,
     )
 
     me_impact = {
@@ -417,6 +603,7 @@ def main():
         "score": blended_me_score,
         "components": {
             "structural_score": structural_me_impact["score"],
+
             "osint_signal_score": me_signal["normalized_risk_score"],
             "osint_raw_total_risk": me_signal["raw_total_risk"],
             "osint_risk_level": me_signal["risk_level"],
@@ -425,6 +612,21 @@ def main():
             "osint_top_locations": me_signal["top_locations"],
             "osint_updated": me_signal["updated"],
             "osint_available": me_signal["available"],
+            "osint_stale": me_signal["stale"],
+            "osint_age_hours": me_signal["age_hours"],
+            "osint_used_in_blend": me_signal["used_in_blend"],
+
+            "conflict_signal_score": conflict_signal["conflict_index_normalized"],
+            "conflict_signal_raw_index": conflict_signal["conflict_index_raw"],
+            "conflict_signal_assessment": conflict_signal["assessment"],
+            "conflict_signal_trajectory": conflict_signal["trajectory"],
+            "conflict_signal_outlook": conflict_signal["outlook"],
+            "conflict_signal_article_count": conflict_signal["article_count"],
+            "conflict_signal_updated": conflict_signal["updated"],
+            "conflict_signal_available": conflict_signal["available"],
+            "conflict_signal_stale": conflict_signal["stale"],
+            "conflict_signal_age_hours": conflict_signal["age_hours"],
+            "conflict_signal_used_in_blend": conflict_signal["used_in_blend"],
         }
     }
 
@@ -435,14 +637,38 @@ def main():
         previous_snapshot
     )
 
+    tanker_zero_flag = all_zone_counts_zero(zone_counts)
+
     payload = {
         "meta": {
             "updated": timestamp,
-            "method": "chokepoint structural impact model v2 + me osint signal v1",
+            "method": (
+                "chokepoint structural impact model v3 + "
+                "me osint signal v1 + conflict end matrix signal v1"
+            ),
             "uses_tanker_signal": True,
             "uses_me_security_signal": True,
+            "uses_conflict_end_matrix_signal": True,
             "tanker_input_source": TANKER_INPUT_FILE,
             "me_security_input_source": ME_SECURITY_SIGNAL_URL,
+            "conflict_end_matrix_input_source": CONFLICT_END_MATRIX_URL,
+            "stale_input_flags": {
+                "all_tracked_zone_counts_zero": tanker_zero_flag,
+                "me_security_signal_stale": me_signal["stale"],
+                "conflict_end_matrix_signal_stale": conflict_signal["stale"],
+            },
+            "blend_weights": {
+                "middle_east": {
+                    "structural_score": 0.50,
+                    "me_security_signal": 0.30,
+                    "conflict_end_matrix_signal": 0.20,
+                },
+                "global": {
+                    "structural_global_score": 0.75,
+                    "me_security_signal": 0.15,
+                    "conflict_end_matrix_signal": 0.10,
+                },
+            },
         },
         "global_trade_risk_index": global_index_value,
         "middle_east_conflict_impact": me_impact,
@@ -468,8 +694,20 @@ def main():
     print(
         "ME security signal | "
         f"available={me_signal['available']} | "
+        f"stale={me_signal['stale']} | "
         f"score={me_signal['normalized_risk_score']} | "
         f"events={me_signal['total_events']}"
+    )
+    print(
+        "Conflict end matrix signal | "
+        f"available={conflict_signal['available']} | "
+        f"stale={conflict_signal['stale']} | "
+        f"normalized_score={conflict_signal['conflict_index_normalized']} | "
+        f"articles={conflict_signal['article_count']}"
+    )
+    print(
+        "Tracked zones | "
+        f"all_zero={tanker_zero_flag} | counts={zone_counts}"
     )
 
 
