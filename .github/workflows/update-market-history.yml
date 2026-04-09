@@ -28,16 +28,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Rebuild historical market history with OSINT backfill
+      - name: Rebuild market history with exact chokepoint backfill where available
         run: python backfill_market_history.py
 
       - name: Update today's market history row
         run: python update_market_history.py
 
-      - name: Commit updated market history
+      - name: Recalculate market correlation
+        run: python update_market_correlation.py
+
+      - name: Commit updated market files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add market-history.json
-          git diff --cached --quiet || git commit -m "Update market history"
+          git add market-history.json market-correlation.json
+          git diff --cached --quiet || git commit -m "Update market history and correlation"
           git push
