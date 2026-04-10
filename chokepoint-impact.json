@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-04-10 19:57 UTC",
+    "updated": "2026-04-10 20:58 UTC",
     "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -9,7 +9,7 @@
     "me_security_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/security-signal.json",
     "conflict_end_matrix_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/conflict-end-matrix/main/docs/latest_summary.json",
     "stale_input_flags": {
-      "all_tracked_zone_counts_zero": true,
+      "all_tracked_zone_counts_zero": false,
       "me_security_signal_stale": false,
       "conflict_end_matrix_signal_stale": true
     },
@@ -27,43 +27,43 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 32.0,
+  "global_trade_risk_index": 32.6,
   "middle_east_conflict_impact": {
     "label": "medium",
-    "score": 48.0,
+    "score": 48.8,
     "components": {
-      "structural_score": 47.9,
-      "osint_signal_score": 80.1,
-      "osint_raw_total_risk": 200.25,
+      "structural_score": 49.5,
+      "osint_signal_score": 80.0,
+      "osint_raw_total_risk": 200.0,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 192,
+      "osint_total_events": 196,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 80.35
+          "risk": 80.4
         },
         {
           "name": "Israel",
-          "risk": 77.75
+          "risk": 78.75
         },
         {
           "name": "Middle East",
-          "risk": 12.2
+          "risk": 12.8
         },
         {
           "name": "Gaza Strip",
-          "risk": 8.8
+          "risk": 6.3
         },
         {
           "name": "Lebanon",
-          "risk": 5.75
+          "risk": 5.4
         }
       ],
-      "osint_updated": "2026-04-10 19:13 UTC",
+      "osint_updated": "2026-04-10 20:57 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.75,
+      "osint_age_hours": 0.02,
       "osint_used_in_blend": true,
       "conflict_signal_score": 23.6,
       "conflict_signal_raw_index": -1.18,
@@ -80,13 +80,13 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -1.4,
-    "middle_east_conflict_impact_change": -2.7,
+    "global_trade_risk_index_change": -0.8,
+    "middle_east_conflict_impact_change": -1.9,
     "direction_global": "down",
     "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
-    "hormuz": 0,
+    "hormuz": 1,
     "suez": 0,
     "bab_el_mandeb": 0,
     "bosporus": 0
@@ -94,7 +94,7 @@
   "top_risks": [
     {
       "name": "Hormuzi-szoros",
-      "estimated_impact": 0.1889,
+      "estimated_impact": 0.1989,
       "status": "severe"
     },
     {
@@ -129,9 +129,9 @@
       "substitution_penalty": 0.95,
       "disruption_level": 0.78,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 0,
-      "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.1889,
+      "ais_count_signal": 1,
+      "ais_signal_multiplier": 1.0,
+      "estimated_impact": 0.1989,
       "status": "severe",
       "notes": "Kiemelten fontos olaj- és energiatranzit pont."
     },
