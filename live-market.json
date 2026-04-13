@@ -1,30 +1,30 @@
 {
   "meta": {
-    "updated": "2026-04-13 04:32 UTC",
+    "updated": "2026-04-13 09:14 UTC",
     "source_mode": "live"
   },
   "prices": {
-    "live_brent": 95.2,
-    "live_wti": 96.57,
+    "live_brent": 102.23,
+    "live_wti": 103.91,
     "live_source": "spot_fallback",
-    "spot_brent": 95.2,
-    "spot_wti": 96.57,
+    "spot_brent": 102.23,
+    "spot_wti": 103.91,
     "spot_source": "oil_data_spot"
   },
   "risk": {
-    "global_trade_risk_index": 29.7,
-    "middle_east_conflict_impact": 42.8,
+    "global_trade_risk_index": 29.1,
+    "middle_east_conflict_impact": 42.0,
     "middle_east_conflict_label": "medium",
     "daily_change": {
-      "global_trade_risk_index_change": -1.5,
-      "middle_east_conflict_impact_change": -3.5,
+      "global_trade_risk_index_change": -2.1,
+      "middle_east_conflict_impact_change": -4.3,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.1989,
+        "estimated_impact": 0.1889,
         "status": "severe"
       },
       {
@@ -44,12 +44,12 @@
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0071,
+        "estimated_impact": 0.0067,
         "status": "low"
       }
     ],
     "me_components": {
-      "structural_score": 49.5,
+      "structural_score": 47.9,
       "osint_signal_score": 60.2,
       "osint_raw_total_risk": 150.56,
       "osint_risk_level": "MEDIUM",
@@ -80,13 +80,13 @@
       "osint_updated": "2026-04-13 03:53 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.03,
+      "osint_age_hours": 5.06,
       "osint_used_in_blend": true,
-      "conflict_signal_score": 3.2,
-      "conflict_signal_raw_index": -0.16,
+      "conflict_signal_score": 8.8,
+      "conflict_signal_raw_index": -0.44,
       "conflict_signal_assessment": "mild escalation",
-      "conflict_signal_trajectory": "stabilizing",
-      "conflict_signal_outlook": "Tension remains present, but escalation pressure may be easing.",
+      "conflict_signal_trajectory": "uncertain",
+      "conflict_signal_outlook": "Short-term direction remains uncertain.",
       "conflict_signal_article_count": 50,
       "conflict_signal_updated": null,
       "conflict_signal_available": true,
@@ -96,7 +96,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-04-13 03:55 UTC",
+      "updated": "2026-04-13 08:56 UTC",
       "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
