@@ -1,18 +1,18 @@
 {
   "market": {
-    "brent": "94.89 USD/hordó",
-    "wti": "90.85 USD/hordó",
-    "inventory": "878.0 millió hordó",
+    "brent": "96.06 USD/hordó",
+    "wti": "89.00 USD/hordó",
+    "inventory": "873.0 millió hordó",
     "supply": "110.4 millió hordó/nap",
-    "brent_30d_trend": "+95.18%",
-    "brent_1d_change": "+8.31%",
-    "brent_7d_change": "+26.64%",
-    "wti_1d_change": "+0.50%",
-    "wti_7d_change": "+19.13%"
+    "brent_30d_trend": "+69.46%",
+    "brent_1d_change": "+3.54%",
+    "brent_7d_change": "-2.69%",
+    "wti_1d_change": "+2.42%",
+    "wti_7d_change": "-1.16%"
   },
   "spot": {
-    "brent": "138.21 USD/hordó",
-    "wti": "114.58 USD/hordó"
+    "brent": "123.28 USD/hordó",
+    "wti": "100.72 USD/hordó"
   },
   "production": {
     "current": "110.4 millió hordó/nap",
@@ -221,7 +221,7 @@
     "level": "stable",
     "label": "Korlátozott hatás",
     "direction": "semleges",
-    "text": "A jelenlegi globális termelési szint alapján a piac egyelőre rendelkezik bizonyos kínálati pufferekkel, ezért a helyzet rövid távon inkább sérülékenységet, mint közvetlen visszaesést jelez."
+    "text": "A havi termelési pálya alapján a globális kínálat jelenleg viszonylag stabil, így a mostani helyzet inkább kockázatként, mint azonnali termelési kiesésként jelenik meg."
   },
   "regional_dependency": {
     "europe": {
@@ -245,49 +245,49 @@
   },
   "regional_impact": {
     "europe": {
-      "level": "extreme",
-      "label": "Nagyon magas hatás",
-      "score": 19.4,
+      "level": "moderate",
+      "label": "Mérsékelt hatás",
+      "score": 6.3,
       "factor": 1.0,
       "icon": "🇪🇺",
       "dependency_label": "Közepes kitettség",
       "dependency_note": "Európa importfüggő, ezért az ár- és ellátási sokkok gyorsan átgyűrűzhetnek az inflációba és az üzemanyagköltségekbe.",
-      "text": "Az európai piacokon az importköltségek, finomított termékárak és inflációs kockázatok rendkívül erősen emelkedhetnek."
+      "text": "Az európai piacok érzékelhetően reagálhatnak az olajár-emelkedésre, főként az importköltségek és az üzemanyagárak oldalán."
     },
     "america": {
-      "level": "high",
-      "label": "Magas hatás",
-      "score": 11.6,
+      "level": "low",
+      "label": "Korlátozott hatás",
+      "score": 3.8,
       "factor": 0.6,
       "icon": "🇺🇸",
       "dependency_label": "Alacsonyabb közvetlen kitettség",
       "dependency_note": "Az USA termelői háttere erősebb, ezért közvetlenül kevésbé sérülékeny, bár a globális árak a hazai üzemanyagpiacon is megjelennek.",
-      "text": "Az USA közvetlenül kevésbé sérülékeny, de a globális ármozgás már erőteljesen átszivároghat a hazai üzemanyag- és finomítói piacra."
+      "text": "Az amerikai piac termelői háttere miatt közvetlenül kevésbé sérülékeny, bár a globális ártrendek itt is megjelennek."
     },
     "asia": {
-      "level": "extreme",
-      "label": "Nagyon magas hatás",
-      "score": 30.1,
+      "level": "high",
+      "label": "Magas hatás",
+      "score": 9.7,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
       "dependency_note": "Ázsia erősen függ a közel-keleti importtól, ezért a Hormuzi-szoroshoz és a tankerforgalomhoz kapcsolódó zavarok itt csapódnak le legerősebben.",
-      "text": "Ázsia a közel-keleti importfüggőség miatt jelenleg a legsérülékenyebb régió, ezért a szállítási zavarok, biztosítási költségek és importárak gyorsan felerősödhetnek."
+      "text": "Az ázsiai piacokon a közel-keleti kitettség miatt az ár- és ellátási sokk erősen érvényesülhet, különösen a finomított termékek és a tengeri szállítás terén."
     }
   },
   "meta": {
-    "updated": "2026-04-15 08:06 UTC",
+    "updated": "2026-04-16 08:05 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
-    "score": 182.8,
-    "level": "elevated",
-    "label": "Emelkedett"
+    "score": 142.7,
+    "level": "moderate",
+    "label": "Mérsékelt"
   },
   "market_stress": {
-    "level": "tense",
-    "label": "Feszült",
-    "note": "A piaci környezet feszült, az árak emelkedése és a kockázati háttér együtt növeli a bizonytalanságot."
+    "level": "watch",
+    "label": "Mérsékelten feszült",
+    "note": "A piacon emelkedő érzékenység látható, de még nem alakult ki szélsőséges sokkhelyzet."
   },
   "forecast": {
     "one_month": "80–85 USD/hordó",
@@ -297,10 +297,10 @@
   "summary": {
     "status": "Az olajpiacon rövid távon erősebb emelkedő árnyomás érzékelhető, amit a piaci szereplők fokozott óvatossága is kísérhet.",
     "supply_note": "Az amerikai készletszint viszonylag magasabb, ami rövid távon részben tompíthatja az árakra nehezedő felfelé mutató nyomást.",
-    "risk_note": "A térségben emelkedett kockázati környezet figyelhető meg, ami továbbra is támogatja a geopolitikai kockázati prémium fennmaradását."
+    "risk_note": "A térségben mérsékelt, de figyelmet igénylő geopolitikai kockázatok maradtak fenn."
   },
   "drivers": {
-    "text": "A jelenlegi ármozgásokat érezhetően befolyásolja a közel-keleti geopolitikai feszültség, miközben a Brent ár elmúlt 30 napos emelkedése is felfelé mutató piaci nyomást jelez, miközben a magasabb amerikai készletszint részben csökkentheti a rövid távú árnyomást."
+    "text": "A jelenlegi ármozgásokat elsősorban a keresleti és kínálati fundamentumok alakítják, miközben a Brent ár elmúlt 30 napos emelkedése is felfelé mutató piaci nyomást jelez, miközben a magasabb amerikai készletszint részben csökkentheti a rövid távú árnyomást."
   },
   "notes": {
     "price_basis": "A market blokk piaci (futures) árakat használ, a spot blokk EIA napi spot adatokat tartalmaz.",
