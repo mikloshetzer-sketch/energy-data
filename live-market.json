@@ -1,25 +1,25 @@
 {
   "meta": {
-    "updated": "2026-04-23 06:19 UTC",
+    "updated": "2026-04-23 08:13 UTC",
     "source_mode": "live"
   },
   "prices": {
-    "live_brent": 93.0,
-    "live_wti": 89.29,
+    "live_brent": 97.24,
+    "live_wti": 93.83,
     "live_source": "spot_fallback",
-    "spot_brent": 93.0,
-    "spot_wti": 89.29,
+    "spot_brent": 97.24,
+    "spot_wti": 93.83,
     "spot_source": "oil_data_spot"
   },
   "risk": {
-    "global_trade_risk_index": 28.2,
-    "middle_east_conflict_impact": 40.1,
+    "global_trade_risk_index": 27.3,
+    "middle_east_conflict_impact": 38.5,
     "middle_east_conflict_label": "medium",
     "daily_change": {
-      "global_trade_risk_index_change": 0.1,
-      "middle_east_conflict_impact_change": 0.1,
-      "direction_global": "up",
-      "direction_middle_east": "up"
+      "global_trade_risk_index_change": -0.9,
+      "middle_east_conflict_impact_change": -1.6,
+      "direction_global": "down",
+      "direction_middle_east": "down"
     },
     "top_risks": [
       {
@@ -34,7 +34,7 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0419,
+        "estimated_impact": 0.0375,
         "status": "low"
       },
       {
@@ -44,43 +44,43 @@
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0067,
+        "estimated_impact": 0.0071,
         "status": "low"
       }
     ],
     "me_components": {
-      "structural_score": 48.6,
-      "osint_signal_score": 52.7,
-      "osint_raw_total_risk": 131.71,
+      "structural_score": 47.9,
+      "osint_signal_score": 48.4,
+      "osint_raw_total_risk": 120.96,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 171,
+      "osint_total_events": 165,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 62.7
+          "risk": 54.05
         },
         {
           "name": "Israel",
-          "risk": 35.16
+          "risk": 36.61
         },
         {
           "name": "West Bank",
-          "risk": 5.9
+          "risk": 5.25
         },
         {
           "name": "Gaza Strip",
-          "risk": 5.55
+          "risk": 4.9
         },
         {
-          "name": "Tehran",
-          "risk": 4.35
+          "name": "Lebanon",
+          "risk": 4.05
         }
       ],
-      "osint_updated": "2026-04-22 21:11 UTC",
+      "osint_updated": "2026-04-23 03:48 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 1.39,
+      "osint_age_hours": 2.69,
       "osint_used_in_blend": true,
       "conflict_signal_score": 0.0,
       "conflict_signal_raw_index": 0.22,
@@ -96,7 +96,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-04-22 22:34 UTC",
+      "updated": "2026-04-23 06:29 UTC",
       "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
