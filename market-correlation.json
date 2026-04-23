@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-04-23 06:20 UTC",
+    "updated": "2026-04-23 06:21 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -10,22 +10,22 @@
   "latest": {
     "leader": "suez_impact",
     "leader_label": "Suez",
-    "leader_correlation": 0.664,
-    "leader_weighted_strength": 0.73,
+    "leader_correlation": 0.694,
+    "leader_weighted_strength": 0.763,
     "ranked": [
       {
         "key": "suez_impact",
         "label": "Suez",
-        "correlation": 0.664,
+        "correlation": 0.694,
         "strategic_weight": 1.1,
-        "weighted_strength": 0.73
+        "weighted_strength": 0.763
       },
       {
         "key": "bosporus_impact",
         "label": "Bosporus",
-        "correlation": -0.407,
+        "correlation": -0.378,
         "strategic_weight": 0.7,
-        "weighted_strength": 0.285
+        "weighted_strength": 0.265
       },
       {
         "key": "hormuz_impact",
@@ -49,7 +49,7 @@
       "lag_days": -1,
       "correlation": 0.842,
       "strategic_weight": 1.5,
-      "weighted_strength": 1.262,
+      "weighted_strength": 1.264,
       "signal": "leading"
     },
     "suez_impact": {
@@ -82,7 +82,7 @@
     "label": "Hormuz",
     "lag_days": -1,
     "correlation": 0.842,
-    "weighted_strength": 1.262,
+    "weighted_strength": 1.264,
     "signal": "leading",
     "text": "Hormuz leads Brent by 1 day(s)"
   },
@@ -601,16 +601,16 @@
     {
       "date": "2026-04-22",
       "brent_vs_hormuz_impact": 0.0,
-      "brent_vs_suez_impact": 0.599,
+      "brent_vs_suez_impact": 0.724,
       "brent_vs_bab_el_mandeb_impact": -0.0,
-      "brent_vs_bosporus_impact": 0.252
+      "brent_vs_bosporus_impact": 0.154
     },
     {
       "date": "2026-04-23",
       "brent_vs_hormuz_impact": 0.0,
-      "brent_vs_suez_impact": 0.664,
+      "brent_vs_suez_impact": 0.694,
       "brent_vs_bab_el_mandeb_impact": -0.0,
-      "brent_vs_bosporus_impact": -0.407
+      "brent_vs_bosporus_impact": -0.378
     }
   ]
 }
