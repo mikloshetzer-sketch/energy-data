@@ -1,25 +1,25 @@
 {
   "meta": {
-    "updated": "2026-04-24 06:31 UTC",
+    "updated": "2026-04-24 08:53 UTC",
     "source_mode": "live"
   },
   "prices": {
-    "live_brent": 97.24,
-    "live_wti": 93.83,
+    "live_brent": 101.17,
+    "live_wti": 97.7,
     "live_source": "spot_fallback",
-    "spot_brent": 97.24,
-    "spot_wti": 93.83,
+    "spot_brent": 101.17,
+    "spot_wti": 97.7,
     "spot_source": "oil_data_spot"
   },
   "risk": {
-    "global_trade_risk_index": 28.2,
-    "middle_east_conflict_impact": 40.4,
+    "global_trade_risk_index": 27.3,
+    "middle_east_conflict_impact": 38.6,
     "middle_east_conflict_label": "medium",
     "daily_change": {
-      "global_trade_risk_index_change": -0.1,
-      "middle_east_conflict_impact_change": 0.0,
+      "global_trade_risk_index_change": -1.0,
+      "middle_east_conflict_impact_change": -1.8,
       "direction_global": "down",
-      "direction_middle_east": "flat"
+      "direction_middle_east": "down"
     },
     "top_risks": [
       {
@@ -44,49 +44,49 @@
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0071,
+        "estimated_impact": 0.0067,
         "status": "low"
       }
     ],
     "me_components": {
       "structural_score": 47.9,
-      "osint_signal_score": 54.7,
-      "osint_raw_total_risk": 136.86,
+      "osint_signal_score": 48.8,
+      "osint_raw_total_risk": 122.06,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 174,
+      "osint_total_events": 173,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 62.9
+          "risk": 57.4
         },
         {
           "name": "Israel",
-          "risk": 43.96
+          "risk": 38.56
         },
         {
           "name": "Gaza Strip",
-          "risk": 11.6
-        },
-        {
-          "name": "West Bank",
-          "risk": 5.25
+          "risk": 9.95
         },
         {
           "name": "Middle East",
-          "risk": 4.75
+          "risk": 5.3
+        },
+        {
+          "name": "West Bank",
+          "risk": 2.5
         }
       ],
-      "osint_updated": "2026-04-23 23:08 UTC",
+      "osint_updated": "2026-04-24 06:22 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 2.1,
+      "osint_age_hours": 2.26,
       "osint_used_in_blend": true,
       "conflict_signal_score": 0.0,
-      "conflict_signal_raw_index": 0.24,
+      "conflict_signal_raw_index": 0.14,
       "conflict_signal_assessment": "neutral",
-      "conflict_signal_trajectory": "stabilizing",
-      "conflict_signal_outlook": "The information environment is moving toward stabilization.",
+      "conflict_signal_trajectory": "uncertain",
+      "conflict_signal_outlook": "Short-term direction remains uncertain.",
       "conflict_signal_article_count": 50,
       "conflict_signal_updated": null,
       "conflict_signal_available": true,
@@ -96,7 +96,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-04-24 01:14 UTC",
+      "updated": "2026-04-24 08:37 UTC",
       "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
