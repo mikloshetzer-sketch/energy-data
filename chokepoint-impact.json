@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-04-25 09:13 UTC",
+    "updated": "2026-04-25 10:08 UTC",
     "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -27,12 +27,12 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 28.2,
+  "global_trade_risk_index": 28.1,
   "middle_east_conflict_impact": {
     "label": "medium",
-    "score": 40.0,
+    "score": 39.9,
     "components": {
-      "structural_score": 48.7,
+      "structural_score": 48.6,
       "osint_signal_score": 52.1,
       "osint_raw_total_risk": 130.36,
       "osint_risk_level": "MEDIUM",
@@ -63,7 +63,7 @@
       "osint_updated": "2026-04-25 09:11 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.04,
+      "osint_age_hours": 0.96,
       "osint_used_in_blend": true,
       "conflict_signal_score": 0.0,
       "conflict_signal_raw_index": 0.06,
@@ -80,16 +80,16 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": 0.1,
-    "middle_east_conflict_impact_change": -0.1,
-    "direction_global": "up",
+    "global_trade_risk_index_change": 0.0,
+    "middle_east_conflict_impact_change": -0.2,
+    "direction_global": "flat",
     "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
-    "suez": 4,
+    "suez": 3,
     "bab_el_mandeb": 0,
-    "bosporus": 1
+    "bosporus": 0
   },
   "top_risks": [
     {
@@ -104,7 +104,7 @@
     },
     {
       "name": "Szuezi térség",
-      "estimated_impact": 0.0427,
+      "estimated_impact": 0.0419,
       "status": "low"
     },
     {
@@ -114,7 +114,7 @@
     },
     {
       "name": "Boszporusz",
-      "estimated_impact": 0.0071,
+      "estimated_impact": 0.0067,
       "status": "low"
     }
   ],
@@ -161,9 +161,9 @@
       "substitution_penalty": 0.68,
       "disruption_level": 0.55,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 4,
-      "ais_signal_multiplier": 1.08,
-      "estimated_impact": 0.0427,
+      "ais_count_signal": 3,
+      "ais_signal_multiplier": 1.06,
+      "estimated_impact": 0.0419,
       "status": "low",
       "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
     },
@@ -193,9 +193,9 @@
       "substitution_penalty": 0.7,
       "disruption_level": 0.22,
       "regional_adjustment": 1.0,
-      "ais_count_signal": 1,
-      "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.0071,
+      "ais_count_signal": 0,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.0067,
       "status": "low",
       "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
     },
