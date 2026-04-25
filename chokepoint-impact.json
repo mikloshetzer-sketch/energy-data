@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-04-24 23:58 UTC",
+    "updated": "2026-04-25 03:35 UTC",
     "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -9,7 +9,7 @@
     "me_security_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/security-signal.json",
     "conflict_end_matrix_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/conflict-end-matrix/main/docs/latest_summary.json",
     "stale_input_flags": {
-      "all_tracked_zone_counts_zero": false,
+      "all_tracked_zone_counts_zero": true,
       "me_security_signal_stale": false,
       "conflict_end_matrix_signal_stale": true
     },
@@ -27,43 +27,43 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 28.1,
+  "global_trade_risk_index": 27.4,
   "middle_east_conflict_impact": {
     "label": "medium",
-    "score": 40.1,
+    "score": 38.8,
     "components": {
       "structural_score": 47.9,
-      "osint_signal_score": 53.7,
-      "osint_raw_total_risk": 134.36,
+      "osint_signal_score": 49.4,
+      "osint_raw_total_risk": 123.41,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 168,
+      "osint_total_events": 177,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 60.5
+          "risk": 53.8
         },
         {
           "name": "Israel",
-          "risk": 45.56
+          "risk": 41.86
         },
         {
           "name": "Gaza Strip",
-          "risk": 8.25
-        },
-        {
-          "name": "Middle East",
           "risk": 8.05
         },
         {
-          "name": "Saudi Arabia",
-          "risk": 2.45
+          "name": "Middle East",
+          "risk": 5.25
+        },
+        {
+          "name": "Syria",
+          "risk": 3.6
         }
       ],
-      "osint_updated": "2026-04-24 21:07 UTC",
+      "osint_updated": "2026-04-25 03:33 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 2.85,
+      "osint_age_hours": 0.04,
       "osint_used_in_blend": true,
       "conflict_signal_score": 0.0,
       "conflict_signal_raw_index": 0.14,
@@ -80,8 +80,8 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -0.2,
-    "middle_east_conflict_impact_change": -0.3,
+    "global_trade_risk_index_change": -0.7,
+    "middle_east_conflict_impact_change": -1.3,
     "direction_global": "down",
     "direction_middle_east": "down"
   },
@@ -89,7 +89,7 @@
     "hormuz": 0,
     "suez": 0,
     "bab_el_mandeb": 0,
-    "bosporus": 2
+    "bosporus": 0
   },
   "top_risks": [
     {
@@ -114,7 +114,7 @@
     },
     {
       "name": "Boszporusz",
-      "estimated_impact": 0.0073,
+      "estimated_impact": 0.0067,
       "status": "low"
     }
   ],
@@ -193,9 +193,9 @@
       "substitution_penalty": 0.7,
       "disruption_level": 0.22,
       "regional_adjustment": 1.0,
-      "ais_count_signal": 2,
-      "ais_signal_multiplier": 1.03,
-      "estimated_impact": 0.0073,
+      "ais_count_signal": 0,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.0067,
       "status": "low",
       "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
     },
