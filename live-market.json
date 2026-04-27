@@ -1,25 +1,25 @@
 {
   "meta": {
-    "updated": "2026-04-27 04:02 UTC",
+    "updated": "2026-04-27 09:10 UTC",
     "source_mode": "live"
   },
   "prices": {
-    "live_brent": 99.13,
-    "live_wti": 94.4,
+    "live_brent": 101.71,
+    "live_wti": 96.67,
     "live_source": "spot_fallback",
-    "spot_brent": 99.13,
-    "spot_wti": 94.4,
+    "spot_brent": 101.71,
+    "spot_wti": 96.67,
     "spot_source": "oil_data_spot"
   },
   "risk": {
-    "global_trade_risk_index": 28.4,
-    "middle_east_conflict_impact": 40.6,
+    "global_trade_risk_index": 27.2,
+    "middle_east_conflict_impact": 38.3,
     "middle_east_conflict_label": "medium",
     "daily_change": {
-      "global_trade_risk_index_change": 0.0,
-      "middle_east_conflict_impact_change": 0.0,
-      "direction_global": "flat",
-      "direction_middle_east": "flat"
+      "global_trade_risk_index_change": -1.2,
+      "middle_east_conflict_impact_change": -2.3,
+      "direction_global": "down",
+      "direction_middle_east": "down"
     },
     "top_risks": [
       {
@@ -44,43 +44,43 @@
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0067,
+        "estimated_impact": 0.0071,
         "status": "low"
       }
     ],
     "me_components": {
       "structural_score": 47.9,
-      "osint_signal_score": 55.6,
-      "osint_raw_total_risk": 139.06,
-      "osint_risk_level": "MEDIUM",
+      "osint_signal_score": 47.9,
+      "osint_raw_total_risk": 119.66,
+      "osint_risk_level": "LOW",
       "osint_confidence": "HIGH",
-      "osint_total_events": 179,
+      "osint_total_events": 168,
       "osint_top_locations": [
         {
           "name": "Israel",
-          "risk": 53.96
+          "risk": 45.91
         },
         {
           "name": "Iran",
-          "risk": 48.6
+          "risk": 41.85
         },
         {
           "name": "Gaza Strip",
-          "risk": 19.3
+          "risk": 17.0
         },
         {
           "name": "Middle East",
-          "risk": 3.15
+          "risk": 3.2
         },
         {
           "name": "Tehran",
-          "risk": 2.85
+          "risk": 2.8
         }
       ],
-      "osint_updated": "2026-04-26 23:00 UTC",
+      "osint_updated": "2026-04-27 06:42 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 2.28,
+      "osint_age_hours": 0.76,
       "osint_used_in_blend": true,
       "conflict_signal_score": 0.0,
       "conflict_signal_raw_index": 0.04,
@@ -96,7 +96,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-04-27 01:16 UTC",
+      "updated": "2026-04-27 07:27 UTC",
       "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
