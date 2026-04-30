@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-04-30 06:44 UTC",
+    "updated": "2026-04-30 06:45 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -10,29 +10,29 @@
   "latest": {
     "leader": "hormuz_impact",
     "leader_label": "Hormuz",
-    "leader_correlation": 0.783,
-    "leader_weighted_strength": 1.175,
+    "leader_correlation": 0.742,
+    "leader_weighted_strength": 1.113,
     "ranked": [
       {
         "key": "hormuz_impact",
         "label": "Hormuz",
-        "correlation": 0.783,
+        "correlation": 0.742,
         "strategic_weight": 1.5,
-        "weighted_strength": 1.175
+        "weighted_strength": 1.113
       },
       {
         "key": "suez_impact",
         "label": "Suez",
-        "correlation": 0.438,
+        "correlation": 0.415,
         "strategic_weight": 1.1,
-        "weighted_strength": 0.482
+        "weighted_strength": 0.457
       },
       {
         "key": "bosporus_impact",
         "label": "Bosporus",
-        "correlation": -0.362,
+        "correlation": -0.457,
         "strategic_weight": 0.7,
-        "weighted_strength": 0.253
+        "weighted_strength": 0.32
       },
       {
         "key": "bab_el_mandeb_impact",
@@ -55,7 +55,7 @@
     "suez_impact": {
       "label": "Suez",
       "lag_days": -3,
-      "correlation": -0.262,
+      "correlation": -0.261,
       "strategic_weight": 1.1,
       "weighted_strength": 0.288,
       "signal": "leading"
@@ -71,7 +71,7 @@
     "bosporus_impact": {
       "label": "Bosporus",
       "lag_days": -3,
-      "correlation": -0.386,
+      "correlation": -0.385,
       "strategic_weight": 0.7,
       "weighted_strength": 0.27,
       "signal": "leading"
@@ -656,10 +656,10 @@
     },
     {
       "date": "2026-04-30",
-      "brent_vs_hormuz_impact": 0.783,
-      "brent_vs_suez_impact": 0.438,
+      "brent_vs_hormuz_impact": 0.742,
+      "brent_vs_suez_impact": 0.415,
       "brent_vs_bab_el_mandeb_impact": -0.0,
-      "brent_vs_bosporus_impact": -0.362
+      "brent_vs_bosporus_impact": -0.457
     }
   ]
 }
