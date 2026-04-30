@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-04-30 03:56 UTC",
+    "updated": "2026-04-30 06:33 UTC",
     "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -27,43 +27,43 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 29.5,
+  "global_trade_risk_index": 29.2,
   "middle_east_conflict_impact": {
     "label": "medium",
-    "score": 41.9,
+    "score": 41.1,
     "components": {
-      "structural_score": 51.8,
-      "osint_signal_score": 53.2,
-      "osint_raw_total_risk": 132.96,
+      "structural_score": 52.7,
+      "osint_signal_score": 49.3,
+      "osint_raw_total_risk": 123.16,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 173,
+      "osint_total_events": 168,
       "osint_top_locations": [
         {
           "name": "Israel",
-          "risk": 48.96
+          "risk": 49.56
         },
         {
           "name": "Iran",
-          "risk": 47.35
+          "risk": 38.0
         },
         {
           "name": "Middle East",
-          "risk": 7.3
+          "risk": 7.05
         },
         {
           "name": "Gaza Strip",
-          "risk": 7.25
+          "risk": 6.75
         },
         {
-          "name": "Tehran",
-          "risk": 5.55
+          "name": "Baghdad",
+          "risk": 5.1
         }
       ],
-      "osint_updated": "2026-04-29 21:19 UTC",
+      "osint_updated": "2026-04-30 04:05 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 6.62,
+      "osint_age_hours": 2.47,
       "osint_used_in_blend": true,
       "conflict_signal_score": 0.0,
       "conflict_signal_raw_index": 0.0,
@@ -80,21 +80,21 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -0.6,
-    "middle_east_conflict_impact_change": -0.9,
+    "global_trade_risk_index_change": -0.9,
+    "middle_east_conflict_impact_change": -1.7,
     "direction_global": "down",
     "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
-    "hormuz": 3,
-    "suez": 1,
+    "hormuz": 4,
+    "suez": 2,
     "bab_el_mandeb": 0,
-    "bosporus": 0
+    "bosporus": 1
   },
   "top_risks": [
     {
       "name": "Hormuzi-szoros",
-      "estimated_impact": 0.2108,
+      "estimated_impact": 0.2148,
       "status": "severe"
     },
     {
@@ -104,7 +104,7 @@
     },
     {
       "name": "Szuezi térség",
-      "estimated_impact": 0.0395,
+      "estimated_impact": 0.0407,
       "status": "low"
     },
     {
@@ -114,7 +114,7 @@
     },
     {
       "name": "Boszporusz",
-      "estimated_impact": 0.0067,
+      "estimated_impact": 0.0071,
       "status": "low"
     }
   ],
@@ -129,9 +129,9 @@
       "substitution_penalty": 0.95,
       "disruption_level": 0.78,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 3,
-      "ais_signal_multiplier": 1.06,
-      "estimated_impact": 0.2108,
+      "ais_count_signal": 4,
+      "ais_signal_multiplier": 1.08,
+      "estimated_impact": 0.2148,
       "status": "severe",
       "notes": "Kiemelten fontos olaj- és energiatranzit pont."
     },
@@ -161,9 +161,9 @@
       "substitution_penalty": 0.68,
       "disruption_level": 0.55,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 1,
-      "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.0395,
+      "ais_count_signal": 2,
+      "ais_signal_multiplier": 1.03,
+      "estimated_impact": 0.0407,
       "status": "low",
       "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
     },
@@ -193,9 +193,9 @@
       "substitution_penalty": 0.7,
       "disruption_level": 0.22,
       "regional_adjustment": 1.0,
-      "ais_count_signal": 0,
-      "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.0067,
+      "ais_count_signal": 1,
+      "ais_signal_multiplier": 1.0,
+      "estimated_impact": 0.0071,
       "status": "low",
       "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
     },
