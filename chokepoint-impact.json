@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-05-02 06:14 UTC",
+    "updated": "2026-05-02 08:24 UTC",
     "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -9,7 +9,7 @@
     "me_security_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/security-signal.json",
     "conflict_end_matrix_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/conflict-end-matrix/main/docs/latest_summary.json",
     "stale_input_flags": {
-      "all_tracked_zone_counts_zero": true,
+      "all_tracked_zone_counts_zero": false,
       "me_security_signal_stale": false,
       "conflict_end_matrix_signal_stale": true
     },
@@ -27,29 +27,29 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 26.7,
+  "global_trade_risk_index": 27.0,
   "middle_east_conflict_impact": {
     "label": "medium",
-    "score": 37.3,
+    "score": 37.6,
     "components": {
-      "structural_score": 47.9,
-      "osint_signal_score": 44.4,
-      "osint_raw_total_risk": 111.11,
+      "structural_score": 48.4,
+      "osint_signal_score": 44.7,
+      "osint_raw_total_risk": 111.86,
       "osint_risk_level": "LOW",
       "osint_confidence": "HIGH",
-      "osint_total_events": 160,
+      "osint_total_events": 162,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 42.2
+          "risk": 42.9
         },
         {
           "name": "Israel",
-          "risk": 37.71
+          "risk": 38.11
         },
         {
           "name": "Middle East",
-          "risk": 9.1
+          "risk": 8.2
         },
         {
           "name": "Gaza Strip",
@@ -57,16 +57,16 @@
         },
         {
           "name": "Tehran",
-          "risk": 3.65
+          "risk": 4.2
         }
       ],
-      "osint_updated": "2026-05-02 03:52 UTC",
+      "osint_updated": "2026-05-02 08:03 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 2.38,
+      "osint_age_hours": 0.36,
       "osint_used_in_blend": true,
-      "conflict_signal_score": 2.0,
-      "conflict_signal_raw_index": -0.1,
+      "conflict_signal_score": 4.0,
+      "conflict_signal_raw_index": -0.2,
       "conflict_signal_assessment": "mild escalation",
       "conflict_signal_trajectory": "escalating",
       "conflict_signal_outlook": "Rising tension, but not yet at peak intensity.",
@@ -80,14 +80,14 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -1.3,
-    "middle_east_conflict_impact_change": -2.3,
+    "global_trade_risk_index_change": -1.0,
+    "middle_east_conflict_impact_change": -2.0,
     "direction_global": "down",
     "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
-    "suez": 0,
+    "suez": 2,
     "bab_el_mandeb": 0,
     "bosporus": 0
   },
@@ -104,7 +104,7 @@
     },
     {
       "name": "Szuezi térség",
-      "estimated_impact": 0.0375,
+      "estimated_impact": 0.0407,
       "status": "low"
     },
     {
@@ -161,9 +161,9 @@
       "substitution_penalty": 0.68,
       "disruption_level": 0.55,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 0,
-      "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.0375,
+      "ais_count_signal": 2,
+      "ais_signal_multiplier": 1.03,
+      "estimated_impact": 0.0407,
       "status": "low",
       "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
     },
