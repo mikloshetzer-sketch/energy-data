@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-05-04 21:33 UTC",
+    "updated": "2026-05-04 22:30 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -10,22 +10,15 @@
   "latest": {
     "leader": "hormuz_impact",
     "leader_label": "Hormuz",
-    "leader_correlation": 0.534,
-    "leader_weighted_strength": 0.801,
+    "leader_correlation": 0.504,
+    "leader_weighted_strength": 0.756,
     "ranked": [
       {
         "key": "hormuz_impact",
         "label": "Hormuz",
-        "correlation": 0.534,
+        "correlation": 0.504,
         "strategic_weight": 1.5,
-        "weighted_strength": 0.801
-      },
-      {
-        "key": "bosporus_impact",
-        "label": "Bosporus",
-        "correlation": -0.432,
-        "strategic_weight": 0.7,
-        "weighted_strength": 0.302
+        "weighted_strength": 0.756
       },
       {
         "key": "suez_impact",
@@ -33,6 +26,13 @@
         "correlation": 0.222,
         "strategic_weight": 1.1,
         "weighted_strength": 0.244
+      },
+      {
+        "key": "bosporus_impact",
+        "label": "Bosporus",
+        "correlation": -0.293,
+        "strategic_weight": 0.7,
+        "weighted_strength": 0.205
       },
       {
         "key": "bab_el_mandeb_impact",
@@ -46,11 +46,11 @@
   "leader_signal": {
     "hormuz_impact": {
       "label": "Hormuz",
-      "lag_days": 0,
+      "lag_days": 1,
       "correlation": 0.837,
       "strategic_weight": 1.5,
       "weighted_strength": 1.256,
-      "signal": "synchronous"
+      "signal": "lagging"
     },
     "suez_impact": {
       "label": "Suez",
@@ -80,11 +80,11 @@
   "leader_summary": {
     "key": "hormuz_impact",
     "label": "Hormuz",
-    "lag_days": 0,
+    "lag_days": 1,
     "correlation": 0.837,
     "weighted_strength": 1.256,
-    "signal": "synchronous",
-    "text": "Hormuz moves broadly in sync with Brent"
+    "signal": "lagging",
+    "text": "Hormuz lags Brent by 1 day(s)"
   },
   "rows": [
     {
@@ -684,10 +684,10 @@
     },
     {
       "date": "2026-05-04",
-      "brent_vs_hormuz_impact": 0.534,
+      "brent_vs_hormuz_impact": 0.504,
       "brent_vs_suez_impact": 0.222,
       "brent_vs_bab_el_mandeb_impact": -0.0,
-      "brent_vs_bosporus_impact": -0.432
+      "brent_vs_bosporus_impact": -0.293
     }
   ]
 }
