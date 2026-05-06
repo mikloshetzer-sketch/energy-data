@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-05-06 16:56 UTC",
+    "updated": "2026-05-06 16:57 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -10,15 +10,15 @@
   "latest": {
     "leader": "hormuz_impact",
     "leader_label": "Hormuz",
-    "leader_correlation": 0.403,
-    "leader_weighted_strength": 0.605,
+    "leader_correlation": 0.521,
+    "leader_weighted_strength": 0.782,
     "ranked": [
       {
         "key": "hormuz_impact",
         "label": "Hormuz",
-        "correlation": 0.403,
+        "correlation": 0.521,
         "strategic_weight": 1.5,
-        "weighted_strength": 0.605
+        "weighted_strength": 0.782
       },
       {
         "key": "suez_impact",
@@ -30,9 +30,9 @@
       {
         "key": "bosporus_impact",
         "label": "Bosporus",
-        "correlation": -0.154,
+        "correlation": -0.06,
         "strategic_weight": 0.7,
-        "weighted_strength": 0.108
+        "weighted_strength": 0.042
       },
       {
         "key": "bab_el_mandeb_impact",
@@ -47,9 +47,9 @@
     "hormuz_impact": {
       "label": "Hormuz",
       "lag_days": 0,
-      "correlation": 0.839,
+      "correlation": 0.842,
       "strategic_weight": 1.5,
-      "weighted_strength": 1.259,
+      "weighted_strength": 1.263,
       "signal": "synchronous"
     },
     "suez_impact": {
@@ -81,8 +81,8 @@
     "key": "hormuz_impact",
     "label": "Hormuz",
     "lag_days": 0,
-    "correlation": 0.839,
-    "weighted_strength": 1.259,
+    "correlation": 0.842,
+    "weighted_strength": 1.263,
     "signal": "synchronous",
     "text": "Hormuz moves broadly in sync with Brent"
   },
@@ -698,10 +698,10 @@
     },
     {
       "date": "2026-05-06",
-      "brent_vs_hormuz_impact": 0.403,
+      "brent_vs_hormuz_impact": 0.521,
       "brent_vs_suez_impact": -0.407,
       "brent_vs_bab_el_mandeb_impact": -0.0,
-      "brent_vs_bosporus_impact": -0.154
+      "brent_vs_bosporus_impact": -0.06
     }
   ]
 }
