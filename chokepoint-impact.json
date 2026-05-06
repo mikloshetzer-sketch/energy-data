@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-05-06 03:50 UTC",
+    "updated": "2026-05-06 06:37 UTC",
     "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -27,43 +27,43 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 29.3,
+  "global_trade_risk_index": 27.7,
   "middle_east_conflict_impact": {
     "label": "medium",
-    "score": 42.0,
+    "score": 39.2,
     "components": {
-      "structural_score": 49.5,
-      "osint_signal_score": 57.4,
-      "osint_raw_total_risk": 143.51,
+      "structural_score": 47.9,
+      "osint_signal_score": 50.9,
+      "osint_raw_total_risk": 127.26,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 145,
+      "osint_total_events": 138,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 78.25
+          "risk": 71.45
         },
         {
           "name": "Israel",
-          "risk": 30.01
+          "risk": 28.01
         },
         {
           "name": "Gaza Strip",
-          "risk": 9.3
-        },
-        {
-          "name": "United Arab Emirates",
-          "risk": 7.95
+          "risk": 8.2
         },
         {
           "name": "Middle East",
-          "risk": 6.8
+          "risk": 6.7
+        },
+        {
+          "name": "United Arab Emirates",
+          "risk": 4.3
         }
       ],
-      "osint_updated": "2026-05-05 23:12 UTC",
+      "osint_updated": "2026-05-06 04:06 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 4.63,
+      "osint_age_hours": 2.52,
       "osint_used_in_blend": true,
       "conflict_signal_score": 13.2,
       "conflict_signal_raw_index": -0.66,
@@ -80,21 +80,21 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": 0.6,
-    "middle_east_conflict_impact_change": 0.8,
-    "direction_global": "up",
-    "direction_middle_east": "up"
+    "global_trade_risk_index_change": -1.0,
+    "middle_east_conflict_impact_change": -2.0,
+    "direction_global": "down",
+    "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
-    "hormuz": 1,
+    "hormuz": 0,
     "suez": 0,
     "bab_el_mandeb": 0,
-    "bosporus": 2
+    "bosporus": 1
   },
   "top_risks": [
     {
       "name": "Hormuzi-szoros",
-      "estimated_impact": 0.1989,
+      "estimated_impact": 0.1889,
       "status": "severe"
     },
     {
@@ -114,7 +114,7 @@
     },
     {
       "name": "Boszporusz",
-      "estimated_impact": 0.0073,
+      "estimated_impact": 0.0071,
       "status": "low"
     }
   ],
@@ -129,9 +129,9 @@
       "substitution_penalty": 0.95,
       "disruption_level": 0.78,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 1,
-      "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.1989,
+      "ais_count_signal": 0,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.1889,
       "status": "severe",
       "notes": "Kiemelten fontos olaj- és energiatranzit pont."
     },
@@ -193,9 +193,9 @@
       "substitution_penalty": 0.7,
       "disruption_level": 0.22,
       "regional_adjustment": 1.0,
-      "ais_count_signal": 2,
-      "ais_signal_multiplier": 1.03,
-      "estimated_impact": 0.0073,
+      "ais_count_signal": 1,
+      "ais_signal_multiplier": 1.0,
+      "estimated_impact": 0.0071,
       "status": "low",
       "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
     },
