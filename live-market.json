@@ -1,23 +1,23 @@
 {
   "meta": {
-    "updated": "2026-05-11 08:36 UTC",
+    "updated": "2026-05-11 12:22 UTC",
     "source_mode": "live"
   },
   "prices": {
-    "live_brent": 101.29,
-    "live_wti": 95.42,
+    "live_brent": 103.88,
+    "live_wti": 97.71,
     "live_source": "spot_fallback",
-    "spot_brent": 101.29,
-    "spot_wti": 95.42,
+    "spot_brent": 103.88,
+    "spot_wti": 97.71,
     "spot_source": "oil_data_spot"
   },
   "risk": {
-    "global_trade_risk_index": 27.7,
-    "middle_east_conflict_impact": 39.0,
+    "global_trade_risk_index": 28.0,
+    "middle_east_conflict_impact": 39.7,
     "middle_east_conflict_label": "medium",
     "daily_change": {
-      "global_trade_risk_index_change": -1.5,
-      "middle_east_conflict_impact_change": -3.1,
+      "global_trade_risk_index_change": -1.2,
+      "middle_east_conflict_impact_change": -2.4,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
@@ -34,7 +34,7 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0434,
+        "estimated_impact": 0.0427,
         "status": "low"
       },
       {
@@ -49,44 +49,44 @@
       }
     ],
     "me_components": {
-      "structural_score": 48.8,
-      "osint_signal_score": 48.8,
-      "osint_raw_total_risk": 121.96,
+      "structural_score": 48.7,
+      "osint_signal_score": 51.3,
+      "osint_raw_total_risk": 128.36,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 155,
+      "osint_total_events": 159,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 61.3
+          "risk": 63.9
         },
         {
           "name": "Israel",
-          "risk": 38.21
+          "risk": 40.96
         },
         {
           "name": "Gaza Strip",
-          "risk": 5.9
+          "risk": 7.75
         },
         {
           "name": "Middle East",
-          "risk": 3.35
+          "risk": 3.15
         },
         {
           "name": "Abu Dhabi",
           "risk": 2.7
         }
       ],
-      "osint_updated": "2026-05-11 04:38 UTC",
+      "osint_updated": "2026-05-11 10:00 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 3.85,
+      "osint_age_hours": 2.3,
       "osint_used_in_blend": true,
-      "conflict_signal_score": 0.0,
-      "conflict_signal_raw_index": 0.26,
-      "conflict_signal_assessment": "neutral",
-      "conflict_signal_trajectory": "stabilizing",
-      "conflict_signal_outlook": "The information environment is moving toward stabilization.",
+      "conflict_signal_score": 1.2,
+      "conflict_signal_raw_index": -0.06,
+      "conflict_signal_assessment": "mild escalation",
+      "conflict_signal_trajectory": "uncertain",
+      "conflict_signal_outlook": "Short-term direction remains uncertain.",
       "conflict_signal_article_count": 50,
       "conflict_signal_updated": null,
       "conflict_signal_available": true,
@@ -96,7 +96,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-05-11 08:29 UTC",
+      "updated": "2026-05-11 12:18 UTC",
       "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
