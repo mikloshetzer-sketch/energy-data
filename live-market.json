@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-05-10 23:08 UTC",
+    "updated": "2026-05-11 00:08 UTC",
     "source_mode": "live"
   },
   "prices": {
@@ -12,14 +12,14 @@
     "spot_source": "oil_data_spot"
   },
   "risk": {
-    "global_trade_risk_index": 29.0,
-    "middle_east_conflict_impact": 41.6,
+    "global_trade_risk_index": 29.2,
+    "middle_east_conflict_impact": 42.1,
     "middle_east_conflict_label": "medium",
     "daily_change": {
-      "global_trade_risk_index_change": -0.1,
-      "middle_east_conflict_impact_change": -0.2,
-      "direction_global": "down",
-      "direction_middle_east": "down"
+      "global_trade_risk_index_change": 0.1,
+      "middle_east_conflict_impact_change": 0.3,
+      "direction_global": "up",
+      "direction_middle_east": "up"
     },
     "top_risks": [
       {
@@ -50,19 +50,19 @@
     ],
     "me_components": {
       "structural_score": 48.8,
-      "osint_signal_score": 57.3,
-      "osint_raw_total_risk": 143.36,
+      "osint_signal_score": 59.0,
+      "osint_raw_total_risk": 147.56,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 158,
+      "osint_total_events": 159,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 69.85
+          "risk": 71.6
         },
         {
           "name": "Israel",
-          "risk": 48.76
+          "risk": 53.31
         },
         {
           "name": "Middle East",
@@ -77,10 +77,10 @@
           "risk": 3.0
         }
       ],
-      "osint_updated": "2026-05-10 19:34 UTC",
+      "osint_updated": "2026-05-10 23:10 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 3.36,
+      "osint_age_hours": 0.82,
       "osint_used_in_blend": true,
       "conflict_signal_score": 0.0,
       "conflict_signal_raw_index": 0.26,
@@ -96,7 +96,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-05-10 22:55 UTC",
+      "updated": "2026-05-10 23:59 UTC",
       "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
