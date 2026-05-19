@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-05-18 22:07 UTC",
+    "updated": "2026-05-19 00:14 UTC",
     "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -27,25 +27,25 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 27.9,
+  "global_trade_risk_index": 27.6,
   "middle_east_conflict_impact": {
     "label": "medium",
-    "score": 39.4,
+    "score": 38.9,
     "components": {
       "structural_score": 48.8,
-      "osint_signal_score": 49.9,
-      "osint_raw_total_risk": 124.86,
+      "osint_signal_score": 48.2,
+      "osint_raw_total_risk": 120.61,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "MEDIUM",
       "osint_total_events": 131,
       "osint_top_locations": [
         {
           "name": "Israel",
-          "risk": 48.16
+          "risk": 43.96
         },
         {
           "name": "Iran",
-          "risk": 37.35
+          "risk": 38.45
         },
         {
           "name": "Gaza Strip",
@@ -57,13 +57,13 @@
         },
         {
           "name": "Iraq",
-          "risk": 4.05
+          "risk": 4.5
         }
       ],
-      "osint_updated": "2026-05-18 21:38 UTC",
+      "osint_updated": "2026-05-18 23:19 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.49,
+      "osint_age_hours": 0.92,
       "osint_used_in_blend": true,
       "conflict_signal_score": 4.8,
       "conflict_signal_raw_index": -0.24,
@@ -80,14 +80,14 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": 0.0,
-    "middle_east_conflict_impact_change": 0.0,
-    "direction_global": "flat",
-    "direction_middle_east": "flat"
+    "global_trade_risk_index_change": -0.3,
+    "middle_east_conflict_impact_change": -0.5,
+    "direction_global": "down",
+    "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
-    "suez": 10,
+    "suez": 14,
     "bab_el_mandeb": 0,
     "bosporus": 0
   },
@@ -161,7 +161,7 @@
       "substitution_penalty": 0.68,
       "disruption_level": 0.55,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 10,
+      "ais_count_signal": 14,
       "ais_signal_multiplier": 1.1,
       "estimated_impact": 0.0434,
       "status": "low",
