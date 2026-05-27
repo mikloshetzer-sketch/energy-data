@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-05-27 04:52 UTC",
+    "updated": "2026-05-27 06:42 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -8,17 +8,17 @@
     "min_leader_correlation": 0.2
   },
   "latest": {
-    "leader": "bosporus_impact",
-    "leader_label": "Bosporus",
-    "leader_correlation": 0.404,
-    "leader_weighted_strength": 0.283,
+    "leader": null,
+    "leader_label": null,
+    "leader_correlation": null,
+    "leader_weighted_strength": null,
     "ranked": [
       {
         "key": "bosporus_impact",
         "label": "Bosporus",
-        "correlation": 0.404,
+        "correlation": -0.042,
         "strategic_weight": 0.7,
-        "weighted_strength": 0.283
+        "weighted_strength": 0.029
       },
       {
         "key": "hormuz_impact",
@@ -40,9 +40,9 @@
     "hormuz_impact": {
       "label": "Hormuz",
       "lag_days": 3,
-      "correlation": 0.87,
+      "correlation": 0.869,
       "strategic_weight": 1.5,
-      "weighted_strength": 1.305,
+      "weighted_strength": 1.304,
       "signal": "lagging"
     },
     "suez_impact": {
@@ -74,8 +74,8 @@
     "key": "hormuz_impact",
     "label": "Hormuz",
     "lag_days": 3,
-    "correlation": 0.87,
-    "weighted_strength": 1.305,
+    "correlation": 0.869,
+    "weighted_strength": 1.304,
     "signal": "lagging",
     "text": "Hormuz lags Brent by 3 day(s)"
   },
@@ -834,14 +834,14 @@
       "brent_vs_hormuz_impact": 0.0,
       "brent_vs_suez_impact": null,
       "brent_vs_bab_el_mandeb_impact": -0.0,
-      "brent_vs_bosporus_impact": -0.097
+      "brent_vs_bosporus_impact": 0.272
     },
     {
       "date": "2026-05-27",
       "brent_vs_hormuz_impact": 0.0,
       "brent_vs_suez_impact": null,
       "brent_vs_bab_el_mandeb_impact": -0.0,
-      "brent_vs_bosporus_impact": 0.404
+      "brent_vs_bosporus_impact": -0.042
     }
   ]
 }
