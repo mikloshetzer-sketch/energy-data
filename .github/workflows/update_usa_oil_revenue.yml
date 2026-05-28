@@ -1,0 +1,39 @@
+name: Update USA Oil Revenue
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    # Naponta egyszer, magyar idő szerint reggel körül
+    # UTC szerint 05:30
+    - cron: "30 5 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-usa-oil-revenue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository letöltése
+        uses: actions/checkout@v4
+
+      - name: Python telepítése
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: USA olajbevétel adat frissítése
+        run: python scripts/update_usa_oil_revenue.py
+
+      - name: Változások commitolása
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add usa-oil-revenue.json
+
+          git commit -m "Update USA oil revenue data" || echo "Nincs változás"
+
+          git push
