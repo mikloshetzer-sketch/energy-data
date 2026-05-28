@@ -1,32 +1,53 @@
 import json
 import csv
 import io
-import os
+import time
 from datetime import datetime, timezone
 from urllib.request import urlopen, Request
+from urllib.error import URLError, HTTPError
 
 OUTPUT_FILE = "usa-oil-revenue.json"
-
 START_DATE = "2026-01-01"
-
-# Becsült amerikai napi kőolajtermelés.
-# Egység: millió hordó / nap
-# Ezt később lehet EIA heti/havi adattal automatizálni.
 DEFAULT_US_PRODUCTION_MBD = 13.65
 
 FRED_WTI_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DCOILWTICO"
+NASDAQ_WTI_CSV_URL = "https://data.nasdaq.com/api/v3/datasets/FRED/DCOILWTICO.csv"
 
 
-def fetch_csv(url: str) -> str:
-    request = Request(
-        url,
-        headers={
-            "User-Agent": "Mozilla/5.0 energy-data-monitor"
-        }
-    )
+def fetch_url(url: str, timeout: int = 90, retries: int = 3) -> str:
+    last_error = None
 
-    with urlopen(request, timeout=30) as response:
-        return response.read().decode("utf-8")
+    for attempt in range(1, retries + 1):
+        try:
+            print(f"Downloading data, attempt {attempt}: {url}")
+
+            request = Request(
+                url,
+                headers={
+                    "User-Agent": "Mozilla/5.0 GitHubActions energy-data-monitor",
+                    "Accept": "text/csv,text/plain,*/*",
+                    "Connection": "close",
+                },
+            )
+
+            with urlopen(request, timeout=timeout) as response:
+                return response.read().decode("utf-8", errors="replace")
+
+        except (TimeoutError, URLError, HTTPError) as error:
+            last_error = error
+            print(f"Download failed on attempt {attempt}: {error}")
+            time.sleep(8 * attempt)
+
+    raise RuntimeError(f"All download attempts failed for {url}. Last error: {last_error}")
+
+
+def fetch_wti_csv() -> str:
+    try:
+        return fetch_url(FRED_WTI_CSV_URL, timeout=90, retries=3)
+    except Exception as fred_error:
+        print(f"FRED direct CSV failed: {fred_error}")
+        print("Trying backup Nasdaq Data Link FRED mirror...")
+        return fetch_url(NASDAQ_WTI_CSV_URL, timeout=90, retries=2)
 
 
 def parse_wti_data(csv_text: str):
@@ -34,8 +55,19 @@ def parse_wti_data(csv_text: str):
     reader = csv.DictReader(io.StringIO(csv_text))
 
     for row in reader:
-        date = row.get("observation_date") or row.get("DATE") or row.get("date")
-        value = row.get("DCOILWTICO")
+        date = (
+            row.get("observation_date")
+            or row.get("DATE")
+            or row.get("Date")
+            or row.get("date")
+        )
+
+        value = (
+            row.get("DCOILWTICO")
+            or row.get("Value")
+            or row.get("VALUE")
+            or row.get("value")
+        )
 
         if not date or not value or value == ".":
             continue
@@ -53,6 +85,7 @@ def parse_wti_data(csv_text: str):
             "wti_usd_per_barrel": round(price, 2)
         })
 
+    rows.sort(key=lambda x: x["date"])
     return rows
 
 
@@ -61,10 +94,6 @@ def build_revenue_series(wti_rows):
 
     for item in wti_rows:
         price = item["wti_usd_per_barrel"]
-
-        # képlet:
-        # USD/nap = ár USD/hordó × millió hordó/nap × 1 000 000
-        # milliárd USD/nap = USD/nap / 1 000 000 000
         revenue_billion_usd = price * DEFAULT_US_PRODUCTION_MBD / 1000
 
         series.append({
@@ -83,7 +112,8 @@ def build_summary(series):
             "latest": None,
             "average_daily_revenue_billion_usd": None,
             "max_daily_revenue_billion_usd": None,
-            "total_estimated_revenue_billion_usd": None
+            "total_estimated_revenue_billion_usd": None,
+            "days_count": 0
         }
 
     latest = series[-1]
@@ -102,8 +132,12 @@ def build_summary(series):
 
 
 def main():
-    csv_text = fetch_csv(FRED_WTI_CSV_URL)
+    csv_text = fetch_wti_csv()
     wti_rows = parse_wti_data(csv_text)
+
+    if not wti_rows:
+        raise RuntimeError("No WTI data rows found after parsing. Check CSV source format.")
+
     series = build_revenue_series(wti_rows)
 
     output = {
@@ -114,7 +148,7 @@ def main():
             "start_date": START_DATE,
             "production_assumption_mbd": DEFAULT_US_PRODUCTION_MBD,
             "production_note": "Static estimate. Later this can be replaced with EIA weekly/monthly production data.",
-            "price_source": "FRED DCOILWTICO daily WTI crude oil price",
+            "price_source": "FRED DCOILWTICO daily WTI crude oil price; Nasdaq Data Link mirror as fallback.",
             "updated_at_utc": datetime.now(timezone.utc).isoformat()
         },
         "summary": build_summary(series),
@@ -126,6 +160,7 @@ def main():
 
     print(f"Created {OUTPUT_FILE}")
     print(f"Rows: {len(series)}")
+    print(f"Latest date: {series[-1]['date']}")
 
 
 if __name__ == "__main__":
