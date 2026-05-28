@@ -19,9 +19,12 @@
       width: 1400px;
       height: 900px;
       box-sizing: border-box;
-      padding: 42px;
-      background: #f5f7fa;
-      border-left: 10px solid #1d4ed8;
+      padding: 38px;
+      background:
+        radial-gradient(circle at top left, rgba(29,78,216,0.16), transparent 32%),
+        radial-gradient(circle at top right, rgba(185,28,28,0.14), transparent 30%),
+        linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
+      border-left: 12px solid #1d4ed8;
       overflow: hidden;
     }
 
@@ -29,127 +32,170 @@
       display: flex;
       justify-content: space-between;
       gap: 30px;
-      margin-bottom: 26px;
+      margin-bottom: 22px;
     }
 
     .title h1 {
       margin: 0;
       font-size: 42px;
-      color: #111827;
+      color: #0f172a;
       line-height: 1.1;
+      letter-spacing: -0.5px;
     }
 
     .title p {
       margin: 10px 0 0 0;
       font-size: 18px;
-      color: #4b5563;
-      font-weight: 600;
+      color: #334155;
+      font-weight: 700;
     }
+
+    .badge-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .badge {
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .badge.blue { background: #1d4ed8; }
+    .badge.red { background: #b91c1c; }
+    .badge.orange { background: #ea580c; }
+    .badge.green { background: #047857; }
 
     .datebox {
       text-align: right;
       font-size: 15px;
-      color: #4b5563;
-      font-weight: 700;
+      color: #334155;
+      font-weight: 800;
       line-height: 1.5;
+      min-width: 170px;
     }
 
-    .grid {
+    .metric-grid {
       display: grid;
-      grid-template-columns: 1.05fr 1.05fr 1fr;
-      gap: 18px;
-      margin-bottom: 18px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 16px;
     }
 
     .metric {
-      background: #ffffff;
+      background: rgba(255,255,255,0.92);
       border: 1px solid #d9e2ec;
       border-radius: 16px;
-      padding: 18px;
-      min-height: 110px;
+      padding: 15px;
+      min-height: 104px;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.06);
     }
 
     .metric-label {
-      color: #4b5563;
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 8px;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 7px;
+      line-height: 1.25;
     }
 
     .metric-value {
-      color: #111827;
-      font-size: 34px;
-      font-weight: 800;
+      color: #0f172a;
+      font-size: 28px;
+      font-weight: 900;
       line-height: 1.1;
     }
 
     .metric-sub {
-      color: #6b7280;
-      font-size: 13px;
-      font-weight: 600;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 700;
       margin-top: 7px;
       line-height: 1.35;
     }
 
     .main {
       display: grid;
-      grid-template-columns: 1.35fr 1fr;
-      gap: 18px;
-      height: 460px;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 16px;
+      height: 535px;
+    }
+
+    .left-stack {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 16px;
     }
 
     .panel {
-      background: #ffffff;
+      background: rgba(255,255,255,0.94);
       border: 1px solid #d9e2ec;
       border-radius: 16px;
-      padding: 18px;
+      padding: 16px;
       box-sizing: border-box;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.06);
     }
 
     .panel h2 {
-      margin: 0 0 12px 0;
-      font-size: 20px;
-      color: #111827;
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      color: #0f172a;
+      letter-spacing: -0.2px;
     }
 
     .chart-wrap {
-      height: 380px;
+      height: 205px;
     }
 
-    .side-list {
+    .large-chart-wrap {
+      height: 475px;
+    }
+
+    .side-grid {
       display: grid;
-      gap: 14px;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
     }
 
     .note {
-      background: #ffffff;
-      border: 1px solid #d9e2ec;
-      border-radius: 14px;
-      padding: 15px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 5px solid #1d4ed8;
+      border-radius: 13px;
+      padding: 12px;
     }
+
+    .note.red { border-left-color: #b91c1c; }
+    .note.orange { border-left-color: #ea580c; }
+    .note.green { border-left-color: #047857; }
 
     .note strong {
       display: block;
-      font-size: 15px;
-      color: #111827;
-      margin-bottom: 6px;
+      font-size: 13px;
+      color: #0f172a;
+      margin-bottom: 5px;
+      font-weight: 900;
     }
 
     .note span {
-      font-size: 14px;
-      line-height: 1.45;
-      color: #374151;
-      font-weight: 600;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #334155;
+      font-weight: 700;
     }
 
     .footer {
-      margin-top: 18px;
+      margin-top: 16px;
       display: flex;
       justify-content: space-between;
       gap: 20px;
-      font-size: 13px;
-      color: #4b5563;
-      font-weight: 600;
+      font-size: 12px;
+      color: #475569;
+      font-weight: 700;
       line-height: 1.45;
     }
 
@@ -166,66 +212,102 @@
       <div class="title">
         <h1>Energia- és olajpiaci helyzetkép</h1>
         <p>Olajár, szűkületi kockázat, USA termelési érték és Kína importkitettség</p>
+
+        <div class="badge-row">
+          <div class="badge blue">WTI / Brent</div>
+          <div class="badge red">Kína importkitettség</div>
+          <div class="badge orange">Szoroskockázat</div>
+          <div class="badge green">USA termelési érték</div>
+        </div>
       </div>
+
       <div class="datebox" id="dateBox">
-        Frissítés: betöltés...
+        Frissítés:<br>betöltés...
       </div>
     </div>
 
-    <div class="grid">
+    <div class="metric-grid">
       <div class="metric">
-        <div class="metric-label">USA becsült napi olajtermelési érték</div>
+        <div class="metric-label">USA napi olajtermelési érték</div>
         <div class="metric-value" id="usaRevenue">–</div>
         <div class="metric-sub" id="usaRevenueSub">WTI-alapú becslés</div>
       </div>
 
       <div class="metric">
-        <div class="metric-label">Kína becsült napi olajimport-költség</div>
+        <div class="metric-label">Kína napi importköltség</div>
         <div class="metric-value" id="chinaImport">–</div>
         <div class="metric-sub" id="chinaImportSub">Brent-alapú becslés</div>
       </div>
 
       <div class="metric">
-        <div class="metric-label">Aktuális árreferencia</div>
-        <div class="metric-value" id="priceRef">–</div>
-        <div class="metric-sub" id="priceRefSub">WTI / Brent</div>
+        <div class="metric-label">Brent ár</div>
+        <div class="metric-value" id="brentPrice">–</div>
+        <div class="metric-sub">globális referenciaár</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-label">WTI ár</div>
+        <div class="metric-value" id="wtiPrice">–</div>
+        <div class="metric-sub">amerikai referenciaár</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-label">Szoroskockázati jelzés</div>
+        <div class="metric-value" id="riskSignal">–</div>
+        <div class="metric-sub" id="riskSignalSub">market-history alapján</div>
       </div>
     </div>
 
     <div class="main">
-      <div class="panel">
-        <h2>USA–Kína energiahatás 2026-ban</h2>
-        <div class="chart-wrap">
-          <canvas id="mainChart"></canvas>
+      <div class="left-stack">
+        <div class="panel">
+          <h2>Brent ár és szoroskockázat együttmozgása</h2>
+          <div class="chart-wrap">
+            <canvas id="riskChart"></canvas>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Brent ár napi alakulása</h2>
+          <div class="chart-wrap">
+            <canvas id="brentChart"></canvas>
+          </div>
         </div>
       </div>
 
-      <div class="side-list">
-        <div class="note">
-          <strong>Mit mutat?</strong>
-          <span>Az USA esetében a becsült termelési érték, Kína esetében a becsült importköltség látható napi bontásban.</span>
+      <div class="panel">
+        <h2>USA–Kína energiahatás 2026-ban</h2>
+        <div class="large-chart-wrap">
+          <canvas id="mainChart"></canvas>
         </div>
 
-        <div class="note">
-          <strong>Geopolitikai olvasat</strong>
-          <span>Magasabb olajár egyszerre növelheti az amerikai termelési értéket és Kína importköltségét.</span>
-        </div>
+        <div class="side-grid">
+          <div class="note green">
+            <strong>USA oldal</strong>
+            <span>Az olajár-emelkedés növeli a becsült amerikai termelési értéket.</span>
+          </div>
 
-        <div class="note">
-          <strong>Kitettségi jelzés</strong>
-          <span>Kína importköltsége érzékeny a Brent árra, a tengeri szűkületekre és a közel-keleti konfliktusokra.</span>
-        </div>
+          <div class="note red">
+            <strong>Kína oldal</strong>
+            <span>A magasabb Brent ár növeli a kínai importköltséget és sérülékenységet.</span>
+          </div>
 
-        <div class="note">
-          <strong>Adatjelleg</strong>
-          <span>A kártya becsléseket jelenít meg, nem hivatalos költségvetési vagy vámnapi adatokat.</span>
+          <div class="note orange">
+            <strong>Szorosok</strong>
+            <span>A tengeri szűkületek kockázata gyorsan megjelenhet az árakban.</span>
+          </div>
+
+          <div class="note">
+            <strong>Adatjelleg</strong>
+            <span>A dashboard becsléseket és piaci indikátorokat jelenít meg.</span>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="footer">
       <div>
-        Forrás: energy-data repo JSON kimenetek: usa-oil-revenue.json, china-oil-import.json.
+        Forrás: energy-data repo JSON kimenetek: usa-oil-revenue.json, china-oil-import.json, market-history.json.
       </div>
       <div>
         toresvonalak.blog · Energia- és olajpiaci elemző
@@ -236,6 +318,7 @@
   <script>
     const USA_DATA_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/usa-oil-revenue.json";
     const CHINA_DATA_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/china-oil-import.json";
+    const MARKET_HISTORY_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/market-history.json";
 
     async function loadJson(url) {
       const res = await fetch(url + "?ts=" + Date.now());
@@ -253,23 +336,43 @@
       return Number(value).toFixed(2) + " USD";
     }
 
+    function fmtIndex(value) {
+      if (value === null || value === undefined || isNaN(value)) return "–";
+      return Number(value).toFixed(1);
+    }
+
     function lastN(arr, n) {
       return arr.slice(Math.max(arr.length - n, 0));
+    }
+
+    function marketRows(data) {
+      return Array.isArray(data.rows) ? data.rows : [];
     }
 
     async function init() {
       const usa = await loadJson(USA_DATA_URL);
       const china = await loadJson(CHINA_DATA_URL);
+      const market = await loadJson(MARKET_HISTORY_URL);
 
       const usaSeries = usa.series || [];
       const chinaSeries = china.series || [];
+      const rows = marketRows(market).filter(row => {
+        const brent = row.market_brent ?? row.brent;
+        return brent !== null && brent !== undefined;
+      });
 
-      if (!usaSeries.length || !chinaSeries.length) {
+      if (!usaSeries.length || !chinaSeries.length || !rows.length) {
         throw new Error("Hiányzó idősoros adat.");
       }
 
       const usaLatest = usa.summary?.latest || usaSeries[usaSeries.length - 1];
       const chinaLatest = china.summary?.latest || chinaSeries[chinaSeries.length - 1];
+      const marketLatest = rows[rows.length - 1];
+
+      const latestRisk =
+        marketLatest.global_trade_risk_index ??
+        marketLatest.middle_east_conflict_impact ??
+        null;
 
       document.getElementById("dateBox").innerHTML =
         "Frissítés:<br>" + new Date().toISOString().slice(0, 10);
@@ -284,14 +387,20 @@
       document.getElementById("chinaImportSub").innerText =
         "Import: " + chinaLatest.estimated_import_volume_mbd.toFixed(2) + " mbd";
 
-      document.getElementById("priceRef").innerText =
+      document.getElementById("brentPrice").innerText =
         fmtPrice(chinaLatest.brent_usd_per_barrel);
-      document.getElementById("priceRefSub").innerText =
-        "Brent referenciaár";
+
+      document.getElementById("wtiPrice").innerText =
+        fmtPrice(usaLatest.wti_usd_per_barrel);
+
+      document.getElementById("riskSignal").innerText =
+        fmtIndex(latestRisk);
+
+      document.getElementById("riskSignalSub").innerText =
+        "utolsó elérhető indexérték";
 
       const usaShort = lastN(usaSeries, 90);
       const chinaShort = lastN(chinaSeries, 90);
-
       const labels = chinaShort.map(d => d.date);
 
       const usaMap = {};
@@ -310,8 +419,8 @@
             {
               label: "USA termelési érték",
               data: usaValues,
-              borderColor: "#1d4ed8",
-              backgroundColor: "rgba(29,78,216,0.08)",
+              borderColor: "#047857",
+              backgroundColor: "rgba(4,120,87,0.08)",
               borderWidth: 4,
               pointRadius: 0,
               tension: 0.25
@@ -335,51 +444,174 @@
             legend: {
               labels: {
                 color: "#111827",
-                font: {
-                  size: 14,
-                  weight: "bold"
-                }
+                font: { size: 12, weight: "bold" }
               }
             },
-            tooltip: {
-              enabled: false
-            }
+            tooltip: { enabled: false }
           },
           scales: {
             x: {
               ticks: {
-                color: "#374151",
-                maxTicksLimit: 8,
+                color: "#334155",
+                maxTicksLimit: 7,
                 maxRotation: 0,
-                font: {
-                  size: 12,
-                  weight: "bold"
-                }
+                font: { size: 11, weight: "bold" }
               },
-              grid: {
-                color: "#f1f5f9"
-              }
+              grid: { color: "#f1f5f9" }
             },
             y: {
               title: {
                 display: true,
                 text: "mrd USD / nap",
                 color: "#111827",
-                font: {
-                  size: 13,
-                  weight: "bold"
-                }
+                font: { size: 12, weight: "bold" }
               },
               ticks: {
-                color: "#374151",
-                font: {
-                  size: 12,
-                  weight: "bold"
-                }
+                color: "#334155",
+                font: { size: 11, weight: "bold" }
               },
-              grid: {
-                color: "#e5e7eb"
+              grid: { color: "#e5e7eb" }
+            }
+          }
+        }
+      });
+
+      const marketShort = lastN(rows, 90);
+      const marketLabels = marketShort.map(row => row.date);
+      const brent = marketShort.map(row => row.market_brent ?? row.brent);
+      const globalRisk = marketShort.map(row => row.global_trade_risk_index ?? null);
+      const meImpact = marketShort.map(row => row.middle_east_conflict_impact ?? null);
+
+      new Chart(document.getElementById("riskChart"), {
+        type: "line",
+        data: {
+          labels: marketLabels,
+          datasets: [
+            {
+              label: "Brent ár",
+              data: brent,
+              borderColor: "#1d4ed8",
+              backgroundColor: "rgba(29,78,216,0.08)",
+              borderWidth: 3,
+              pointRadius: 0,
+              tension: 0.25,
+              yAxisID: "y"
+            },
+            {
+              label: "Szoroskockázat",
+              data: globalRisk,
+              borderColor: "#ea580c",
+              backgroundColor: "rgba(234,88,12,0.08)",
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.25,
+              yAxisID: "y1"
+            },
+            {
+              label: "Közel-keleti konfliktushatás",
+              data: meImpact,
+              borderColor: "#b91c1c",
+              backgroundColor: "rgba(185,28,28,0.08)",
+              borderWidth: 2,
+              pointRadius: 0,
+              borderDash: [6, 4],
+              tension: 0.25,
+              yAxisID: "y1"
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: "#111827",
+                font: { size: 11, weight: "bold" }
               }
+            },
+            tooltip: { enabled: false }
+          },
+          scales: {
+            x: {
+              ticks: {
+                display: false
+              },
+              grid: { color: "#f1f5f9" }
+            },
+            y: {
+              position: "left",
+              ticks: {
+                color: "#1d4ed8",
+                font: { size: 10, weight: "bold" }
+              },
+              grid: { color: "#e5e7eb" }
+            },
+            y1: {
+              position: "right",
+              ticks: {
+                color: "#b91c1c",
+                font: { size: 10, weight: "bold" }
+              },
+              grid: { drawOnChartArea: false }
+            }
+          }
+        }
+      });
+
+      new Chart(document.getElementById("brentChart"), {
+        type: "line",
+        data: {
+          labels: marketLabels,
+          datasets: [
+            {
+              label: "Brent ár",
+              data: brent,
+              borderColor: "#1d4ed8",
+              backgroundColor: "rgba(29,78,216,0.10)",
+              borderWidth: 4,
+              pointRadius: 0,
+              tension: 0.25,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: "#111827",
+                font: { size: 11, weight: "bold" }
+              }
+            },
+            tooltip: { enabled: false }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: "#334155",
+                maxTicksLimit: 6,
+                maxRotation: 0,
+                font: { size: 10, weight: "bold" }
+              },
+              grid: { color: "#f1f5f9" }
+            },
+            y: {
+              title: {
+                display: true,
+                text: "USD / hordó",
+                color: "#1d4ed8",
+                font: { size: 11, weight: "bold" }
+              },
+              ticks: {
+                color: "#1d4ed8",
+                font: { size: 10, weight: "bold" }
+              },
+              grid: { color: "#e5e7eb" }
             }
           }
         }
