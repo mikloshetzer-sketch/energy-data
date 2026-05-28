@@ -82,21 +82,17 @@
     }
 
     .brand {
-      text-align: right;
-      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.96);
     }
 
-    .brand .big {
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: 1px;
-    }
-
-    .brand .small {
-      font-size: 13px;
-      font-weight: 800;
-      color: #475569;
-      letter-spacing: 2px;
+    .brand img {
+      max-width: 190px;
+      max-height: 78px;
+      object-fit: contain;
+      display: block;
     }
 
     .metric-grid {
@@ -316,8 +312,10 @@
       </div>
 
       <div class="topbox brand">
-        <div class="big">THINK TANK</div>
-        <div class="small">TORESVONALAK.BLOG</div>
+        <img
+          src="https://toresvonalak.blog/wp-content/uploads/2025/04/cropped-logo.png"
+          alt="Törésvonalak Blog"
+        />
       </div>
     </div>
 
