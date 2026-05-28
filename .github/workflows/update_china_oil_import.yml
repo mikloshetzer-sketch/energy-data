@@ -1,0 +1,39 @@
+name: Update China Oil Import
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    # Naponta egyszer, magyar idő szerint reggel körül
+    # UTC szerint 05:45
+    - cron: "45 5 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-china-oil-import:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository letöltése
+        uses: actions/checkout@v4
+
+      - name: Python telepítése
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Kína olajimport adat frissítése
+        run: python scripts/update_china_oil_import.py
+
+      - name: Változások commitolása
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add china-oil-import.json
+
+          git commit -m "Update China oil import data" || echo "Nincs változás"
+
+          git push
