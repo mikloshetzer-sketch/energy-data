@@ -234,6 +234,9 @@
   </div>
 
   <script>
+    const USA_DATA_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/usa-oil-revenue.json";
+    const CHINA_DATA_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/china-oil-import.json";
+
     async function loadJson(url) {
       const res = await fetch(url + "?ts=" + Date.now());
       if (!res.ok) throw new Error("Nem tölthető be: " + url);
@@ -255,11 +258,15 @@
     }
 
     async function init() {
-      const usa = await loadJson("../usa-oil-revenue.json");
-      const china = await loadJson("../china-oil-import.json");
+      const usa = await loadJson(USA_DATA_URL);
+      const china = await loadJson(CHINA_DATA_URL);
 
       const usaSeries = usa.series || [];
       const chinaSeries = china.series || [];
+
+      if (!usaSeries.length || !chinaSeries.length) {
+        throw new Error("Hiányzó idősoros adat.");
+      }
 
       const usaLatest = usa.summary?.latest || usaSeries[usaSeries.length - 1];
       const chinaLatest = china.summary?.latest || chinaSeries[chinaSeries.length - 1];
@@ -288,10 +295,12 @@
       const labels = chinaShort.map(d => d.date);
 
       const usaMap = {};
-      usaShort.forEach(d => usaMap[d.date] = d.estimated_revenue_billion_usd);
+      usaShort.forEach(d => {
+        usaMap[d.date] = d.estimated_revenue_billion_usd;
+      });
 
-      const chinaValues = chinaShort.map(d => d.estimated_import_value_billion_usd);
       const usaValues = labels.map(date => usaMap[date] ?? null);
+      const chinaValues = chinaShort.map(d => d.estimated_import_value_billion_usd);
 
       new Chart(document.getElementById("mainChart"), {
         type: "line",
@@ -326,7 +335,10 @@
             legend: {
               labels: {
                 color: "#111827",
-                font: { size: 14, weight: "bold" }
+                font: {
+                  size: 14,
+                  weight: "bold"
+                }
               }
             },
             tooltip: {
@@ -339,22 +351,35 @@
                 color: "#374151",
                 maxTicksLimit: 8,
                 maxRotation: 0,
-                font: { size: 12, weight: "bold" }
+                font: {
+                  size: 12,
+                  weight: "bold"
+                }
               },
-              grid: { color: "#f1f5f9" }
+              grid: {
+                color: "#f1f5f9"
+              }
             },
             y: {
               title: {
                 display: true,
                 text: "mrd USD / nap",
                 color: "#111827",
-                font: { size: 13, weight: "bold" }
+                font: {
+                  size: 13,
+                  weight: "bold"
+                }
               },
               ticks: {
                 color: "#374151",
-                font: { size: 12, weight: "bold" }
+                font: {
+                  size: 12,
+                  weight: "bold"
+                }
               },
-              grid: { color: "#e5e7eb" }
+              grid: {
+                color: "#e5e7eb"
+              }
             }
           }
         }
