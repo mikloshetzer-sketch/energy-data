@@ -38,6 +38,9 @@ jobs:
       - name: Generate energy forecast
         run: python scripts/generate_energy_forecast.py
 
+      - name: Generate chokepoint status
+        run: python scripts/generate_chokepoint_status.py
+
       - name: Commit updated live market intelligence data
         run: |
           git config user.name "github-actions[bot]"
@@ -48,6 +51,7 @@ jobs:
           git add docs/data/risk_drivers.json
           git add docs/data/historical_context.json
           git add docs/data/energy_forecast.json
+          git add docs/data/chokepoint_status.json
 
           git diff --cached --quiet || git commit -m "Update live market intelligence data"
           git push
