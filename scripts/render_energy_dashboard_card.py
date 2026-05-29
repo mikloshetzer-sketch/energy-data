@@ -19,42 +19,32 @@ def main():
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=True,
-            args=[
-                "--disable-dev-shm-usage",
-                "--no-sandbox",
-            ],
+            args=["--disable-dev-shm-usage", "--no-sandbox"],
         )
 
         page = browser.new_page(
-            viewport={
-                "width": 1800,
-                "height": 2200,
-            },
+            viewport={"width": 1800, "height": 2400},
             device_scale_factor=2,
         )
 
-        print("Opening dashboard from GitHub Pages...")
+        url = PAGE_URL + f"?cache_bust={timestamp}"
+        print(f"Opening: {url}")
 
-        page.goto(
-            PAGE_URL + f"?ts={timestamp}",
-            wait_until="networkidle",
-            timeout=120000,
-        )
+        page.goto(url, wait_until="networkidle", timeout=120000)
 
-        print("Waiting for JSON data and charts...")
-        page.wait_for_timeout(10000)
+        print("Waiting for fresh dashboard markers...")
 
-        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        page.wait_for_timeout(3000)
+        page.wait_for_selector("text=Inventory Stress", timeout=120000)
+        page.wait_for_selector("text=Piaci egyensúly", timeout=120000)
+        page.wait_for_selector("text=Market Regime", timeout=120000)
 
-        page.evaluate("window.scrollTo(0, 0)")
-        page.wait_for_timeout(2000)
+        page.wait_for_timeout(8000)
 
-        print("Taking screenshot...")
+        print("Taking #capture screenshot...")
 
-        page.screenshot(
+        capture = page.locator("#capture")
+        capture.screenshot(
             path=str(timestamped_output),
-            full_page=True,
             type="png",
         )
 
