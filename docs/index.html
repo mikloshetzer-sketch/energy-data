@@ -22,10 +22,21 @@
     .bar-bg{width:100%;height:10px;border-radius:999px;background:#e2e8f0;overflow:hidden}.bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#1d4ed8,#ea580c)}
     .context-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.context-card,.forecast-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:13px;padding:10px}.context-name,.forecast-title{font-size:11px;font-weight:900}.context-value,.forecast-main{font-size:18px;font-weight:900;margin-top:5px;color:#1d4ed8}.context-sub,.forecast-sub{font-size:10px;color:#64748b;font-weight:700;line-height:1.35;margin-top:3px}.forecast-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.forecast-card{min-height:110px}.forecast-main{font-size:22px}
     .mini-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px}.mini{padding:10px;min-height:110px}.mini-title{font-size:11px;font-weight:900;line-height:1.25}.mini-title span{display:block;color:#64748b;font-size:9px;margin-top:2px}.mini-value{font-size:18px;font-weight:900;color:#1d4ed8;margin-top:5px}.mini-chart{height:43px;margin-top:3px}
-    .bottom-grid{display:grid;grid-template-columns:1fr 1fr .9fr;gap:12px;margin-bottom:12px}.analysis{padding:14px;border-left:7px solid #1d4ed8}.analysis.exposure-box{border-left-color:#b91c1c}.analysis-text{font-size:12px;line-height:1.45;color:#334155;font-weight:700}.analysis-text strong{display:block;font-size:12px;color:#0f172a;margin-bottom:4px}
+    .bottom-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:12px;margin-bottom:12px;align-items:start}
+    .right-stack{display:grid;grid-template-rows:auto auto auto;gap:12px}
+    .analysis{padding:14px;border-left:7px solid #1d4ed8}.analysis.exposure-box{border-left-color:#b91c1c}.analysis.balance-box{border-left-color:#047857}.analysis-text{font-size:12px;line-height:1.45;color:#334155;font-weight:700}.analysis-text strong{display:block;font-size:12px;color:#0f172a;margin-bottom:4px}
     .choke-map{height:185px;background:radial-gradient(circle at 72% 52%,rgba(234,88,12,.22),transparent 18%),radial-gradient(circle at 54% 55%,rgba(185,28,28,.18),transparent 16%),linear-gradient(135deg,#dbeafe,#f8fafc);border:1px solid #d9e2ec;border-radius:14px;position:relative;overflow:hidden;margin-bottom:10px}
     .dot{position:absolute;width:13px;height:13px;border-radius:50%;background:#ca8a04;border:3px solid #fff;box-shadow:0 0 0 2px rgba(15,23,42,.15)}.dot.high{background:#b91c1c}.dot.medium{background:#ca8a04}.dot.low{background:#047857}.dot-label{position:absolute;font-size:10px;font-weight:900;background:rgba(255,255,255,.85);padding:3px 5px;border-radius:6px}
     .hormuz{left:59%;top:54%}.hormuz-label{left:62%;top:51%}.bab{left:48%;top:66%}.bab-label{left:51%;top:64%}.suez{left:39%;top:43%}.suez-label{left:42%;top:41%}.malacca{left:78%;top:73%}.malacca-label{left:64%;top:75%}
+    .explain-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .explain-card{background:#f8fafc;border:1px solid #d9e2ec;border-radius:12px;padding:12px}
+    .explain-card ul{margin:6px 0 0 18px;padding:0}.explain-card li{margin-bottom:6px}
+    .formula-box{background:#eef6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px;font-size:12px;line-height:1.55}
+    .balance-row{margin-bottom:10px}
+    .balance-head{display:flex;justify-content:space-between;font-size:12px;font-weight:900;margin-bottom:4px}
+    .balance-head span{color:#64748b;font-size:10px}
+    .balance-value{font-size:18px;font-weight:900;color:#047857}
+    .balance-orange{color:#ea580c}.balance-blue{color:#1d4ed8}
     .footer{padding:10px 14px;background:#0f172a;color:#e5e7eb;border-radius:12px;display:flex;justify-content:space-between;font-size:11px;font-weight:700}
     canvas{width:100%!important;height:100%!important}
   </style>
@@ -92,17 +103,57 @@
         <div id="dotMalacca" class="dot malacca"></div><div class="dot-label malacca-label">Malacca</div>
       </div>
       <div id="chokepointList"></div>
+
+      <div class="explain-grid">
+        <div class="explain-card analysis-text">
+          <strong>Szoroskockázat – hogyan jön létre?</strong>
+          A mutató azt becsüli, hogy egy tengeri átjáró zavara mennyire érintené a globális energiakereskedelmet.
+          <ul>
+            <li><b>Forgalom:</b> olaj- és LNG-áramlás aránya.</li>
+            <li><b>Sérülékenység:</b> alternatív útvonalak korlátozottsága.</li>
+            <li><b>Feszültség:</b> katonai, politikai vagy biztonsági események.</li>
+            <li><b>Piaci hatás:</b> biztosítási díjak, fuvarozási költségek, árreakció.</li>
+          </ul>
+        </div>
+
+        <div class="formula-box">
+          <strong>Chokepoint Risk model</strong><br><br>
+          CR = weighted combination of:<br>
+          Traffic + Vulnerability + Tension + Market impact<br><br>
+          <b>Magasabb pontszám = nagyobb piaci sérülékenység.</b><br>
+          Higher score means stronger potential impact on energy flows and prices.
+        </div>
+      </div>
     </div>
 
-    <div class="analysis exposure-box"><h2>Kína kitettségi index <span>China Exposure Index</span></h2><div class="analysis-text" id="chinaExposureText">Betöltés...</div></div>
-    <div class="analysis"><h2>Piaci értelmezés <span>Market interpretation</span></h2><div class="analysis-text"><strong>HU</strong><div id="analysisHu">Betöltés...</div><br><strong>EN</strong><div id="analysisEn">Loading...</div></div></div>
+    <div class="right-stack">
+      <div class="analysis exposure-box">
+        <h2>Kína kitettségi index <span>China Exposure Index</span></h2>
+        <div class="analysis-text" id="chinaExposureText">Betöltés...</div>
+      </div>
+
+      <div class="analysis balance-box">
+        <h2>Supply–Demand Balance <span>Kereslet–kínálat egyensúly</span></h2>
+        <div class="analysis-text" id="supplyDemandBox">Betöltés...</div>
+      </div>
+
+      <div class="analysis">
+        <h2>Piaci értelmezés <span>Market interpretation</span></h2>
+        <div class="analysis-text">
+          <strong>HU</strong>
+          <div id="analysisHu">Betöltés...</div>
+          <br>
+          <strong>EN</strong>
+          <div id="analysisEn">Loading...</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="footer">
-    <div>Forrás / Source: energy-data repo · Brent · WTI · USA revenue · China import · risk drivers · forecast · chokepoints</div>
+    <div>Forrás / Source: energy-data repo · Brent · WTI · USA revenue · China import · risk drivers · forecast · chokepoints · supply-demand balance</div>
     <div>toresvonalak.blog · Energy Intelligence Dashboard</div>
   </div>
-
 </div>
 
 <script>
@@ -116,7 +167,8 @@ const URLS={
   context:BASE+"docs/data/historical_context.json",
   forecast:BASE+"docs/data/energy_forecast.json",
   chokepoints:BASE+"docs/data/chokepoint_status.json",
-  exposure:BASE+"docs/data/china_exposure.json"
+  exposure:BASE+"docs/data/china_exposure.json",
+  supplyDemand:BASE+"docs/data/supply_demand_balance.json"
 };
 
 async function loadJson(url){const r=await fetch(url+"?ts="+Date.now());if(!r.ok)throw new Error("Nem tölthető be: "+url);return await r.json();}
@@ -174,9 +226,34 @@ function renderChokepoints(items){
   `).join("");
 }
 
+function renderSupplyDemand(sd){
+  document.getElementById("supplyDemandBox").innerHTML=`
+    <div class="balance-row">
+      <div class="balance-head">Keresleti nyomás <span>Demand pressure</span></div>
+      <div class="balance-value">${sd.demand_pressure}/100</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${sd.demand_pressure}%"></div></div>
+    </div>
+
+    <div class="balance-row">
+      <div class="balance-head">Kínálati nyomás <span>Supply pressure</span></div>
+      <div class="balance-value balance-orange">${sd.supply_pressure}/100</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${sd.supply_pressure}%"></div></div>
+    </div>
+
+    <div class="balance-row">
+      <div class="balance-head">Piaci egyensúly <span>Market balance</span></div>
+      <div class="balance-value balance-blue">${sd.balance_score > 0 ? "+" : ""}${sd.balance_score}</div>
+    </div>
+
+    <strong>${sd.market_direction_hu} / ${sd.market_direction_en}</strong>
+    <br><br>
+    ${sd.summary_hu}
+  `;
+}
+
 async function init(){
-  const [usa,china,market,interpretation,drivers,context,forecast,chokepoints,exposure]=await Promise.all([
-    loadJson(URLS.usa),loadJson(URLS.china),loadJson(URLS.market),loadJson(URLS.interpretation),loadJson(URLS.drivers),loadJson(URLS.context),loadJson(URLS.forecast),loadJson(URLS.chokepoints),loadJson(URLS.exposure)
+  const [usa,china,market,interpretation,drivers,context,forecast,chokepoints,exposure,supplyDemand]=await Promise.all([
+    loadJson(URLS.usa),loadJson(URLS.china),loadJson(URLS.market),loadJson(URLS.interpretation),loadJson(URLS.drivers),loadJson(URLS.context),loadJson(URLS.forecast),loadJson(URLS.chokepoints),loadJson(URLS.exposure),loadJson(URLS.supplyDemand)
   ]);
 
   const usaSeries=usa.series||[];
@@ -206,6 +283,7 @@ async function init(){
   renderDrivers(drivers.drivers||[]);
   renderHistorical(context.metrics||[]);
   renderChokepoints(chokepoints.chokepoints||[]);
+  renderSupplyDemand(supplyDemand);
 
   document.getElementById("forecastBrent").innerText=forecast.brent.forecast_low+"–"+forecast.brent.forecast_high+" USD";
   document.getElementById("forecastBrentSub").innerText=forecast.brent.trend_hu+" / "+forecast.brent.trend_en+" · confidence: "+forecast.brent.confidence_en;
