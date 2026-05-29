@@ -8,27 +8,30 @@
 
   <style>
     body{margin:0;background:#e5e7eb;font-family:Arial,Helvetica,sans-serif;color:#0f172a}
-    .card{width:1600px;height:2600px;box-sizing:border-box;padding:32px;background:radial-gradient(circle at top left,rgba(29,78,216,.16),transparent 28%),radial-gradient(circle at top right,rgba(234,88,12,.16),transparent 30%),linear-gradient(135deg,#f8fafc 0%,#eef2f7 100%);border-left:12px solid #1d4ed8;overflow:hidden}
+    .card{width:1600px;height:2200px;box-sizing:border-box;padding:32px;background:radial-gradient(circle at top left,rgba(29,78,216,.16),transparent 28%),radial-gradient(circle at top right,rgba(234,88,12,.16),transparent 30%),linear-gradient(135deg,#f8fafc 0%,#eef2f7 100%);border-left:12px solid #1d4ed8;overflow:hidden}
     .header{display:grid;grid-template-columns:1.6fr .75fr .5fr;gap:16px;margin-bottom:14px}
     .title h1{margin:0;font-size:40px;line-height:1.1}.title p{margin:8px 0 0;font-size:17px;color:#1d4ed8;font-weight:800}.title small{display:block;margin-top:4px;font-size:13px;color:#475569;font-weight:700}
     .box,.kpi,.panel,.mini,.analysis{background:rgba(255,255,255,.96);border:1px solid #d9e2ec;border-radius:16px;box-shadow:0 8px 18px rgba(15,23,42,.05)}
     .box{padding:14px}.logoBox{display:flex;align-items:center;justify-content:center}.logoBox img{max-width:190px;max-height:78px;object-fit:contain}
     .label{font-size:11px;color:#64748b;text-transform:uppercase;font-weight:900;margin-bottom:5px}.value{font-size:18px;font-weight:900;line-height:1.35}
     .risk-pill{margin-top:9px;display:inline-block;padding:7px 11px;border-radius:999px;font-size:12px;font-weight:900;color:#fff;background:#ca8a04}.risk-low{background:#047857}.risk-medium{background:#ca8a04}.risk-high{background:#b91c1c}
-    .kpi-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-bottom:12px}.kpi{padding:11px;min-height:105px;border-top:5px solid #1d4ed8}.kpi.green{border-top-color:#047857}.kpi.red{border-top-color:#b91c1c}.kpi.orange{border-top-color:#ea580c}.kpi.purple{border-top-color:#7e22ce}.kpi.gold{border-top-color:#ca8a04}
+    .kpi-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;margin-bottom:12px}.kpi{padding:11px;min-height:103px;border-top:5px solid #1d4ed8}.kpi.green{border-top-color:#047857}.kpi.red{border-top-color:#b91c1c}.kpi.orange{border-top-color:#ea580c}.kpi.purple{border-top-color:#7e22ce}.kpi.gold{border-top-color:#ca8a04}
     .kpi-title{font-size:12px;font-weight:900;color:#334155;line-height:1.25}.kpi-title span{display:block;color:#64748b;font-size:9.5px;margin-top:2px}.kpi-value{margin-top:7px;font-size:23px;font-weight:900;line-height:1.1}.kpi-sub{margin-top:6px;color:#64748b;font-size:10.5px;font-weight:700;line-height:1.35}
-    .main-grid{display:grid;grid-template-columns:1.1fr 1.1fr .85fr;gap:12px;margin-bottom:12px}.panel{padding:13px}.panel h2,.analysis h2{margin:0 0 8px;font-size:16px;line-height:1.2}.panel h2 span,.analysis h2 span{display:block;font-size:11px;color:#64748b;margin-top:2px;font-weight:800}.chart-wrap{height:230px}
+    .main-grid{display:grid;grid-template-columns:1.1fr 1.1fr .85fr;gap:12px;margin-bottom:12px}.panel{padding:13px}.panel h2,.analysis h2{margin:0 0 8px;font-size:16px;line-height:1.2}.panel h2 span,.analysis h2 span{display:block;font-size:11px;color:#64748b;margin-top:2px;font-weight:800}.chart-wrap{height:220px}
     .mid-grid{display:grid;grid-template-columns:1.05fr .95fr .9fr;gap:12px;margin-bottom:12px}.driver-row,.choke-row,.balance-row{margin-bottom:8px}.driver-head,.choke-head,.balance-head{display:flex;justify-content:space-between;gap:10px;font-size:12px;font-weight:900;margin-bottom:4px}.driver-head span,.choke-head span,.balance-head span{color:#64748b;font-size:10.5px}
     .bar-bg{width:100%;height:10px;border-radius:999px;background:#e2e8f0;overflow:hidden}.bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#1d4ed8,#ea580c)}
-    .context-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.context-card,.forecast-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:13px;padding:10px}.context-name,.forecast-title{font-size:11px;font-weight:900}.context-value,.forecast-main{font-size:18px;font-weight:900;margin-top:5px;color:#1d4ed8}.context-sub,.forecast-sub{font-size:10px;color:#64748b;font-weight:700;line-height:1.35;margin-top:3px}.forecast-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.forecast-card{min-height:110px}.forecast-main{font-size:22px}
-    .mini-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px}.mini{padding:10px;min-height:110px}.mini-title{font-size:11px;font-weight:900;line-height:1.25}.mini-title span{display:block;color:#64748b;font-size:9px;margin-top:2px}.mini-value{font-size:18px;font-weight:900;color:#1d4ed8;margin-top:5px}.mini-chart{height:43px;margin-top:3px}
-    .lower-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}.analysis{padding:14px;border-left:7px solid #1d4ed8}.analysis.exposure-box{border-left-color:#b91c1c}.analysis.balance-box{border-left-color:#047857}.analysis.note-box{border-left-color:#ea580c}
-    .analysis-text{font-size:12px;line-height:1.45;color:#334155;font-weight:700}.analysis-text strong{display:block;font-size:12px;color:#0f172a;margin-bottom:4px}
-    .stack{display:grid;grid-template-rows:1fr 1fr;gap:12px}.small-analysis{min-height:160px}
-    .choke-map{height:185px;background:radial-gradient(circle at 72% 52%,rgba(234,88,12,.22),transparent 18%),radial-gradient(circle at 54% 55%,rgba(185,28,28,.18),transparent 16%),linear-gradient(135deg,#dbeafe,#f8fafc);border:1px solid #d9e2ec;border-radius:14px;position:relative;overflow:hidden;margin-bottom:10px}
+    .context-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.context-card,.forecast-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:13px;padding:10px}.context-name,.forecast-title{font-size:11px;font-weight:900}.context-value,.forecast-main{font-size:18px;font-weight:900;margin-top:5px;color:#1d4ed8}.context-sub,.forecast-sub{font-size:10px;color:#64748b;font-weight:700;line-height:1.35;margin-top:3px}.forecast-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.forecast-card{min-height:104px}.forecast-main{font-size:22px}
+    .mini-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px}.mini{padding:10px;min-height:104px}.mini-title{font-size:11px;font-weight:900;line-height:1.25}.mini-title span{display:block;color:#64748b;font-size:9px;margin-top:2px}.mini-value{font-size:18px;font-weight:900;color:#1d4ed8;margin-top:5px}.mini-chart{height:40px;margin-top:3px}
+    .lower-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}.analysis{padding:14px;border-left:7px solid #1d4ed8}.analysis.exposure-box{border-left-color:#b91c1c}.analysis.balance-box{border-left-color:#047857}.analysis.note-box{border-left-color:#ea580c}.analysis.gold-box{border-left-color:#ca8a04}
+    .analysis-text{font-size:12px;line-height:1.42;color:#334155;font-weight:700}.analysis-text strong{display:block;font-size:12px;color:#0f172a;margin-bottom:4px}
+    .compact-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}.compact{min-height:185px;max-height:205px;overflow:hidden}
+    .full-analysis{min-height:170px;max-height:190px;overflow:hidden}
+    .choke-map{height:145px;background:radial-gradient(circle at 72% 52%,rgba(234,88,12,.22),transparent 18%),radial-gradient(circle at 54% 55%,rgba(185,28,28,.18),transparent 16%),linear-gradient(135deg,#dbeafe,#f8fafc);border:1px solid #d9e2ec;border-radius:14px;position:relative;overflow:hidden;margin-bottom:9px}
     .dot{position:absolute;width:13px;height:13px;border-radius:50%;background:#ca8a04;border:3px solid #fff;box-shadow:0 0 0 2px rgba(15,23,42,.15)}.dot.high{background:#b91c1c}.dot.medium{background:#ca8a04}.dot.low{background:#047857}.dot-label{position:absolute;font-size:10px;font-weight:900;background:rgba(255,255,255,.85);padding:3px 5px;border-radius:6px}
     .hormuz{left:59%;top:54%}.hormuz-label{left:62%;top:51%}.bab{left:48%;top:66%}.bab-label{left:51%;top:64%}.suez{left:39%;top:43%}.suez-label{left:42%;top:41%}.malacca{left:78%;top:73%}.malacca-label{left:64%;top:75%}
     .method-list{margin:0;padding-left:17px}.method-list li{font-size:12px;line-height:1.42;color:#334155;font-weight:700;margin-bottom:4px}
+    .mini-method{font-size:12px;line-height:1.45;color:#334155;font-weight:700}.mini-method b{color:#0f172a}
+    .metric-row{display:flex;justify-content:space-between;gap:12px;margin-bottom:7px;font-size:12px;font-weight:900}.metric-row span{color:#64748b;font-size:10px}
     .footer{padding:10px 14px;background:#0f172a;color:#e5e7eb;border-radius:12px;display:flex;justify-content:space-between;font-size:11px;font-weight:700}
     canvas{width:100%!important;height:100%!important}
   </style>
@@ -101,41 +104,46 @@
     <div class="analysis balance-box">
       <h2>Piaci egyensúly <span>Supply–Demand Balance</span></h2>
       <div id="balanceBox">Betöltés...</div>
-      <br>
       <div class="analysis-text" id="balanceSummary"></div>
     </div>
 
     <div class="analysis note-box">
       <h2>Hogyan jön létre a szoroskockázat? <span>How chokepoint risk is built</span></h2>
-      <ul class="method-list">
-        <li>A modell a Hormuzi-szoros, Bab el-Mandeb, Szuez és Malaka stratégiai szerepét figyeli.</li>
-        <li>Figyelembe veszi a közel-keleti konfliktushatást, a kereskedelmi sérülékenységet és az energiapiaci kockázatot.</li>
-        <li>Magasabb érték nagyobb ellátási és szállítási sérülékenységet jelez.</li>
-        <li>The score is a proxy indicator, not a live AIS vessel-tracking measure.</li>
-      </ul>
+      <div class="mini-method">
+        <b>Nem hajókövetési adat.</b> A modell proxy mutató, amely a fő tengeri átjárók stratégiai szerepét becsüli.
+        <br><br>
+        Figyelt tényezők: forgalmi jelentőség, alternatív útvonalak hiánya, geopolitikai feszültség, biztosítási és piaci árhatás.
+        <br><br>
+        Higher score means stronger potential impact on energy flows and prices.
+      </div>
     </div>
   </div>
 
-  <div class="lower-grid">
-    <div class="stack">
-      <div class="analysis exposure-box small-analysis">
-        <h2>Kína kitettségi index <span>China Exposure Index</span></h2>
-        <div class="analysis-text" id="chinaExposureText">Betöltés...</div>
-      </div>
-      <div class="analysis small-analysis">
-        <h2>Piaci értelmezés <span>Market interpretation</span></h2>
-        <div class="analysis-text"><strong>HU</strong><div id="analysisHu">Betöltés...</div><br><strong>EN</strong><div id="analysisEn">Loading...</div></div>
-      </div>
+  <div class="compact-grid">
+    <div class="analysis exposure-box compact">
+      <h2>Kína kitettségi index <span>China Exposure Index</span></h2>
+      <div class="analysis-text" id="chinaExposureText">Betöltés...</div>
     </div>
 
-    <div class="analysis">
+    <div class="analysis gold-box compact">
       <h2>Inventory Stress <span>Készletoldali nyomás</span></h2>
       <div class="analysis-text" id="inventoryText">Betöltés...</div>
     </div>
 
-    <div class="analysis">
+    <div class="analysis compact">
       <h2>Market Regime <span>Piaci rezsim</span></h2>
       <div class="analysis-text" id="marketRegimeText">Betöltés...</div>
+    </div>
+  </div>
+
+  <div class="analysis full-analysis">
+    <h2>Piaci értelmezés <span>Market interpretation</span></h2>
+    <div class="analysis-text">
+      <strong>HU</strong>
+      <div id="analysisHu">Betöltés...</div>
+      <br>
+      <strong>EN</strong>
+      <div id="analysisEn">Loading...</div>
     </div>
   </div>
 
@@ -162,57 +170,86 @@ const URLS={
   balance:BASE+"docs/data/supply_demand_balance.json"
 };
 
-async function loadJson(url){const r=await fetch(url+"?ts="+Date.now());if(!r.ok)throw new Error("Nem tölthető be: "+url);return await r.json();}
+async function loadJsonSafe(url,fallback){
+  try{
+    const r=await fetch(url+"?ts="+Date.now());
+    if(!r.ok)throw new Error("Nem tölthető be: "+url);
+    return await r.json();
+  }catch(e){
+    console.warn(e);
+    return fallback;
+  }
+}
+
 function fmtBillion(v){return v==null||isNaN(v)?"–":Number(v).toFixed(2)+" mrd USD";}
 function fmtPrice(v){return v==null||isNaN(v)?"–":Number(v).toFixed(2)+" USD";}
 function fmtIndex(v){return v==null||isNaN(v)?"–":Number(v).toFixed(1);}
-function lastN(a,n){return a.slice(Math.max(a.length-n,0));}
+function lastN(a,n){return Array.isArray(a)?a.slice(Math.max(a.length-n,0)):[];}
 function riskClass(l){if(l==="LOW")return"risk-low";if(l==="HIGH")return"risk-high";return"risk-medium";}
 function riskIcon(l){if(l==="LOW")return"🟢";if(l==="HIGH")return"🔴";return"🟡";}
-function marketRegime(balance, risk){if(risk>=65)return"Risk-driven market / Kockázatvezérelt piac";if(balance>10)return"Demand-led tightening / Keresletvezérelt szűkülés";if(balance<-10)return"Loose market / Lazább piaci környezet";return"Balanced but fragile market / Kiegyensúlyozott, de sérülékeny piac";}
+function marketRegime(balance,risk){if(risk>=65)return"Risk-driven market / Kockázatvezérelt piac";if(balance>10)return"Demand-led tightening / Keresletvezérelt szűkülés";if(balance<-10)return"Loose market / Lazább piaci környezet";return"Balanced but fragile market / Kiegyensúlyozott, de sérülékeny piac";}
 
 function makeMiniChart(id,labels,values,color){
-  new Chart(document.getElementById(id),{type:"line",data:{labels,datasets:[{data:values,borderColor:color,backgroundColor:color.replace("1)","0.10)"),borderWidth:2,pointRadius:0,tension:.25,fill:true}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}}}});
+  const el=document.getElementById(id); if(!el||!labels.length)return;
+  new Chart(el,{type:"line",data:{labels,datasets:[{data:values,borderColor:color,backgroundColor:color.replace("1)","0.10)"),borderWidth:2,pointRadius:0,tension:.25,fill:true}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}}}});
 }
+
 function renderDrivers(ds){
   const box=document.getElementById("riskDriversBox");
+  if(!ds.length){box.innerHTML="Nincs elérhető adat.";return;}
   const max=Math.max(...ds.map(d=>d.contribution_points||0),1);
   box.innerHTML=ds.map(d=>`<div class="driver-row"><div class="driver-head"><div>${d.label_hu}<br><span>${d.label_en}</span></div><div>${Number(d.contribution_points).toFixed(1)} pt</div></div><div class="bar-bg"><div class="bar-fill" style="width:${((d.contribution_points||0)/max)*100}%"></div></div></div>`).join("");
 }
+
 function renderHistorical(ms){
   const wanted=["Brent ár","Összesített kockázat","USA olajtermelési érték","Kína importköltség"];
-  const selected=ms.filter(m=>wanted.includes(m.name_hu)).slice(0,4);
+  const selected=(ms||[]).filter(m=>wanted.includes(m.name_hu)).slice(0,4);
   document.getElementById("historicalBox").innerHTML=selected.map(m=>`<div class="context-card"><div class="context-name">${m.name_hu}<br><span>${m.name_en}</span></div><div class="context-value">${m.current??"–"}</div><div class="context-sub">30d: ${m.avg_30d??"–"} · 90d: ${m.avg_90d??"–"}<br>${m.status_hu} / ${m.status_en}</div></div>`).join("");
 }
+
 function dotClass(level){if(level==="HIGH")return"dot high";if(level==="LOW")return"dot low";return"dot medium";}
 function renderChokepoints(items){
+  const list=Array.isArray(items)?items:[];
   const map={hormuz:"dotHormuz",bab_el_mandeb:"dotBab",suez:"dotSuez",malacca:"dotMalacca"};
   const pos={hormuz:"hormuz",bab_el_mandeb:"bab",suez:"suez",malacca:"malacca"};
-  items.forEach(i=>{const el=document.getElementById(map[i.id]);if(el)el.className=dotClass(i.level)+" "+pos[i.id];});
-  document.getElementById("chokepointList").innerHTML=items.slice(0,4).map(c=>`<div class="choke-row"><div class="choke-head"><div>${c.name_hu}<br><span>${c.name_en}</span></div><div>${c.level_hu} · ${Number(c.score).toFixed(1)}</div></div><div class="bar-bg"><div class="bar-fill" style="width:${c.score}%"></div></div></div>`).join("");
+  list.forEach(i=>{const el=document.getElementById(map[i.id]);if(el)el.className=dotClass(i.level)+" "+pos[i.id];});
+  document.getElementById("chokepointList").innerHTML=list.slice(0,4).map(c=>`<div class="choke-row"><div class="choke-head"><div>${c.name_hu}<br><span>${c.name_en}</span></div><div>${c.level_hu} · ${Number(c.score).toFixed(1)}</div></div><div class="bar-bg"><div class="bar-fill" style="width:${c.score}%"></div></div></div>`).join("");
 }
+
 function renderBalance(balance){
-  const items=[
+  if(!balance||balance.demand_pressure==null){document.getElementById("balanceBox").innerHTML="Nincs balance adat.";return;}
+  const rows=[
     ["Keresleti nyomás","Demand pressure",balance.demand_pressure],
     ["Kínálati nyomás","Supply pressure",balance.supply_pressure],
     ["Piaci egyensúly","Market balance",balance.balance_score]
   ];
-  document.getElementById("balanceBox").innerHTML=items.map(i=>`<div class="balance-row"><div class="balance-head"><div>${i[0]}<br><span>${i[1]}</span></div><div>${Number(i[2]).toFixed(1)}</div></div><div class="bar-bg"><div class="bar-fill" style="width:${Math.min(100,Math.abs(i[2]))}%"></div></div></div>`).join("");
+  document.getElementById("balanceBox").innerHTML=rows.map(i=>`<div class="balance-row"><div class="balance-head"><div>${i[0]}<br><span>${i[1]}</span></div><div>${Number(i[2]).toFixed(1)}</div></div><div class="bar-bg"><div class="bar-fill" style="width:${Math.min(100,Math.abs(i[2]))}%"></div></div></div>`).join("");
+  document.getElementById("balanceSummary").innerText=(balance.summary_hu||"");
 }
 
 async function init(){
   const [usa,china,market,interpretation,drivers,context,forecast,chokepoints,exposure,inventory,balance]=await Promise.all([
-    loadJson(URLS.usa),loadJson(URLS.china),loadJson(URLS.market),loadJson(URLS.interpretation),loadJson(URLS.drivers),loadJson(URLS.context),loadJson(URLS.forecast),loadJson(URLS.chokepoints),loadJson(URLS.exposure),loadJson(URLS.inventory),loadJson(URLS.balance)
+    loadJsonSafe(URLS.usa,{series:[]}),
+    loadJsonSafe(URLS.china,{series:[]}),
+    loadJsonSafe(URLS.market,{rows:[]}),
+    loadJsonSafe(URLS.interpretation,{}),
+    loadJsonSafe(URLS.drivers,{drivers:[]}),
+    loadJsonSafe(URLS.context,{metrics:[]}),
+    loadJsonSafe(URLS.forecast,{brent:{},risk:{}}),
+    loadJsonSafe(URLS.chokepoints,{chokepoints:[]}),
+    loadJsonSafe(URLS.exposure,{}),
+    loadJsonSafe(URLS.inventory,{}),
+    loadJsonSafe(URLS.balance,{})
   ]);
 
   const usaSeries=usa.series||[], chinaSeries=china.series||[];
   const rows=Array.isArray(market.rows)?market.rows.filter(r=>(r.market_brent??r.brent)!=null):[];
-  const usaLatest=usa.summary?.latest||usaSeries[usaSeries.length-1];
-  const chinaLatest=china.summary?.latest||chinaSeries[chinaSeries.length-1];
-  const marketLatest=rows[rows.length-1];
+  const usaLatest=usa.summary?.latest||usaSeries[usaSeries.length-1]||{};
+  const chinaLatest=china.summary?.latest||chinaSeries[chinaSeries.length-1]||{};
+  const marketLatest=rows[rows.length-1]||{};
 
   const level=interpretation.risk_level||"MEDIUM";
-  document.getElementById("dateBox").innerHTML=new Date().toISOString().slice(0,10)+"<br>UTC";
+  document.getElementById("dateBox").innerHTML=(interpretation.generated_at||new Date().toISOString().slice(0,10))+"<br>UTC";
   const pill=document.getElementById("topRiskPill");
   pill.className="risk-pill "+riskClass(level);
   pill.innerText=riskIcon(level)+" "+(interpretation.risk_label_hu||"Közepes")+" risk / "+(interpretation.risk_label_en||"Medium")+" risk";
@@ -220,7 +257,7 @@ async function init(){
   document.getElementById("usaRevenue").innerText=fmtBillion(usaLatest.estimated_revenue_billion_usd);
   document.getElementById("usaRevenueSub").innerText="WTI: "+fmtPrice(usaLatest.wti_usd_per_barrel);
   document.getElementById("chinaImport").innerText=fmtBillion(chinaLatest.estimated_import_value_billion_usd);
-  document.getElementById("chinaImportSub").innerText="Import: "+Number(chinaLatest.estimated_import_volume_mbd).toFixed(2)+" mbd";
+  document.getElementById("chinaImportSub").innerText="Import: "+(chinaLatest.estimated_import_volume_mbd!=null?Number(chinaLatest.estimated_import_volume_mbd).toFixed(2):"–")+" mbd";
   document.getElementById("brentPrice").innerText=fmtPrice(chinaLatest.brent_usd_per_barrel);
   document.getElementById("wtiPrice").innerText=fmtPrice(usaLatest.wti_usd_per_barrel);
   document.getElementById("riskSignal").innerText=fmtIndex(interpretation.combined_risk_score);
@@ -235,32 +272,29 @@ async function init(){
   renderChokepoints(chokepoints.chokepoints||[]);
   renderBalance(balance);
 
-  document.getElementById("forecastBrent").innerText=forecast.brent.forecast_low+"–"+forecast.brent.forecast_high+" USD";
-  document.getElementById("forecastBrentSub").innerText=forecast.brent.trend_hu+" / "+forecast.brent.trend_en+" · confidence: "+forecast.brent.confidence_en;
-  document.getElementById("forecastRisk").innerText=forecast.risk.forecast_low+"–"+forecast.risk.forecast_high;
-  document.getElementById("forecastRiskSub").innerText=forecast.risk.trend_hu+" / "+forecast.risk.trend_en+" · confidence: "+forecast.risk.confidence_en;
+  document.getElementById("forecastBrent").innerText=forecast.brent?.forecast_low!=null?forecast.brent.forecast_low+"–"+forecast.brent.forecast_high+" USD":"–";
+  document.getElementById("forecastBrentSub").innerText=forecast.brent?.trend_hu?forecast.brent.trend_hu+" / "+forecast.brent.trend_en+" · confidence: "+forecast.brent.confidence_en:"–";
+  document.getElementById("forecastRisk").innerText=forecast.risk?.forecast_low!=null?forecast.risk.forecast_low+"–"+forecast.risk.forecast_high:"–";
+  document.getElementById("forecastRiskSub").innerText=forecast.risk?.trend_hu?forecast.risk.trend_hu+" / "+forecast.risk.trend_en+" · confidence: "+forecast.risk.confidence_en:"–";
 
   document.getElementById("analysisHu").innerText=interpretation.summary_hu||"Nincs elérhető értelmezés.";
   document.getElementById("analysisEn").innerText=interpretation.summary_en||"No interpretation available.";
-  document.getElementById("chinaExposureText").innerHTML="<strong>"+(exposure.exposure_level_hu||"–")+" / "+(exposure.exposure_level_en||"–")+" exposure</strong><br><br>"+(exposure.summary_hu||"")+"<br><br>"+(exposure.summary_en||"");
-  document.getElementById("inventoryText").innerHTML="<strong>"+(inventory.inventory_stress_level_hu||"–")+" / "+(inventory.inventory_stress_level_en||"–")+"</strong><br><br>"+(inventory.summary_hu||"")+"<br><br>"+(inventory.summary_en||"");
-  document.getElementById("balanceSummary").innerText=(balance.summary_hu||"")+" "+(balance.summary_en||"");
-  document.getElementById("marketRegimeText").innerHTML="<strong>"+marketRegime(balance.balance_score,interpretation.combined_risk_score)+"</strong><br><br>A rezsim a piaci egyensúly, az összesített risk, a készletoldali nyomás és az olajártrend alapján ad gyors értelmezést.<br><br>The regime label combines market balance, combined risk, inventory stress and oil-price trend.";
+  document.getElementById("chinaExposureText").innerHTML="<strong>"+(exposure.exposure_level_hu||"–")+" / "+(exposure.exposure_level_en||"–")+"</strong><br>"+(exposure.summary_hu||"Nincs elérhető adat.");
+  document.getElementById("inventoryText").innerHTML="<strong>"+(inventory.inventory_stress_level_hu||"–")+" / "+(inventory.inventory_stress_level_en||"–")+"</strong><br>"+(inventory.summary_hu||"Nincs elérhető adat.");
+  document.getElementById("marketRegimeText").innerHTML="<strong>"+marketRegime(balance.balance_score||0,interpretation.combined_risk_score||0)+"</strong><br>A rezsim a piaci egyensúly, az összesített risk, a készletoldali nyomás és az olajártrend alapján ad gyors értelmezést.";
 
   document.getElementById("miniUsaRevenue").innerText=fmtBillion(usaLatest.estimated_revenue_billion_usd);
   document.getElementById("miniChinaCost").innerText=fmtBillion(chinaLatest.estimated_import_value_billion_usd);
-  document.getElementById("miniChinaVol").innerText=Number(chinaLatest.estimated_import_volume_mbd).toFixed(2)+" mbd";
+  document.getElementById("miniChinaVol").innerText=(chinaLatest.estimated_import_volume_mbd!=null?Number(chinaLatest.estimated_import_volume_mbd).toFixed(2):"–")+" mbd";
   document.getElementById("miniRisk").innerText=fmtIndex(marketLatest.global_trade_risk_index);
   document.getElementById("miniME").innerText=fmtIndex(marketLatest.middle_east_conflict_impact);
-  document.getElementById("miniSpread").innerText=(usaLatest.estimated_revenue_billion_usd-chinaLatest.estimated_import_value_billion_usd).toFixed(2)+" mrd";
+  document.getElementById("miniSpread").innerText=(usaLatest.estimated_revenue_billion_usd!=null&&chinaLatest.estimated_import_value_billion_usd!=null)?(usaLatest.estimated_revenue_billion_usd-chinaLatest.estimated_import_value_billion_usd).toFixed(2)+" mrd":"–";
 
-  const marketShort=lastN(rows,90);
-  const marketLabels=marketShort.map(r=>r.date);
+  const marketShort=lastN(rows,90), marketLabels=marketShort.map(r=>r.date);
   const brent=marketShort.map(r=>r.market_brent??r.brent);
   const globalRisk=marketShort.map(r=>r.global_trade_risk_index??null);
   const meImpact=marketShort.map(r=>r.middle_east_conflict_impact??null);
-  const usaShort=lastN(usaSeries,90);
-  const chinaShort=lastN(chinaSeries,90);
+  const usaShort=lastN(usaSeries,90), chinaShort=lastN(chinaSeries,90);
   const labels=chinaShort.map(d=>d.date);
   const usaMap={}; usaShort.forEach(d=>usaMap[d.date]=d.estimated_revenue_billion_usd);
   const usaValues=labels.map(date=>usaMap[date]??null);
@@ -268,25 +302,27 @@ async function init(){
   const chinaVol=chinaShort.map(d=>d.estimated_import_volume_mbd);
   const spreadValues=labels.map((date,i)=>usaMap[date]!=null?usaMap[date]-chinaValues[i]:null);
 
-  new Chart(document.getElementById("riskChart"),{type:"line",data:{labels:marketLabels,datasets:[
-    {label:"Brent ár / Brent price",data:brent,borderColor:"#1d4ed8",borderWidth:3,pointRadius:0,tension:.25,yAxisID:"y"},
-    {label:"Szoroskockázat / Chokepoint risk",data:globalRisk,borderColor:"#ea580c",borderWidth:2,pointRadius:0,tension:.25,yAxisID:"y1"},
-    {label:"Közel-keleti hatás / Middle East impact",data:meImpact,borderColor:"#b91c1c",borderWidth:2,pointRadius:0,borderDash:[6,4],tension:.25,yAxisID:"y1"}
-  ]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:"#111827",font:{size:10,weight:"bold"}}},tooltip:{enabled:false}},scales:{x:{ticks:{display:false},grid:{color:"#f1f5f9"}},y:{position:"left",ticks:{color:"#1d4ed8",font:{size:10,weight:"bold"}},grid:{color:"#e5e7eb"}},y1:{position:"right",ticks:{color:"#b91c1c",font:{size:10,weight:"bold"}},grid:{drawOnChartArea:false}}}}});
+  if(marketLabels.length){
+    new Chart(document.getElementById("riskChart"),{type:"line",data:{labels:marketLabels,datasets:[
+      {label:"Brent ár / Brent price",data:brent,borderColor:"#1d4ed8",borderWidth:3,pointRadius:0,tension:.25,yAxisID:"y"},
+      {label:"Szoroskockázat / Chokepoint risk",data:globalRisk,borderColor:"#ea580c",borderWidth:2,pointRadius:0,tension:.25,yAxisID:"y1"},
+      {label:"Közel-keleti hatás / Middle East impact",data:meImpact,borderColor:"#b91c1c",borderWidth:2,pointRadius:0,borderDash:[6,4],tension:.25,yAxisID:"y1"}
+    ]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:"#111827",font:{size:10,weight:"bold"}}},tooltip:{enabled:false}},scales:{x:{ticks:{display:false},grid:{color:"#f1f5f9"}},y:{position:"left",ticks:{color:"#1d4ed8",font:{size:10,weight:"bold"}},grid:{color:"#e5e7eb"}},y1:{position:"right",ticks:{color:"#b91c1c",font:{size:10,weight:"bold"}},grid:{drawOnChartArea:false}}}}});
+    new Chart(document.getElementById("brentChart"),{type:"line",data:{labels:marketLabels,datasets:[{label:"Brent ár / Brent price",data:brent,borderColor:"#1d4ed8",backgroundColor:"rgba(29,78,216,0.10)",borderWidth:3,pointRadius:0,tension:.25,fill:true}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:"#111827",font:{size:10,weight:"bold"}}},tooltip:{enabled:false}},scales:{x:{ticks:{color:"#334155",maxTicksLimit:6,maxRotation:0,font:{size:9,weight:"bold"}},grid:{color:"#f1f5f9"}},y:{title:{display:true,text:"USD / hordó",color:"#1d4ed8",font:{size:10,weight:"bold"}},ticks:{color:"#1d4ed8",font:{size:9,weight:"bold"}},grid:{color:"#e5e7eb"}}}}});
+    makeMiniChart("miniRiskChart",marketLabels,globalRisk,"rgba(234,88,12,1)");
+    makeMiniChart("miniMEChart",marketLabels,meImpact,"rgba(220,38,38,1)");
+  }
 
-  new Chart(document.getElementById("mainChart"),{type:"line",data:{labels:labels,datasets:[
-    {label:"USA termelési érték / US production value",data:usaValues,borderColor:"#047857",borderWidth:3,pointRadius:0,tension:.25},
-    {label:"Kína importköltség / China import cost",data:chinaValues,borderColor:"#b91c1c",borderWidth:3,pointRadius:0,tension:.25}
-  ]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:"#111827",font:{size:10,weight:"bold"}}},tooltip:{enabled:false}},scales:{x:{ticks:{color:"#334155",maxTicksLimit:6,maxRotation:0,font:{size:9,weight:"bold"}},grid:{color:"#f1f5f9"}},y:{title:{display:true,text:"mrd USD / nap",color:"#111827",font:{size:10,weight:"bold"}},ticks:{color:"#334155",font:{size:9,weight:"bold"}},grid:{color:"#e5e7eb"}}}}});
-
-  new Chart(document.getElementById("brentChart"),{type:"line",data:{labels:marketLabels,datasets:[{label:"Brent ár / Brent price",data:brent,borderColor:"#1d4ed8",backgroundColor:"rgba(29,78,216,0.10)",borderWidth:3,pointRadius:0,tension:.25,fill:true}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:"#111827",font:{size:10,weight:"bold"}}},tooltip:{enabled:false}},scales:{x:{ticks:{color:"#334155",maxTicksLimit:6,maxRotation:0,font:{size:9,weight:"bold"}},grid:{color:"#f1f5f9"}},y:{title:{display:true,text:"USD / hordó",color:"#1d4ed8",font:{size:10,weight:"bold"}},ticks:{color:"#1d4ed8",font:{size:9,weight:"bold"}},grid:{color:"#e5e7eb"}}}}});
-
-  makeMiniChart("miniUsaChart",labels,usaValues,"rgba(4,120,87,1)");
-  makeMiniChart("miniChinaCostChart",labels,chinaValues,"rgba(185,28,28,1)");
-  makeMiniChart("miniChinaVolChart",labels,chinaVol,"rgba(185,28,28,1)");
-  makeMiniChart("miniRiskChart",marketLabels,globalRisk,"rgba(234,88,12,1)");
-  makeMiniChart("miniMEChart",marketLabels,meImpact,"rgba(220,38,38,1)");
-  makeMiniChart("miniSpreadChart",labels,spreadValues,"rgba(4,120,87,1)");
+  if(labels.length){
+    new Chart(document.getElementById("mainChart"),{type:"line",data:{labels:labels,datasets:[
+      {label:"USA termelési érték / US production value",data:usaValues,borderColor:"#047857",borderWidth:3,pointRadius:0,tension:.25},
+      {label:"Kína importköltség / China import cost",data:chinaValues,borderColor:"#b91c1c",borderWidth:3,pointRadius:0,tension:.25}
+    ]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:"#111827",font:{size:10,weight:"bold"}}},tooltip:{enabled:false}},scales:{x:{ticks:{color:"#334155",maxTicksLimit:6,maxRotation:0,font:{size:9,weight:"bold"}},grid:{color:"#f1f5f9"}},y:{title:{display:true,text:"mrd USD / nap",color:"#111827",font:{size:10,weight:"bold"}},ticks:{color:"#334155",font:{size:9,weight:"bold"}},grid:{color:"#e5e7eb"}}}}});
+    makeMiniChart("miniUsaChart",labels,usaValues,"rgba(4,120,87,1)");
+    makeMiniChart("miniChinaCostChart",labels,chinaValues,"rgba(185,28,28,1)");
+    makeMiniChart("miniChinaVolChart",labels,chinaVol,"rgba(185,28,28,1)");
+    makeMiniChart("miniSpreadChart",labels,spreadValues,"rgba(4,120,87,1)");
+  }
 }
 
 init().catch(e=>{
