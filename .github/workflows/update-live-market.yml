@@ -44,6 +44,9 @@ jobs:
       - name: Generate china exposure
         run: python scripts/generate_china_exposure.py
 
+      - name: Generate inventory stress
+        run: python scripts/generate_inventory_stress.py
+
       - name: Commit updated live market intelligence data
         run: |
           git config user.name "github-actions[bot]"
@@ -56,6 +59,7 @@ jobs:
           git add docs/data/energy_forecast.json
           git add docs/data/chokepoint_status.json
           git add docs/data/china_exposure.json
+          git add docs/data/inventory_stress.json
 
           git diff --cached --quiet || git commit -m "Update live market intelligence data"
           git push
