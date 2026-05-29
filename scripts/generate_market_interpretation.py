@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 USA_FILE = ROOT / "usa-oil-revenue.json"
 CHINA_FILE = ROOT / "china-oil-import.json"
 MARKET_FILE = ROOT / "market-history.json"
+INVENTORY_FILE = ROOT / "docs" / "data" / "inventory_stress.json"
 
 OUTPUT_FILE = ROOT / "docs" / "data" / "market_interpretation.json"
 
@@ -50,17 +51,19 @@ def get_brent(row):
     return row.get("market_brent") if row.get("market_brent") is not None else row.get("brent")
 
 
-def combined_risk_score(chokepoint, middle_east, brent_change_pct, brent_volatility_pct):
+def combined_risk_score(chokepoint, middle_east, brent_change_pct, brent_volatility_pct, inventory_stress):
     chokepoint = chokepoint if chokepoint is not None else 50
     middle_east = middle_east if middle_east is not None else 50
+    inventory_stress = inventory_stress if inventory_stress is not None else 50
 
     price_risk = normalize_price_change(brent_change_pct)
     volatility_risk = normalize_volatility(brent_volatility_pct)
 
     score = (
-        chokepoint * 0.40 +
+        chokepoint * 0.25 +
         middle_east * 0.25 +
         price_risk * 0.20 +
+        inventory_stress * 0.15 +
         volatility_risk * 0.15
     )
 
@@ -72,8 +75,7 @@ def risk_level(score):
         return "LOW", "Alacsony", "Low"
     elif score < 65:
         return "MEDIUM", "Közepes", "Medium"
-    else:
-        return "HIGH", "Magas", "High"
+    return "HIGH", "Magas", "High"
 
 
 def main():
@@ -85,6 +87,9 @@ def main():
 
     with open(MARKET_FILE, "r", encoding="utf-8") as f:
         market = json.load(f)
+
+    with open(INVENTORY_FILE, "r", encoding="utf-8") as f:
+        inventory = json.load(f)
 
     usa_series = usa.get("series", [])
     china_series = china.get("series", [])
@@ -118,10 +123,10 @@ def main():
     brent_window = [x for x in brent_window if x is not None]
 
     if len(brent_window) > 1:
-      avg_brent = statistics.mean(brent_window)
-      brent_volatility = (statistics.stdev(brent_window) / avg_brent) * 100 if avg_brent else 0
+        avg_brent = statistics.mean(brent_window)
+        brent_volatility = (statistics.stdev(brent_window) / avg_brent) * 100 if avg_brent else 0
     else:
-      brent_volatility = 0
+        brent_volatility = 0
 
     usa_change = pct_change(
         usa_old.get("estimated_revenue_billion_usd"),
@@ -135,12 +140,14 @@ def main():
 
     chokepoint = market_latest.get("global_trade_risk_index")
     middle_east = market_latest.get("middle_east_conflict_impact")
+    inventory_stress = inventory.get("inventory_stress_score")
 
     risk_score, price_risk, volatility_risk = combined_risk_score(
         chokepoint,
         middle_east,
         brent_change,
-        brent_volatility
+        brent_volatility,
+        inventory_stress
     )
 
     risk_code, risk_hu, risk_en = risk_level(risk_score)
@@ -155,8 +162,8 @@ def main():
         f"{china_change:+.1f}% mértékben változott. "
         f"Az összesített energiapiaci kockázati pontszám "
         f"{risk_score:.1f}/100, ami {risk_hu.lower()} szintnek felel meg. "
-        f"A pontszám a szoroskockázatot, a közel-keleti konfliktushatást, "
-        f"a Brent árváltozását és az árvolatilitást együtt veszi figyelembe."
+        f"A modell a szoroskockázatot, a közel-keleti konfliktushatást, "
+        f"a Brent árváltozását, az árvolatilitást és az amerikai készletoldali nyomást együtt veszi figyelembe."
     )
 
     summary_en = (
@@ -169,8 +176,8 @@ def main():
         f"{china_change:+.1f}%. "
         f"The combined energy-market risk score is "
         f"{risk_score:.1f}/100, corresponding to a {risk_en.lower()} risk level. "
-        f"The score combines chokepoint risk, Middle East conflict impact, "
-        f"Brent price movement and price volatility."
+        f"The model combines chokepoint risk, Middle East conflict impact, "
+        f"Brent price movement, price volatility and U.S. inventory-side stress."
     )
 
     output = {
@@ -179,10 +186,18 @@ def main():
         "risk_label_hu": risk_hu,
         "risk_label_en": risk_en,
         "combined_risk_score": risk_score,
+        "risk_model": {
+            "chokepoint_risk_weight": 0.25,
+            "middle_east_conflict_impact_weight": 0.25,
+            "brent_price_change_risk_weight": 0.20,
+            "inventory_stress_weight": 0.15,
+            "brent_volatility_risk_weight": 0.15
+        },
         "risk_components": {
             "chokepoint_risk": chokepoint,
             "middle_east_conflict_impact": middle_east,
             "brent_price_change_risk": price_risk,
+            "inventory_stress": inventory_stress,
             "brent_volatility_risk": volatility_risk
         },
         "brent_change_pct": round(brent_change, 2),
