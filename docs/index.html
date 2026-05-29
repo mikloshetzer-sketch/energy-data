@@ -32,11 +32,7 @@
     .explain-card{background:#f8fafc;border:1px solid #d9e2ec;border-radius:12px;padding:12px}
     .explain-card ul{margin:6px 0 0 18px;padding:0}.explain-card li{margin-bottom:6px}
     .formula-box{background:#eef6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px;font-size:12px;line-height:1.55}
-    .balance-row{margin-bottom:10px}
-    .balance-head{display:flex;justify-content:space-between;font-size:12px;font-weight:900;margin-bottom:4px}
-    .balance-head span{color:#64748b;font-size:10px}
-    .balance-value{font-size:18px;font-weight:900;color:#047857}
-    .balance-orange{color:#ea580c}.balance-blue{color:#1d4ed8}
+    .balance-row{margin-bottom:10px}.balance-head{display:flex;justify-content:space-between;font-size:12px;font-weight:900;margin-bottom:4px}.balance-head span{color:#64748b;font-size:10px}.balance-value{font-size:18px;font-weight:900;color:#047857}.balance-orange{color:#ea580c}.balance-blue{color:#1d4ed8}
     .footer{padding:10px 14px;background:#0f172a;color:#e5e7eb;border-radius:12px;display:flex;justify-content:space-between;font-size:11px;font-weight:700}
     canvas{width:100%!important;height:100%!important}
   </style>
@@ -171,16 +167,28 @@ const URLS={
   supplyDemand:BASE+"docs/data/supply_demand_balance.json"
 };
 
-async function loadJson(url){const r=await fetch(url+"?ts="+Date.now());if(!r.ok)throw new Error("Nem tölthető be: "+url);return await r.json();}
+async function loadJsonSafe(url, fallback){
+  try{
+    const r=await fetch(url+"?ts="+Date.now());
+    if(!r.ok) throw new Error("HTTP "+r.status+" - "+url);
+    return await r.json();
+  }catch(e){
+    console.warn("JSON betöltési hiba:", e);
+    return fallback;
+  }
+}
+
 function fmtBillion(v){return v==null||isNaN(v)?"–":Number(v).toFixed(2)+" mrd USD";}
 function fmtPrice(v){return v==null||isNaN(v)?"–":Number(v).toFixed(2)+" USD";}
 function fmtIndex(v){return v==null||isNaN(v)?"–":Number(v).toFixed(1);}
-function lastN(a,n){return a.slice(Math.max(a.length-n,0));}
+function lastN(a,n){return Array.isArray(a)?a.slice(Math.max(a.length-n,0)):[];}
 function riskClass(l){if(l==="LOW")return"risk-low";if(l==="HIGH")return"risk-high";return"risk-medium";}
 function riskIcon(l){if(l==="LOW")return"🟢";if(l==="HIGH")return"🔴";return"🟡";}
 
 function makeMiniChart(id,labels,values,color){
-  new Chart(document.getElementById(id),{
+  const el=document.getElementById(id);
+  if(!el) return;
+  new Chart(el,{
     type:"line",
     data:{labels:labels,datasets:[{data:values,borderColor:color,backgroundColor:color.replace("1)","0.10)"),borderWidth:2,pointRadius:0,tension:.25,fill:true}]},
     options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}}}
@@ -189,6 +197,8 @@ function makeMiniChart(id,labels,values,color){
 
 function renderDrivers(ds){
   const box=document.getElementById("riskDriversBox");
+  if(!box) return;
+  if(!Array.isArray(ds)||!ds.length){box.innerHTML="Nincs elérhető kockázati hajtóerő adat.";return;}
   const max=Math.max(...ds.map(d=>d.contribution_points||0),1);
   box.innerHTML=ds.map(d=>`
     <div class="driver-row">
@@ -202,9 +212,12 @@ function renderDrivers(ds){
 }
 
 function renderHistorical(ms){
+  const box=document.getElementById("historicalBox");
+  if(!box) return;
   const wanted=["Brent ár","Összesített kockázat","USA olajtermelési érték","Kína importköltség"];
-  const selected=ms.filter(m=>wanted.includes(m.name_hu)).slice(0,4);
-  document.getElementById("historicalBox").innerHTML=selected.map(m=>`
+  const selected=(Array.isArray(ms)?ms:[]).filter(m=>wanted.includes(m.name_hu)).slice(0,4);
+  if(!selected.length){box.innerHTML="<div class='context-card'>Nincs historikus kontextus adat.</div>";return;}
+  box.innerHTML=selected.map(m=>`
     <div class="context-card">
       <div class="context-name">${m.name_hu}<br><span>${m.name_en}</span></div>
       <div class="context-value">${m.current ?? "–"}</div>
@@ -215,10 +228,14 @@ function renderHistorical(ms){
 
 function dotClass(level){if(level==="HIGH")return"dot high";if(level==="LOW")return"dot low";return"dot medium";}
 function renderChokepoints(items){
+  const list=Array.isArray(items)?items:[];
   const map={hormuz:"dotHormuz",bab_el_mandeb:"dotBab",suez:"dotSuez",malacca:"dotMalacca"};
   const pos={hormuz:"hormuz",bab_el_mandeb:"bab",suez:"suez",malacca:"malacca"};
-  items.forEach(i=>{const el=document.getElementById(map[i.id]);if(el)el.className=dotClass(i.level)+" "+pos[i.id];});
-  document.getElementById("chokepointList").innerHTML=items.slice(0,4).map(c=>`
+  list.forEach(i=>{const el=document.getElementById(map[i.id]);if(el)el.className=dotClass(i.level)+" "+pos[i.id];});
+  const box=document.getElementById("chokepointList");
+  if(!box) return;
+  if(!list.length){box.innerHTML="Nincs szűkületi adat.";return;}
+  box.innerHTML=list.slice(0,4).map(c=>`
     <div class="choke-row">
       <div class="choke-head"><div>${c.name_hu}<br><span>${c.name_en}</span></div><div>${c.level_hu} · ${Number(c.score).toFixed(1)}</div></div>
       <div class="bar-bg"><div class="bar-fill" style="width:${c.score}%"></div></div>
@@ -227,7 +244,14 @@ function renderChokepoints(items){
 }
 
 function renderSupplyDemand(sd){
-  document.getElementById("supplyDemandBox").innerHTML=`
+  const box=document.getElementById("supplyDemandBox");
+  if(!box) return;
+  if(!sd || sd.demand_pressure==null){
+    box.innerHTML="A kereslet–kínálat modul még nem áll rendelkezésre. Futtasd az Update live market workflow-t.";
+    return;
+  }
+
+  box.innerHTML=`
     <div class="balance-row">
       <div class="balance-head">Keresleti nyomás <span>Demand pressure</span></div>
       <div class="balance-value">${sd.demand_pressure}/100</div>
@@ -247,24 +271,34 @@ function renderSupplyDemand(sd){
 
     <strong>${sd.market_direction_hu} / ${sd.market_direction_en}</strong>
     <br><br>
-    ${sd.summary_hu}
+    ${sd.summary_hu || ""}
   `;
 }
 
 async function init(){
-  const [usa,china,market,interpretation,drivers,context,forecast,chokepoints,exposure,supplyDemand]=await Promise.all([
-    loadJson(URLS.usa),loadJson(URLS.china),loadJson(URLS.market),loadJson(URLS.interpretation),loadJson(URLS.drivers),loadJson(URLS.context),loadJson(URLS.forecast),loadJson(URLS.chokepoints),loadJson(URLS.exposure),loadJson(URLS.supplyDemand)
-  ]);
+  const fallback={};
+  const usa=await loadJsonSafe(URLS.usa,{series:[]});
+  const china=await loadJsonSafe(URLS.china,{series:[]});
+  const market=await loadJsonSafe(URLS.market,{rows:[]});
+  const interpretation=await loadJsonSafe(URLS.interpretation,fallback);
+  const drivers=await loadJsonSafe(URLS.drivers,{drivers:[]});
+  const context=await loadJsonSafe(URLS.context,{metrics:[]});
+  const forecast=await loadJsonSafe(URLS.forecast,{brent:{},risk:{}});
+  const chokepoints=await loadJsonSafe(URLS.chokepoints,{chokepoints:[]});
+  const exposure=await loadJsonSafe(URLS.exposure,fallback);
+  const supplyDemand=await loadJsonSafe(URLS.supplyDemand,null);
 
   const usaSeries=usa.series||[];
   const chinaSeries=china.series||[];
   const rows=Array.isArray(market.rows)?market.rows.filter(r=>(r.market_brent??r.brent)!=null):[];
-  const usaLatest=usa.summary?.latest||usaSeries[usaSeries.length-1];
-  const chinaLatest=china.summary?.latest||chinaSeries[chinaSeries.length-1];
-  const marketLatest=rows[rows.length-1];
+
+  const usaLatest=usa.summary?.latest||usaSeries[usaSeries.length-1]||{};
+  const chinaLatest=china.summary?.latest||chinaSeries[chinaSeries.length-1]||{};
+  const marketLatest=rows[rows.length-1]||{};
 
   const level=interpretation.risk_level||"MEDIUM";
-  document.getElementById("dateBox").innerHTML=new Date().toISOString().slice(0,10)+"<br>UTC";
+  document.getElementById("dateBox").innerHTML=(interpretation.generated_at||new Date().toISOString().slice(0,10))+"<br>UTC";
+
   const pill=document.getElementById("topRiskPill");
   pill.className="risk-pill "+riskClass(level);
   pill.innerText=riskIcon(level)+" "+(interpretation.risk_label_hu||"Közepes")+" risk / "+(interpretation.risk_label_en||"Medium")+" risk";
@@ -272,7 +306,7 @@ async function init(){
   document.getElementById("usaRevenue").innerText=fmtBillion(usaLatest.estimated_revenue_billion_usd);
   document.getElementById("usaRevenueSub").innerText="WTI: "+fmtPrice(usaLatest.wti_usd_per_barrel);
   document.getElementById("chinaImport").innerText=fmtBillion(chinaLatest.estimated_import_value_billion_usd);
-  document.getElementById("chinaImportSub").innerText="Import: "+Number(chinaLatest.estimated_import_volume_mbd).toFixed(2)+" mbd";
+  document.getElementById("chinaImportSub").innerText="Import: "+(chinaLatest.estimated_import_volume_mbd!=null?Number(chinaLatest.estimated_import_volume_mbd).toFixed(2):"–")+" mbd";
   document.getElementById("brentPrice").innerText=fmtPrice(chinaLatest.brent_usd_per_barrel);
   document.getElementById("wtiPrice").innerText=fmtPrice(usaLatest.wti_usd_per_barrel);
   document.getElementById("riskSignal").innerText=fmtIndex(interpretation.combined_risk_score);
@@ -285,21 +319,33 @@ async function init(){
   renderChokepoints(chokepoints.chokepoints||[]);
   renderSupplyDemand(supplyDemand);
 
-  document.getElementById("forecastBrent").innerText=forecast.brent.forecast_low+"–"+forecast.brent.forecast_high+" USD";
-  document.getElementById("forecastBrentSub").innerText=forecast.brent.trend_hu+" / "+forecast.brent.trend_en+" · confidence: "+forecast.brent.confidence_en;
-  document.getElementById("forecastRisk").innerText=forecast.risk.forecast_low+"–"+forecast.risk.forecast_high;
-  document.getElementById("forecastRiskSub").innerText=forecast.risk.trend_hu+" / "+forecast.risk.trend_en+" · confidence: "+forecast.risk.confidence_en;
+  document.getElementById("forecastBrent").innerText=
+    forecast.brent?.forecast_low!=null ? forecast.brent.forecast_low+"–"+forecast.brent.forecast_high+" USD" : "–";
+  document.getElementById("forecastBrentSub").innerText=
+    forecast.brent?.trend_hu ? forecast.brent.trend_hu+" / "+forecast.brent.trend_en+" · confidence: "+forecast.brent.confidence_en : "–";
+  document.getElementById("forecastRisk").innerText=
+    forecast.risk?.forecast_low!=null ? forecast.risk.forecast_low+"–"+forecast.risk.forecast_high : "–";
+  document.getElementById("forecastRiskSub").innerText=
+    forecast.risk?.trend_hu ? forecast.risk.trend_hu+" / "+forecast.risk.trend_en+" · confidence: "+forecast.risk.confidence_en : "–";
 
   document.getElementById("analysisHu").innerText=interpretation.summary_hu||"Nincs elérhető értelmezés.";
   document.getElementById("analysisEn").innerText=interpretation.summary_en||"No interpretation available.";
-  document.getElementById("chinaExposureText").innerHTML="<strong>"+(exposure.exposure_level_hu||"–")+" / "+(exposure.exposure_level_en||"–")+" exposure</strong><br><br>"+(exposure.summary_hu||"")+"<br><br>"+(exposure.summary_en||"");
+
+  document.getElementById("chinaExposureText").innerHTML=
+    "<strong>"+(exposure.exposure_level_hu||"–")+" / "+(exposure.exposure_level_en||"–")+" exposure</strong><br><br>"+
+    (exposure.summary_hu||"Nincs elérhető kínai kitettségi összefoglaló.")+
+    "<br><br>"+
+    (exposure.summary_en||"No China exposure summary available.");
 
   document.getElementById("miniUsaRevenue").innerText=fmtBillion(usaLatest.estimated_revenue_billion_usd);
   document.getElementById("miniChinaCost").innerText=fmtBillion(chinaLatest.estimated_import_value_billion_usd);
-  document.getElementById("miniChinaVol").innerText=Number(chinaLatest.estimated_import_volume_mbd).toFixed(2)+" mbd";
+  document.getElementById("miniChinaVol").innerText=(chinaLatest.estimated_import_volume_mbd!=null?Number(chinaLatest.estimated_import_volume_mbd).toFixed(2):"–")+" mbd";
   document.getElementById("miniRisk").innerText=fmtIndex(marketLatest.global_trade_risk_index);
   document.getElementById("miniME").innerText=fmtIndex(marketLatest.middle_east_conflict_impact);
-  document.getElementById("miniSpread").innerText=(usaLatest.estimated_revenue_billion_usd-chinaLatest.estimated_import_value_billion_usd).toFixed(2)+" mrd";
+  document.getElementById("miniSpread").innerText=
+    (usaLatest.estimated_revenue_billion_usd!=null&&chinaLatest.estimated_import_value_billion_usd!=null)
+    ? (usaLatest.estimated_revenue_billion_usd-chinaLatest.estimated_import_value_billion_usd).toFixed(2)+" mrd"
+    : "–";
 
   const marketShort=lastN(rows,90);
   const marketLabels=marketShort.map(r=>r.date);
@@ -315,25 +361,32 @@ async function init(){
   const chinaVol=chinaShort.map(d=>d.estimated_import_volume_mbd);
   const spreadValues=labels.map((date,i)=>usaMap[date]!=null?usaMap[date]-chinaValues[i]:null);
 
-  new Chart(document.getElementById("riskChart"),{type:"line",data:{labels:marketLabels,datasets:[
-    {label:"Brent ár / Brent price",data:brent,borderColor:"#1d4ed8",borderWidth:3,pointRadius:0,tension:.25,yAxisID:"y"},
-    {label:"Szoroskockázat / Chokepoint risk",data:globalRisk,borderColor:"#ea580c",borderWidth:2,pointRadius:0,tension:.25,yAxisID:"y1"},
-    {label:"Közel-keleti hatás / Middle East impact",data:meImpact,borderColor:"#b91c1c",borderWidth:2,pointRadius:0,borderDash:[6,4],tension:.25,yAxisID:"y1"}
-  ]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:"#111827",font:{size:10,weight:"bold"}}},tooltip:{enabled:false}},scales:{x:{ticks:{display:false},grid:{color:"#f1f5f9"}},y:{position:"left",ticks:{color:"#1d4ed8",font:{size:10,weight:"bold"}},grid:{color:"#e5e7eb"}},y1:{position:"right",ticks:{color:"#b91c1c",font:{size:10,weight:"bold"}},grid:{drawOnChartArea:false}}}}});
+  if(marketLabels.length){
+    new Chart(document.getElementById("riskChart"),{type:"line",data:{labels:marketLabels,datasets:[
+      {label:"Brent ár / Brent price",data:brent,borderColor:"#1d4ed8",borderWidth:3,pointRadius:0,tension:.25,yAxisID:"y"},
+      {label:"Szoroskockázat / Chokepoint risk",data:globalRisk,borderColor:"#ea580c",borderWidth:2,pointRadius:0,tension:.25,yAxisID:"y1"},
+      {label:"Közel-keleti hatás / Middle East impact",data:meImpact,borderColor:"#b91c1c",borderWidth:2,pointRadius:0,borderDash:[6,4],tension:.25,yAxisID:"y1"}
+    ]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:"#111827",font:{size:10,weight:"bold"}}},tooltip:{enabled:false}},scales:{x:{ticks:{display:false},grid:{color:"#f1f5f9"}},y:{position:"left",ticks:{color:"#1d4ed8",font:{size:10,weight:"bold"}},grid:{color:"#e5e7eb"}},y1:{position:"right",ticks:{color:"#b91c1c",font:{size:10,weight:"bold"}},grid:{drawOnChartArea:false}}}}});
 
-  new Chart(document.getElementById("mainChart"),{type:"line",data:{labels:labels,datasets:[
-    {label:"USA termelési érték / US production value",data:usaValues,borderColor:"#047857",borderWidth:3,pointRadius:0,tension:.25},
-    {label:"Kína importköltség / China import cost",data:chinaValues,borderColor:"#b91c1c",borderWidth:3,pointRadius:0,tension:.25}
-  ]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:"#111827",font:{size:10,weight:"bold"}}},tooltip:{enabled:false}},scales:{x:{ticks:{color:"#334155",maxTicksLimit:6,maxRotation:0,font:{size:9,weight:"bold"}},grid:{color:"#f1f5f9"}},y:{title:{display:true,text:"mrd USD / nap",color:"#111827",font:{size:10,weight:"bold"}},ticks:{color:"#334155",font:{size:9,weight:"bold"}},grid:{color:"#e5e7eb"}}}}});
+    new Chart(document.getElementById("brentChart"),{type:"line",data:{labels:marketLabels,datasets:[{label:"Brent ár / Brent price",data:brent,borderColor:"#1d4ed8",backgroundColor:"rgba(29,78,216,0.10)",borderWidth:3,pointRadius:0,tension:.25,fill:true}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:"#111827",font:{size:10,weight:"bold"}}},tooltip:{enabled:false}},scales:{x:{ticks:{color:"#334155",maxTicksLimit:6,maxRotation:0,font:{size:9,weight:"bold"}},grid:{color:"#f1f5f9"}},y:{title:{display:true,text:"USD / hordó",color:"#1d4ed8",font:{size:10,weight:"bold"}},ticks:{color:"#1d4ed8",font:{size:9,weight:"bold"}},grid:{color:"#e5e7eb"}}}}});
+  }
 
-  new Chart(document.getElementById("brentChart"),{type:"line",data:{labels:marketLabels,datasets:[{label:"Brent ár / Brent price",data:brent,borderColor:"#1d4ed8",backgroundColor:"rgba(29,78,216,0.10)",borderWidth:3,pointRadius:0,tension:.25,fill:true}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:"#111827",font:{size:10,weight:"bold"}}},tooltip:{enabled:false}},scales:{x:{ticks:{color:"#334155",maxTicksLimit:6,maxRotation:0,font:{size:9,weight:"bold"}},grid:{color:"#f1f5f9"}},y:{title:{display:true,text:"USD / hordó",color:"#1d4ed8",font:{size:10,weight:"bold"}},ticks:{color:"#1d4ed8",font:{size:9,weight:"bold"}},grid:{color:"#e5e7eb"}}}}});
+  if(labels.length){
+    new Chart(document.getElementById("mainChart"),{type:"line",data:{labels:labels,datasets:[
+      {label:"USA termelési érték / US production value",data:usaValues,borderColor:"#047857",borderWidth:3,pointRadius:0,tension:.25},
+      {label:"Kína importköltség / China import cost",data:chinaValues,borderColor:"#b91c1c",borderWidth:3,pointRadius:0,tension:.25}
+    ]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:"#111827",font:{size:10,weight:"bold"}}},tooltip:{enabled:false}},scales:{x:{ticks:{color:"#334155",maxTicksLimit:6,maxRotation:0,font:{size:9,weight:"bold"}},grid:{color:"#f1f5f9"}},y:{title:{display:true,text:"mrd USD / nap",color:"#111827",font:{size:10,weight:"bold"}},ticks:{color:"#334155",font:{size:9,weight:"bold"}},grid:{color:"#e5e7eb"}}}}});
 
-  makeMiniChart("miniUsaChart",labels,usaValues,"rgba(4,120,87,1)");
-  makeMiniChart("miniChinaCostChart",labels,chinaValues,"rgba(185,28,28,1)");
-  makeMiniChart("miniChinaVolChart",labels,chinaVol,"rgba(185,28,28,1)");
-  makeMiniChart("miniRiskChart",marketLabels,globalRisk,"rgba(234,88,12,1)");
-  makeMiniChart("miniMEChart",marketLabels,meImpact,"rgba(220,38,38,1)");
-  makeMiniChart("miniSpreadChart",labels,spreadValues,"rgba(4,120,87,1)");
+    makeMiniChart("miniUsaChart",labels,usaValues,"rgba(4,120,87,1)");
+    makeMiniChart("miniChinaCostChart",labels,chinaValues,"rgba(185,28,28,1)");
+    makeMiniChart("miniChinaVolChart",labels,chinaVol,"rgba(185,28,28,1)");
+    makeMiniChart("miniSpreadChart",labels,spreadValues,"rgba(4,120,87,1)");
+  }
+
+  if(marketLabels.length){
+    makeMiniChart("miniRiskChart",marketLabels,globalRisk,"rgba(234,88,12,1)");
+    makeMiniChart("miniMEChart",marketLabels,meImpact,"rgba(220,38,38,1)");
+  }
 }
 
 init().catch(e=>{
