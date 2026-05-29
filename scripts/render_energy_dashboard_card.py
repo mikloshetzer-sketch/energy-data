@@ -23,7 +23,7 @@ def main():
         page = browser.new_page(
             viewport={
                 "width": 1800,
-                "height": 2400
+                "height": 2600
             },
             device_scale_factor=2
         )
