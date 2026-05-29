@@ -5,8 +5,8 @@
   "risk_label_hu": "Közepes",
   "risk_label_en": "Medium",
   "method": {
-    "hu": "A kockázati hozzájárulás az egyes komponensek normalizált értékéből és súlyából számított pontszám.",
-    "en": "Risk contribution is calculated from each component's normalized value and model weight."
+    "hu": "A kockázati hozzájárulás az egyes komponensek normalizált értékéből és a frissített modell súlyaiból számított pontszám.",
+    "en": "Risk contribution is calculated from each component's normalized value and the updated model weights."
   },
   "drivers": [
     {
@@ -16,16 +16,8 @@
       "raw_value": 100.0,
       "weight": 0.2,
       "contribution_points": 20.0,
-      "share_pct": 36.9
-    },
-    {
-      "id": "chokepoint_risk",
-      "label_hu": "Szoroskockázat",
-      "label_en": "Chokepoint risk",
-      "raw_value": 31.2,
-      "weight": 0.4,
-      "contribution_points": 12.48,
-      "share_pct": 23.0
+      "share_pct": 35.1,
+      "weight_pct": 20.0
     },
     {
       "id": "middle_east_conflict",
@@ -34,7 +26,8 @@
       "raw_value": 46.3,
       "weight": 0.25,
       "contribution_points": 11.57,
-      "share_pct": 21.4
+      "share_pct": 20.3,
+      "weight_pct": 25.0
     },
     {
       "id": "brent_volatility",
@@ -43,7 +36,28 @@
       "raw_value": 67.6,
       "weight": 0.15,
       "contribution_points": 10.14,
-      "share_pct": 18.7
+      "share_pct": 17.8,
+      "weight_pct": 15.0
+    },
+    {
+      "id": "chokepoint_risk",
+      "label_hu": "Szoroskockázat",
+      "label_en": "Chokepoint risk",
+      "raw_value": 31.2,
+      "weight": 0.25,
+      "contribution_points": 7.8,
+      "share_pct": 13.7,
+      "weight_pct": 25.0
+    },
+    {
+      "id": "inventory_stress",
+      "label_hu": "Készletoldali nyomás",
+      "label_en": "Inventory stress",
+      "raw_value": 50.0,
+      "weight": 0.15,
+      "contribution_points": 7.5,
+      "share_pct": 13.2,
+      "weight_pct": 15.0
     }
   ]
 }
