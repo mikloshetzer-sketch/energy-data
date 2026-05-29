@@ -17,7 +17,7 @@
 
     .card {
       width: 1500px;
-      height: 1120px;
+      height: 1240px;
       box-sizing: border-box;
       padding: 34px;
       background:
@@ -94,6 +94,21 @@
       object-fit: contain;
       display: block;
     }
+
+    .risk-pill {
+      margin-top: 8px;
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #ffffff;
+      background: #64748b;
+    }
+
+    .risk-low { background: #047857; }
+    .risk-medium { background: #ca8a04; }
+    .risk-high { background: #b91c1c; }
 
     .metric-grid {
       display: grid;
@@ -180,7 +195,7 @@
     }
 
     .chart-wrap {
-      height: 245px;
+      height: 235px;
     }
 
     .small-chart-grid {
@@ -224,6 +239,80 @@
     .mini-chart {
       height: 48px;
       margin-top: 3px;
+    }
+
+    .analysis-panel {
+      background: rgba(255,255,255,0.97);
+      border: 1px solid #d9e2ec;
+      border-left: 7px solid #1d4ed8;
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+      box-shadow: 0 8px 18px rgba(15,23,42,0.05);
+    }
+
+    .analysis-panel h2 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      color: #0f172a;
+      font-weight: 900;
+    }
+
+    .analysis-panel h2 span {
+      display: block;
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 0.35fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .analysis-text {
+      font-size: 13px;
+      line-height: 1.55;
+      color: #334155;
+      font-weight: 700;
+    }
+
+    .analysis-text strong {
+      display: block;
+      color: #0f172a;
+      font-size: 13px;
+      margin-bottom: 5px;
+      font-weight: 900;
+    }
+
+    .risk-box {
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid #d9e2ec;
+      padding: 12px;
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .risk-box .risk-title {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .risk-box .risk-main {
+      font-size: 22px;
+      color: #0f172a;
+    }
+
+    .risk-box .risk-sub {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #475569;
     }
 
     .bottom-grid {
@@ -302,6 +391,7 @@
         <h1>Energia- és olajpiaci helyzetkép</h1>
         <p>Olajár, szűkületi kockázat, USA termelési érték és Kína importkitettség</p>
         <small>Energy and oil market snapshot · Oil price, chokepoint risk, US production value and China import exposure</small>
+        <div id="topRiskPill" class="risk-pill">Kockázati szint betöltés...</div>
       </div>
 
       <div class="topbox">
@@ -412,6 +502,28 @@
       </div>
     </div>
 
+    <div class="analysis-panel">
+      <h2>Piaci értelmezés <span>Market Interpretation</span></h2>
+
+      <div class="analysis-grid">
+        <div class="analysis-text">
+          <strong>Magyar összefoglaló</strong>
+          <div id="analysisHu">Betöltés...</div>
+        </div>
+
+        <div class="analysis-text">
+          <strong>English summary</strong>
+          <div id="analysisEn">Loading...</div>
+        </div>
+
+        <div class="risk-box">
+          <div class="risk-title">Risk level</div>
+          <div class="risk-main" id="analysisRiskMain">–</div>
+          <div class="risk-sub" id="analysisRiskSub">–</div>
+        </div>
+      </div>
+    </div>
+
     <div class="bottom-grid">
       <div class="note green">
         <strong>Fő megállapítások <span>Key takeaways</span></strong>
@@ -451,7 +563,7 @@
     </div>
 
     <div class="footer">
-      <div>Forrás / Source: energy-data repo · usa-oil-revenue.json · china-oil-import.json · market-history.json</div>
+      <div>Forrás / Source: energy-data repo · usa-oil-revenue.json · china-oil-import.json · market-history.json · market_interpretation.json</div>
       <div>toresvonalak.blog · Energia- és olajpiaci elemző / Energy and oil market analysis</div>
     </div>
 
@@ -461,6 +573,7 @@
     const USA_DATA_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/usa-oil-revenue.json";
     const CHINA_DATA_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/china-oil-import.json";
     const MARKET_HISTORY_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/market-history.json";
+    const INTERPRETATION_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/docs/data/market_interpretation.json";
 
     async function loadJson(url) {
       const res = await fetch(url + "?ts=" + Date.now());
@@ -485,6 +598,18 @@
 
     function lastN(arr, n) {
       return arr.slice(Math.max(arr.length - n, 0));
+    }
+
+    function riskClass(level) {
+      if (level === "LOW") return "risk-low";
+      if (level === "HIGH") return "risk-high";
+      return "risk-medium";
+    }
+
+    function riskIcon(level) {
+      if (level === "LOW") return "🟢";
+      if (level === "HIGH") return "🔴";
+      return "🟡";
     }
 
     function makeMiniChart(canvasId, labels, values, color) {
@@ -516,6 +641,7 @@
       const usa = await loadJson(USA_DATA_URL);
       const china = await loadJson(CHINA_DATA_URL);
       const market = await loadJson(MARKET_HISTORY_URL);
+      const interpretation = await loadJson(INTERPRETATION_URL);
 
       const usaSeries = usa.series || [];
       const chinaSeries = china.series || [];
@@ -556,6 +682,21 @@
       document.getElementById("miniME").innerText = fmtIndex(latestME);
       document.getElementById("miniSpread").innerText =
         (usaLatest.estimated_revenue_billion_usd - chinaLatest.estimated_import_value_billion_usd).toFixed(2) + " mrd";
+
+      const level = interpretation.risk_level || "MEDIUM";
+      const topRiskPill = document.getElementById("topRiskPill");
+      topRiskPill.className = "risk-pill " + riskClass(level);
+      topRiskPill.innerText =
+        riskIcon(level) + " " +
+        (interpretation.risk_label_hu || "Közepes") +
+        " kockázat / " +
+        (interpretation.risk_label_en || "Medium") +
+        " risk";
+
+      document.getElementById("analysisHu").innerText = interpretation.summary_hu || "Nincs elérhető magyar értelmezés.";
+      document.getElementById("analysisEn").innerText = interpretation.summary_en || "No English interpretation available.";
+      document.getElementById("analysisRiskMain").innerText = riskIcon(level) + " " + (interpretation.risk_label_hu || level);
+      document.getElementById("analysisRiskSub").innerText = (interpretation.risk_label_en || level) + " risk";
 
       const marketShort = lastN(rows, 90);
       const marketLabels = marketShort.map(row => row.date);
