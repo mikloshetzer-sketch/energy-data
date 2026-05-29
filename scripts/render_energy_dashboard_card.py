@@ -1,49 +1,67 @@
-from pathlib import Path
 from playwright.sync_api import sync_playwright
+from pathlib import Path
+import time
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+OUTPUT = Path("docs/assets/energy_dashboard_card.png")
 
-HTML_FILE = REPO_ROOT / "docs" / "index.html"
-OUTPUT_DIR = REPO_ROOT / "docs" / "assets"
-OUTPUT_FILE = OUTPUT_DIR / "energy-dashboard-card.png"
+PAGE_URL = "https://mikloshetzer-sketch.github.io/energy-data/"
 
 
 def main():
-    if not HTML_FILE.exists():
-        raise FileNotFoundError(f"Nem található a dashboard HTML: {HTML_FILE}")
-
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-    html_url = HTML_FILE.as_uri()
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 
     with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page(
-            viewport={
-                "width": 1600,
-                "height": 2300,
-                "device_scale_factor": 2
-            }
+
+        browser = p.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-dev-shm-usage",
+                "--no-sandbox"
+            ]
         )
 
-        page.goto(html_url, wait_until="networkidle", timeout=120000)
+        page = browser.new_page(
+            viewport={
+                "width": 1800,
+                "height": 2400
+            },
+            device_scale_factor=2
+        )
 
-        # Várunk, hogy a Chart.js diagramok biztosan kirajzolódjanak
-        page.wait_for_timeout(4000)
+        print("Opening dashboard...")
 
-        card = page.locator("#capture")
+        page.goto(
+            PAGE_URL + f"?ts={int(time.time())}",
+            wait_until="networkidle",
+            timeout=120000
+        )
 
-        if card.count() == 0:
-            raise RuntimeError("Nem található a #capture elem a HTML-ben.")
+        print("Waiting for charts...")
 
-        card.screenshot(
-            path=str(OUTPUT_FILE),
-            omit_background=False
+        page.wait_for_timeout(8000)
+
+        page.evaluate("""
+        window.scrollTo(0, document.body.scrollHeight);
+        """)
+
+        page.wait_for_timeout(3000)
+
+        page.evaluate("""
+        window.scrollTo(0, 0);
+        """)
+
+        page.wait_for_timeout(2000)
+
+        body = page.locator("body")
+
+        body.screenshot(
+            path=str(OUTPUT),
+            type="png"
         )
 
         browser.close()
 
-    print(f"Kép elkészült: {OUTPUT_FILE}")
+    print(f"Saved: {OUTPUT}")
 
 
 if __name__ == "__main__":
