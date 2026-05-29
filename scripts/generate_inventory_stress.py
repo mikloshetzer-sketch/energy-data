@@ -1,80 +1,61 @@
-import csv
 import json
 import statistics
 from datetime import datetime
-from io import StringIO
 from pathlib import Path
+from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
-
 OUTPUT_FILE = ROOT / "docs" / "data" / "inventory_stress.json"
 
-# EIA weekly series CSV exports
-# WCESTUS1 = Weekly U.S. Ending Stocks excluding SPR of Crude Oil
-# WCSSTUS1 = Weekly U.S. Ending Stocks of Crude Oil in SPR
-COMMERCIAL_STOCKS_URL = (
-    "https://www.eia.gov/dnav/pet/hist_xls/WCESTUS1w.xls"
-)
-SPR_STOCKS_URL = (
-    "https://www.eia.gov/dnav/pet/hist_xls/WCSSTUS1w.xls"
-)
+EIA_API_URL = "https://api.eia.gov/v2/petroleum/stoc/wstk/data/"
+
+# EIA product/series candidates. If one fails, the script tries the next.
+COMMERCIAL_SERIES = ["WCESTUS1"]
+SPR_SERIES = ["WCSSTUS1"]
 
 
-def fetch_text(url):
+def fetch_eia_series(series_id):
+    params = {
+        "frequency": "weekly",
+        "data[0]": "value",
+        "facets[series][]": series_id,
+        "sort[0][column]": "period",
+        "sort[0][direction]": "desc",
+        "offset": "0",
+        "length": "300",
+    }
+
+    url = EIA_API_URL + "?" + urlencode(params, doseq=True)
+
     request = Request(
         url,
         headers={
-            "User-Agent": "Mozilla/5.0 energy-data dashboard"
-        }
+            "User-Agent": "Mozilla/5.0 energy-data dashboard",
+            "Accept": "application/json",
+        },
     )
 
     with urlopen(request, timeout=60) as response:
-        raw = response.read()
+        payload = json.loads(response.read().decode("utf-8"))
 
-    return raw.decode("latin-1", errors="replace")
-
-
-def parse_eia_hist_xls_text(text):
-    """
-    EIA hist_xls files are often tabular text inside an .xls endpoint.
-    We parse rows containing a date and a numeric value.
-    """
+    data = payload.get("response", {}).get("data", [])
 
     rows = []
+    for item in data:
+        period = item.get("period")
+        value = item.get("value")
 
-    for line in text.splitlines():
-        parts = [p.strip().strip('"') for p in line.replace("\t", ",").split(",")]
-
-        if len(parts) < 2:
-            continue
-
-        date_raw = parts[0]
-        value_raw = parts[1]
-
-        # Skip headers
-        if "Date" in date_raw or "Week" in date_raw:
-            continue
-
-        parsed_date = None
-
-        for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%b %d, %Y"):
-            try:
-                parsed_date = datetime.strptime(date_raw, fmt).date()
-                break
-            except ValueError:
-                pass
-
-        if parsed_date is None:
+        if period is None or value is None:
             continue
 
         try:
-            value = float(value_raw.replace(",", ""))
-        except ValueError:
+            value = float(value)
+        except (TypeError, ValueError):
             continue
 
         rows.append({
-            "date": parsed_date.isoformat(),
+            "date": str(period),
             "value_thousand_barrels": value
         })
 
@@ -82,8 +63,39 @@ def parse_eia_hist_xls_text(text):
     return rows
 
 
-def last_n(rows, n):
-    return rows[-n:] if len(rows) >= n else rows
+def load_existing_or_default():
+    if OUTPUT_FILE.exists():
+        try:
+            with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
+                old = json.load(f)
+
+            old["generated_at"] = datetime.utcnow().strftime("%Y-%m-%d")
+            old["data_quality"] = "FALLBACK_PREVIOUS"
+            old["warning_hu"] = "Az EIA készletadatok friss lekérése nem sikerült, ezért az előző inventory stress érték maradt érvényben."
+            old["warning_en"] = "Fresh EIA inventory data could not be fetched, so the previous inventory stress value was retained."
+            return old
+        except Exception:
+            pass
+
+    return {
+        "generated_at": datetime.utcnow().strftime("%Y-%m-%d"),
+        "data_quality": "FALLBACK_DEFAULT",
+        "source": {
+            "commercial_stocks": "EIA weekly U.S. crude stocks excluding SPR",
+            "spr_stocks": "EIA weekly U.S. crude oil stocks in SPR"
+        },
+        "unit": "thousand barrels",
+        "inventory_stress_score": 50.0,
+        "inventory_stress_level": "MEDIUM",
+        "inventory_stress_level_hu": "Közepes",
+        "inventory_stress_level_en": "Medium",
+        "summary_hu": "Az EIA készletadatok friss lekérése nem sikerült, ezért a modell óvatos, közepes készletoldali nyomást alkalmaz.",
+        "summary_en": "Fresh EIA inventory data could not be fetched, so the model applies a cautious medium inventory-side pressure estimate."
+    }
+
+
+def last_n(values, n):
+    return values[-n:] if len(values) >= n else values
 
 
 def pct_change(old, new):
@@ -109,24 +121,12 @@ def clamp(value, low=0, high=100):
 def level_from_score(score):
     if score < 35:
         return "LOW", "Alacsony", "Low"
-    elif score < 65:
+    if score < 65:
         return "MEDIUM", "Közepes", "Medium"
     return "HIGH", "Magas", "High"
 
 
-def main():
-    commercial_text = fetch_text(COMMERCIAL_STOCKS_URL)
-    spr_text = fetch_text(SPR_STOCKS_URL)
-
-    commercial_rows = parse_eia_hist_xls_text(commercial_text)
-    spr_rows = parse_eia_hist_xls_text(spr_text)
-
-    if len(commercial_rows) < 20:
-        raise RuntimeError("Nincs elég EIA commercial stocks adat.")
-
-    if len(spr_rows) < 20:
-        raise RuntimeError("Nincs elég EIA SPR stocks adat.")
-
+def calculate_inventory_stress(commercial_rows, spr_rows):
     commercial_latest = commercial_rows[-1]
     spr_latest = spr_rows[-1]
 
@@ -136,25 +136,28 @@ def main():
     commercial_current = commercial_latest["value_thousand_barrels"]
     spr_current = spr_latest["value_thousand_barrels"]
 
-    commercial_30 = last_n(commercial_values, 4)   # weekly data ≈ 1 month
-    commercial_90 = last_n(commercial_values, 13)  # weekly data ≈ 1 quarter
+    commercial_4w = last_n(commercial_values, 4)
+    commercial_13w = last_n(commercial_values, 13)
 
-    spr_30 = last_n(spr_values, 4)
-    spr_90 = last_n(spr_values, 13)
+    spr_4w = last_n(spr_values, 4)
+    spr_13w = last_n(spr_values, 13)
 
-    commercial_30_avg = statistics.mean(commercial_30)
-    commercial_90_avg = statistics.mean(commercial_90)
+    commercial_4w_avg = statistics.mean(commercial_4w)
+    commercial_13w_avg = statistics.mean(commercial_13w)
 
-    spr_30_avg = statistics.mean(spr_30)
-    spr_90_avg = statistics.mean(spr_90)
+    spr_4w_avg = statistics.mean(spr_4w)
+    spr_13w_avg = statistics.mean(spr_13w)
 
-    commercial_change_4w = pct_change(commercial_rows[-5]["value_thousand_barrels"], commercial_current) if len(commercial_rows) >= 5 else 0
-    spr_change_4w = pct_change(spr_rows[-5]["value_thousand_barrels"], spr_current) if len(spr_rows) >= 5 else 0
+    commercial_change_4w = (
+        pct_change(commercial_rows[-5]["value_thousand_barrels"], commercial_current)
+        if len(commercial_rows) >= 5 else 0
+    )
 
-    # Stress logic:
-    # Lower commercial inventories = higher stress.
-    # Lower SPR inventories = higher stress.
-    # Falling inventory trend = higher stress.
+    spr_change_4w = (
+        pct_change(spr_rows[-5]["value_thousand_barrels"], spr_current)
+        if len(spr_rows) >= 5 else 0
+    )
+
     commercial_percentile = percentile_rank(commercial_values[-260:], commercial_current)
     spr_percentile = percentile_rank(spr_values[-260:], spr_current)
 
@@ -172,29 +175,29 @@ def main():
     )
 
     stress_score = round(clamp(stress_score), 1)
-
     level_code, level_hu, level_en = level_from_score(stress_score)
 
-    output = {
+    return {
         "generated_at": datetime.utcnow().strftime("%Y-%m-%d"),
+        "data_quality": "LIVE_EIA_API",
         "source": {
-            "commercial_stocks": "EIA WCESTUS1 weekly U.S. crude stocks excluding SPR",
-            "spr_stocks": "EIA WCSSTUS1 weekly U.S. crude oil stocks in SPR"
+            "commercial_stocks": "EIA API v2 WCESTUS1 weekly U.S. crude stocks excluding SPR",
+            "spr_stocks": "EIA API v2 WCSSTUS1 weekly U.S. crude oil stocks in SPR"
         },
         "unit": "thousand barrels",
         "commercial": {
             "latest_date": commercial_latest["date"],
             "current": round(commercial_current, 1),
-            "avg_4w": round(commercial_30_avg, 1),
-            "avg_13w": round(commercial_90_avg, 1),
+            "avg_4w": round(commercial_4w_avg, 1),
+            "avg_13w": round(commercial_13w_avg, 1),
             "change_4w_pct": round(commercial_change_4w, 2),
             "low_stock_stress": round(commercial_low_stock_stress, 1)
         },
         "spr": {
             "latest_date": spr_latest["date"],
             "current": round(spr_current, 1),
-            "avg_4w": round(spr_30_avg, 1),
-            "avg_13w": round(spr_90_avg, 1),
+            "avg_4w": round(spr_4w_avg, 1),
+            "avg_13w": round(spr_13w_avg, 1),
             "change_4w_pct": round(spr_change_4w, 2),
             "low_stock_stress": round(spr_low_stock_stress, 1)
         },
@@ -214,14 +217,33 @@ def main():
         )
     }
 
+
+def main():
+    try:
+        commercial_rows = fetch_eia_series("WCESTUS1")
+        spr_rows = fetch_eia_series("WCSSTUS1")
+
+        if len(commercial_rows) < 20:
+            raise RuntimeError(f"Nincs elég EIA commercial stocks adat: {len(commercial_rows)} sor.")
+
+        if len(spr_rows) < 20:
+            raise RuntimeError(f"Nincs elég EIA SPR stocks adat: {len(spr_rows)} sor.")
+
+        output = calculate_inventory_stress(commercial_rows, spr_rows)
+
+    except Exception as exc:
+        print(f"WARNING: EIA inventory fetch failed: {exc}")
+        output = load_existing_or_default()
+
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
     print("Inventory stress generated")
-    print(f"Inventory stress score: {stress_score}")
-    print(f"Inventory level: {level_code}")
+    print(f"Data quality: {output.get('data_quality')}")
+    print(f"Inventory stress score: {output.get('inventory_stress_score')}")
+    print(f"Inventory level: {output.get('inventory_stress_level')}")
 
 
 if __name__ == "__main__":
