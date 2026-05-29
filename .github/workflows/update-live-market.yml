@@ -29,13 +29,17 @@ jobs:
       - name: Generate market interpretation
         run: python scripts/generate_market_interpretation.py
 
-      - name: Commit updated live market and interpretation
+      - name: Generate risk drivers
+        run: python scripts/generate_risk_drivers.py
+
+      - name: Commit updated live market, interpretation and risk drivers
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add live-market.json
           git add docs/data/market_interpretation.json
+          git add docs/data/risk_drivers.json
 
-          git diff --cached --quiet || git commit -m "Update live market and market interpretation"
+          git diff --cached --quiet || git commit -m "Update live market intelligence data"
           git push
