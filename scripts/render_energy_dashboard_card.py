@@ -20,8 +20,8 @@ def main():
         browser = p.chromium.launch()
         page = browser.new_page(
             viewport={
-                "width": 1500,
-                "height": 1240,
+                "width": 1600,
+                "height": 1500,
                 "device_scale_factor": 2
             }
         )
