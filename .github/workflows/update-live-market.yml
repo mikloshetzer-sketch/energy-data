@@ -26,6 +26,9 @@ jobs:
       - name: Run live market updater
         run: python update_live_market.py
 
+      - name: Generate inventory stress
+        run: python scripts/generate_inventory_stress.py
+
       - name: Generate market interpretation
         run: python scripts/generate_market_interpretation.py
 
@@ -44,22 +47,19 @@ jobs:
       - name: Generate china exposure
         run: python scripts/generate_china_exposure.py
 
-      - name: Generate inventory stress
-        run: python scripts/generate_inventory_stress.py
-
       - name: Commit updated live market intelligence data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add live-market.json
+          git add docs/data/inventory_stress.json
           git add docs/data/market_interpretation.json
           git add docs/data/risk_drivers.json
           git add docs/data/historical_context.json
           git add docs/data/energy_forecast.json
           git add docs/data/chokepoint_status.json
           git add docs/data/china_exposure.json
-          git add docs/data/inventory_stress.json
 
           git diff --cached --quiet || git commit -m "Update live market intelligence data"
           git push
