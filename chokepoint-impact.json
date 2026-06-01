@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-06-01 06:09 UTC",
+    "updated": "2026-06-01 12:43 UTC",
     "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -27,45 +27,49 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 22.0,
+  "global_trade_risk_index": 30.5,
   "middle_east_conflict_impact": {
-    "label": "low",
-    "score": 27.8,
+    "label": "medium",
+    "score": 44.9,
     "components": {
       "structural_score": 47.9,
-      "osint_signal_score": 12.9,
-      "osint_raw_total_risk": 32.36,
-      "osint_risk_level": "LOW",
-      "osint_confidence": "LOW",
-      "osint_total_events": 23,
+      "osint_signal_score": 69.7,
+      "osint_raw_total_risk": 174.26,
+      "osint_risk_level": "MEDIUM",
+      "osint_confidence": "HIGH",
+      "osint_total_events": 161,
       "osint_top_locations": [
         {
-          "name": "Israel",
-          "risk": 23.26
+          "name": "Iran",
+          "risk": 70.45
         },
         {
-          "name": "Iran",
-          "risk": 6.7
+          "name": "Israel",
+          "risk": 65.01
         },
         {
           "name": "Gaza Strip",
-          "risk": 2.2
+          "risk": 23.75
         },
         {
-          "name": "United Arab Emirates",
-          "risk": 0.2
+          "name": "Lebanon",
+          "risk": 3.95
+        },
+        {
+          "name": "Middle East",
+          "risk": 3.85
         }
       ],
-      "osint_updated": "2026-06-01 05:16 UTC",
+      "osint_updated": "2026-06-01 12:10 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.89,
+      "osint_age_hours": 0.56,
       "osint_used_in_blend": true,
-      "conflict_signal_score": 10.0,
-      "conflict_signal_raw_index": -0.5,
+      "conflict_signal_score": 12.8,
+      "conflict_signal_raw_index": -0.64,
       "conflict_signal_assessment": "mild escalation",
-      "conflict_signal_trajectory": "uncertain",
-      "conflict_signal_outlook": "Short-term direction remains uncertain.",
+      "conflict_signal_trajectory": "escalating",
+      "conflict_signal_outlook": "Rising tension, but not yet at peak intensity.",
       "conflict_signal_article_count": 50,
       "conflict_signal_updated": null,
       "conflict_signal_available": true,
@@ -76,10 +80,10 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -7.4,
-    "middle_east_conflict_impact_change": -15.0,
-    "direction_global": "down",
-    "direction_middle_east": "down"
+    "global_trade_risk_index_change": 1.1,
+    "middle_east_conflict_impact_change": 2.1,
+    "direction_global": "up",
+    "direction_middle_east": "up"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
