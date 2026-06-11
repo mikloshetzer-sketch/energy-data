@@ -1,23 +1,23 @@
 {
   "meta": {
-    "updated": "2026-06-11 07:04 UTC",
+    "updated": "2026-06-11 11:47 UTC",
     "source_mode": "live"
   },
   "prices": {
-    "live_brent": 91.4,
-    "live_wti": 88.23,
+    "live_brent": 92.18,
+    "live_wti": 89.31,
     "live_source": "spot_fallback",
-    "spot_brent": 91.4,
-    "spot_wti": 88.23,
+    "spot_brent": 92.18,
+    "spot_wti": 89.31,
     "spot_source": "oil_data_spot"
   },
   "risk": {
-    "global_trade_risk_index": 32.2,
-    "middle_east_conflict_impact": 48.1,
+    "global_trade_risk_index": 32.0,
+    "middle_east_conflict_impact": 48.0,
     "middle_east_conflict_label": "medium",
     "daily_change": {
-      "global_trade_risk_index_change": -0.6,
-      "middle_east_conflict_impact_change": -1.2,
+      "global_trade_risk_index_change": -0.8,
+      "middle_east_conflict_impact_change": -1.3,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
@@ -34,7 +34,7 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0395,
+        "estimated_impact": 0.0375,
         "status": "low"
       },
       {
@@ -44,12 +44,12 @@
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0067,
+        "estimated_impact": 0.0071,
         "status": "low"
       }
     ],
     "me_components": {
-      "structural_score": 48.2,
+      "structural_score": 47.9,
       "osint_signal_score": 80.0,
       "osint_raw_total_risk": 200.01,
       "osint_risk_level": "MEDIUM",
@@ -80,7 +80,7 @@
       "osint_updated": "2026-06-11 04:59 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.97,
+      "osint_age_hours": 5.85,
       "osint_used_in_blend": true,
       "conflict_signal_score": 20.0,
       "conflict_signal_raw_index": -1.0,
@@ -96,7 +96,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-06-11 05:57 UTC",
+      "updated": "2026-06-11 10:49 UTC",
       "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
