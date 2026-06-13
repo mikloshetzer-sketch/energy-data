@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-06-13 04:25 UTC",
+    "updated": "2026-06-13 08:27 UTC",
     "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -27,43 +27,43 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 32.4,
+  "global_trade_risk_index": 31.0,
   "middle_east_conflict_impact": {
     "label": "medium",
-    "score": 48.3,
+    "score": 45.8,
     "components": {
-      "structural_score": 48.8,
-      "osint_signal_score": 79.8,
-      "osint_raw_total_risk": 199.51,
+      "structural_score": 48.2,
+      "osint_signal_score": 72.3,
+      "osint_raw_total_risk": 180.66,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 172,
+      "osint_total_events": 173,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 106.5
+          "risk": 97.0
         },
         {
           "name": "Israel",
-          "risk": 61.96
+          "risk": 56.56
         },
         {
           "name": "Gaza Strip",
-          "risk": 7.1
+          "risk": 6.5
         },
         {
           "name": "Oman",
-          "risk": 5.2
+          "risk": 4.55
         },
         {
-          "name": "Tehran",
-          "risk": 4.6
+          "name": "Middle East",
+          "risk": 4.3
         }
       ],
-      "osint_updated": "2026-06-12 23:52 UTC",
+      "osint_updated": "2026-06-13 04:52 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 4.56,
+      "osint_age_hours": 3.59,
       "osint_used_in_blend": true,
       "conflict_signal_score": 30.8,
       "conflict_signal_raw_index": -1.54,
@@ -80,14 +80,14 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": 0.0,
-    "middle_east_conflict_impact_change": 0.0,
-    "direction_global": "flat",
-    "direction_middle_east": "flat"
+    "global_trade_risk_index_change": -1.4,
+    "middle_east_conflict_impact_change": -2.5,
+    "direction_global": "down",
+    "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
-    "suez": 9,
+    "suez": 1,
     "bab_el_mandeb": 0,
     "bosporus": 0
   },
@@ -104,7 +104,7 @@
     },
     {
       "name": "Szuezi térség",
-      "estimated_impact": 0.0434,
+      "estimated_impact": 0.0395,
       "status": "low"
     },
     {
@@ -161,9 +161,9 @@
       "substitution_penalty": 0.68,
       "disruption_level": 0.55,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 9,
-      "ais_signal_multiplier": 1.1,
-      "estimated_impact": 0.0434,
+      "ais_count_signal": 1,
+      "ais_signal_multiplier": 1.0,
+      "estimated_impact": 0.0395,
       "status": "low",
       "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
     },
