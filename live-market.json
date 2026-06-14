@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-06-14 20:40 UTC",
+    "updated": "2026-06-14 22:34 UTC",
     "source_mode": "live"
   },
   "prices": {
@@ -12,14 +12,14 @@
     "spot_source": "oil_data_spot"
   },
   "risk": {
-    "global_trade_risk_index": 30.8,
-    "middle_east_conflict_impact": 45.5,
+    "global_trade_risk_index": 30.6,
+    "middle_east_conflict_impact": 45.2,
     "middle_east_conflict_label": "medium",
     "daily_change": {
-      "global_trade_risk_index_change": 0.1,
-      "middle_east_conflict_impact_change": 0.3,
-      "direction_global": "up",
-      "direction_middle_east": "up"
+      "global_trade_risk_index_change": -0.1,
+      "middle_east_conflict_impact_change": 0.0,
+      "direction_global": "down",
+      "direction_middle_east": "flat"
     },
     "top_risks": [
       {
@@ -50,23 +50,23 @@
     ],
     "me_components": {
       "structural_score": 47.9,
-      "osint_signal_score": 71.8,
-      "osint_raw_total_risk": 179.41,
+      "osint_signal_score": 70.8,
+      "osint_raw_total_risk": 177.11,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
       "osint_total_events": 170,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 89.4
+          "risk": 85.8
         },
         {
           "name": "Israel",
-          "risk": 52.56
+          "risk": 52.61
         },
         {
           "name": "Gaza Strip",
-          "risk": 9.9
+          "risk": 10.35
         },
         {
           "name": "Lebanon",
@@ -77,10 +77,10 @@
           "risk": 5.5
         }
       ],
-      "osint_updated": "2026-06-14 19:58 UTC",
+      "osint_updated": "2026-06-14 21:41 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.4,
+      "osint_age_hours": 0.62,
       "osint_used_in_blend": true,
       "conflict_signal_score": 15.2,
       "conflict_signal_raw_index": -0.76,
@@ -96,7 +96,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-06-14 20:22 UTC",
+      "updated": "2026-06-14 22:17 UTC",
       "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
