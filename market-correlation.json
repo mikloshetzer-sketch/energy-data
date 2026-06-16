@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-06-16 11:37 UTC",
+    "updated": "2026-06-16 11:38 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -8,36 +8,36 @@
     "min_leader_correlation": 0.2
   },
   "latest": {
-    "leader": "bosporus_impact",
-    "leader_label": "Bosporus",
-    "leader_correlation": -0.765,
-    "leader_weighted_strength": 0.535,
+    "leader": "suez_impact",
+    "leader_label": "Suez",
+    "leader_correlation": 0.374,
+    "leader_weighted_strength": 0.411,
     "ranked": [
-      {
-        "key": "bosporus_impact",
-        "label": "Bosporus",
-        "correlation": -0.765,
-        "strategic_weight": 0.7,
-        "weighted_strength": 0.535
-      },
       {
         "key": "suez_impact",
         "label": "Suez",
-        "correlation": 0.361,
+        "correlation": 0.374,
         "strategic_weight": 1.1,
-        "weighted_strength": 0.397
+        "weighted_strength": 0.411
+      },
+      {
+        "key": "bosporus_impact",
+        "label": "Bosporus",
+        "correlation": -0.365,
+        "strategic_weight": 0.7,
+        "weighted_strength": 0.256
       },
       {
         "key": "hormuz_impact",
         "label": "Hormuz",
-        "correlation": 0.0,
+        "correlation": -0.0,
         "strategic_weight": 1.5,
         "weighted_strength": 0.0
       },
       {
         "key": "bab_el_mandeb_impact",
         "label": "Bab el-Mandeb",
-        "correlation": -0.0,
+        "correlation": 0.0,
         "strategic_weight": 1.3,
         "weighted_strength": 0.0
       }
@@ -71,7 +71,7 @@
     "bosporus_impact": {
       "label": "Bosporus",
       "lag_days": -3,
-      "correlation": -0.332,
+      "correlation": -0.331,
       "strategic_weight": 0.7,
       "weighted_strength": 0.232,
       "signal": "leading"
@@ -985,10 +985,10 @@
     },
     {
       "date": "2026-06-16",
-      "brent_vs_hormuz_impact": 0.0,
-      "brent_vs_suez_impact": 0.361,
-      "brent_vs_bab_el_mandeb_impact": -0.0,
-      "brent_vs_bosporus_impact": -0.765
+      "brent_vs_hormuz_impact": -0.0,
+      "brent_vs_suez_impact": 0.374,
+      "brent_vs_bab_el_mandeb_impact": 0.0,
+      "brent_vs_bosporus_impact": -0.365
     }
   ]
 }
