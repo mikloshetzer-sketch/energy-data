@@ -1,18 +1,18 @@
 {
   "market": {
-    "brent": "79.31 USD/hordó",
-    "wti": "75.68 USD/hordó",
-    "inventory": "7.8 millió hordó",
+    "brent": "78.55 USD/hordó",
+    "wti": "74.59 USD/hordó",
+    "inventory": "7.9 millió hordó",
     "supply": "110.9 millió hordó/nap",
-    "brent_30d_trend": "-1.19%",
-    "brent_1d_change": "+0.17%",
-    "brent_7d_change": "+2.08%",
-    "wti_1d_change": "+0.72%",
-    "wti_7d_change": "+2.54%"
+    "brent_30d_trend": "-24.58%",
+    "brent_1d_change": "-4.83%",
+    "brent_7d_change": "-14.77%",
+    "wti_1d_change": "-4.48%",
+    "wti_7d_change": "-12.58%"
   },
   "spot": {
-    "brent": "97.46 USD/hordó",
-    "wti": "95.00 USD/hordó"
+    "brent": "84.36 USD/hordó",
+    "wti": "84.65 USD/hordó"
   },
   "production": {
     "current": "110.9 millió hordó/nap",
@@ -247,7 +247,7 @@
     "europe": {
       "level": "low",
       "label": "Korlátozott hatás",
-      "score": 4.3,
+      "score": 3.1,
       "factor": 1.0,
       "icon": "🇪🇺",
       "dependency_label": "Közepes kitettség",
@@ -257,7 +257,7 @@
     "america": {
       "level": "low",
       "label": "Korlátozott hatás",
-      "score": 2.6,
+      "score": 1.9,
       "factor": 0.6,
       "icon": "🇺🇸",
       "dependency_label": "Alacsonyabb közvetlen kitettség",
@@ -265,29 +265,29 @@
       "text": "Az amerikai piac termelői háttere miatt közvetlenül kevésbé sérülékeny, bár a globális ártrendek itt is megjelennek."
     },
     "asia": {
-      "level": "moderate",
-      "label": "Mérsékelt hatás",
-      "score": 6.7,
+      "level": "low",
+      "label": "Korlátozott hatás",
+      "score": 4.9,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
       "dependency_note": "Ázsia erősen függ a közel-keleti importtól, ezért a Hormuzi-szoroshoz és a tankerforgalomhoz kapcsolódó zavarok itt csapódnak le legerősebben.",
-      "text": "Ázsia továbbra is érzékeny a közel-keleti fejleményekre, de a jelenlegi mozgás még nem utal maximális régiós nyomásra."
+      "text": "Ázsiában is megjelenik a kockázat, de a jelenlegi indikátorok még nem utalnak szélsőséges piaci átgyűrűzésre."
     }
   },
   "meta": {
-    "updated": "2026-06-17 11:17 UTC",
+    "updated": "2026-06-18 10:48 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
-    "score": 190.4,
-    "level": "elevated",
-    "label": "Emelkedett"
+    "score": 164.9,
+    "level": "moderate",
+    "label": "Mérsékelt"
   },
   "market_stress": {
-    "level": "watch",
-    "label": "Mérsékelten feszült",
-    "note": "A piacon emelkedő érzékenység látható, de még nem alakult ki szélsőséges sokkhelyzet."
+    "level": "normal",
+    "label": "Normál",
+    "note": "A piaci reakciók jelenleg nem utalnak szélsőséges rövid távú feszültségre."
   },
   "forecast": {
     "one_month": "80–85 USD/hordó",
@@ -295,12 +295,12 @@
     "twelve_months": "75–95 USD/hordó"
   },
   "summary": {
-    "status": "A globális olajpiac jelenleg kiegyensúlyozottabb képet mutat, de a geopolitikai és kínálati tényezők továbbra is érdemben befolyásolják a kilátásokat.",
+    "status": "Az olajpiac rövid távon enyhülő árnyomást mutat, ami kiegyensúlyozottabb piaci környezetre utalhat.",
     "supply_note": "Az amerikai készletszint viszonylag magasabb, ami rövid távon részben tompíthatja az árakra nehezedő felfelé mutató nyomást.",
-    "risk_note": "A térségben emelkedett kockázati környezet figyelhető meg, ami továbbra is támogatja a geopolitikai kockázati prémium fennmaradását."
+    "risk_note": "A térségben mérsékelt, de figyelmet igénylő geopolitikai kockázatok maradtak fenn."
   },
   "drivers": {
-    "text": "A jelenlegi ármozgásokat érezhetően befolyásolja a közel-keleti geopolitikai feszültség, miközben a Brent ár 30 napos mozgása inkább mérsékelt irányt mutat, miközben a magasabb amerikai készletszint részben csökkentheti a rövid távú árnyomást."
+    "text": "A jelenlegi ármozgásokat elsősorban a keresleti és kínálati fundamentumok alakítják, miközben a Brent ár 30 napos csökkenése mérsékeltebb piaci hangulatra utal, miközben a magasabb amerikai készletszint részben csökkentheti a rövid távú árnyomást."
   },
   "notes": {
     "price_basis": "A market blokk piaci (futures) árakat használ, a spot blokk EIA napi spot adatokat tartalmaz.",
