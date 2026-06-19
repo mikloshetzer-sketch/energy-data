@@ -22,20 +22,14 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Node.js telepítése
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Playwright telepítése
+      - name: Python függőségek telepítése
         run: |
-          npm install -g playwright
-          playwright install chromium
-          playwright install-deps
-
-      - name: Python függőségek
-        run: |
+          python -m pip install --upgrade pip
           pip install playwright
+
+      - name: Playwright Chromium telepítése
+        run: |
+          python -m playwright install --with-deps chromium
 
       - name: Dashboard PNG renderelése
         run: |
