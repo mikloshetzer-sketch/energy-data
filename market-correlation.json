@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-06-20 01:33 UTC",
+    "updated": "2026-06-20 04:46 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -10,22 +10,22 @@
   "latest": {
     "leader": "suez_impact",
     "leader_label": "Suez",
-    "leader_correlation": -0.323,
-    "leader_weighted_strength": 0.355,
+    "leader_correlation": -0.259,
+    "leader_weighted_strength": 0.285,
     "ranked": [
       {
         "key": "suez_impact",
         "label": "Suez",
-        "correlation": -0.323,
+        "correlation": -0.259,
         "strategic_weight": 1.1,
-        "weighted_strength": 0.355
+        "weighted_strength": 0.285
       },
       {
         "key": "bosporus_impact",
         "label": "Bosporus",
-        "correlation": -0.337,
+        "correlation": -0.356,
         "strategic_weight": 0.7,
-        "weighted_strength": 0.236
+        "weighted_strength": 0.249
       },
       {
         "key": "hormuz_impact",
@@ -47,33 +47,33 @@
     "hormuz_impact": {
       "label": "Hormuz",
       "lag_days": -3,
-      "correlation": 0.795,
+      "correlation": 0.786,
       "strategic_weight": 1.5,
-      "weighted_strength": 1.193,
+      "weighted_strength": 1.179,
       "signal": "leading"
     },
     "suez_impact": {
       "label": "Suez",
       "lag_days": -3,
-      "correlation": -0.182,
+      "correlation": -0.168,
       "strategic_weight": 1.1,
-      "weighted_strength": 0.2,
+      "weighted_strength": 0.185,
       "signal": "weak"
     },
     "bab_el_mandeb_impact": {
       "label": "Bab el-Mandeb",
       "lag_days": 3,
-      "correlation": 0.098,
+      "correlation": 0.108,
       "strategic_weight": 1.3,
-      "weighted_strength": 0.127,
+      "weighted_strength": 0.141,
       "signal": "weak"
     },
     "bosporus_impact": {
       "label": "Bosporus",
       "lag_days": -3,
-      "correlation": -0.276,
+      "correlation": -0.261,
       "strategic_weight": 0.7,
-      "weighted_strength": 0.194,
+      "weighted_strength": 0.183,
       "signal": "leading"
     }
   },
@@ -81,8 +81,8 @@
     "key": "hormuz_impact",
     "label": "Hormuz",
     "lag_days": -3,
-    "correlation": 0.795,
-    "weighted_strength": 1.193,
+    "correlation": 0.786,
+    "weighted_strength": 1.179,
     "signal": "leading",
     "text": "Hormuz leads Brent by 3 day(s)"
   },
@@ -1006,10 +1006,17 @@
     },
     {
       "date": "2026-06-19",
+      "brent_vs_hormuz_impact": -0.0,
+      "brent_vs_suez_impact": -0.346,
+      "brent_vs_bab_el_mandeb_impact": 0.0,
+      "brent_vs_bosporus_impact": -0.402
+    },
+    {
+      "date": "2026-06-20",
       "brent_vs_hormuz_impact": 0.0,
-      "brent_vs_suez_impact": -0.323,
+      "brent_vs_suez_impact": -0.259,
       "brent_vs_bab_el_mandeb_impact": -0.0,
-      "brent_vs_bosporus_impact": -0.337
+      "brent_vs_bosporus_impact": -0.356
     }
   ]
 }
