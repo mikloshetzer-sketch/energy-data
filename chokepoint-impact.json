@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-06-27 16:11 UTC",
+    "updated": "2026-06-27 18:10 UTC",
     "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -27,25 +27,25 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 27.2,
+  "global_trade_risk_index": 27.1,
   "middle_east_conflict_impact": {
     "label": "medium",
-    "score": 37.8,
+    "score": 37.9,
     "components": {
-      "structural_score": 48.8,
-      "osint_signal_score": 44.6,
-      "osint_raw_total_risk": 111.51,
+      "structural_score": 48.6,
+      "osint_signal_score": 45.4,
+      "osint_raw_total_risk": 113.56,
       "osint_risk_level": "LOW",
       "osint_confidence": "MEDIUM",
       "osint_total_events": 136,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 63.16
+          "risk": 61.91
         },
         {
           "name": "Israel",
-          "risk": 19.7
+          "risk": 23.75
         },
         {
           "name": "West Bank",
@@ -57,13 +57,13 @@
         },
         {
           "name": "Oman",
-          "risk": 3.6
+          "risk": 3.15
         }
       ],
-      "osint_updated": "2026-06-27 15:40 UTC",
+      "osint_updated": "2026-06-27 17:31 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.53,
+      "osint_age_hours": 0.65,
       "osint_used_in_blend": true,
       "conflict_signal_score": 9.6,
       "conflict_signal_raw_index": -0.48,
@@ -80,16 +80,16 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -0.2,
-    "middle_east_conflict_impact_change": -0.7,
+    "global_trade_risk_index_change": -0.3,
+    "middle_east_conflict_impact_change": -0.6,
     "direction_global": "down",
     "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
-    "suez": 12,
+    "suez": 3,
     "bab_el_mandeb": 0,
-    "bosporus": 5
+    "bosporus": 3
   },
   "top_risks": [
     {
@@ -104,7 +104,7 @@
     },
     {
       "name": "Szuezi térség",
-      "estimated_impact": 0.0434,
+      "estimated_impact": 0.0419,
       "status": "low"
     },
     {
@@ -114,7 +114,7 @@
     },
     {
       "name": "Boszporusz",
-      "estimated_impact": 0.0078,
+      "estimated_impact": 0.0075,
       "status": "low"
     }
   ],
@@ -161,9 +161,9 @@
       "substitution_penalty": 0.68,
       "disruption_level": 0.55,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 12,
-      "ais_signal_multiplier": 1.1,
-      "estimated_impact": 0.0434,
+      "ais_count_signal": 3,
+      "ais_signal_multiplier": 1.06,
+      "estimated_impact": 0.0419,
       "status": "low",
       "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
     },
@@ -193,9 +193,9 @@
       "substitution_penalty": 0.7,
       "disruption_level": 0.22,
       "regional_adjustment": 1.0,
-      "ais_count_signal": 5,
-      "ais_signal_multiplier": 1.1,
-      "estimated_impact": 0.0078,
+      "ais_count_signal": 3,
+      "ais_signal_multiplier": 1.06,
+      "estimated_impact": 0.0075,
       "status": "low",
       "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
     },
