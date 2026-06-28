@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-06-28 00:08 UTC",
+    "updated": "2026-06-28 05:22 UTC",
     "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -27,43 +27,43 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 27.6,
+  "global_trade_risk_index": 26.6,
   "middle_east_conflict_impact": {
     "label": "medium",
-    "score": 38.8,
+    "score": 36.7,
     "components": {
       "structural_score": 48.8,
-      "osint_signal_score": 47.9,
-      "osint_raw_total_risk": 119.86,
+      "osint_signal_score": 41.1,
+      "osint_raw_total_risk": 102.72,
       "osint_risk_level": "LOW",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 133,
+      "osint_total_events": 126,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 66.51
+          "risk": 56.52
         },
         {
           "name": "Israel",
-          "risk": 26.9
+          "risk": 21.8
         },
         {
           "name": "West Bank",
-          "risk": 4.8
+          "risk": 4.55
         },
         {
           "name": "Iraq",
-          "risk": 4.15
+          "risk": 3.7
         },
         {
-          "name": "Oman",
-          "risk": 3.15
+          "name": "Syria",
+          "risk": 3.2
         }
       ],
-      "osint_updated": "2026-06-27 23:17 UTC",
+      "osint_updated": "2026-06-28 04:52 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.86,
+      "osint_age_hours": 0.5,
       "osint_used_in_blend": true,
       "conflict_signal_score": 9.6,
       "conflict_signal_raw_index": -0.48,
@@ -80,14 +80,14 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": 0.2,
-    "middle_east_conflict_impact_change": 0.3,
-    "direction_global": "up",
-    "direction_middle_east": "up"
+    "global_trade_risk_index_change": -0.8,
+    "middle_east_conflict_impact_change": -1.8,
+    "direction_global": "down",
+    "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
-    "suez": 13,
+    "suez": 7,
     "bab_el_mandeb": 0,
     "bosporus": 3
   },
@@ -161,7 +161,7 @@
       "substitution_penalty": 0.68,
       "disruption_level": 0.55,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 13,
+      "ais_count_signal": 7,
       "ais_signal_multiplier": 1.1,
       "estimated_impact": 0.0434,
       "status": "low",
