@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-07-06 12:57 UTC",
+    "updated": "2026-07-06 16:29 UTC",
     "source_mode": "live"
   },
   "prices": {
@@ -12,14 +12,14 @@
     "spot_source": "oil_data_spot"
   },
   "risk": {
-    "global_trade_risk_index": 24.0,
-    "middle_east_conflict_impact": 31.9,
+    "global_trade_risk_index": 24.6,
+    "middle_east_conflict_impact": 33.1,
     "middle_east_conflict_label": "medium",
     "daily_change": {
-      "global_trade_risk_index_change": -0.1,
-      "middle_east_conflict_impact_change": -0.2,
-      "direction_global": "down",
-      "direction_middle_east": "down"
+      "global_trade_risk_index_change": 0.5,
+      "middle_east_conflict_impact_change": 1.0,
+      "direction_global": "up",
+      "direction_middle_east": "up"
     },
     "top_risks": [
       {
@@ -50,37 +50,37 @@
     ],
     "me_components": {
       "structural_score": 47.9,
-      "osint_signal_score": 26.4,
-      "osint_raw_total_risk": 65.94,
+      "osint_signal_score": 30.4,
+      "osint_raw_total_risk": 75.98,
       "osint_risk_level": "LOW",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 100,
+      "osint_total_events": 107,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 19.98
+          "risk": 20.99
         },
         {
           "name": "Israel",
-          "risk": 10.15
-        },
-        {
-          "name": "Damascus",
-          "risk": 8.1
+          "risk": 13.9
         },
         {
           "name": "Gaza Strip",
-          "risk": 8.0
+          "risk": 12.8
+        },
+        {
+          "name": "Damascus",
+          "risk": 7.8
         },
         {
           "name": "Yemen",
           "risk": 5.75
         }
       ],
-      "osint_updated": "2026-07-06 11:03 UTC",
+      "osint_updated": "2026-07-06 15:55 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 1.89,
+      "osint_age_hours": 0.5,
       "osint_used_in_blend": true,
       "conflict_signal_score": 0.0,
       "conflict_signal_raw_index": 0.1,
@@ -96,7 +96,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-07-06 12:56 UTC",
+      "updated": "2026-07-06 16:25 UTC",
       "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
