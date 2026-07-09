@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-07-09 00:19 UTC",
+    "updated": "2026-07-09 05:04 UTC",
     "source_mode": "live"
   },
   "prices": {
@@ -12,12 +12,12 @@
     "spot_source": "oil_data_spot"
   },
   "risk": {
-    "global_trade_risk_index": 20.5,
-    "middle_east_conflict_impact": 24.4,
-    "middle_east_conflict_label": "low",
+    "global_trade_risk_index": 28.3,
+    "middle_east_conflict_impact": 40.4,
+    "middle_east_conflict_label": "medium",
     "daily_change": {
-      "global_trade_risk_index_change": -8.6,
-      "middle_east_conflict_impact_change": -17.6,
+      "global_trade_risk_index_change": -0.8,
+      "middle_east_conflict_impact_change": -1.6,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
@@ -34,7 +34,7 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0434,
+        "estimated_impact": 0.0375,
         "status": "low"
       },
       {
@@ -44,38 +44,59 @@
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0078,
+        "estimated_impact": 0.0071,
         "status": "low"
       }
     ],
     "me_components": {
-      "structural_score": 48.8,
-      "osint_signal_score": 0.0,
-      "osint_raw_total_risk": 0.0,
-      "osint_risk_level": "UNKNOWN",
-      "osint_confidence": "LOW",
-      "osint_total_events": 0,
-      "osint_top_locations": [],
-      "osint_updated": null,
-      "osint_available": false,
-      "osint_stale": true,
-      "osint_age_hours": null,
-      "osint_used_in_blend": false,
-      "conflict_signal_score": 0.0,
-      "conflict_signal_raw_index": null,
-      "conflict_signal_assessment": "unknown",
-      "conflict_signal_trajectory": "unknown",
-      "conflict_signal_outlook": "unknown",
-      "conflict_signal_article_count": 0,
+      "structural_score": 47.9,
+      "osint_signal_score": 54.9,
+      "osint_raw_total_risk": 137.37,
+      "osint_risk_level": "MEDIUM",
+      "osint_confidence": "HIGH",
+      "osint_total_events": 152,
+      "osint_top_locations": [
+        {
+          "name": "Iran",
+          "risk": 69.81
+        },
+        {
+          "name": "Gaza Strip",
+          "risk": 14.95
+        },
+        {
+          "name": "Israel",
+          "risk": 14.0
+        },
+        {
+          "name": "Damascus",
+          "risk": 10.3
+        },
+        {
+          "name": "Syria",
+          "risk": 4.7
+        }
+      ],
+      "osint_updated": "2026-07-09 04:14 UTC",
+      "osint_available": true,
+      "osint_stale": false,
+      "osint_age_hours": 0.75,
+      "osint_used_in_blend": true,
+      "conflict_signal_score": 9.2,
+      "conflict_signal_raw_index": -0.46,
+      "conflict_signal_assessment": "mild escalation",
+      "conflict_signal_trajectory": "escalating",
+      "conflict_signal_outlook": "Rising tension, but not yet at peak intensity.",
+      "conflict_signal_article_count": 50,
       "conflict_signal_updated": null,
-      "conflict_signal_available": false,
+      "conflict_signal_available": true,
       "conflict_signal_stale": true,
       "conflict_signal_age_hours": null,
       "conflict_signal_used_in_blend": false,
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-07-09 00:17 UTC",
+      "updated": "2026-07-09 04:58 UTC",
       "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
