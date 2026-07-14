@@ -1,7 +1,7 @@
 {
   "market": {
-    "brent": "86.31 USD/hordó",
-    "wti": "80.70 USD/hordó",
+    "brent": "86.11 USD/hordó",
+    "wti": "80.61 USD/hordó",
     "inventory": "730.8 millió hordó",
     "supply": "111.2 millió hordó/nap",
     "brent_30d_trend": "-40.41%",
@@ -267,7 +267,7 @@
     "asia": {
       "level": "moderate",
       "label": "Mérsékelt hatás",
-      "score": 5.8,
+      "score": 5.7,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
@@ -276,7 +276,7 @@
     }
   },
   "meta": {
-    "updated": "2026-07-14 07:57 UTC",
+    "updated": "2026-07-14 08:08 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
@@ -286,14 +286,14 @@
     "type": "geopolitical"
   },
   "energy_risk": {
-    "score": 23.6,
+    "score": 29.6,
     "level": "high",
     "label": "Magas",
     "components": {
       "geopolitical": 12.6,
       "price_level": 11.0,
-      "price_momentum": 0.0,
-      "market_stress": 0.0,
+      "price_momentum": 3.0,
+      "market_stress": 3.0,
       "supply_pressure": 0.0
     },
     "triggers": [
@@ -302,14 +302,53 @@
     "method": "Összetett index: geopolitika 40%, árszint 20%, ármozgás 20%, piaci stressz 10%, készlet és kínálat 10%."
   },
   "market_stress": {
-    "level": "normal",
-    "label": "Normál",
-    "note": "A piaci reakciók jelenleg nem utalnak szélsőséges rövid távú feszültségre."
+    "score": 25.0,
+    "level": "watch",
+    "label": "Mérsékelten feszült",
+    "note": "A piac érzékenyebb a szokásosnál, de a mért adatok még nem mutatnak szélsőséges reakciót.",
+    "components": {
+      "volatility": 4.0,
+      "price_level": 12.0,
+      "geopolitical": 5.0,
+      "supply_buffer": 0.0,
+      "brent_wti_spread": 4.0
+    },
+    "triggers": [],
+    "methodology": "A 0–100-as mutató a Brent és WTI napi és heti abszolút ármozgását (30%), az aktuális olajárszintet (20%), a ME Security Monitor geopolitikai kategóriáját (20%), az EIA amerikai készlet- és globális kínálati adatait (15%), valamint a Brent–WTI árkülönbséget (15%) értékeli.",
+    "limitations": "A mutató nem mér közvetlenül tankerforgalmat, biztosítási díjakat, szoroslezárást vagy tényleges fizikai termeléskiesést.",
+    "data_quality": {
+      "completeness_percent": 100,
+      "missing_fields": [],
+      "available_fields": [
+        "brent_price",
+        "wti_price",
+        "brent_1d",
+        "brent_7d",
+        "wti_1d",
+        "wti_7d",
+        "geopolitical",
+        "inventory",
+        "global_supply"
+      ]
+    },
+    "observed_values": {
+      "brent": 86.11,
+      "wti": 80.61,
+      "brent_1d_change": 1.2813046010483335,
+      "brent_7d_change": -5.668565229183608,
+      "wti_1d_change": -0.1864333859171227,
+      "wti_7d_change": -2.5483057966956135,
+      "brent_wti_spread": 5.5,
+      "inventory_million_barrels": 730.8,
+      "global_supply_mbd": 111.2493672,
+      "geopolitical_level": "moderate"
+    }
   },
   "forecast": {
-    "one_month": "80–85 USD/hordó",
-    "three_months": "78–90 USD/hordó",
-    "twelve_months": "75–95 USD/hordó"
+    "one_month": "nincs automatikus előrejelzés",
+    "three_months": "nincs automatikus előrejelzés",
+    "twelve_months": "nincs automatikus előrejelzés",
+    "note": "A rendszer jelenleg megfigyelt adatokat értékel, önálló árfolyam-előrejelzést nem készít."
   },
   "summary": {
     "status": "Az olajpiac rövid távon enyhülő árnyomást mutat, ami kiegyensúlyozottabb piaci környezetre utalhat.",
@@ -324,6 +363,8 @@
     "chart_basis": "A diagram piaci napi jegyzést követ, ezért eltérhet a spot adatoktól.",
     "production_basis": "A termelési görbe havi EIA STEO adatsor.",
     "regional_basis": "A modell a geopolitikai kockázatot és ármozgást együtt értékeli.",
-    "energy_risk_basis": "A fő energiapiaci barométer összetett indexet használ: geopolitika, árszint, ármozgás, piaci stressz, készlet és globális kínálat."
+    "energy_risk_basis": "A fő energiapiaci barométer kizárólag a lekért geopolitikai, ár-, készlet- és kínálati adatokból képez összetett indexet.",
+    "market_stress_basis": "A piaci feszültség a Brent és WTI árszintjét, napi és heti abszolút változását, a Brent–WTI spreadet, a geopolitikai kategóriát, valamint az EIA készlet- és kínálati adatokat használja.",
+    "model_limitations": "A rendszer nem mér közvetlenül tankerforgalmat, biztosítási díjakat, szoroslezárást vagy tényleges fizikai termeléskiesést."
   }
 }
