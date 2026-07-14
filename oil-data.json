@@ -1,7 +1,7 @@
 {
   "market": {
-    "brent": "77.29 USD/hordó",
-    "wti": "72.65 USD/hordó",
+    "brent": "86.31 USD/hordó",
+    "wti": "80.70 USD/hordó",
     "inventory": "730.8 millió hordó",
     "supply": "111.2 millió hordó/nap",
     "brent_30d_trend": "-40.41%",
@@ -247,7 +247,7 @@
     "europe": {
       "level": "low",
       "label": "Korlátozott hatás",
-      "score": 3.5,
+      "score": 3.7,
       "factor": 1.0,
       "icon": "🇪🇺",
       "dependency_label": "Közepes kitettség",
@@ -257,7 +257,7 @@
     "america": {
       "level": "low",
       "label": "Korlátozott hatás",
-      "score": 2.1,
+      "score": 2.2,
       "factor": 0.6,
       "icon": "🇺🇸",
       "dependency_label": "Alacsonyabb közvetlen kitettség",
@@ -267,7 +267,7 @@
     "asia": {
       "level": "moderate",
       "label": "Mérsékelt hatás",
-      "score": 5.5,
+      "score": 5.8,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
@@ -276,13 +276,30 @@
     }
   },
   "meta": {
-    "updated": "2026-07-13 09:48 UTC",
+    "updated": "2026-07-14 07:57 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
     "score": 110.6,
     "level": "moderate",
-    "label": "Mérsékelt"
+    "label": "Mérsékelt",
+    "type": "geopolitical"
+  },
+  "energy_risk": {
+    "score": 23.6,
+    "level": "high",
+    "label": "Magas",
+    "components": {
+      "geopolitical": 12.6,
+      "price_level": 11.0,
+      "price_momentum": 0.0,
+      "market_stress": 0.0,
+      "supply_pressure": 0.0
+    },
+    "triggers": [
+      "85 USD feletti olajár geopolitikai feszültség mellett"
+    ],
+    "method": "Összetett index: geopolitika 40%, árszint 20%, ármozgás 20%, piaci stressz 10%, készlet és kínálat 10%."
   },
   "market_stress": {
     "level": "normal",
@@ -306,6 +323,7 @@
     "price_basis": "A market blokk piaci (futures) árakat használ, a spot blokk EIA napi spot adatokat tartalmaz.",
     "chart_basis": "A diagram piaci napi jegyzést követ, ezért eltérhet a spot adatoktól.",
     "production_basis": "A termelési görbe havi EIA STEO adatsor.",
-    "regional_basis": "A modell a geopolitikai kockázatot és ármozgást együtt értékeli."
+    "regional_basis": "A modell a geopolitikai kockázatot és ármozgást együtt értékeli.",
+    "energy_risk_basis": "A fő energiapiaci barométer összetett indexet használ: geopolitika, árszint, ármozgás, piaci stressz, készlet és globális kínálat."
   }
 }
