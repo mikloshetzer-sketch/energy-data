@@ -181,8 +181,9 @@ def fetch_yahoo_last_price(url: str):
 
 
 def classify_risk(score):
+    # Hiányzó forrásadatból nem képzünk mesterséges kockázati szintet.
     if score is None:
-        return {"level": "elevated", "label": "Emelkedett"}
+        return {"level": "unknown", "label": "Nincs adat"}
 
     if score < 100:
         return {"level": "low", "label": "Alacsony"}
@@ -199,54 +200,271 @@ def classify_risk(score):
     return {"level": "extreme", "label": "Extrém"}
 
 
-def classify_market_stress(risk_level, brent_1d_change, brent_7d_change, wti_1d_change):
-    b1 = brent_1d_change if brent_1d_change is not None else 0
-    b7 = brent_7d_change if brent_7d_change is not None else 0
-    w1 = wti_1d_change if wti_1d_change is not None else 0
+def market_stress_label(level):
+    labels = {
+        "normal": "Normál",
+        "watch": "Mérsékelten feszült",
+        "tense": "Feszült",
+        "severe": "Erősen feszült",
+        "shock": "Sokkhelyzet",
+        "unknown": "Nincs elegendő adat",
+    }
+    return labels.get(level, "Nincs elegendő adat")
 
-    if risk_level == "extreme":
-        return {
-            "level": "shock",
-            "label": "Sokkhelyzet",
-            "note": "Az ármozgások és a geopolitikai háttér rendkívül feszült piaci környezetre utalnak."
-        }
 
-    if risk_level == "high" and (b1 >= 10 or w1 >= 10):
-        return {
-            "level": "shock",
-            "label": "Sokkhelyzet",
-            "note": "A magas geopolitikai kockázat és a hirtelen napi árugrások sokkszerű piaci reakciót jeleznek."
-        }
+def classify_market_stress(
+    risk_level,
+    brent_value,
+    wti_value,
+    brent_1d_change,
+    brent_7d_change,
+    wti_1d_change,
+    wti_7d_change,
+    inventory_value,
+    supply_value,
+):
+    """Átlátható, 0–100-as piaci feszültségi index.
 
-    if risk_level == "high" and (b1 >= 5 or b7 >= 10):
-        return {
-            "level": "severe",
-            "label": "Erősen feszült",
-            "note": "A piac intenzíven reagál a geopolitikai kockázatokra, az árak rövid távon erősen volatilisek."
-        }
+    Kizárólag a program által ténylegesen lekért adatokból számol:
+    - Brent és WTI piaci árszint,
+    - Brent és WTI 1 és 7 napos abszolút ármozgás,
+    - Brent–WTI árkülönbség,
+    - ME Security Monitor geopolitikai kategória,
+    - amerikai kereskedelmi kőolajkészlet,
+    - EIA globális kínálati adat.
 
-    if risk_level == "high" or b7 >= 7 or w1 >= 5:
-        return {
-            "level": "tense",
-            "label": "Feszült",
-            "note": "A piaci környezet feszült, az árak emelkedése és a kockázati háttér együtt növeli a bizonytalanságot."
-        }
+    A modell nem állít semmit tankerforgalomról, biztosítási díjakról,
+    szoroslezárásról vagy tényleges termeléskiesésről, mert ezekhez nincs
+    strukturált adatforrás ebben a rendszerben.
+    """
+    brent = to_float(brent_value)
+    wti = to_float(wti_value)
+    b1 = to_float(brent_1d_change)
+    b7 = to_float(brent_7d_change)
+    w1 = to_float(wti_1d_change)
+    w7 = to_float(wti_7d_change)
+    inventory = to_float(inventory_value)
+    supply = to_float(supply_value)
 
-    if risk_level == "elevated" or b1 >= 3 or b7 >= 3:
-        return {
-            "level": "watch",
-            "label": "Mérsékelten feszült",
-            "note": "A piacon emelkedő érzékenység látható, de még nem alakult ki szélsőséges sokkhelyzet."
-        }
+    components = {
+        "volatility": 0.0,       # max. 30
+        "price_level": 0.0,      # max. 20
+        "geopolitical": 0.0,     # max. 20
+        "supply_buffer": 0.0,    # max. 15
+        "brent_wti_spread": 0.0, # max. 15
+    }
+
+    available = {
+        "brent_price": brent is not None,
+        "wti_price": wti is not None,
+        "brent_1d": b1 is not None,
+        "brent_7d": b7 is not None,
+        "wti_1d": w1 is not None,
+        "wti_7d": w7 is not None,
+        "geopolitical": risk_level not in [None, "", "unknown"],
+        "inventory": inventory is not None,
+        "global_supply": supply is not None,
+    }
+
+    # 1. Volatilitás: mindkét irányú, abszolút elmozdulás számít.
+    daily_moves = [abs(x) for x in [b1, w1] if x is not None]
+    weekly_moves = [abs(x) for x in [b7, w7] if x is not None]
+    daily_move = max(daily_moves, default=None)
+    weekly_move = max(weekly_moves, default=None)
+
+    if daily_move is not None:
+        if daily_move >= 12:
+            daily_points = 18.0
+        elif daily_move >= 8:
+            daily_points = 15.0
+        elif daily_move >= 5:
+            daily_points = 11.0
+        elif daily_move >= 3:
+            daily_points = 7.0
+        elif daily_move >= 1.5:
+            daily_points = 3.0
+        else:
+            daily_points = 0.0
+    else:
+        daily_points = 0.0
+
+    if weekly_move is not None:
+        if weekly_move >= 18:
+            weekly_points = 12.0
+        elif weekly_move >= 12:
+            weekly_points = 10.0
+        elif weekly_move >= 8:
+            weekly_points = 7.0
+        elif weekly_move >= 4:
+            weekly_points = 4.0
+        else:
+            weekly_points = 0.0
+    else:
+        weekly_points = 0.0
+
+    components["volatility"] = min(daily_points + weekly_points, 30.0)
+
+    # 2. Abszolút árszint. Elsődlegesen Brent, hiányában WTI.
+    reference_price = brent if brent is not None else wti
+    if reference_price is not None:
+        if reference_price >= 110:
+            components["price_level"] = 20.0
+        elif reference_price >= 100:
+            components["price_level"] = 18.0
+        elif reference_price >= 95:
+            components["price_level"] = 16.0
+        elif reference_price >= 90:
+            components["price_level"] = 14.0
+        elif reference_price >= 85:
+            components["price_level"] = 12.0
+        elif reference_price >= 80:
+            components["price_level"] = 8.0
+        elif reference_price >= 75:
+            components["price_level"] = 4.0
+
+    # 3. Geopolitikai háttér. Ez háttértényező, önmagában nem okoz sokkhelyzetet.
+    geo_points = {
+        "low": 0.0,
+        "moderate": 5.0,
+        "elevated": 10.0,
+        "high": 15.0,
+        "extreme": 20.0,
+    }
+    components["geopolitical"] = geo_points.get(risk_level, 0.0)
+
+    # 4. Készlet- és kínálati puffer. Csak tényleges EIA-adatokból.
+    buffer_points = 0.0
+    if inventory is not None:
+        if inventory < 390:
+            buffer_points += 9.0
+        elif inventory < 410:
+            buffer_points += 7.0
+        elif inventory < 430:
+            buffer_points += 4.0
+        elif inventory < 450:
+            buffer_points += 2.0
+
+    if supply is not None:
+        if supply < 100:
+            buffer_points += 6.0
+        elif supply < 101:
+            buffer_points += 4.0
+        elif supply < 102:
+            buffer_points += 2.0
+
+    components["supply_buffer"] = min(buffer_points, 15.0)
+
+    # 5. Brent–WTI spread. Csak akkor számolható, ha mindkét ár elérhető.
+    spread = None
+    if brent is not None and wti is not None:
+        spread = brent - wti
+        abs_spread = abs(spread)
+        if abs_spread >= 12:
+            components["brent_wti_spread"] = 15.0
+        elif abs_spread >= 9:
+            components["brent_wti_spread"] = 12.0
+        elif abs_spread >= 6:
+            components["brent_wti_spread"] = 8.0
+        elif abs_spread >= 3:
+            components["brent_wti_spread"] = 4.0
+
+    score = round(min(sum(components.values()), 100.0), 1)
+
+    core_available = sum([
+        reference_price is not None,
+        daily_move is not None or weekly_move is not None,
+        risk_level not in [None, "", "unknown"],
+    ])
+
+    if core_available < 2:
+        level = "unknown"
+    elif score < 20:
+        level = "normal"
+    elif score < 40:
+        level = "watch"
+    elif score < 60:
+        level = "tense"
+    elif score < 80:
+        level = "severe"
+    else:
+        level = "shock"
+
+    triggers = []
+
+    # Minimumszintek kizárólag mérhető piaci adatokból.
+    if level != "unknown":
+        if daily_move is not None and daily_move >= 12:
+            level = "shock"
+            triggers.append("legalább 12%-os napi ármozgás")
+        elif daily_move is not None and daily_move >= 8 and level in ["normal", "watch", "tense"]:
+            level = "severe"
+            triggers.append("legalább 8%-os napi ármozgás")
+
+        if reference_price is not None and reference_price >= 85 and risk_level in ["elevated", "high", "extreme"]:
+            if level in ["normal", "watch"]:
+                level = "tense"
+            triggers.append("85 USD feletti olajár emelkedett geopolitikai háttér mellett")
+
+        if reference_price is not None and reference_price >= 95 and risk_level in ["high", "extreme"]:
+            if level in ["normal", "watch", "tense"]:
+                level = "severe"
+            triggers.append("95 USD feletti olajár magas geopolitikai háttér mellett")
+
+    missing = [name for name, is_available in available.items() if not is_available]
+    completeness = round((sum(available.values()) / len(available)) * 100)
+
+    if level == "unknown":
+        note = "A piaci feszültség nem értékelhető megbízhatóan, mert több alapvető adat nem érhető el."
+    elif level == "shock":
+        note = "A rendelkezésre álló ár-, volatilitási és háttéradatok szélsőséges piaci reakciót jeleznek."
+    elif level == "severe":
+        note = "Az árszint, a rövid távú ármozgás és a kockázati háttér erősen feszült piaci környezetet jelez."
+    elif level == "tense":
+        note = "A rendelkezésre álló mutatók fokozott piaci érzékenységet és érdemi feszültséget jeleznek."
+    elif level == "watch":
+        note = "A piac érzékenyebb a szokásosnál, de a mért adatok még nem mutatnak szélsőséges reakciót."
+    else:
+        note = "A rendelkezésre álló piaci adatok jelenleg nem jeleznek rendkívüli rövid távú feszültséget."
 
     return {
-        "level": "normal",
-        "label": "Normál",
-        "note": "A piaci reakciók jelenleg nem utalnak szélsőséges rövid távú feszültségre."
+        "score": score if level != "unknown" else None,
+        "level": level,
+        "label": market_stress_label(level),
+        "note": note,
+        "components": {key: round(value, 1) for key, value in components.items()},
+        "triggers": triggers,
+        "methodology": (
+            "A 0–100-as mutató a Brent és WTI napi és heti abszolút ármozgását "
+            "(30%), az aktuális olajárszintet (20%), a ME Security Monitor "
+            "geopolitikai kategóriáját (20%), az EIA amerikai készlet- és globális "
+            "kínálati adatait (15%), valamint a Brent–WTI árkülönbséget (15%) értékeli."
+        ),
+        "limitations": (
+            "A mutató nem mér közvetlenül tankerforgalmat, biztosítási díjakat, "
+            "szoroslezárást vagy tényleges fizikai termeléskiesést."
+        ),
+        "data_quality": {
+            "completeness_percent": completeness,
+            "missing_fields": missing,
+            "available_fields": [name for name, is_available in available.items() if is_available],
+        },
+        "observed_values": {
+            "brent": brent,
+            "wti": wti,
+            "brent_1d_change": b1,
+            "brent_7d_change": b7,
+            "wti_1d_change": w1,
+            "wti_7d_change": w7,
+            "brent_wti_spread": round(spread, 2) if spread is not None else None,
+            "inventory_million_barrels": round(inventory / 1000, 1) if inventory is not None else None,
+            "global_supply_mbd": supply,
+            "geopolitical_level": risk_level,
+        },
     }
 
 
 RISK_LEVEL_ORDER = {
+    "unknown": -1,
     "low": 0,
     "moderate": 1,
     "elevated": 2,
@@ -282,6 +500,7 @@ def classify_energy_risk(
     brent_1d_change,
     brent_7d_change,
     wti_1d_change,
+    wti_7d_change,
     inventory_value,
     supply_value,
 ):
@@ -304,6 +523,7 @@ def classify_energy_risk(
     b1 = to_float(brent_1d_change) or 0.0
     b7 = to_float(brent_7d_change) or 0.0
     w1 = to_float(wti_1d_change) or 0.0
+    w7 = to_float(wti_7d_change) or 0.0
     inventory = to_float(inventory_value)
     supply = to_float(supply_value)
 
@@ -319,14 +539,8 @@ def classify_energy_risk(
     if geo_risk_score is not None:
         components["geopolitical"] = min(max(float(geo_risk_score) / 350.0 * 40.0, 0.0), 40.0)
     else:
-        fallback_geo = {
-            "low": 8.0,
-            "moderate": 16.0,
-            "elevated": 24.0,
-            "high": 32.0,
-            "extreme": 40.0,
-        }
-        components["geopolitical"] = fallback_geo.get(geo_risk_level, 16.0)
+        # Hiányzó geopolitikai pontszám esetén nem képzünk feltételezett pontot.
+        components["geopolitical"] = 0.0
 
     # 2. Abszolút olajárszint: maximum 20 pont.
     reference_price = max([x for x in [brent, wti] if x is not None], default=None)
@@ -345,8 +559,8 @@ def classify_energy_risk(
             components["price_level"] = 4.0
 
     # 3. Rövid távú ármozgás: maximum 20 pont.
-    daily_move = max(b1, w1, 0.0)
-    weekly_move = max(b7, 0.0)
+    daily_move = max(abs(b1), abs(w1), 0.0)
+    weekly_move = max(abs(b7), abs(w7), 0.0)
 
     if daily_move >= 10:
         daily_points = 12.0
@@ -519,7 +733,7 @@ def classify_regional_impact(brent_value, wti_value, brent_1d_change, brent_7d_c
     b1 = brent_1d_change if brent_1d_change is not None else 0
     b7 = brent_7d_change if brent_7d_change is not None else 0
     spread = (brent - wti) if (brent_value is not None and wti_value is not None) else 0
-    risk = risk_score if risk_score is not None else 180
+    risk = risk_score if risk_score is not None else 0
 
     base_pressure = (
         (risk / 70.0) +
@@ -892,10 +1106,15 @@ except Exception:
 risk_info = classify_risk(geo_risk_score)
 
 market_stress = classify_market_stress(
-    risk_info["level"],
-    brent_1d_change,
-    brent_7d_change,
-    wti_1d_change
+    risk_level=risk_info["level"],
+    brent_value=market_brent_value,
+    wti_value=market_wti_value,
+    brent_1d_change=brent_1d_change,
+    brent_7d_change=brent_7d_change,
+    wti_1d_change=wti_1d_change,
+    wti_7d_change=wti_7d_change,
+    inventory_value=inventory_value,
+    supply_value=supply_value,
 )
 
 energy_risk = classify_energy_risk(
@@ -907,6 +1126,7 @@ energy_risk = classify_energy_risk(
     brent_1d_change=brent_1d_change,
     brent_7d_change=brent_7d_change,
     wti_1d_change=wti_1d_change,
+    wti_7d_change=wti_7d_change,
     inventory_value=inventory_value,
     supply_value=supply_value,
 )
@@ -987,14 +1207,22 @@ oil_data = {
         "method": energy_risk["method"]
     },
     "market_stress": {
+        "score": market_stress["score"],
         "level": market_stress["level"],
         "label": market_stress["label"],
-        "note": market_stress["note"]
+        "note": market_stress["note"],
+        "components": market_stress["components"],
+        "triggers": market_stress["triggers"],
+        "methodology": market_stress["methodology"],
+        "limitations": market_stress["limitations"],
+        "data_quality": market_stress["data_quality"],
+        "observed_values": market_stress["observed_values"]
     },
     "forecast": {
-        "one_month": "80–85 USD/hordó",
-        "three_months": "78–90 USD/hordó",
-        "twelve_months": "75–95 USD/hordó"
+        "one_month": "nincs automatikus előrejelzés",
+        "three_months": "nincs automatikus előrejelzés",
+        "twelve_months": "nincs automatikus előrejelzés",
+        "note": "A rendszer jelenleg megfigyelt adatokat értékel, önálló árfolyam-előrejelzést nem készít."
     },
     "summary": {
         "status": summary_status,
@@ -1009,12 +1237,14 @@ oil_data = {
         "chart_basis": "A diagram piaci napi jegyzést követ, ezért eltérhet a spot adatoktól.",
         "production_basis": "A termelési görbe havi EIA STEO adatsor.",
         "regional_basis": "A modell a geopolitikai kockázatot és ármozgást együtt értékeli.",
-        "energy_risk_basis": "A fő energiapiaci barométer összetett indexet használ: geopolitika, árszint, ármozgás, piaci stressz, készlet és globális kínálat."
+        "energy_risk_basis": "A fő energiapiaci barométer kizárólag a lekért geopolitikai, ár-, készlet- és kínálati adatokból képez összetett indexet.",
+        "market_stress_basis": "A piaci feszültség a Brent és WTI árszintjét, napi és heti abszolút változását, a Brent–WTI spreadet, a geopolitikai kategóriát, valamint az EIA készlet- és kínálati adatokat használja.",
+        "model_limitations": "A rendszer nem mér közvetlenül tankerforgalmat, biztosítási díjakat, szoroslezárást vagy tényleges fizikai termeléskiesést."
     }
 }
 
 with open("oil-data.json", "w", encoding="utf-8") as f:
     json.dump(oil_data, f, ensure_ascii=False, indent=2)
 
-print("oil-data.json frissítve (market + spot árakkal)")
+print("oil-data.json frissítve (átlátható energy_risk + market_stress modellel)")
        
