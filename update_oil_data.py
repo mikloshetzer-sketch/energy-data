@@ -246,6 +246,214 @@ def classify_market_stress(risk_level, brent_1d_change, brent_7d_change, wti_1d_
     }
 
 
+RISK_LEVEL_ORDER = {
+    "low": 0,
+    "moderate": 1,
+    "elevated": 2,
+    "high": 3,
+    "extreme": 4,
+}
+
+
+def level_at_least(current_level, minimum_level):
+    """A két kockázati szint közül a magasabbat adja vissza."""
+    current_rank = RISK_LEVEL_ORDER.get(current_level, 0)
+    minimum_rank = RISK_LEVEL_ORDER.get(minimum_level, 0)
+    return minimum_level if minimum_rank > current_rank else current_level
+
+
+def energy_risk_label(level):
+    labels = {
+        "low": "Alacsony",
+        "moderate": "Mérsékelt",
+        "elevated": "Emelkedett",
+        "high": "Magas",
+        "extreme": "Extrém",
+    }
+    return labels.get(level, "Nincs adat")
+
+
+def classify_energy_risk(
+    geo_risk_score,
+    geo_risk_level,
+    market_stress_level,
+    brent_value,
+    wti_value,
+    brent_1d_change,
+    brent_7d_change,
+    wti_1d_change,
+    inventory_value,
+    supply_value,
+):
+    """
+    Összetett energiapiaci kockázati index.
+
+    A végső pontszám 0–100 közötti érték. A modell figyelembe veszi:
+    - geopolitikai kockázatot,
+    - Brent és WTI árszintet,
+    - rövid távú ármozgást,
+    - piaci stresszt,
+    - amerikai készleteket,
+    - globális kínálatot.
+
+    A pontszám mellett minimumszint-szabályok is működnek. Ezek megakadályozzák,
+    hogy magas olajár és gyors drágulás mellett a rendszer mérsékelt szintet mutasson.
+    """
+    brent = to_float(brent_value)
+    wti = to_float(wti_value)
+    b1 = to_float(brent_1d_change) or 0.0
+    b7 = to_float(brent_7d_change) or 0.0
+    w1 = to_float(wti_1d_change) or 0.0
+    inventory = to_float(inventory_value)
+    supply = to_float(supply_value)
+
+    components = {
+        "geopolitical": 0.0,
+        "price_level": 0.0,
+        "price_momentum": 0.0,
+        "market_stress": 0.0,
+        "supply_pressure": 0.0,
+    }
+
+    # 1. Geopolitikai komponens: maximum 40 pont.
+    if geo_risk_score is not None:
+        components["geopolitical"] = min(max(float(geo_risk_score) / 350.0 * 40.0, 0.0), 40.0)
+    else:
+        fallback_geo = {
+            "low": 8.0,
+            "moderate": 16.0,
+            "elevated": 24.0,
+            "high": 32.0,
+            "extreme": 40.0,
+        }
+        components["geopolitical"] = fallback_geo.get(geo_risk_level, 16.0)
+
+    # 2. Abszolút olajárszint: maximum 20 pont.
+    reference_price = max([x for x in [brent, wti] if x is not None], default=None)
+    if reference_price is not None:
+        if reference_price >= 110:
+            components["price_level"] = 20.0
+        elif reference_price >= 100:
+            components["price_level"] = 17.0
+        elif reference_price >= 90:
+            components["price_level"] = 14.0
+        elif reference_price >= 85:
+            components["price_level"] = 11.0
+        elif reference_price >= 80:
+            components["price_level"] = 8.0
+        elif reference_price >= 75:
+            components["price_level"] = 4.0
+
+    # 3. Rövid távú ármozgás: maximum 20 pont.
+    daily_move = max(b1, w1, 0.0)
+    weekly_move = max(b7, 0.0)
+
+    if daily_move >= 10:
+        daily_points = 12.0
+    elif daily_move >= 7:
+        daily_points = 10.0
+    elif daily_move >= 5:
+        daily_points = 8.0
+    elif daily_move >= 3:
+        daily_points = 6.0
+    elif daily_move >= 1.5:
+        daily_points = 3.0
+    else:
+        daily_points = 0.0
+
+    if weekly_move >= 15:
+        weekly_points = 8.0
+    elif weekly_move >= 10:
+        weekly_points = 7.0
+    elif weekly_move >= 7:
+        weekly_points = 5.0
+    elif weekly_move >= 3:
+        weekly_points = 3.0
+    else:
+        weekly_points = 0.0
+
+    components["price_momentum"] = min(daily_points + weekly_points, 20.0)
+
+    # 4. Piaci stressz: maximum 10 pont.
+    stress_points = {
+        "normal": 0.0,
+        "watch": 3.0,
+        "tense": 6.0,
+        "severe": 8.0,
+        "shock": 10.0,
+    }
+    components["market_stress"] = stress_points.get(market_stress_level, 0.0)
+
+    # 5. Készlet- és kínálati nyomás: maximum 10 pont.
+    supply_points = 0.0
+    if inventory is not None:
+        if inventory < 400:
+            supply_points += 6.0
+        elif inventory < 420:
+            supply_points += 4.0
+        elif inventory < 440:
+            supply_points += 2.0
+
+    if supply is not None:
+        if supply < 100:
+            supply_points += 4.0
+        elif supply < 101:
+            supply_points += 3.0
+        elif supply < 102:
+            supply_points += 1.0
+
+    components["supply_pressure"] = min(supply_points, 10.0)
+
+    score = round(min(sum(components.values()), 100.0), 1)
+
+    if score < 25:
+        level = "low"
+    elif score < 40:
+        level = "moderate"
+    elif score < 55:
+        level = "elevated"
+    elif score < 75:
+        level = "high"
+    else:
+        level = "extreme"
+
+    triggers = []
+
+    # Minimumszint-szabályok gyors katonai/piaci eszkalációra.
+    if geo_risk_level == "extreme" or market_stress_level == "shock":
+        level = level_at_least(level, "extreme")
+        triggers.append("extrém geopolitikai vagy piaci sokk")
+
+    if geo_risk_level == "high":
+        level = level_at_least(level, "high")
+        triggers.append("magas geopolitikai kockázat")
+
+    if reference_price is not None and reference_price >= 85 and geo_risk_level in ["moderate", "elevated", "high", "extreme"]:
+        level = level_at_least(level, "high")
+        triggers.append("85 USD feletti olajár geopolitikai feszültség mellett")
+
+    if daily_move >= 5 and geo_risk_level in ["elevated", "high", "extreme"]:
+        level = level_at_least(level, "high")
+        triggers.append("legalább 5%-os napi árugrás")
+
+    if weekly_move >= 10 and geo_risk_level in ["moderate", "elevated", "high", "extreme"]:
+        level = level_at_least(level, "high")
+        triggers.append("legalább 10%-os heti Brent-emelkedés")
+
+    if reference_price is not None and reference_price >= 100 and daily_move >= 5:
+        level = level_at_least(level, "extreme")
+        triggers.append("100 USD feletti ár és gyors napi emelkedés")
+
+    return {
+        "score": score,
+        "level": level,
+        "label": energy_risk_label(level),
+        "components": {key: round(value, 1) for key, value in components.items()},
+        "triggers": triggers,
+        "method": "Összetett index: geopolitika 40%, árszint 20%, ármozgás 20%, piaci stressz 10%, készlet és kínálat 10%.",
+    }
+
+
 def regional_dependency_model():
     return {
         "europe": {
@@ -690,6 +898,19 @@ market_stress = classify_market_stress(
     wti_1d_change
 )
 
+energy_risk = classify_energy_risk(
+    geo_risk_score=geo_risk_score,
+    geo_risk_level=risk_info["level"],
+    market_stress_level=market_stress["level"],
+    brent_value=market_brent_value,
+    wti_value=market_wti_value,
+    brent_1d_change=brent_1d_change,
+    brent_7d_change=brent_7d_change,
+    wti_1d_change=wti_1d_change,
+    inventory_value=inventory_value,
+    supply_value=supply_value,
+)
+
 summary_status = generate_status_text(brent_trend, geo_risk_score)
 summary_supply = generate_supply_note(inventory_value, supply_value)
 summary_risk = generate_risk_note(geo_risk_score)
@@ -754,7 +975,16 @@ oil_data = {
     "risk": {
         "score": geo_risk_score,
         "level": risk_info["level"],
-        "label": risk_info["label"]
+        "label": risk_info["label"],
+        "type": "geopolitical"
+    },
+    "energy_risk": {
+        "score": energy_risk["score"],
+        "level": energy_risk["level"],
+        "label": energy_risk["label"],
+        "components": energy_risk["components"],
+        "triggers": energy_risk["triggers"],
+        "method": energy_risk["method"]
     },
     "market_stress": {
         "level": market_stress["level"],
@@ -778,7 +1008,8 @@ oil_data = {
         "price_basis": "A market blokk piaci (futures) árakat használ, a spot blokk EIA napi spot adatokat tartalmaz.",
         "chart_basis": "A diagram piaci napi jegyzést követ, ezért eltérhet a spot adatoktól.",
         "production_basis": "A termelési görbe havi EIA STEO adatsor.",
-        "regional_basis": "A modell a geopolitikai kockázatot és ármozgást együtt értékeli."
+        "regional_basis": "A modell a geopolitikai kockázatot és ármozgást együtt értékeli.",
+        "energy_risk_basis": "A fő energiapiaci barométer összetett indexet használ: geopolitika, árszint, ármozgás, piaci stressz, készlet és globális kínálat."
     }
 }
 
