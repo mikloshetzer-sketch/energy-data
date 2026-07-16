@@ -1,0 +1,219 @@
+name: Update oil country flows
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    # Hetente hétfőn 08:20 UTC
+    # Magyar idő szerint:
+    # télen 09:20
+    # nyáron 10:20
+    - cron: "20 8 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-oil-country-flows
+  cancel-in-progress: false
+
+jobs:
+  update-oil-country-flows:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository letöltése
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Python telepítése
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Országos olajpiaci adatmodul futtatása
+        run: |
+          python scripts/generate_oil_country_flows.py
+
+      - name: Generált JSON ellenőrzése
+        run: |
+          test -f docs/data/oil_country_flows.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          file_path = Path("docs/data/oil_country_flows.json")
+
+          with file_path.open("r", encoding="utf-8") as file:
+              data = json.load(file)
+
+          required_top_level = {
+              "generated_at",
+              "dataset",
+              "unit",
+              "default_year",
+              "available_years",
+              "years",
+          }
+
+          missing_top_level = required_top_level - data.keys()
+
+          if missing_top_level:
+              raise RuntimeError(
+                  "Hiányzó felső szintű mezők: "
+                  f"{sorted(missing_top_level)}"
+              )
+
+          required_years = {2023, 2024, 2025, 2026}
+          available_years = {
+              int(year)
+              for year in data.get("available_years", [])
+          }
+
+          missing_years = required_years - available_years
+
+          if missing_years:
+              raise RuntimeError(
+                  f"Hiányzó évek: {sorted(missing_years)}"
+              )
+
+          years = data.get("years", {})
+
+          for year in sorted(required_years):
+              year_key = str(year)
+
+              if year_key not in years:
+                  raise RuntimeError(
+                      f"Hiányzó éves adatblokk: {year}"
+                  )
+
+              year_data = years[year_key]
+
+              status = year_data.get("status")
+
+              if status not in {
+                  "historical",
+                  "estimate",
+                  "forecast",
+              }:
+                  raise RuntimeError(
+                      f"Érvénytelen státusz {year} évnél: {status}"
+                  )
+
+              for category in ("producers", "importers"):
+                  rows = year_data.get(category)
+
+                  if not isinstance(rows, list) or not rows:
+                      raise RuntimeError(
+                          f"Hiányzó vagy üres lista: "
+                          f"{year} / {category}"
+                      )
+
+                  if len(rows) < 5:
+                      raise RuntimeError(
+                          f"Túl kevés ország: "
+                          f"{year} / {category}"
+                      )
+
+                  ranks = []
+                  countries = set()
+
+                  for row in rows:
+                      required_row_fields = {
+                          "rank",
+                          "country",
+                          "country_en",
+                          "value_mbd",
+                          "change_mbd",
+                          "change_percent",
+                      }
+
+                      missing_row_fields = (
+                          required_row_fields - row.keys()
+                      )
+
+                      if missing_row_fields:
+                          raise RuntimeError(
+                              f"Hiányzó mezők "
+                              f"{year} / {category}: "
+                              f"{sorted(missing_row_fields)}"
+                          )
+
+                      rank = int(row["rank"])
+                      value = float(row["value_mbd"])
+                      country = str(row["country_en"])
+
+                      if rank < 1:
+                          raise RuntimeError(
+                              f"Érvénytelen rang: "
+                              f"{year} / {category} / {country}"
+                          )
+
+                      if value <= 0:
+                          raise RuntimeError(
+                              f"Nem pozitív érték: "
+                              f"{year} / {category} / {country}"
+                          )
+
+                      if country in countries:
+                          raise RuntimeError(
+                              f"Duplikált ország: "
+                              f"{year} / {category} / {country}"
+                          )
+
+                      ranks.append(rank)
+                      countries.add(country)
+
+                  expected_ranks = list(
+                      range(1, len(rows) + 1)
+                  )
+
+                  if sorted(ranks) != expected_ranks:
+                      raise RuntimeError(
+                          f"Hibás rangsor: "
+                          f"{year} / {category}"
+                      )
+
+                  values = [
+                      float(row["value_mbd"])
+                      for row in rows
+                  ]
+
+                  if values != sorted(
+                      values,
+                      reverse=True,
+                  ):
+                      raise RuntimeError(
+                          f"A lista nincs csökkenő sorrendben: "
+                          f"{year} / {category}"
+                      )
+
+          print(
+              "Az oil_country_flows.json "
+              "ellenőrzése sikeres."
+          )
+          print(
+              f"Elérhető évek: "
+              f"{sorted(available_years)}"
+          )
+          PY
+
+      - name: Változások commitolása
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/data/oil_country_flows.json
+
+          if git diff --cached --quiet; then
+            echo "Nincs új országos olajpiaci adat."
+            exit 0
+          fi
+
+          git commit -m "Update oil producer and importer data"
+
+          git pull --rebase origin main
+          git push origin main
