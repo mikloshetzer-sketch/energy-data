@@ -1,0 +1,1014 @@
+:root {
+  --navy: #123e59;
+  --navy-2: #1d5f86;
+  --blue: #228bc8;
+  --blue-dark: #145b83;
+  --teal: #0f8f87;
+  --green: #059669;
+  --orange: #d97706;
+  --red: #dc2626;
+  --purple: #7c3aed;
+
+  --text: #0f2740;
+  --muted: #64748b;
+  --line: #d5e1e9;
+  --page: #edf4f8;
+  --card: #ffffff;
+  --soft: #f7fafc;
+
+  --shadow: 0 10px 28px rgba(15, 39, 64, 0.08);
+  --radius-large: 18px;
+  --radius-medium: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+a {
+  font-family: inherit;
+}
+
+/* =========================================================
+   FELSŐ FEJLÉC
+   ========================================================= */
+
+.topbar {
+  padding: 18px 34px 24px;
+  color: #ffffff;
+  background:
+    radial-gradient(
+      circle at 88% 20%,
+      rgba(80, 172, 225, 0.35),
+      transparent 32%
+    ),
+    linear-gradient(
+      110deg,
+      #123e59 0%,
+      #1a5373 55%,
+      #2b78a4 100%
+    );
+}
+
+.topbar-inner {
+  width: min(1500px, calc(100% - 10px));
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.brand-area {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.brand-mark {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.10);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.brand-small {
+  margin: 1px 0 6px;
+
+  color: #d9f1ff;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.brand-title {
+  max-width: 900px;
+  margin: 0;
+
+  color: #ffffff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(34px, 4vw, 57px);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+
+.top-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.top-btn {
+  padding: 12px 17px;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 900;
+  text-decoration: none;
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+.top-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.top-btn.primary {
+  background: #1c91d2;
+  border-color: #1c91d2;
+}
+
+/* =========================================================
+   OLDALVÁZ
+   ========================================================= */
+
+.dashboard {
+  width: min(1500px, calc(100% - 34px));
+  margin: 24px auto 36px;
+}
+
+.dashboard-section {
+  margin-top: 16px;
+}
+
+.section-anchor {
+  scroll-margin-top: 20px;
+}
+
+/* =========================================================
+   BEVEZETŐ BLOKK
+   ========================================================= */
+
+.hero {
+  padding: 26px 30px;
+
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 24px;
+
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 7px solid var(--blue);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow);
+}
+
+.kicker {
+  margin: 0 0 8px;
+
+  color: #0f628f;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hero h2 {
+  margin: 0;
+
+  color: var(--navy);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(35px, 4vw, 50px);
+  line-height: 1;
+}
+
+.hero p {
+  max-width: 930px;
+  margin: 10px 0 0;
+
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.hero-status {
+  text-align: right;
+}
+
+.hero-status-label {
+  margin-bottom: 7px;
+
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.status-badge {
+  min-width: 132px;
+  padding: 13px 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #fed7aa;
+  border-radius: 999px;
+
+  background: #fff3e3;
+  color: #9a4d00;
+
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.status-badge.deficit {
+  border-color: #fecaca;
+  background: #fee8e8;
+  color: #991b1b;
+}
+
+.status-badge.surplus {
+  border-color: #a7f3d0;
+  background: #dcfce7;
+  color: #047857;
+}
+
+.status-badge.balanced {
+  border-color: #fed7aa;
+  background: #fff3e3;
+  color: #9a4d00;
+}
+
+/* =========================================================
+   KPI SOR
+   ========================================================= */
+
+.metric-grid {
+  margin-top: 16px;
+
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow);
+}
+
+.metric {
+  min-height: 116px;
+  padding: 20px 14px 16px;
+
+  text-align: center;
+  border-right: 1px solid var(--line);
+}
+
+.metric:last-child {
+  border-right: 0;
+}
+
+.metric-value {
+  color: #0d456a;
+  font-size: 31px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.metric-label {
+  margin-top: 11px;
+
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.metric-sub {
+  margin-top: 6px;
+
+  color: #8297a5;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+/* =========================================================
+   ELEMZŐ ÁTTEKINTŐ BLOKK
+   ========================================================= */
+
+.brief {
+  margin-top: 16px;
+  padding: 20px 22px 22px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(236, 249, 255, 0.95),
+      rgba(255, 255, 255, 0.98)
+    );
+
+  border: 1px solid #cfe2ec;
+  border-left: 7px solid var(--teal);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow);
+}
+
+.brief-head,
+.section-head {
+  padding-bottom: 13px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+
+  border-bottom: 1px solid #cfe2ec;
+}
+
+.brief h3,
+.section-head h3 {
+  margin: 0;
+
+  color: var(--navy);
+  font-size: 23px;
+  line-height: 1.25;
+}
+
+.brief small,
+.section-head small {
+  display: block;
+  margin-top: 4px;
+
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.latest {
+  padding: 9px 12px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  white-space: nowrap;
+
+  background: #dcfce7;
+  border: 1px solid #a7f3d0;
+  border-radius: 999px;
+  color: #047857;
+
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.latest::before {
+  content: "";
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.13);
+}
+
+/* =========================================================
+   ÉVES EGYENLEG KÁRTYÁK
+   ========================================================= */
+
+.balance-tiles {
+  margin-top: 14px;
+
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.balance-tile {
+  padding: 16px;
+
+  background: rgba(255, 255, 255, 0.90);
+  border: 1px solid #d4e2e9;
+  border-top: 4px solid var(--blue);
+  border-radius: var(--radius-medium);
+}
+
+.balance-tile.forecast {
+  border-top-color: var(--orange);
+}
+
+.balance-year {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.balance-value {
+  margin-top: 7px;
+
+  color: #0d456a;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.balance-sub {
+  margin-top: 8px;
+
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   ÉVVÁLASZTÓ
+   ========================================================= */
+
+.year-selector {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.year-button {
+  min-width: 58px;
+  padding: 9px 12px;
+
+  border: 1px solid var(--line);
+  border-radius: 999px;
+
+  background: #ffffff;
+  color: var(--muted);
+
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.year-button:hover {
+  border-color: var(--blue);
+  color: var(--blue-dark);
+}
+
+.year-button.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #ffffff;
+}
+
+/* =========================================================
+   DIAGRAM PANELEK
+   ========================================================= */
+
+.panel-grid {
+  margin-top: 16px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.panel {
+  min-width: 0;
+  padding: 20px;
+
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow);
+}
+
+.panel.full {
+  grid-column: 1 / -1;
+}
+
+.panel.accent-blue {
+  border-top: 5px solid var(--blue);
+}
+
+.panel.accent-green {
+  border-top: 5px solid var(--green);
+}
+
+.panel.accent-orange {
+  border-top: 5px solid var(--orange);
+}
+
+.panel-head {
+  margin-bottom: 14px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.panel h3,
+.panel-title {
+  margin: 0;
+
+  color: var(--navy);
+  font-size: 21px;
+  line-height: 1.2;
+}
+
+.panel h3 span,
+.panel-title span {
+  display: block;
+  margin-top: 4px;
+
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.panel-note {
+  max-width: 280px;
+
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: right;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 390px;
+}
+
+.chart-wrap.large {
+  height: 455px;
+}
+
+.chart-wrap.country {
+  height: 430px;
+}
+
+/* =========================================================
+   ORSZÁGELEMZÉSI BLOKK
+   ========================================================= */
+
+.country-module {
+  margin-top: 16px;
+  padding: 20px;
+
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow);
+}
+
+.country-grid {
+  margin-top: 16px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.country-summary {
+  margin-top: 16px;
+  padding: 17px 18px;
+
+  background: #f2f8fc;
+  border: 1px solid #d5e5ee;
+  border-left: 5px solid var(--blue);
+  border-radius: var(--radius-medium);
+}
+
+.country-summary strong {
+  display: block;
+  margin-bottom: 8px;
+
+  color: var(--navy);
+  font-size: 15px;
+}
+
+.country-summary ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.country-summary li {
+  margin-bottom: 5px;
+
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+/* =========================================================
+   MINI DIAGRAMOK
+   ========================================================= */
+
+.mini-grid {
+  margin-top: 16px;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.mini {
+  padding: 18px;
+
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow);
+}
+
+.mini-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mini-title {
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.3;
+}
+
+.mini-title span {
+  display: block;
+  margin-top: 3px;
+
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.mini-value {
+  color: #0d456a;
+  font-size: 22px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.mini-chart {
+  height: 92px;
+  margin-top: 8px;
+}
+
+/* =========================================================
+   MARKET DRIVERS
+   ========================================================= */
+
+.driver-grid {
+  margin-top: 16px;
+
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.driver-card {
+  min-height: 138px;
+  padding: 17px;
+
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--blue);
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow);
+}
+
+.driver-card.green {
+  border-top-color: var(--green);
+}
+
+.driver-card.orange {
+  border-top-color: var(--orange);
+}
+
+.driver-card.red {
+  border-top-color: var(--red);
+}
+
+.driver-card.purple {
+  border-top-color: var(--purple);
+}
+
+.driver-label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.driver-value {
+  margin-top: 9px;
+
+  color: var(--navy);
+  font-size: 23px;
+  font-weight: 900;
+}
+
+.driver-description {
+  margin-top: 8px;
+
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   ELEMZŐI SZÖVEGBLOKKOK
+   ========================================================= */
+
+.notes {
+  margin-top: 16px;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.note {
+  padding: 18px;
+
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--blue);
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow);
+}
+
+.note.orange {
+  border-left-color: var(--orange);
+}
+
+.note.red {
+  border-left-color: var(--red);
+}
+
+.note.green {
+  border-left-color: var(--green);
+}
+
+.note strong {
+  display: block;
+  margin-bottom: 9px;
+
+  color: var(--navy);
+  font-size: 15px;
+}
+
+.note p {
+  margin: 0;
+
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.intelligence-box {
+  margin-top: 16px;
+  padding: 22px 24px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #123e59 0%,
+      #1d5f86 100%
+    );
+
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow);
+  color: #ffffff;
+}
+
+.intelligence-box h3 {
+  margin: 0 0 10px;
+
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.intelligence-box p {
+  margin: 0;
+
+  color: #dceef8;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+/* =========================================================
+   MÓDSZERTAN
+   ========================================================= */
+
+.methodology {
+  margin-top: 16px;
+  padding: 18px 20px;
+
+  background: #f8fbfd;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-medium);
+}
+
+.methodology strong {
+  display: block;
+  margin-bottom: 7px;
+
+  color: var(--navy);
+  font-size: 14px;
+}
+
+.methodology p {
+  margin: 0;
+
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+/* =========================================================
+   HIBAÜZENET
+   ========================================================= */
+
+.data-error {
+  padding: 18px;
+
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-left: 5px solid var(--red);
+  border-radius: var(--radius-medium);
+  color: #9f1239;
+
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+/* =========================================================
+   LÁBLÉC
+   ========================================================= */
+
+.footer {
+  margin-top: 16px;
+  padding: 14px 18px;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+
+  background: var(--navy);
+  border-radius: 12px;
+  color: #dceefa;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* =========================================================
+   RESZPONZÍV NÉZETEK
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .driver-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .metric-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .metric:nth-child(3) {
+    border-right: 0;
+  }
+
+  .metric:nth-child(-n + 3) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .panel-grid,
+  .country-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panel.full {
+    grid-column: auto;
+  }
+
+  .mini-grid,
+  .notes {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 780px) {
+  .topbar {
+    padding: 18px 14px 24px;
+  }
+
+  .topbar-inner,
+  .hero,
+  .brief-head,
+  .section-head {
+    display: block;
+  }
+
+  .top-actions {
+    margin-top: 20px;
+    justify-content: flex-start;
+  }
+
+  .dashboard {
+    width: min(100% - 20px, 1500px);
+  }
+
+  .hero-status {
+    margin-top: 18px;
+    text-align: left;
+  }
+
+  .metric-grid,
+  .balance-tiles,
+  .mini-grid,
+  .notes,
+  .driver-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metric {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .metric:last-child {
+    border-bottom: 0;
+  }
+
+  .latest {
+    margin-top: 12px;
+  }
+
+  .panel-head {
+    display: block;
+  }
+
+  .panel-note {
+    max-width: none;
+    margin-top: 8px;
+    text-align: left;
+  }
+
+  .chart-wrap,
+  .chart-wrap.large,
+  .chart-wrap.country {
+    height: 350px;
+  }
+}
