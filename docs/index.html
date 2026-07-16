@@ -1198,6 +1198,122 @@
       line-height: 1.58;
     }
 
+
+    .explain-block {
+      margin-top: 14px;
+      padding: 15px 16px;
+      background: #f8fbfd;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .explain-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .explain-item {
+      padding: 12px 13px;
+      background: #ffffff;
+      border: 1px solid #e2eaf0;
+      border-radius: 10px;
+    }
+
+    .explain-title {
+      margin-bottom: 6px;
+      color: var(--navy);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .explain-text {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.58;
+    }
+
+    .key-insight {
+      margin-top: 11px;
+      padding: 12px 14px;
+      border-left: 5px solid var(--blue);
+      border-radius: 10px;
+      background: #eef7fc;
+      color: #28485d;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1.58;
+    }
+
+    .validation-grid {
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 15px;
+      align-items: stretch;
+    }
+
+    .validation-kpis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .validation-kpi {
+      padding: 15px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .validation-kpi.blue { border-top: 4px solid var(--blue); }
+    .validation-kpi.orange { border-top: 4px solid var(--orange); }
+    .validation-kpi.red { border-top: 4px solid var(--red); }
+    .validation-kpi.green { border-top: 4px solid var(--green); }
+
+    .validation-label {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .validation-value {
+      margin-top: 7px;
+      color: var(--navy);
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .validation-sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .validation-chart-wrap {
+      height: 275px;
+      position: relative;
+    }
+
+    .validation-warning {
+      margin-top: 12px;
+      padding: 13px 15px;
+      background: #fff8e8;
+      border: 1px solid #f2dca9;
+      border-left: 5px solid var(--orange);
+      border-radius: 11px;
+      color: #6f5428;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.58;
+    }
+
     canvas {
       width: 100% !important;
       height: 100% !important;
@@ -1241,7 +1357,9 @@
       .scenario-grid,
       .stress-grid,
       .coverage-grid,
-      .ompi-grid {
+      .ompi-grid,
+      .validation-grid,
+      .explain-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -1448,6 +1566,29 @@
           <canvas id="scenarioChart"></canvas>
         </div>
       </div>
+      <div class="explain-block">
+        <div class="explain-grid">
+          <div class="explain-item">
+            <div class="explain-title">Mit mutat?</div>
+            <div class="explain-text">A 2026-os alapesetet egy stresszhelyzettel veti össze, amelyben a kínálat nem nő, miközben a kereslet visszatér a 2025-ös szintre.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Hogyan értelmezzük?</div>
+            <div class="explain-text">A két oszloppár közötti különbség azt mutatja, mennyivel romlana az egyenleg a kereslet gyorsabb helyreállása esetén.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Mire jó?</div>
+            <div class="explain-text">Segít megérteni, mennyire sérülékeny a piac akkor, ha a kereslet erősödik, de a kínálati oldal nem képes vele lépést tartani.</div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <strong>Key Insight:</strong> A kereslet visszatérése változatlan kínálat mellett a jelenlegi alapesetnél lényegesen nagyobb hiányt okozna.
+        </div>
+      </div>
+
     </section>
 
     <section class="section-card blue-top">
@@ -1502,6 +1643,29 @@
           <canvas id="inventoryDrawChart"></canvas>
         </div>
       </div>
+      <div class="explain-block">
+        <div class="explain-grid">
+          <div class="explain-item">
+            <div class="explain-title">Mit mutat?</div>
+            <div class="explain-text">A napi hiányból számított elméleti készletleépülést mutatja 30, 90, 180 és 365 napos időtávon.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Hogyan értelmezzük?</div>
+            <div class="explain-text">A nagyobb negatív egyenleg és a hosszabb időtáv gyorsan növeli a készletekből fedezendő mennyiséget.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Mire jó?</div>
+            <div class="explain-text">A készletek jelentik a piac elsődleges pufferét. A tartós leépülés növeli az árérzékenységet és csökkenti a következő sokk kezelésének képességét.</div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <strong>Key Insight:</strong> A hiány időtartama legalább olyan fontos, mint annak napi nagysága.
+        </div>
+      </div>
+
     </section>
 
     <section class="section-card orange-top">
@@ -1533,6 +1697,29 @@
       <div class="matrix-note">
         A mátrix nem ár-előrejelzés. Azt mutatja meg, hogy az egyes kínálati és keresleti kombinációk milyen strukturális többletet vagy hiányt okoznának.
       </div>
+      <div class="explain-block">
+        <div class="explain-grid">
+          <div class="explain-item">
+            <div class="explain-title">Mit mutat?</div>
+            <div class="explain-text">Kilenc kínálati–keresleti kombinációt hasonlít össze, és minden cellában a napi piaci egyenleget mutatja.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Hogyan értelmezzük?</div>
+            <div class="explain-text">A zöld cellák többletet, a sárga cellák közel egyensúlyt, a piros cellák pedig különböző erősségű hiányt jeleznek.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Mire jó?</div>
+            <div class="explain-text">Gyors stressztesztként használható annak felmérésére, hogy mely keresleti és kínálati változások billentenék át a piacot hiányba vagy többletbe.</div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <strong>Key Insight:</strong> A piac állapota nem egyetlen előrejelzéstől, hanem a kínálati és keresleti pályák kombinációjától függ.
+        </div>
+      </div>
+
     </section>
 
     <section class="section-card teal-top">
@@ -1600,6 +1787,29 @@
           </div>
         </div>
       </div>
+      <div class="explain-block">
+        <div class="explain-grid">
+          <div class="explain-item">
+            <div class="explain-title">Mit mutat?</div>
+            <div class="explain-text">A stresszforgatókönyv piaci hiányát hasonlítja össze az effektív, gyorsan mozgósítható OPEC+ tartalékkapacitással.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Hogyan értelmezzük?</div>
+            <div class="explain-text">A 100% feletti érték teljes elméleti lefedettséget jelez. Az alacsony arány azt mutatja, hogy a kínálati puffer csak a hiány kis részét képes kiváltani.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Mire jó?</div>
+            <div class="explain-text">Megmutatja, mennyire képes a termelői oldal rövid időn belül stabilizálni a piacot, illetve mekkora teher marad a készleteken és a kereslet alkalmazkodásán.</div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <strong>Key Insight:</strong> A tartalékkapacitás létezése önmagában nem elég; annak gyors mozgósíthatósága dönti el, hogy valódi rövid távú puffernek tekinthető-e.
+        </div>
+      </div>
+
     </section>
 
     <section class="section-card blue-top">
@@ -1640,6 +1850,105 @@
           </div>
         </div>
       </div>
+      <div class="explain-block">
+        <div class="explain-grid">
+          <div class="explain-item">
+            <div class="explain-title">Mit mutat?</div>
+            <div class="explain-text">A dashboard saját, 0–100 közötti összesített olajpiaci árnyomási indexét és annak hét komponensét mutatja.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Hogyan értelmezzük?</div>
+            <div class="explain-text">A magasabb pontszám erősebb felfelé irányuló árnyomást, kisebb piaci tartalékot és nagyobb sérülékenységet jelez.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Mire jó?</div>
+            <div class="explain-text">Egyetlen áttekinthető mutatóba sűríti a fundamentális, készlet-, OPEC+, geopolitikai, szoros-, kínai keresleti és Brent-momentum tényezőket.</div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <strong>Key Insight:</strong> Az OMPI nem ár-előrejelzés, hanem azt jelzi, hogy a piaci környezet mennyire kedvez egy tartós áremelkedés kialakulásának.
+        </div>
+      </div>
+
+    </section>
+
+
+    <section class="section-card orange-top">
+      <div class="section-head">
+        <h2 class="section-title">
+          Előzetes történeti validáció
+          <span>Preliminary historical validation</span>
+        </h2>
+
+        <div class="section-note">
+          A jelenlegi adatbázis Brent-árfolyamának rövid távú mozgását és az aktuális OMPI-jelzést hasonlítja össze.
+        </div>
+      </div>
+
+      <div class="validation-grid">
+        <div>
+          <div class="validation-kpis">
+            <div class="validation-kpi blue">
+              <div class="validation-label">Aktuális OMPI</div>
+              <div class="validation-value" id="validationOmpi">–</div>
+              <div class="validation-sub">A jelenlegi súlyozott piaci árnyomási mutató</div>
+            </div>
+
+            <div class="validation-kpi orange">
+              <div class="validation-label">Brent 30 napos változás</div>
+              <div class="validation-value" id="validationBrentChange">–</div>
+              <div class="validation-sub">Az elérhető piaci adatsor alapján</div>
+            </div>
+
+            <div class="validation-kpi green">
+              <div class="validation-label">Irányegyezés</div>
+              <div class="validation-value" id="validationDirection">–</div>
+              <div class="validation-sub">Az index és az ármozgás irányának összevetése</div>
+            </div>
+
+            <div class="validation-kpi red">
+              <div class="validation-label">Validációs státusz</div>
+              <div class="validation-value" id="validationStatus">Előzetes</div>
+              <div class="validation-sub">Teljes visszateszthez hosszabb historikus komponenssor szükséges</div>
+            </div>
+          </div>
+
+          <div class="validation-warning" id="validationWarning">
+            Ez még nem teljes historikus visszateszt. A múltbeli OMPI komponensek teljes idősora jelenleg nem áll rendelkezésre, ezért a blokk csak az aktuális index és a rövid távú Brent-momentum konzisztenciáját ellenőrzi.
+          </div>
+        </div>
+
+        <div class="validation-chart-wrap">
+          <canvas id="validationChart"></canvas>
+        </div>
+      </div>
+
+      <div class="explain-block">
+        <div class="explain-grid">
+          <div class="explain-item">
+            <div class="explain-title">Mit mutat?</div>
+            <div class="explain-text">Az aktuális OMPI jelzést a rendelkezésre álló Brent-adatsor rövid távú irányával veti össze.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Hogyan értelmezzük?</div>
+            <div class="explain-text">Az irányegyezés azt mutatja, hogy a magasabb vagy alacsonyabb árnyomási jelzés összhangban van-e a közelmúlt Brent-mozgásával.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Mire jó?</div>
+            <div class="explain-text">Első minőségellenőrzésként használható, de nem helyettesíti a többéves, minden komponensre kiterjedő visszatesztet.</div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <strong>Key Insight:</strong> Megbízható ársávbecslést csak akkor érdemes építeni, ha az OMPI múltbeli változatai is reprodukálhatók és összevethetők a Brent történeti áraival.
+        </div>
+      </div>
+
     </section>
 
     <section class="section-card teal-top">
@@ -1662,6 +1971,29 @@
           <div class="chart-wrap country">
             <canvas id="producerChart"></canvas>
           </div>
+      <div class="explain-block">
+        <div class="explain-grid">
+          <div class="explain-item">
+            <div class="explain-title">Mit mutat?</div>
+            <div class="explain-text">A kiválasztott év legnagyobb olajtermelő országait és becsült napi termelésüket mutatja.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Hogyan értelmezzük?</div>
+            <div class="explain-text">A hosszabb oszlop nagyobb globális kínálati súlyt jelent. Az évváltással látható, mely termelők növelik vagy veszítik el piaci jelentőségüket.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Mire jó?</div>
+            <div class="explain-text">Segít azonosítani, mely országok termelési döntései vagy kiesései lehetnek a legnagyobb hatással a világpiaci kínálatra.</div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <strong>Key Insight:</strong> A globális kínálat néhány szereplőnél koncentrálódik, ezért a legnagyobb termelők változásai aránytalanul nagy piaci hatást válthatnak ki.
+        </div>
+      </div>
+
         </article>
 
         <article class="chart-panel">
@@ -1673,6 +2005,29 @@
           <div class="chart-wrap country">
             <canvas id="importerChart"></canvas>
           </div>
+      <div class="explain-block">
+        <div class="explain-grid">
+          <div class="explain-item">
+            <div class="explain-title">Mit mutat?</div>
+            <div class="explain-text">A kiválasztott év legnagyobb olajimportőreit és becsült napi importigényüket mutatja.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Hogyan értelmezzük?</div>
+            <div class="explain-text">A magasabb import erősebb külső energiafüggőséget és nagyobb világpiaci keresleti súlyt jelez.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Mire jó?</div>
+            <div class="explain-text">Segít felmérni, hogy Kína, India, Európa és más nagy fogyasztók keresletváltozása hogyan mozgathatja a globális olajpiacot.</div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <strong>Key Insight:</strong> A keresleti oldal koncentrációja miatt néhány nagy importőr gazdasági ciklusa az egész világpiaci egyensúlyt képes módosítani.
+        </div>
+      </div>
+
         </article>
       </div>
 
@@ -1946,6 +2301,8 @@
     let importerChartInstance = null;
     let inventoryDrawChartInstance = null;
     let activeInventoryDays = 30;
+    let validationChartInstance = null;
+    let latestOmpiScore = null;
 
     async function loadJsonSafe(url, fallback) {
       try {
@@ -3067,6 +3424,7 @@
       );
 
       const level = ompiLevel(totalScore);
+      latestOmpiScore = totalScore;
 
       document.getElementById("ompiScore").innerText =
         totalScore.toFixed(1);
@@ -3107,6 +3465,144 @@
             </div>
           </div>
         `).join("");
+    }
+
+    function renderHistoricalValidation(marketRows) {
+      if (!Array.isArray(marketRows) || marketRows.length < 10) {
+        document.getElementById("validationWarning").innerText =
+          "A történeti validációhoz nem áll rendelkezésre elegendő Brent-adat.";
+        return;
+      }
+
+      const parsed = marketRows
+        .map(row => {
+          const value = Number(row.market_brent ?? row.brent);
+          const date = row.date ?? row.timestamp ?? row.updated_at;
+
+          return {
+            date,
+            value
+          };
+        })
+        .filter(row => Number.isFinite(row.value));
+
+      if (parsed.length < 10) {
+        document.getElementById("validationWarning").innerText =
+          "A történeti validációhoz nem áll rendelkezésre elegendő használható Brent-adat.";
+        return;
+      }
+
+      const latest = parsed[parsed.length - 1].value;
+      const comparisonIndex = Math.max(0, parsed.length - 31);
+      const earlier = parsed[comparisonIndex].value;
+      const changePercent = earlier
+        ? ((latest - earlier) / earlier) * 100
+        : 0;
+
+      const ompi = Number.isFinite(latestOmpiScore)
+        ? latestOmpiScore
+        : 50;
+
+      const ompiDirection =
+        ompi >= 55 ? "up" :
+        ompi <= 40 ? "down" :
+        "neutral";
+
+      const brentDirection =
+        changePercent > 1 ? "up" :
+        changePercent < -1 ? "down" :
+        "neutral";
+
+      const directionMatches =
+        ompiDirection === brentDirection ||
+        ompiDirection === "neutral" ||
+        brentDirection === "neutral";
+
+      document.getElementById("validationOmpi").innerText =
+        ompi.toFixed(1) + "/100";
+
+      document.getElementById("validationBrentChange").innerText =
+        (changePercent > 0 ? "+" : "") +
+        changePercent.toFixed(1) +
+        "%";
+
+      document.getElementById("validationDirection").innerText =
+        directionMatches ? "Igen" : "Nem";
+
+      document.getElementById("validationStatus").innerText =
+        directionMatches ? "Konzisztens" : "Felülvizsgálandó";
+
+      const chartRows = parsed.slice(-60);
+
+      if (validationChartInstance) {
+        validationChartInstance.destroy();
+      }
+
+      validationChartInstance = new Chart(
+        document.getElementById("validationChart"),
+        {
+          type: "line",
+          data: {
+            labels: chartRows.map(row => row.date ?? ""),
+            datasets: [
+              {
+                label: "Brent",
+                data: chartRows.map(row => row.value),
+                borderColor: "#258bc7",
+                backgroundColor: "rgba(37,139,199,.10)",
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: .25,
+                fill: true
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              datalabels: {
+                display: false
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  display: false
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "USD/hordó",
+                  color: "#526879",
+                  font: {
+                    size: 10,
+                    weight: "bold"
+                  }
+                },
+                ticks: {
+                  color: "#526879",
+                  font: {
+                    size: 9,
+                    weight: "bold"
+                  }
+                },
+                grid: {
+                  color: "rgba(148,163,184,.18)"
+                }
+              }
+            }
+          }
+        }
+      );
     }
 
     function createCountryChart(
@@ -3424,6 +3920,7 @@
         interpretation,
         rows
       );
+      renderHistoricalValidation(rows);
       renderCountryModule(countryFlows);
 
       document.getElementById("forecastBrent").innerText =
