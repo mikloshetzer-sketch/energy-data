@@ -1,0 +1,127 @@
+name: Update global oil balance
+
+on:
+  # Kézi indítás az Actions felületről
+  workflow_dispatch:
+
+  # Hetente egyszer, hétfőn 07:40 UTC-kor
+  # Magyar idő szerint:
+  # télen 08:40
+  # nyáron 09:40
+  schedule:
+    - cron: "40 7 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-global-oil-balance
+  cancel-in-progress: false
+
+jobs:
+  update-global-oil-balance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository letöltése
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Python telepítése
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Python csomagok telepítése
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas openpyxl
+
+      - name: Globális olajpiaci adatok frissítése
+        run: |
+          python scripts/generate_global_oil_balance.py
+
+      - name: Generált JSON ellenőrzése
+        run: |
+          test -f docs/data/global_oil_balance.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          file_path = Path("docs/data/global_oil_balance.json")
+
+          with file_path.open("r", encoding="utf-8") as file:
+              data = json.load(file)
+
+          required_keys = {
+              "generated_at",
+              "dataset",
+              "unit",
+              "series",
+          }
+
+          missing_keys = required_keys - data.keys()
+
+          if missing_keys:
+              raise RuntimeError(
+                  f"Hiányzó kötelező JSON-mezők: {sorted(missing_keys)}"
+              )
+
+          series = data.get("series", [])
+
+          if not series:
+              raise RuntimeError("A JSON series mezője üres.")
+
+          years = {
+              int(row["year"])
+              for row in series
+              if "year" in row
+          }
+
+          required_years = {2023, 2024, 2025, 2026}
+          missing_years = required_years - years
+
+          if missing_years:
+              raise RuntimeError(
+                  f"Hiányzó évek: {sorted(missing_years)}"
+              )
+
+          for row in series:
+              for key in (
+                  "year",
+                  "supply_mbd",
+                  "demand_mbd",
+                  "balance_mbd",
+              ):
+                  if key not in row:
+                      raise RuntimeError(
+                          f"Hiányzó mező a(z) {row.get('year')} "
+                          f"évi adatsorban: {key}"
+                      )
+
+          print("A global_oil_balance.json ellenőrzése sikeres.")
+          print(f"Elérhető évek: {sorted(years)}")
+          PY
+
+      - name: Változások commitolása
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/data/global_oil_balance.json
+
+          if git diff --cached --quiet; then
+            echo "Nincs új globális olajpiaci adat."
+            exit 0
+          fi
+
+          git commit -m "Update global oil supply and demand data"
+
+          # Csökkenti annak esélyét, hogy egy másik workflow
+          # közben végrehajtott commitja miatt sikertelen legyen a push.
+          git pull --rebase origin main
+          git push origin main
