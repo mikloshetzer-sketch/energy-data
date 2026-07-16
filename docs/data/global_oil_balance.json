@@ -1,0 +1,96 @@
+{
+  "generated_at": "2026-07-16T14:26:37+00:00",
+  "dataset": "global_oil_supply_demand",
+  "title_hu": "Globális olajkínálat és kereslet",
+  "title_en": "Global Oil Supply and Demand",
+  "unit": "million_barrels_per_day",
+  "unit_short": "mb/d",
+  "coverage": {
+    "start_year": 2023,
+    "end_year": 2026
+  },
+  "latest_year": 2026,
+  "latest_balance_mbd": -0.85,
+  "latest_balance_status": "deficit",
+  "methodology_hu": "A kínálat az OPEC- és nem OPEC-országok folyékonyüzemanyag-termelésének összege. A kereslet az OECD- és nem OECD-országok folyékonyüzemanyag-fogyasztásának összege. Az éves értékek a havi adatok számtani átlagai. A piaci egyenleg a kínálat és a kereslet különbsége.",
+  "methodology_en": "Supply is calculated as OPEC plus non-OPEC liquid fuels production. Demand is calculated as OECD plus non-OECD liquid fuels consumption. Annual values are arithmetic averages of monthly data. Market balance equals supply minus demand.",
+  "interpretation_hu": {
+    "surplus": "A pozitív érték kínálati többletet jelez, ami általában lefelé irányuló árnyomást okozhat.",
+    "balanced": "A nullához közeli érték közel kiegyensúlyozott piacot jelez.",
+    "deficit": "A negatív érték kínálati hiányt vagy készletleépülést jelezhet, ami árfelhajtó hatású lehet."
+  },
+  "interpretation_en": {
+    "surplus": "A positive value indicates a supply surplus that can create downward price pressure.",
+    "balanced": "A value close to zero indicates a broadly balanced market.",
+    "deficit": "A negative value indicates a supply deficit or inventory draw, which can support prices."
+  },
+  "series": [
+    {
+      "year": 2023,
+      "supply_mbd": 101.84,
+      "demand_mbd": 101.78,
+      "status": "historical",
+      "source_type": "annual_baseline",
+      "balance_mbd": 0.06,
+      "balance_status": "balanced",
+      "months_available": 12,
+      "supply_change_mbd": null,
+      "demand_change_mbd": null,
+      "balance_change_mbd": null
+    },
+    {
+      "year": 2024,
+      "supply_mbd": 103.07,
+      "demand_mbd": 102.8,
+      "balance_mbd": 0.27,
+      "balance_status": "surplus",
+      "months_available": 12,
+      "status": "historical",
+      "source_type": "eia_monthly_average",
+      "supply_change_mbd": 1.23,
+      "demand_change_mbd": 1.02,
+      "balance_change_mbd": 0.21
+    },
+    {
+      "year": 2025,
+      "supply_mbd": 106.1,
+      "demand_mbd": 104.0,
+      "balance_mbd": 2.1,
+      "balance_status": "surplus",
+      "months_available": 12,
+      "status": "historical",
+      "source_type": "eia_monthly_average",
+      "supply_change_mbd": 3.03,
+      "demand_change_mbd": 1.2,
+      "balance_change_mbd": 1.83
+    },
+    {
+      "year": 2026,
+      "supply_mbd": 101.94,
+      "demand_mbd": 102.79,
+      "balance_mbd": -0.85,
+      "balance_status": "deficit",
+      "months_available": 12,
+      "status": "forecast",
+      "source_type": "eia_monthly_average",
+      "supply_change_mbd": -4.16,
+      "demand_change_mbd": -1.21,
+      "balance_change_mbd": -2.95
+    }
+  ],
+  "sources": [
+    {
+      "name": "U.S. Energy Information Administration",
+      "report": "Short-Term Energy Outlook – World liquid fuels production and consumption",
+      "url": "https://www.eia.gov/outlooks/steo/xls/Fig3.xlsx",
+      "used_for": "2024-2026 monthly series"
+    },
+    {
+      "name": "U.S. Energy Information Administration",
+      "report": "Historical world petroleum and other liquid fuels annual data",
+      "used_for": "2023 annual baseline"
+    }
+  ],
+  "disclaimer_hu": "A 2026-os adat előrejelzés. Az értékek az EIA következő havi STEO kiadásában módosulhatnak. A mutató petroleum and other liquid fuels kategóriát használ, ezért nem kizárólag nyersolajat tartalmaz.",
+  "disclaimer_en": "The 2026 value is a forecast and may change in subsequent EIA STEO releases. The dataset covers petroleum and other liquid fuels, not crude oil only."
+}
