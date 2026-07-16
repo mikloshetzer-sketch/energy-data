@@ -2,657 +2,313 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=1500, initial-scale=1.0" />
-  <title>Energia- és olajpiaci dashboard kártya</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Energia- és olajpiaci elemző dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    body {
-      margin: 0;
-      background: #e5e7eb;
-      font-family: Arial, Helvetica, sans-serif;
-      color: #0f172a;
+    :root{
+      --navy:#123d58;--navy2:#1b5577;--blue:#2c91cf;--blue2:#1678b3;
+      --page:#eaf1f5;--panel:#fff;--border:#cedbe4;--text:#14374e;--muted:#688092;
+      --green:#0b9b6a;--greenSoft:#e7f7f1;--orange:#d97706;--orangeSoft:#fff3df;
+      --red:#d94a3a;--redSoft:#fdecea;--purple:#7d58bf;--shadow:0 8px 22px rgba(24,58,82,.08);
+      --radius:16px;
     }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--page);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+    a,button{font-family:inherit}
 
-    .card {
-      width: 1500px;
-      height: 1120px;
-      box-sizing: border-box;
-      padding: 34px;
-      background:
-        radial-gradient(circle at top left, rgba(29, 78, 216, 0.16), transparent 28%),
-        radial-gradient(circle at top right, rgba(234, 88, 12, 0.16), transparent 30%),
-        linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
-      border-left: 12px solid #1d4ed8;
-      overflow: hidden;
+    .top-header{min-height:182px;padding:18px 34px 24px;color:#fff;background:radial-gradient(circle at 90% 15%,rgba(79,166,218,.46),transparent 31%),linear-gradient(112deg,#123d58 0%,#194f70 58%,#347da7 100%)}
+    .top-header-inner{width:min(1460px,calc(100% - 10px));margin:0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:28px}
+    .top-brand{display:flex;gap:16px;align-items:flex-start}
+    .top-logo{width:46px;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.09);display:grid;place-items:center;font-weight:900;flex:0 0 auto}
+    .top-eyebrow{margin:1px 0 7px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:#d8f0ff}
+    .top-title{max-width:900px;margin:0;font-family:Georgia,"Times New Roman",serif;font-size:clamp(37px,4.4vw,61px);line-height:.98;letter-spacing:-.02em;color:#fff}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;padding-top:53px}
+    .top-button{appearance:none;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:12px 18px;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;font-size:12px;font-weight:900;cursor:pointer;transition:.18s ease}
+    .top-button:hover{transform:translateY(-1px);background:rgba(255,255,255,.2)}
+    .top-button.primary{background:#268dce;border-color:#268dce}
+
+    .dashboard{width:min(1420px,calc(100% - 32px));margin:24px auto 34px}
+    .hero{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;background:var(--panel);border:1px solid var(--border);border-left:7px solid var(--blue);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 28px}
+    .kicker{margin:0 0 8px;color:#0f6797;text-transform:uppercase;letter-spacing:.14em;font-size:11px;font-weight:900}
+    .hero h2{margin:0;color:var(--navy);font-family:Georgia,"Times New Roman",serif;font-size:clamp(34px,4vw,50px);line-height:1}
+    .hero p{max-width:920px;margin:10px 0 0;color:var(--muted);font-size:15px;line-height:1.65}
+    .hero-meta{text-align:right}
+    .hero-meta-label{margin-bottom:7px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:900}
+    .status-pill{display:inline-flex;min-width:132px;justify-content:center;padding:12px 18px;border-radius:999px;font-size:12px;font-weight:900;text-transform:uppercase;border:1px solid transparent;box-shadow:0 8px 18px rgba(29,63,87,.08)}
+    .status-pill.surplus{color:#087a54;background:var(--greenSoft);border-color:#b7ead8}
+    .status-pill.balanced{color:#9a5600;background:var(--orangeSoft);border-color:#f2d2a7}
+    .status-pill.deficit{color:#b83225;background:var(--redSoft);border-color:#f4c3be}
+
+    .metrics{margin-top:14px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .metric{min-height:116px;padding:19px 14px 16px;text-align:center;border-right:1px solid var(--border)}
+    .metric:last-child{border-right:0}
+    .metric-value{color:#0e4e74;font-size:30px;line-height:1;font-weight:900}
+    .metric-label{margin-top:11px;color:var(--muted);font-size:10px;line-height:1.4;text-transform:uppercase;letter-spacing:.04em;font-weight:900}
+    .metric-sub{margin-top:6px;color:#8297a5;font-size:10px;line-height:1.35;font-weight:700}
+
+    .balance-overview{margin-top:14px;padding:20px 22px 22px;background:linear-gradient(135deg,rgba(238,248,253,.96),rgba(255,255,255,.98));border:1px solid #cbdde7;border-left:7px solid #0d988e;border-radius:var(--radius);box-shadow:var(--shadow)}
+    .section-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding-bottom:12px;border-bottom:1px solid #ccdde7}
+    .section-head h3{margin:0;color:var(--navy);font-size:22px;line-height:1.25}
+    .section-head h3 span{display:block;margin-top:4px;color:var(--muted);font-size:11px;font-weight:700}
+    .latest-chip{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;padding:9px 12px;border:1px solid #aae5cf;border-radius:999px;background:#e3f8ef;color:#087a54;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:900}
+    .latest-chip:before{content:"";width:8px;height:8px;border-radius:50%;background:#12ad78;box-shadow:0 0 0 4px rgba(18,173,120,.13)}
+    .balance-cards{margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .balance-card{padding:16px;background:rgba(255,255,255,.88);border:1px solid #d0dfe7;border-top:4px solid var(--blue);border-radius:14px}
+    .balance-card.forecast{border-top-color:var(--orange)}
+    .balance-year{color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.07em}
+    .balance-value{margin-top:6px;color:#0e4e74;font-size:28px;font-weight:900}
+    .balance-text{margin-top:8px;color:var(--muted);font-size:11px;line-height:1.55;font-weight:700}
+
+    .charts-grid{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .panel{min-width:0;padding:20px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .panel.full{grid-column:1/-1}
+    .panel-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:14px}
+    .panel-title{margin:0;color:var(--navy);font-size:21px;line-height:1.2}
+    .panel-title span{display:block;margin-top:4px;color:var(--muted);font-size:11px;font-weight:700}
+    .panel-side-note{max-width:280px;color:var(--muted);font-size:10px;line-height:1.5;text-align:right;font-weight:700}
+    .chart-wrap{position:relative;height:390px}
+    .chart-wrap.large{height:470px}
+
+    .mini-grid{margin-top:14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .mini{padding:17px;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+    .mini-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .mini-title{color:var(--navy);font-size:13px;line-height:1.35;font-weight:900}
+    .mini-title span{display:block;margin-top:3px;color:var(--muted);font-size:10px;font-weight:700}
+    .mini-value{color:#0e4e74;font-size:22px;font-weight:900;white-space:nowrap}
+    .mini-chart{height:94px;margin-top:8px}
+
+    .insight-grid{margin-top:14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .insight{padding:18px;background:var(--panel);border:1px solid var(--border);border-left:6px solid var(--blue);border-radius:14px;box-shadow:var(--shadow)}
+    .insight.orange{border-left-color:var(--orange)}
+    .insight.red{border-left-color:var(--red)}
+    .insight strong{display:block;margin-bottom:8px;color:var(--navy);font-size:15px}
+    .insight p{margin:0;color:var(--muted);font-size:12px;line-height:1.65}
+    .footer{margin-top:14px;padding:13px 16px;background:var(--navy);color:#d8edf8;border-radius:12px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:11px;font-weight:700}
+    canvas{width:100%!important;height:100%!important}
+
+    @media(max-width:1120px){
+      .metrics{grid-template-columns:repeat(3,1fr)}
+      .metric:nth-child(3n){border-right:0}.metric:nth-child(-n+3){border-bottom:1px solid var(--border)}
+      .charts-grid{grid-template-columns:1fr}.panel.full{grid-column:auto}
+      .mini-grid,.insight-grid{grid-template-columns:1fr 1fr}
     }
-
-    .header {
-      display: grid;
-      grid-template-columns: 1.5fr 0.7fr 0.55fr;
-      gap: 18px;
-      margin-bottom: 18px;
-      align-items: stretch;
-    }
-
-    .title h1 {
-      margin: 0;
-      font-size: 40px;
-      color: #0f172a;
-      line-height: 1.1;
-      letter-spacing: -0.6px;
-    }
-
-    .title p {
-      margin: 8px 0 0 0;
-      font-size: 17px;
-      color: #1d4ed8;
-      font-weight: 800;
-    }
-
-    .title small {
-      display: block;
-      margin-top: 4px;
-      font-size: 13px;
-      color: #475569;
-      font-weight: 700;
-    }
-
-    .topbox {
-      background: rgba(255,255,255,0.94);
-      border: 1px solid #d9e2ec;
-      border-radius: 16px;
-      padding: 14px 16px;
-      box-shadow: 0 10px 24px rgba(15,23,42,0.06);
-      font-weight: 800;
-    }
-
-    .topbox-label {
-      font-size: 12px;
-      color: #475569;
-      text-transform: uppercase;
-      margin-bottom: 5px;
-    }
-
-    .topbox-value {
-      font-size: 17px;
-      color: #0f172a;
-      line-height: 1.35;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,0.96);
-    }
-
-    .brand img {
-      max-width: 190px;
-      max-height: 78px;
-      object-fit: contain;
-      display: block;
-    }
-
-    .metric-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .metric {
-      background: rgba(255,255,255,0.96);
-      border: 1px solid #d9e2ec;
-      border-radius: 16px;
-      padding: 14px;
-      min-height: 112px;
-      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
-      border-top: 5px solid #1d4ed8;
-    }
-
-    .metric.red { border-top-color: #b91c1c; }
-    .metric.green { border-top-color: #047857; }
-    .metric.orange { border-top-color: #ea580c; }
-    .metric.purple { border-top-color: #7e22ce; }
-
-    .metric-label {
-      color: #334155;
-      font-size: 13px;
-      font-weight: 900;
-      line-height: 1.25;
-    }
-
-    .metric-label span {
-      display: block;
-      color: #64748b;
-      font-size: 10.5px;
-      margin-top: 2px;
-      font-weight: 800;
-    }
-
-    .metric-value {
-      color: #0f172a;
-      font-size: 27px;
-      font-weight: 900;
-      line-height: 1.1;
-      margin-top: 8px;
-    }
-
-    .metric-sub {
-      color: #64748b;
-      font-size: 11.5px;
-      font-weight: 700;
-      margin-top: 7px;
-      line-height: 1.35;
-    }
-
-    .chart-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 0.72fr;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .panel {
-      background: rgba(255,255,255,0.96);
-      border: 1px solid #d9e2ec;
-      border-radius: 16px;
-      padding: 14px;
-      box-sizing: border-box;
-      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
-    }
-
-    .panel h2 {
-      margin: 0 0 8px 0;
-      font-size: 17px;
-      color: #0f172a;
-      line-height: 1.2;
-    }
-
-    .panel h2 span {
-      display: block;
-      color: #475569;
-      font-size: 11.5px;
-      margin-top: 2px;
-      font-weight: 700;
-    }
-
-    .chart-wrap {
-      height: 245px;
-    }
-
-    .small-chart-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .mini {
-      background: rgba(255,255,255,0.96);
-      border: 1px solid #d9e2ec;
-      border-radius: 14px;
-      padding: 11px;
-      box-shadow: 0 8px 18px rgba(15,23,42,0.05);
-      min-height: 118px;
-    }
-
-    .mini-title {
-      font-size: 11.5px;
-      font-weight: 900;
-      color: #0f172a;
-      line-height: 1.25;
-    }
-
-    .mini-title span {
-      display: block;
-      font-size: 9.8px;
-      color: #64748b;
-      font-weight: 800;
-      margin-top: 2px;
-    }
-
-    .mini-value {
-      font-size: 19px;
-      font-weight: 900;
-      margin-top: 6px;
-      color: #1d4ed8;
-    }
-
-    .mini-chart {
-      height: 48px;
-      margin-top: 3px;
-    }
-
-    .bottom-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 1.1fr 0.9fr 0.8fr;
-      gap: 12px;
-    }
-
-    .note {
-      background: rgba(255,255,255,0.96);
-      border: 1px solid #d9e2ec;
-      border-radius: 16px;
-      padding: 15px;
-      border-left: 6px solid #1d4ed8;
-      min-height: 130px;
-      box-shadow: 0 8px 18px rgba(15,23,42,0.05);
-    }
-
-    .note.red { border-left-color: #b91c1c; }
-    .note.orange { border-left-color: #ea580c; }
-    .note.green { border-left-color: #047857; }
-
-    .note strong {
-      display: block;
-      font-size: 15px;
-      color: #0f172a;
-      margin-bottom: 8px;
-      font-weight: 900;
-    }
-
-    .note strong span {
-      display: block;
-      font-size: 11px;
-      color: #64748b;
-      margin-top: 2px;
-      font-weight: 800;
-    }
-
-    .note ul {
-      margin: 0;
-      padding-left: 17px;
-    }
-
-    .note li {
-      font-size: 12px;
-      line-height: 1.45;
-      color: #334155;
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
-
-    .footer {
-      margin-top: 12px;
-      padding: 10px 14px;
-      background: #0f172a;
-      color: #e5e7eb;
-      border-radius: 12px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 11.5px;
-      font-weight: 700;
-    }
-
-    canvas {
-      width: 100% !important;
-      height: 100% !important;
+    @media(max-width:760px){
+      .top-header{padding:18px 14px 22px}.top-header-inner,.hero,.section-head{display:block}
+      .top-actions{justify-content:flex-start;padding-top:20px}.dashboard{width:min(100% - 18px,1420px)}
+      .hero-meta{margin-top:18px;text-align:left}.metrics,.balance-cards,.mini-grid,.insight-grid{grid-template-columns:1fr}
+      .metric{border-right:0;border-bottom:1px solid var(--border)}.metric:last-child{border-bottom:0}
+      .latest-chip{margin-top:12px}.panel-head{display:block}.panel-side-note{margin-top:8px;max-width:none;text-align:left}
+      .chart-wrap,.chart-wrap.large{height:350px}
     }
   </style>
 </head>
-
 <body>
-  <div class="card" id="capture">
 
-    <div class="header">
-      <div class="title">
-        <h1>Energia- és olajpiaci helyzetkép</h1>
-        <p>Olajár, szűkületi kockázat, USA termelési érték és Kína importkitettség</p>
-        <small>Energy and oil market snapshot · Oil price, chokepoint risk, US production value and China import exposure</small>
-      </div>
-
-      <div class="topbox">
-        <div class="topbox-label">Frissítés / Updated</div>
-        <div class="topbox-value" id="dateBox">betöltés...</div>
-        <div class="topbox-label" style="margin-top:8px;">Adatforrás / Source</div>
-        <div class="topbox-value">energy-data repo · JSON</div>
-      </div>
-
-      <div class="topbox brand">
-        <img
-          src="https://toresvonalak.blog/wp-content/uploads/2025/04/cropped-logo.png"
-          alt="Törésvonalak Blog"
-        />
+<header class="top-header">
+  <div class="top-header-inner">
+    <div class="top-brand">
+      <div class="top-logo">ME</div>
+      <div>
+        <div class="top-eyebrow">Törésvonalak.blog</div>
+        <h1 class="top-title">Elemzés. Tények. Kontextus. · Energia- és olajpiaci dashboard</h1>
       </div>
     </div>
-
-    <div class="metric-grid">
-      <div class="metric green">
-        <div class="metric-label">USA napi olajtermelési érték <span>US daily oil production value</span></div>
-        <div class="metric-value" id="usaRevenue">–</div>
-        <div class="metric-sub" id="usaRevenueSub">WTI-alapú becslés / WTI-based estimate</div>
-      </div>
-
-      <div class="metric red">
-        <div class="metric-label">Kína napi importköltség <span>China daily oil import cost</span></div>
-        <div class="metric-value" id="chinaImport">–</div>
-        <div class="metric-sub" id="chinaImportSub">Brent-alapú becslés / Brent-based estimate</div>
-      </div>
-
-      <div class="metric">
-        <div class="metric-label">Brent ár <span>Brent price</span></div>
-        <div class="metric-value" id="brentPrice">–</div>
-        <div class="metric-sub">globális referenciaár / global benchmark</div>
-      </div>
-
-      <div class="metric purple">
-        <div class="metric-label">WTI ár <span>WTI price</span></div>
-        <div class="metric-value" id="wtiPrice">–</div>
-        <div class="metric-sub">amerikai referenciaár / US benchmark</div>
-      </div>
-
-      <div class="metric orange">
-        <div class="metric-label">Szoroskockázati jelzés <span>Chokepoint risk signal</span></div>
-        <div class="metric-value" id="riskSignal">–</div>
-        <div class="metric-sub" id="riskSignalSub">utolsó indexérték / latest index</div>
-      </div>
+    <div class="top-actions">
+      <button class="top-button" type="button" onclick="location.reload()">Adatok frissítése</button>
+      <a class="top-button primary" href="https://toresvonalak.blog/energia-es-olajpiaci-elemzo/" target="_blank" rel="noopener">Elemző oldal</a>
     </div>
-
-    <div class="chart-grid">
-      <div class="panel">
-        <h2>Brent ár és szoroskockázat együttmozgása <span>Brent price and chokepoint risk co-movement</span></h2>
-        <div class="chart-wrap">
-          <canvas id="riskChart"></canvas>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2>USA–Kína energiahatás 2026-ban <span>US–China energy impact in 2026</span></h2>
-        <div class="chart-wrap">
-          <canvas id="mainChart"></canvas>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2>Brent ár napi alakulása <span>Daily Brent price trend</span></h2>
-        <div class="chart-wrap">
-          <canvas id="brentChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div class="small-chart-grid">
-      <div class="mini">
-        <div class="mini-title">WTI ár <span>WTI price</span></div>
-        <div class="mini-value" id="miniWti">–</div>
-        <div class="mini-chart"><canvas id="miniWtiChart"></canvas></div>
-      </div>
-
-      <div class="mini">
-        <div class="mini-title">Brent ár <span>Brent price</span></div>
-        <div class="mini-value" id="miniBrent">–</div>
-        <div class="mini-chart"><canvas id="miniBrentChart"></canvas></div>
-      </div>
-
-      <div class="mini">
-        <div class="mini-title">Kína importmennyiség <span>China import volume</span></div>
-        <div class="mini-value" id="miniChinaVol">–</div>
-        <div class="mini-chart"><canvas id="miniChinaVolChart"></canvas></div>
-      </div>
-
-      <div class="mini">
-        <div class="mini-title">Szoroskockázat <span>Chokepoint risk</span></div>
-        <div class="mini-value" id="miniRisk">–</div>
-        <div class="mini-chart"><canvas id="miniRiskChart"></canvas></div>
-      </div>
-
-      <div class="mini">
-        <div class="mini-title">Közel-keleti hatás <span>Middle East impact</span></div>
-        <div class="mini-value" id="miniME">–</div>
-        <div class="mini-chart"><canvas id="miniMEChart"></canvas></div>
-      </div>
-
-      <div class="mini">
-        <div class="mini-title">USA–Kína különbség <span>US–China spread</span></div>
-        <div class="mini-value" id="miniSpread">–</div>
-        <div class="mini-chart"><canvas id="miniSpreadChart"></canvas></div>
-      </div>
-    </div>
-
-    <div class="bottom-grid">
-      <div class="note green">
-        <strong>Fő megállapítások <span>Key takeaways</span></strong>
-        <ul>
-          <li>Magasabb olajár növeli az USA termelési értékét.</li>
-          <li>Higher oil prices increase estimated US production value.</li>
-          <li>Kína importköltsége közvetlenül érzékeny a Brent árra.</li>
-          <li>China’s import cost is directly exposed to Brent prices.</li>
-        </ul>
-      </div>
-
-      <div class="note orange">
-        <strong>Mit érdemes figyelni? <span>What to watch?</span></strong>
-        <ul>
-          <li>Hormuzi-szoros és Vörös-tenger kockázata.</li>
-          <li>Risk in the Strait of Hormuz and the Red Sea.</li>
-          <li>OPEC+ döntések, készletek és kínai finomítói kereslet.</li>
-          <li>OPEC+ decisions, inventories and Chinese refinery demand.</li>
-        </ul>
-      </div>
-
-      <div class="note red">
-        <strong>Értelmezési útmutató <span>Interpretation guide</span></strong>
-        <ul>
-          <li>A szoroskockázat 0–100 skálán jelzi a tengeri útvonalak sérülékenységét.</li>
-          <li>The chokepoint index measures maritime route vulnerability on a 0–100 scale.</li>
-        </ul>
-      </div>
-
-      <div class="note">
-        <strong>Adatjelleg <span>Data note</span></strong>
-        <ul>
-          <li>A kártya becsléseket és piaci indikátorokat jelenít meg.</li>
-          <li>The card shows estimates and market indicators, not official fiscal data.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="footer">
-      <div>Forrás / Source: energy-data repo · usa-oil-revenue.json · china-oil-import.json · market-history.json</div>
-      <div>toresvonalak.blog · Energia- és olajpiaci elemző / Energy and oil market analysis</div>
-    </div>
-
   </div>
+</header>
 
-  <script>
-    const USA_DATA_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/usa-oil-revenue.json";
-    const CHINA_DATA_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/china-oil-import.json";
-    const MARKET_HISTORY_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/market-history.json";
+<main class="dashboard">
+  <section class="hero">
+    <div>
+      <div class="kicker">Operational intelligence overview</div>
+      <h2>Energia- és olajpiaci helyzetkép</h2>
+      <p>A dashboard a globális kínálat és kereslet, a Brent és WTI árfolyam, az Egyesült Államok termelési értéke, Kína importkitettsége és a tengeri szűkületek kockázata alapján ad gyorsan értelmezhető piaci helyzetképet.</p>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-label">Globális piaci egyenleg</div>
+      <div id="overallStatus" class="status-pill balanced">Betöltés...</div>
+    </div>
+  </section>
 
-    async function loadJson(url) {
-      const res = await fetch(url + "?ts=" + Date.now());
-      if (!res.ok) throw new Error("Nem tölthető be: " + url);
-      return await res.json();
-    }
+  <section class="metrics">
+    <div class="metric"><div class="metric-value" id="usaRevenue">–</div><div class="metric-label">USA napi termelési érték<br>US daily production value</div><div class="metric-sub" id="usaRevenueSub">WTI-alapú becslés</div></div>
+    <div class="metric"><div class="metric-value" id="chinaImport">–</div><div class="metric-label">Kína napi importköltség<br>China daily import cost</div><div class="metric-sub" id="chinaImportSub">Brent-alapú becslés</div></div>
+    <div class="metric"><div class="metric-value" id="brentPrice">–</div><div class="metric-label">Brent ár<br>Brent price</div><div class="metric-sub">globális referenciaár</div></div>
+    <div class="metric"><div class="metric-value" id="wtiPrice">–</div><div class="metric-label">WTI ár<br>WTI price</div><div class="metric-sub">amerikai referenciaár</div></div>
+    <div class="metric"><div class="metric-value" id="riskSignal">–</div><div class="metric-label">Szoroskockázati index<br>Chokepoint risk</div><div class="metric-sub">utolsó elérhető érték</div></div>
+    <div class="metric"><div class="metric-value" id="globalBalanceMetric">–</div><div class="metric-label">2026 piaci egyenleg<br>2026 market balance</div><div class="metric-sub">kínálat mínusz kereslet</div></div>
+  </section>
 
-    function fmtBillion(value) {
-      if (value === null || value === undefined || isNaN(value)) return "–";
-      return Number(value).toFixed(2) + " mrd USD";
-    }
+  <section class="balance-overview">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Global oil balance</div>
+        <h3>Éves kínálati–keresleti helyzetkép<span>2023–2025 tényadat, 2026 előrejelzés · millió hordó/nap</span></h3>
+      </div>
+      <div class="latest-chip">Latest data window</div>
+    </div>
+    <div id="balanceCards" class="balance-cards"></div>
+  </section>
 
-    function fmtPrice(value) {
-      if (value === null || value === undefined || isNaN(value)) return "–";
-      return Number(value).toFixed(2) + " USD";
-    }
+  <section class="charts-grid">
+    <article class="panel full">
+      <div class="panel-head">
+        <h3 class="panel-title">Globális olaj- és folyékonyüzemanyag-kínálat és kereslet<span>Global petroleum and other liquid fuels supply and demand</span></h3>
+        <div class="panel-side-note">A halványabb 2026-os oszlopok előrejelzést jelentenek. Az egyenleg a kínálat és kereslet különbsége.</div>
+      </div>
+      <div class="chart-wrap large"><canvas id="globalBalanceChart"></canvas></div>
+    </article>
 
-    function fmtIndex(value) {
-      if (value === null || value === undefined || isNaN(value)) return "–";
-      return Number(value).toFixed(1);
-    }
+    <article class="panel">
+      <div class="panel-head"><h3 class="panel-title">Brent ár és geopolitikai kockázat<span>Brent price and geopolitical risk</span></h3></div>
+      <div class="chart-wrap"><canvas id="riskChart"></canvas></div>
+    </article>
 
-    function lastN(arr, n) {
-      return arr.slice(Math.max(arr.length - n, 0));
-    }
+    <article class="panel">
+      <div class="panel-head"><h3 class="panel-title">USA–Kína energiahatás<span>US–China energy impact</span></h3></div>
+      <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+    </article>
 
-    function makeMiniChart(canvasId, labels, values, color) {
-      new Chart(document.getElementById(canvasId), {
-        type: "line",
-        data: {
-          labels: labels,
-          datasets: [{
-            data: values,
-            borderColor: color,
-            backgroundColor: color.replace("1)", "0.10)"),
-            borderWidth: 2,
-            pointRadius: 0,
-            tension: 0.25,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false,
-          plugins: { legend: { display: false }, tooltip: { enabled: false } },
-          scales: { x: { display: false }, y: { display: false } }
-        }
-      });
-    }
+    <article class="panel full">
+      <div class="panel-head"><h3 class="panel-title">Brent ár napi alakulása<span>Daily Brent price trend</span></h3><div class="panel-side-note">Az utolsó 90 rendelkezésre álló adatpont.</div></div>
+      <div class="chart-wrap"><canvas id="brentChart"></canvas></div>
+    </article>
+  </section>
 
-    async function init() {
-      const usa = await loadJson(USA_DATA_URL);
-      const china = await loadJson(CHINA_DATA_URL);
-      const market = await loadJson(MARKET_HISTORY_URL);
+  <section class="mini-grid">
+    <article class="mini"><div class="mini-top"><div class="mini-title">WTI ár<span>WTI price</span></div><div class="mini-value" id="miniWti">–</div></div><div class="mini-chart"><canvas id="miniWtiChart"></canvas></div></article>
+    <article class="mini"><div class="mini-top"><div class="mini-title">Brent ár<span>Brent price</span></div><div class="mini-value" id="miniBrent">–</div></div><div class="mini-chart"><canvas id="miniBrentChart"></canvas></div></article>
+    <article class="mini"><div class="mini-top"><div class="mini-title">Kína importmennyiség<span>China import volume</span></div><div class="mini-value" id="miniChinaVol">–</div></div><div class="mini-chart"><canvas id="miniChinaVolChart"></canvas></div></article>
+    <article class="mini"><div class="mini-top"><div class="mini-title">Szoroskockázat<span>Chokepoint risk</span></div><div class="mini-value" id="miniRisk">–</div></div><div class="mini-chart"><canvas id="miniRiskChart"></canvas></div></article>
+    <article class="mini"><div class="mini-top"><div class="mini-title">Közel-keleti hatás<span>Middle East impact</span></div><div class="mini-value" id="miniME">–</div></div><div class="mini-chart"><canvas id="miniMEChart"></canvas></div></article>
+    <article class="mini"><div class="mini-top"><div class="mini-title">USA–Kína különbség<span>US–China spread</span></div><div class="mini-value" id="miniSpread">–</div></div><div class="mini-chart"><canvas id="miniSpreadChart"></canvas></div></article>
+  </section>
 
-      const usaSeries = usa.series || [];
-      const chinaSeries = china.series || [];
-      const rows = Array.isArray(market.rows) ? market.rows.filter(row => {
-        const brent = row.market_brent ?? row.brent;
-        return brent !== null && brent !== undefined;
-      }) : [];
+  <section class="insight-grid">
+    <article class="insight"><strong>Fő megállapítás</strong><p id="mainInsight">A globális piaci egyenleg betöltése folyamatban.</p></article>
+    <article class="insight orange"><strong>Mit érdemes figyelni?</strong><p>OPEC+ döntések, amerikai termelés, kínai finomítói kereslet, készletváltozások, valamint a Hormuzi-szoros és a Vörös-tenger kockázata.</p></article>
+    <article class="insight red"><strong>Adatértelmezés</strong><p>A 2026-os éves kínálati és keresleti adat előrejelzés. A petroleum and other liquid fuels kategória nem kizárólag nyersolajat tartalmaz.</p></article>
+  </section>
 
-      if (!usaSeries.length || !chinaSeries.length || !rows.length) {
-        throw new Error("Hiányzó idősoros adat.");
-      }
+  <footer class="footer"><div id="dateBox">Frissítés: betöltés...</div><div>Forrás: energy-data repo · EIA STEO · market-history.json</div><div>toresvonalak.blog · Energia- és olajpiaci elemző</div></footer>
+</main>
 
-      const usaLatest = usa.summary?.latest || usaSeries[usaSeries.length - 1];
-      const chinaLatest = china.summary?.latest || chinaSeries[chinaSeries.length - 1];
-      const marketLatest = rows[rows.length - 1];
+<script>
+  const USA_DATA_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/usa-oil-revenue.json";
+  const CHINA_DATA_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/china-oil-import.json";
+  const MARKET_HISTORY_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/market-history.json";
+  const GLOBAL_BALANCE_URL = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/docs/data/global_oil_balance.json";
 
-      const latestRisk = marketLatest.global_trade_risk_index ?? null;
-      const latestME = marketLatest.middle_east_conflict_impact ?? null;
+  Chart.defaults.font.family = "Arial, Helvetica, sans-serif";
+  Chart.defaults.color = "#526b7c";
 
-      document.getElementById("dateBox").innerHTML = new Date().toISOString().slice(0, 10) + "<br>UTC";
+  async function loadJson(url){
+    const response = await fetch(url + "?ts=" + Date.now());
+    if(!response.ok) throw new Error("Nem tölthető be: " + url);
+    return response.json();
+  }
+  const lastN=(arr,n)=>arr.slice(Math.max(arr.length-n,0));
+  const valid=v=>v!==null&&v!==undefined&&!Number.isNaN(Number(v));
+  const fmtBillion=v=>valid(v)?Number(v).toFixed(2)+" mrd USD":"–";
+  const fmtPrice=v=>valid(v)?Number(v).toFixed(2)+" USD":"–";
+  const fmtIndex=v=>valid(v)?Number(v).toFixed(1):"–";
+  const fmtBalance=v=>valid(v)?(Number(v)>0?"+":"")+Number(v).toFixed(2)+" mb/d":"–";
 
-      document.getElementById("usaRevenue").innerText = fmtBillion(usaLatest.estimated_revenue_billion_usd);
-      document.getElementById("usaRevenueSub").innerText = "WTI: " + fmtPrice(usaLatest.wti_usd_per_barrel) + " / hordó · barrel";
-
-      document.getElementById("chinaImport").innerText = fmtBillion(chinaLatest.estimated_import_value_billion_usd);
-      document.getElementById("chinaImportSub").innerText = "Import: " + chinaLatest.estimated_import_volume_mbd.toFixed(2) + " mbd";
-
-      document.getElementById("brentPrice").innerText = fmtPrice(chinaLatest.brent_usd_per_barrel);
-      document.getElementById("wtiPrice").innerText = fmtPrice(usaLatest.wti_usd_per_barrel);
-
-      document.getElementById("riskSignal").innerText = fmtIndex(latestRisk);
-      document.getElementById("riskSignalSub").innerText = "utolsó indexérték / latest index";
-
-      document.getElementById("miniWti").innerText = fmtPrice(usaLatest.wti_usd_per_barrel);
-      document.getElementById("miniBrent").innerText = fmtPrice(chinaLatest.brent_usd_per_barrel);
-      document.getElementById("miniChinaVol").innerText = chinaLatest.estimated_import_volume_mbd.toFixed(2) + " mbd";
-      document.getElementById("miniRisk").innerText = fmtIndex(latestRisk);
-      document.getElementById("miniME").innerText = fmtIndex(latestME);
-      document.getElementById("miniSpread").innerText =
-        (usaLatest.estimated_revenue_billion_usd - chinaLatest.estimated_import_value_billion_usd).toFixed(2) + " mrd";
-
-      const marketShort = lastN(rows, 90);
-      const marketLabels = marketShort.map(row => row.date);
-      const brent = marketShort.map(row => row.market_brent ?? row.brent);
-      const globalRisk = marketShort.map(row => row.global_trade_risk_index ?? null);
-      const meImpact = marketShort.map(row => row.middle_east_conflict_impact ?? null);
-
-      const usaShort = lastN(usaSeries, 90);
-      const chinaShort = lastN(chinaSeries, 90);
-      const labels = chinaShort.map(d => d.date);
-
-      const usaMap = {};
-      usaShort.forEach(d => usaMap[d.date] = d.estimated_revenue_billion_usd);
-
-      const usaValues = labels.map(date => usaMap[date] ?? null);
-      const chinaValues = chinaShort.map(d => d.estimated_import_value_billion_usd);
-      const chinaVol = chinaShort.map(d => d.estimated_import_volume_mbd);
-      const spreadValues = labels.map((date, i) => {
-        const u = usaMap[date];
-        const c = chinaValues[i];
-        return u !== null && u !== undefined ? u - c : null;
-      });
-
-      new Chart(document.getElementById("riskChart"), {
-        type: "line",
-        data: {
-          labels: marketLabels,
-          datasets: [
-            { label: "Brent ár / Brent price", data: brent, borderColor: "#1d4ed8", borderWidth: 3, pointRadius: 0, tension: 0.25, yAxisID: "y" },
-            { label: "Szoroskockázat / Chokepoint risk", data: globalRisk, borderColor: "#ea580c", borderWidth: 2, pointRadius: 0, tension: 0.25, yAxisID: "y1" },
-            { label: "Közel-keleti hatás / Middle East impact", data: meImpact, borderColor: "#b91c1c", borderWidth: 2, pointRadius: 0, borderDash: [6, 4], tension: 0.25, yAxisID: "y1" }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false,
-          plugins: { legend: { labels: { color: "#111827", font: { size: 10, weight: "bold" } } }, tooltip: { enabled: false } },
-          scales: {
-            x: { ticks: { display: false }, grid: { color: "#f1f5f9" } },
-            y: { position: "left", ticks: { color: "#1d4ed8", font: { size: 10, weight: "bold" } }, grid: { color: "#e5e7eb" } },
-            y1: { position: "right", ticks: { color: "#b91c1c", font: { size: 10, weight: "bold" } }, grid: { drawOnChartArea: false } }
-          }
-        }
-      });
-
-      new Chart(document.getElementById("mainChart"), {
-        type: "line",
-        data: {
-          labels: labels,
-          datasets: [
-            { label: "USA termelési érték / US production value", data: usaValues, borderColor: "#047857", borderWidth: 3, pointRadius: 0, tension: 0.25 },
-            { label: "Kína importköltség / China import cost", data: chinaValues, borderColor: "#b91c1c", borderWidth: 3, pointRadius: 0, tension: 0.25 }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false,
-          plugins: { legend: { labels: { color: "#111827", font: { size: 10, weight: "bold" } } }, tooltip: { enabled: false } },
-          scales: {
-            x: { ticks: { color: "#334155", maxTicksLimit: 6, maxRotation: 0, font: { size: 9, weight: "bold" } }, grid: { color: "#f1f5f9" } },
-            y: { title: { display: true, text: "mrd USD / nap", color: "#111827", font: { size: 10, weight: "bold" } }, ticks: { color: "#334155", font: { size: 9, weight: "bold" } }, grid: { color: "#e5e7eb" } }
-          }
-        }
-      });
-
-      new Chart(document.getElementById("brentChart"), {
-        type: "line",
-        data: {
-          labels: marketLabels,
-          datasets: [{ label: "Brent ár / Brent price", data: brent, borderColor: "#1d4ed8", backgroundColor: "rgba(29,78,216,0.10)", borderWidth: 3, pointRadius: 0, tension: 0.25, fill: true }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false,
-          plugins: { legend: { labels: { color: "#111827", font: { size: 10, weight: "bold" } } }, tooltip: { enabled: false } },
-          scales: {
-            x: { ticks: { color: "#334155", maxTicksLimit: 6, maxRotation: 0, font: { size: 9, weight: "bold" } }, grid: { color: "#f1f5f9" } },
-            y: { title: { display: true, text: "USD / hordó · barrel", color: "#1d4ed8", font: { size: 10, weight: "bold" } }, ticks: { color: "#1d4ed8", font: { size: 9, weight: "bold" } }, grid: { color: "#e5e7eb" } }
-          }
-        }
-      });
-
-      makeMiniChart("miniWtiChart", usaShort.map(d => d.date), usaShort.map(d => d.wti_usd_per_barrel), "rgba(126,34,206,1)");
-      makeMiniChart("miniBrentChart", marketLabels, brent, "rgba(29,78,216,1)");
-      makeMiniChart("miniChinaVolChart", labels, chinaVol, "rgba(185,28,28,1)");
-      makeMiniChart("miniRiskChart", marketLabels, globalRisk, "rgba(234,88,12,1)");
-      makeMiniChart("miniMEChart", marketLabels, meImpact, "rgba(220,38,38,1)");
-      makeMiniChart("miniSpreadChart", labels, spreadValues, "rgba(4,120,87,1)");
-    }
-
-    init().catch(function(error) {
-      console.error(error);
-      document.getElementById("dateBox").innerHTML = "Adatbetöltési hiba<br>Data loading error";
+  function makeMiniChart(id,labels,values,color){
+    new Chart(document.getElementById(id),{
+      type:"line",
+      data:{labels,datasets:[{data:values,borderColor:color,backgroundColor:color.replace("1)","0.10)"),borderWidth:2,pointRadius:0,tension:.28,fill:true}]},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}}}
     });
-  </script>
+  }
+
+  function renderBalanceCards(series){
+    document.getElementById("balanceCards").innerHTML=series.map(row=>{
+      const label=row.balance_status==="surplus"?"kínálati többlet":row.balance_status==="deficit"?"kínálati hiány":"közel egyensúly";
+      return `<div class="balance-card ${row.status==="forecast"?"forecast":""}"><div class="balance-year">${row.year}${row.status==="forecast"?" · FORECAST":""}</div><div class="balance-value">${fmtBalance(row.balance_mbd)}</div><div class="balance-text">${label}<br>Kínálat: ${Number(row.supply_mbd).toFixed(2)} · Kereslet: ${Number(row.demand_mbd).toFixed(2)} mb/d</div></div>`;
+    }).join("");
+  }
+
+  function renderGlobalBalanceChart(series){
+    const labels=series.map(r=>String(r.year));
+    new Chart(document.getElementById("globalBalanceChart"),{
+      type:"bar",
+      data:{labels,datasets:[
+        {label:"Kínálat / Supply",data:series.map(r=>r.supply_mbd),backgroundColor:series.map(r=>r.status==="forecast"?"rgba(44,145,207,.48)":"rgba(44,145,207,.88)"),borderColor:"#176b9f",borderWidth:1,borderRadius:8,maxBarThickness:76},
+        {label:"Kereslet / Demand",data:series.map(r=>r.demand_mbd),backgroundColor:series.map(r=>r.status==="forecast"?"rgba(217,119,6,.48)":"rgba(217,119,6,.88)"),borderColor:"#b45309",borderWidth:1,borderRadius:8,maxBarThickness:76}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"top",labels:{usePointStyle:true,pointStyle:"rectRounded",padding:22,font:{size:12,weight:"bold"}}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${Number(c.raw).toFixed(2)} mb/d`,afterBody:items=>`Egyenleg / Balance: ${fmtBalance(series[items[0].dataIndex].balance_mbd)}`}}},scales:{x:{grid:{display:false},ticks:{color:"#1e293b",font:{size:13,weight:"bold"}}},y:{beginAtZero:false,suggestedMin:98,title:{display:true,text:"millió hordó/nap · million barrels per day",color:"#334155",font:{size:12,weight:"bold"}},ticks:{color:"#526b7c",font:{size:11,weight:"bold"}},grid:{color:"rgba(148,163,184,.22)"}}}}
+    });
+  }
+
+  async function init(){
+    const [usa,china,market,balance]=await Promise.all([loadJson(USA_DATA_URL),loadJson(CHINA_DATA_URL),loadJson(MARKET_HISTORY_URL),loadJson(GLOBAL_BALANCE_URL)]);
+    const usaSeries=usa.series||[],chinaSeries=china.series||[],balanceSeries=balance.series||[];
+    const rows=Array.isArray(market.rows)?market.rows.filter(r=>valid(r.market_brent??r.brent)):[];
+    if(!usaSeries.length||!chinaSeries.length||!rows.length||!balanceSeries.length) throw new Error("Hiányzó idősoros adat.");
+
+    const usaLatest=usa.summary?.latest||usaSeries.at(-1);
+    const chinaLatest=china.summary?.latest||chinaSeries.at(-1);
+    const marketLatest=rows.at(-1);
+    const latestRisk=marketLatest.global_trade_risk_index??null;
+    const latestME=marketLatest.middle_east_conflict_impact??null;
+    const latestBalance=balanceSeries.at(-1);
+
+    document.getElementById("dateBox").innerText="Frissítés: "+new Date(balance.generated_at||Date.now()).toLocaleString("hu-HU",{timeZone:"UTC"})+" UTC";
+    document.getElementById("usaRevenue").innerText=fmtBillion(usaLatest.estimated_revenue_billion_usd);
+    document.getElementById("usaRevenueSub").innerText="WTI: "+fmtPrice(usaLatest.wti_usd_per_barrel)+" / hordó";
+    document.getElementById("chinaImport").innerText=fmtBillion(chinaLatest.estimated_import_value_billion_usd);
+    document.getElementById("chinaImportSub").innerText="Import: "+Number(chinaLatest.estimated_import_volume_mbd).toFixed(2)+" mb/d";
+    document.getElementById("brentPrice").innerText=fmtPrice(chinaLatest.brent_usd_per_barrel);
+    document.getElementById("wtiPrice").innerText=fmtPrice(usaLatest.wti_usd_per_barrel);
+    document.getElementById("riskSignal").innerText=fmtIndex(latestRisk);
+    document.getElementById("globalBalanceMetric").innerText=fmtBalance(latestBalance.balance_mbd);
+
+    const status=document.getElementById("overallStatus");
+    status.className="status-pill "+latestBalance.balance_status;
+    status.innerText=latestBalance.balance_status==="surplus"?"Kínálati többlet":latestBalance.balance_status==="deficit"?"Kínálati hiány":"Közel egyensúly";
+    document.getElementById("mainInsight").innerText=latestBalance.balance_status==="deficit"?`A ${latestBalance.year}-os előrejelzés ${Math.abs(latestBalance.balance_mbd).toFixed(2)} mb/d kínálati hiányt mutat. Ez készletcsökkenési és árfelhajtó nyomást jelezhet.`:latestBalance.balance_status==="surplus"?`A ${latestBalance.year}-os előrejelzés ${latestBalance.balance_mbd.toFixed(2)} mb/d kínálati többletet mutat. Ez lefelé irányuló árnyomást erősíthet.`:"A legfrissebb éves előrejelzés közel kiegyensúlyozott globális piacot mutat.";
+
+    renderBalanceCards(balanceSeries);
+    renderGlobalBalanceChart(balanceSeries);
+
+    const marketShort=lastN(rows,90),marketLabels=marketShort.map(r=>r.date),brent=marketShort.map(r=>r.market_brent??r.brent),globalRisk=marketShort.map(r=>r.global_trade_risk_index??null),meImpact=marketShort.map(r=>r.middle_east_conflict_impact??null);
+    const usaShort=lastN(usaSeries,90),chinaShort=lastN(chinaSeries,90),labels=chinaShort.map(d=>d.date),usaMap={};
+    usaShort.forEach(d=>usaMap[d.date]=d.estimated_revenue_billion_usd);
+    const usaValues=labels.map(date=>usaMap[date]??null),chinaValues=chinaShort.map(d=>d.estimated_import_value_billion_usd),chinaVol=chinaShort.map(d=>d.estimated_import_volume_mbd),spreadValues=labels.map((date,i)=>valid(usaMap[date])?usaMap[date]-chinaValues[i]:null);
+
+    document.getElementById("miniWti").innerText=fmtPrice(usaLatest.wti_usd_per_barrel);
+    document.getElementById("miniBrent").innerText=fmtPrice(chinaLatest.brent_usd_per_barrel);
+    document.getElementById("miniChinaVol").innerText=Number(chinaLatest.estimated_import_volume_mbd).toFixed(2)+" mb/d";
+    document.getElementById("miniRisk").innerText=fmtIndex(latestRisk);
+    document.getElementById("miniME").innerText=fmtIndex(latestME);
+    document.getElementById("miniSpread").innerText=(usaLatest.estimated_revenue_billion_usd-chinaLatest.estimated_import_value_billion_usd).toFixed(2)+" mrd";
+
+    new Chart(document.getElementById("riskChart"),{type:"line",data:{labels:marketLabels,datasets:[{label:"Brent ár",data:brent,borderColor:"#2c91cf",borderWidth:3,pointRadius:0,tension:.25,yAxisID:"y"},{label:"Szoroskockázat",data:globalRisk,borderColor:"#d97706",borderWidth:2,pointRadius:0,tension:.25,yAxisID:"y1"},{label:"Közel-keleti hatás",data:meImpact,borderColor:"#d94a3a",borderWidth:2,pointRadius:0,borderDash:[6,4],tension:.25,yAxisID:"y1"}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{font:{size:11,weight:"bold"}}}},scales:{x:{ticks:{maxTicksLimit:7,maxRotation:0},grid:{color:"#eef3f6"}},y:{position:"left",ticks:{color:"#176b9f"},grid:{color:"#e3ebf0"}},y1:{position:"right",ticks:{color:"#b83225"},grid:{drawOnChartArea:false}}}}});
+
+    new Chart(document.getElementById("mainChart"),{type:"line",data:{labels,datasets:[{label:"USA termelési érték",data:usaValues,borderColor:"#0b9b6a",backgroundColor:"rgba(11,155,106,.08)",borderWidth:3,pointRadius:0,tension:.25,fill:true},{label:"Kína importköltség",data:chinaValues,borderColor:"#d94a3a",backgroundColor:"rgba(217,74,58,.06)",borderWidth:3,pointRadius:0,tension:.25,fill:true}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{font:{size:11,weight:"bold"}}}},scales:{x:{ticks:{maxTicksLimit:7,maxRotation:0},grid:{color:"#eef3f6"}},y:{title:{display:true,text:"mrd USD / nap",font:{size:11,weight:"bold"}},grid:{color:"#e3ebf0"}}}}});
+
+    new Chart(document.getElementById("brentChart"),{type:"line",data:{labels:marketLabels,datasets:[{label:"Brent ár",data:brent,borderColor:"#2c91cf",backgroundColor:"rgba(44,145,207,.10)",borderWidth:3,pointRadius:0,tension:.25,fill:true}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{font:{size:11,weight:"bold"}}}},scales:{x:{ticks:{maxTicksLimit:10,maxRotation:0},grid:{color:"#eef3f6"}},y:{title:{display:true,text:"USD / hordó",font:{size:11,weight:"bold"}},grid:{color:"#e3ebf0"}}}}});
+
+    makeMiniChart("miniWtiChart",usaShort.map(d=>d.date),usaShort.map(d=>d.wti_usd_per_barrel),"rgba(125,88,191,1)");
+    makeMiniChart("miniBrentChart",marketLabels,brent,"rgba(44,145,207,1)");
+    makeMiniChart("miniChinaVolChart",labels,chinaVol,"rgba(217,74,58,1)");
+    makeMiniChart("miniRiskChart",marketLabels,globalRisk,"rgba(217,119,6,1)");
+    makeMiniChart("miniMEChart",marketLabels,meImpact,"rgba(217,74,58,1)");
+    makeMiniChart("miniSpreadChart",labels,spreadValues,"rgba(11,155,106,1)");
+  }
+
+  init().catch(error=>{
+    console.error(error);
+    document.getElementById("dateBox").innerText="Adatbetöltési hiba";
+    document.getElementById("overallStatus").innerText="Hiba";
+  });
+</script>
 </body>
 </html>
