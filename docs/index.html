@@ -1314,6 +1314,299 @@
       line-height: 1.58;
     }
 
+
+    .outlook-grid {
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 15px;
+      align-items: stretch;
+    }
+
+    .outlook-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .outlook-kpi {
+      padding: 15px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .outlook-kpi.blue { border-top: 4px solid var(--blue); }
+    .outlook-kpi.orange { border-top: 4px solid var(--orange); }
+    .outlook-kpi.red { border-top: 4px solid var(--red); }
+    .outlook-kpi.green { border-top: 4px solid var(--green); }
+
+    .outlook-label {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .outlook-value {
+      margin-top: 7px;
+      color: var(--navy);
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .outlook-sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .price-band-card {
+      padding: 20px;
+      background:
+        radial-gradient(circle at 78% 28%, rgba(217,119,6,.13), transparent 36%),
+        #f8fbfd;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .price-band-title {
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .price-band-main {
+      margin-top: 12px;
+      color: var(--navy);
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .price-band-main span {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .price-band-track {
+      height: 20px;
+      margin-top: 18px;
+      border-radius: 999px;
+      background:
+        linear-gradient(
+          90deg,
+          #d9f2e7 0%,
+          #fff0cf 38%,
+          #fbd9d4 70%,
+          #f3b7af 100%
+        );
+      position: relative;
+      overflow: hidden;
+    }
+
+    .price-band-marker {
+      position: absolute;
+      top: -3px;
+      width: 4px;
+      height: 26px;
+      border-radius: 4px;
+      background: var(--navy);
+      transform: translateX(-50%);
+    }
+
+    .price-band-scale {
+      margin-top: 7px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .price-band-note {
+      margin-top: 13px;
+      padding: 12px 14px;
+      background: #fff8e8;
+      border: 1px solid #f2dca9;
+      border-left: 5px solid var(--orange);
+      border-radius: 10px;
+      color: #6f5428;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.58;
+    }
+
+    .assessment-box {
+      padding: 20px;
+      background: #f8fbfd;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .assessment-title {
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .assessment-text {
+      margin-top: 10px;
+      color: #334f61;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.75;
+    }
+
+    .assessment-drivers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .assessment-driver {
+      padding: 12px;
+      background: #ffffff;
+      border: 1px solid #e2eaf0;
+      border-radius: 10px;
+    }
+
+    .assessment-driver-title {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .assessment-driver-value {
+      margin-top: 6px;
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .risk-outlook-grid {
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 15px;
+      align-items: stretch;
+    }
+
+    .risk-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .risk-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 11px;
+    }
+
+    .risk-name {
+      color: var(--navy);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .risk-name span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .risk-badge {
+      min-width: 72px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      text-align: center;
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .risk-badge.low {
+      background: #e2f5ec;
+      color: #087452;
+    }
+
+    .risk-badge.medium {
+      background: #fff1d4;
+      color: #965400;
+    }
+
+    .risk-badge.high {
+      background: #fee7e4;
+      color: #a62820;
+    }
+
+    .risk-badge.critical {
+      background: #f7c8c2;
+      color: #811d17;
+    }
+
+    .overall-risk-card {
+      min-height: 260px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(200,60,50,.14), transparent 42%),
+        #f8fbfd;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    .overall-risk-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+
+    .overall-risk-score {
+      margin-top: 10px;
+      color: var(--navy);
+      font-size: 58px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .overall-risk-status {
+      margin-top: 13px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #fee7e4;
+      border: 1px solid #f3c5bf;
+      color: #a62820;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .overall-risk-text {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
     canvas {
       width: 100% !important;
       height: 100% !important;
@@ -1359,7 +1652,10 @@
       .coverage-grid,
       .ompi-grid,
       .validation-grid,
-      .explain-grid {
+      .explain-grid,
+      .outlook-grid,
+      .risk-outlook-grid,
+      .assessment-drivers {
         grid-template-columns: 1fr;
       }
     }
@@ -1875,6 +2171,210 @@
 
     </section>
 
+
+
+    <section class="section-card orange-top">
+      <div class="section-head">
+        <h2 class="section-title">
+          Brent Price Outlook
+          <span>Óvatos, OMPI-alapú rövid távú ársáv</span>
+        </h2>
+
+        <div class="section-note">
+          Heurisztikus becslés. Nem kereskedési ajánlás és nem validált célármodell.
+        </div>
+      </div>
+
+      <div class="outlook-grid">
+        <div class="outlook-summary">
+          <div class="outlook-kpi blue">
+            <div class="outlook-label">Aktuális Brent</div>
+            <div class="outlook-value" id="priceOutlookCurrent">–</div>
+            <div class="outlook-sub">A legfrissebb rendelkezésre álló adat</div>
+          </div>
+
+          <div class="outlook-kpi orange">
+            <div class="outlook-label">Aktuális OMPI</div>
+            <div class="outlook-value" id="priceOutlookOmpi">–</div>
+            <div class="outlook-sub">Súlyozott piaci árnyomási index</div>
+          </div>
+
+          <div class="outlook-kpi red">
+            <div class="outlook-label">Piaci irány</div>
+            <div class="outlook-value" id="priceOutlookDirection">–</div>
+            <div class="outlook-sub">A jelenlegi fundamentumok alapján</div>
+          </div>
+
+          <div class="outlook-kpi green">
+            <div class="outlook-label">Megbízhatóság</div>
+            <div class="outlook-value" id="priceOutlookConfidence">–</div>
+            <div class="outlook-sub">A rendelkezésre álló validáció alapján</div>
+          </div>
+        </div>
+
+        <div class="price-band-card">
+          <div class="price-band-title">Becsült rövid távú Brent ársáv</div>
+
+          <div class="price-band-main">
+            <span id="priceOutlookRange">–</span>
+            <span>USD/hordó</span>
+          </div>
+
+          <div class="price-band-track">
+            <div class="price-band-marker" id="priceOutlookMarker"></div>
+          </div>
+
+          <div class="price-band-scale">
+            <span>Alacsonyabb árnyomás</span>
+            <span>Aktuális piac</span>
+            <span>Magasabb árnyomás</span>
+          </div>
+
+          <div class="price-band-note" id="priceOutlookNote">
+            Az ársáv számítása folyamatban.
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="explain-block">
+        <div class="explain-grid">
+          <div class="explain-item">
+            <div class="explain-title">Mit mutat?</div>
+            <div class="explain-text">A jelenlegi Brent-ár, az OMPI, a piaci egyenleg és az OPEC+ lefedési képesség alapján számított óvatos, rövid távú ársávot mutatja.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Hogyan értelmezzük?</div>
+            <div class="explain-text">A sáv nem célár. A szélessége a bizonytalanságot, a középpontja pedig a jelenlegi piaci árnyomás irányát jelzi.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Mire jó?</div>
+            <div class="explain-text">Segít a dashboard különböző mutatóit egy könnyen értelmezhető, de óvatos piaci kimenetté összefoglalni.</div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <strong>Key Insight:</strong> Az ársávot csak irányadó stressztesztként szabad használni, amíg az OMPI hosszabb történeti visszatesztje nem készül el.
+        </div>
+      </div>
+
+    </section>
+
+    <section class="section-card blue-top">
+      <div class="section-head">
+        <h2 class="section-title">
+          Market Intelligence Assessment
+          <span>Automatikus elemzői helyzetértékelés</span>
+        </h2>
+
+        <div class="section-note">
+          A dashboard aktuális mutatóiból generált összefoglaló.
+        </div>
+      </div>
+
+      <div class="assessment-box">
+        <div class="assessment-title">Aktuális piaci értékelés</div>
+
+        <div class="assessment-text" id="marketAssessmentText">
+          Az elemzői összefoglaló betöltése folyamatban.
+        </div>
+
+        <div class="assessment-drivers">
+          <div class="assessment-driver">
+            <div class="assessment-driver-title">Fő fundamentális hajtóerő</div>
+            <div class="assessment-driver-value" id="assessmentFundamental">–</div>
+          </div>
+
+          <div class="assessment-driver">
+            <div class="assessment-driver-title">Fő piaci korlát</div>
+            <div class="assessment-driver-value" id="assessmentConstraint">–</div>
+          </div>
+
+          <div class="assessment-driver">
+            <div class="assessment-driver-title">Rövid távú kimenet</div>
+            <div class="assessment-driver-value" id="assessmentOutcome">–</div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="explain-block">
+        <div class="explain-grid">
+          <div class="explain-item">
+            <div class="explain-title">Mit mutat?</div>
+            <div class="explain-text">Automatikusan létrehozott rövid elemző értékelést ad a fundamentumok, a készletnyomás, az OPEC+ mozgástér és az OMPI alapján.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Hogyan értelmezzük?</div>
+            <div class="explain-text">A szöveg nem új adatot hoz létre, hanem a dashboard már kiszámított eredményeit kapcsolja össze ok-okozati logikában.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Mire jó?</div>
+            <div class="explain-text">Segít az olvasónak gyorsan megérteni, hogy a különálló mutatók együtt milyen piaci helyzetet rajzolnak ki.</div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <strong>Key Insight:</strong> A legnagyobb értéke az, hogy a számokat összefüggő piaci történetté alakítja, miközben a forrásadatok továbbra is ellenőrizhetők.
+        </div>
+      </div>
+
+    </section>
+
+    <section class="section-card red-top">
+      <div class="section-head">
+        <h2 class="section-title">
+          Risk Outlook
+          <span>Fő olajpiaci kockázati tényezők</span>
+        </h2>
+
+        <div class="section-note">
+          Dinamikus besorolás a jelenlegi dashboard-adatok alapján.
+        </div>
+      </div>
+
+      <div class="risk-outlook-grid">
+        <div class="risk-list" id="riskOutlookList"></div>
+
+        <div class="overall-risk-card">
+          <div class="overall-risk-label">Overall Market Outlook</div>
+          <div class="overall-risk-score" id="overallRiskScore">–</div>
+          <div class="overall-risk-status" id="overallRiskStatus">Betöltés...</div>
+          <div class="overall-risk-text" id="overallRiskText">
+            Az összesített kockázati értékelés számítása folyamatban.
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="explain-block">
+        <div class="explain-grid">
+          <div class="explain-item">
+            <div class="explain-title">Mit mutat?</div>
+            <div class="explain-text">A fő olajpiaci kockázati tényezőket külön-külön, valamint egy összesített kockázati státuszban jeleníti meg.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Hogyan értelmezzük?</div>
+            <div class="explain-text">A magasabb besorolás azt jelenti, hogy az adott tényező erősebben növeli a kínálati zavar, a készletleépülés vagy az áremelkedés valószínűségét.</div>
+          </div>
+
+          <div class="explain-item">
+            <div class="explain-title">Mire jó?</div>
+            <div class="explain-text">Gyors kockázati térképként használható annak azonosítására, hogy jelenleg mely tényezők igényelnek kiemelt figyelmet.</div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <strong>Key Insight:</strong> Az összesített státusz mögött mindig a részmutatók állnak; ezért nem csak a végső címkét, hanem az egyes tényezőket is érdemes figyelni.
+        </div>
+      </div>
+
+    </section>
 
     <section class="section-card orange-top">
       <div class="section-head">
@@ -3467,6 +3967,289 @@
         `).join("");
     }
 
+    function getLatestBrent(marketRows) {
+      if (!Array.isArray(marketRows)) return null;
+
+      const values = marketRows
+        .map(row => Number(row.market_brent ?? row.brent))
+        .filter(value => Number.isFinite(value));
+
+      return values.length ? values[values.length - 1] : null;
+    }
+
+    function calculatePriceOutlook(globalBalance, marketRows) {
+      const currentBrent = getLatestBrent(marketRows);
+
+      if (!Number.isFinite(currentBrent)) {
+        return null;
+      }
+
+      const ompi = Number.isFinite(latestOmpiScore)
+        ? latestOmpiScore
+        : 50;
+
+      const pressureShift = (ompi - 50) / 50;
+      const centerMultiplier = 1 + pressureShift * 0.12;
+      const center = currentBrent * centerMultiplier;
+
+      const uncertainty =
+        ompi >= 80 ? 0.13 :
+        ompi >= 65 ? 0.10 :
+        ompi >= 45 ? 0.08 :
+        0.07;
+
+      const lower = Math.max(0, center * (1 - uncertainty));
+      const upper = center * (1 + uncertainty);
+
+      const direction =
+        ompi >= 65 ? "Felfelé" :
+        ompi <= 35 ? "Lefelé" :
+        "Oldalazó";
+
+      const confidence =
+        "Alacsony";
+
+      return {
+        currentBrent,
+        ompi,
+        center,
+        lower,
+        upper,
+        direction,
+        confidence
+      };
+    }
+
+    function renderPriceOutlook(globalBalance, marketRows) {
+      const outlook = calculatePriceOutlook(globalBalance, marketRows);
+
+      if (!outlook) return;
+
+      document.getElementById("priceOutlookCurrent").innerText =
+        outlook.currentBrent.toFixed(2) + " USD";
+
+      document.getElementById("priceOutlookOmpi").innerText =
+        outlook.ompi.toFixed(1) + "/100";
+
+      document.getElementById("priceOutlookDirection").innerText =
+        outlook.direction;
+
+      document.getElementById("priceOutlookConfidence").innerText =
+        outlook.confidence;
+
+      document.getElementById("priceOutlookRange").innerText =
+        outlook.lower.toFixed(0) +
+        "–" +
+        outlook.upper.toFixed(0);
+
+      const markerPosition = clamp(
+        ((outlook.currentBrent - outlook.lower) /
+          (outlook.upper - outlook.lower)) * 100,
+        0,
+        100
+      );
+
+      document.getElementById("priceOutlookMarker").style.left =
+        markerPosition.toFixed(1) + "%";
+
+      document.getElementById("priceOutlookNote").innerHTML =
+        "A sáv a jelenlegi Brent-árból és az OMPI által jelzett nyomásból készül. " +
+        "A modell még nem rendelkezik többéves visszateszttel, ezért a megbízhatósági szint szándékosan alacsony. " +
+        "Az eredmény stresszteszt, nem kereskedési célár.";
+    }
+
+    function renderMarketAssessment(globalBalance, marketRows) {
+      const series = globalBalance.series || [];
+      const row2025 = series.find(item => Number(item.year) === 2025);
+      const row2026 = series.find(item => Number(item.year) === 2026);
+      const coverage = calculateCoverage(globalBalance);
+
+      if (!row2025 || !row2026 || !coverage) return;
+
+      const stressDeficit = Math.max(
+        0,
+        Number(row2025.demand_mbd) -
+        Number(row2026.supply_mbd)
+      );
+
+      const ompi = Number.isFinite(latestOmpiScore)
+        ? latestOmpiScore
+        : 50;
+
+      const level = ompiLevel(ompi);
+      const currentBrent = getLatestBrent(marketRows);
+
+      const text =
+        "A globális olajpiac jelenleg " +
+        (
+          stressDeficit >= 1.5
+            ? "strukturálisan feszes"
+            : "közel kiegyensúlyozott"
+        ) +
+        " helyzetet jelez. A kereslet 2025-ös szintre történő visszatérése változatlan kínálat mellett " +
+        stressDeficit.toFixed(2) +
+        " millió hordó/nap hiányt okozna. Az OPEC+ gyorsan mozgósítható tartalékkapacitása ennek csak " +
+        coverage.ratio.toFixed(1) +
+        "%-át fedezné, ezért a piac nagyobb mértékben támaszkodna a készletekre és a kereslet alkalmazkodására. " +
+        "Az OMPI " +
+        ompi.toFixed(1) +
+        "/100 értéke " +
+        level.label.toLowerCase() +
+        " árnyomási környezetet jelez" +
+        (
+          Number.isFinite(currentBrent)
+            ? ", miközben a legfrissebb Brent-ár " +
+              currentBrent.toFixed(2) +
+              " USD/hordó"
+            : ""
+        ) +
+        ". A rövid távú kockázati kép ezért inkább felfelé mutató, de az ársáv bizonytalansága továbbra is jelentős.";
+
+      document.getElementById("marketAssessmentText").innerText = text;
+
+      document.getElementById("assessmentFundamental").innerText =
+        stressDeficit >= 1.5
+          ? "Kínálati hiány"
+          : "Közel egyensúly";
+
+      document.getElementById("assessmentConstraint").innerText =
+        coverage.ratio < 25
+          ? "Alacsony OPEC+ puffer"
+          : "Korlátozott tartalék";
+
+      document.getElementById("assessmentOutcome").innerText =
+        ompi >= 65
+          ? "Felfelé mutató árnyomás"
+          : "Mérsékelt volatilitás";
+    }
+
+    function riskLevelFromScore(score) {
+      if (score >= 80) return {
+        label: "Critical",
+        className: "critical"
+      };
+
+      if (score >= 65) return {
+        label: "High",
+        className: "high"
+      };
+
+      if (score >= 40) return {
+        label: "Medium",
+        className: "medium"
+      };
+
+      return {
+        label: "Low",
+        className: "low"
+      };
+    }
+
+    function renderRiskOutlook(
+      globalBalance,
+      countryFlows,
+      interpretation,
+      marketRows
+    ) {
+      const series = globalBalance.series || [];
+      const row2025 = series.find(item => Number(item.year) === 2025);
+      const row2026 = series.find(item => Number(item.year) === 2026);
+      const coverage = calculateCoverage(globalBalance);
+
+      if (!row2025 || !row2026 || !coverage) return;
+
+      const stressDeficit = Math.max(
+        0,
+        Number(row2025.demand_mbd) -
+        Number(row2026.supply_mbd)
+      );
+
+      const latestMarket = Array.isArray(marketRows) && marketRows.length
+        ? marketRows[marketRows.length - 1]
+        : {};
+
+      const risks = [
+        {
+          name: "Kereslet-visszatérés",
+          en: "Demand recovery",
+          score: scoreSupplyDemand(stressDeficit)
+        },
+        {
+          name: "OPEC+ tartalékkapacitás",
+          en: "OPEC+ spare capacity",
+          score: scoreOpecCoverage(coverage.ratio)
+        },
+        {
+          name: "Készletleépülési nyomás",
+          en: "Inventory draw pressure",
+          score: scoreInventoryDraw(stressDeficit * 90)
+        },
+        {
+          name: "Geopolitikai kockázat",
+          en: "Geopolitical risk",
+          score: clamp(
+            Number(interpretation.combined_risk_score ?? 50),
+            0,
+            100
+          )
+        },
+        {
+          name: "Tengeri szűkületek",
+          en: "Maritime chokepoints",
+          score: clamp(
+            Number(latestMarket.global_trade_risk_index ?? 50),
+            0,
+            100
+          )
+        },
+        {
+          name: "Kínai importkereslet",
+          en: "China import demand",
+          score: scoreChinaDemand(countryFlows)
+        }
+      ];
+
+      const overall = risks.reduce(
+        (sum, risk) => sum + risk.score,
+        0
+      ) / risks.length;
+
+      const overallLevel = riskLevelFromScore(overall);
+
+      document.getElementById("riskOutlookList").innerHTML =
+        risks.map(risk => {
+          const level = riskLevelFromScore(risk.score);
+
+          return `
+            <div class="risk-row">
+              <div class="risk-name">
+                ${risk.name}
+                <span>${risk.en} · ${risk.score.toFixed(1)}/100</span>
+              </div>
+
+              <div class="risk-badge ${level.className}">
+                ${level.label}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+      document.getElementById("overallRiskScore").innerText =
+        overall.toFixed(0);
+
+      const status = document.getElementById("overallRiskStatus");
+      status.innerText = overallLevel.label;
+      status.className =
+        "overall-risk-status " + overallLevel.className;
+
+      document.getElementById("overallRiskText").innerText =
+        overall >= 65
+          ? "A fő kockázati tényezők többsége emelkedett vagy magas szintű. A piac érzékeny marad a további kínálati zavarokra."
+          : overall >= 40
+          ? "A kockázati környezet emelkedett, de a piac még rendelkezik részleges alkalmazkodási képességgel."
+          : "A fő kockázati tényezők jelenleg mérsékeltek, és a piac pufferkapacitása megfelelőbb.";
+    }
+
     function renderHistoricalValidation(marketRows) {
       if (!Array.isArray(marketRows) || marketRows.length < 10) {
         document.getElementById("validationWarning").innerText =
@@ -3915,6 +4698,14 @@
       renderScenarioMatrix(globalBalance);
       renderOpecCoverage(globalBalance);
       renderOmpi(
+        globalBalance,
+        countryFlows,
+        interpretation,
+        rows
+      );
+      renderPriceOutlook(globalBalance, rows);
+      renderMarketAssessment(globalBalance, rows);
+      renderRiskOutlook(
         globalBalance,
         countryFlows,
         interpretation,
@@ -4378,4 +5169,5 @@
 
 </body>
 </html>
+
 
