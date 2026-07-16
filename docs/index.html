@@ -6,6 +6,7 @@
   <title>Energy Intelligence Dashboard</title>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
   <style>
     :root {
@@ -716,6 +717,71 @@
       font-weight: 700;
     }
 
+
+    .scenario-grid{
+      display:grid;
+      grid-template-columns:.85fr 1.15fr;
+      gap:15px;
+      align-items:stretch;
+    }
+
+    .scenario-kpis{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .scenario-kpi{
+      padding:15px;
+      background:var(--surface-soft);
+      border:1px solid var(--line);
+      border-radius:12px;
+    }
+
+    .scenario-kpi.base{border-top:4px solid var(--orange)}
+    .scenario-kpi.warning{border-top:4px solid var(--red)}
+
+    .scenario-label{
+      color:var(--muted);
+      font-size:9px;
+      font-weight:900;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+    }
+
+    .scenario-value{
+      margin-top:7px;
+      color:var(--navy);
+      font-size:25px;
+      font-weight:900;
+    }
+
+    .scenario-sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:10px;
+      font-weight:700;
+      line-height:1.45;
+    }
+
+    .scenario-text{
+      margin-top:11px;
+      padding:14px 15px;
+      background:#fff5f4;
+      border:1px solid #f4cbc6;
+      border-left:5px solid var(--red);
+      border-radius:12px;
+      color:#5e3b38;
+      font-size:11px;
+      font-weight:700;
+      line-height:1.62;
+    }
+
+    .scenario-chart-wrap{
+      height:250px;
+      position:relative;
+    }
+
     canvas {
       width: 100% !important;
       height: 100% !important;
@@ -755,7 +821,8 @@
       }
 
       .chart-grid-2,
-      .analysis-grid {
+      .analysis-grid,
+      .scenario-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -922,6 +989,45 @@
         <ul>
           <li>Betöltés...</li>
         </ul>
+      </div>
+    </section>
+
+    <section class="section-card orange-top">
+      <div class="section-head">
+        <h2 class="section-title">
+          2026 What-if forgatókönyv
+          <span>Demand recovery stress scenario</span>
+        </h2>
+
+        <div class="section-note">
+          Feltételezés: a 2026-os kínálat 101,94 mb/d marad, miközben a kereslet visszatér a 2025-ös 104,00 mb/d szintre.
+        </div>
+      </div>
+
+      <div class="scenario-grid">
+        <div>
+          <div class="scenario-kpis">
+            <div class="scenario-kpi base">
+              <div class="scenario-label">Alapeseti 2026 egyenleg</div>
+              <div class="scenario-value" id="scenarioBaseBalance">–</div>
+              <div class="scenario-sub">EIA 2026 forecast supply minus demand</div>
+            </div>
+
+            <div class="scenario-kpi warning">
+              <div class="scenario-label">Stresszhelyzeti egyenleg</div>
+              <div class="scenario-value" id="scenarioStressBalance">–</div>
+              <div class="scenario-sub">Változatlan kínálat + 2025-ös kereslet</div>
+            </div>
+          </div>
+
+          <div class="scenario-text" id="scenarioInterpretation">
+            A forgatókönyv betöltése folyamatban.
+          </div>
+        </div>
+
+        <div class="scenario-chart-wrap">
+          <canvas id="scenarioChart"></canvas>
+        </div>
       </div>
     </section>
 
@@ -1212,6 +1318,8 @@
       globalBalance: BASE + "docs/data/global_oil_balance.json",
       countryFlows: BASE + "docs/data/oil_country_flows.json"
     };
+
+    Chart.register(ChartDataLabels);
 
     Chart.defaults.font.family = "Arial, Helvetica, sans-serif";
     Chart.defaults.color = "#526879";
@@ -1564,6 +1672,17 @@
                       fmtBalance(row.balance_mbd);
                   }
                 }
+              },
+              datalabels: {
+                anchor: "end",
+                align: "end",
+                offset: 2,
+                color: "#27485d",
+                font: {
+                  size: 10,
+                  weight: "bold"
+                },
+                formatter: value => Number(value).toFixed(2)
               }
             },
             scales: {
@@ -1630,6 +1749,156 @@
       `;
     }
 
+    function renderDemandRecoveryScenario(globalBalance) {
+      const series = globalBalance.series || [];
+      const row2025 = series.find(item => Number(item.year) === 2025);
+      const row2026 = series.find(item => Number(item.year) === 2026);
+
+      if (!row2025 || !row2026) {
+        return;
+      }
+
+      const supply2026 = Number(row2026.supply_mbd);
+      const baseDemand2026 = Number(row2026.demand_mbd);
+      const recoveredDemand = Number(row2025.demand_mbd);
+
+      const baseBalance = supply2026 - baseDemand2026;
+      const stressBalance = supply2026 - recoveredDemand;
+      const deterioration = stressBalance - baseBalance;
+
+      document.getElementById("scenarioBaseBalance").innerText =
+        fmtBalance(baseBalance);
+
+      document.getElementById("scenarioStressBalance").innerText =
+        fmtBalance(stressBalance);
+
+      document.getElementById("scenarioInterpretation").innerHTML =
+        "Ha a globális kereslet 2026-ban visszatérne a 2025-ös " +
+        recoveredDemand.toFixed(2) +
+        " mb/d szintre, miközben a kínálat " +
+        supply2026.toFixed(2) +
+        " mb/d maradna, a piaci hiány " +
+        Math.abs(stressBalance).toFixed(2) +
+        " mb/d-re nőne. Ez " +
+        Math.abs(deterioration).toFixed(2) +
+        " mb/d-vel rosszabb egyenleg az alapesetnél. " +
+        "A valószínű következmény gyorsabb készletleépülés, erősebb Brent-áremelkedési nyomás és nagyobb OPEC+ termelésnövelési kényszer lenne. " +
+        "Pontos olajárat ebből önmagában nem lehet megbízhatóan számítani.";
+
+      new Chart(
+        document.getElementById("scenarioChart"),
+        {
+          type: "bar",
+          data: {
+            labels: [
+              "2026 alapeset",
+              "2026 kereslet-visszatérés"
+            ],
+            datasets: [
+              {
+                label: "Kínálat / Supply",
+                data: [supply2026, supply2026],
+                backgroundColor: "rgba(37,139,199,.84)",
+                borderColor: "#17648f",
+                borderWidth: 1,
+                borderRadius: 7,
+                maxBarThickness: 58
+              },
+              {
+                label: "Kereslet / Demand",
+                data: [baseDemand2026, recoveredDemand],
+                backgroundColor: [
+                  "rgba(217,119,6,.74)",
+                  "rgba(200,60,50,.82)"
+                ],
+                borderColor: [
+                  "#b45e08",
+                  "#a92f28"
+                ],
+                borderWidth: 1,
+                borderRadius: 7,
+                maxBarThickness: 58
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: {
+              legend: {
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: "rectRounded",
+                  font: {
+                    size: 10,
+                    weight: "bold"
+                  }
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: context =>
+                    context.dataset.label +
+                    ": " +
+                    Number(context.raw).toFixed(2) +
+                    " mb/d"
+                }
+              },
+              datalabels: {
+                anchor: "end",
+                align: "end",
+                color: "#27485d",
+                font: {
+                  size: 10,
+                  weight: "bold"
+                },
+                formatter: value => Number(value).toFixed(2)
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  color: "#27485d",
+                  font: {
+                    size: 10,
+                    weight: "bold"
+                  }
+                }
+              },
+              y: {
+                beginAtZero: false,
+                suggestedMin: 100,
+                grace: "8%",
+                title: {
+                  display: true,
+                  text: "millió hordó/nap",
+                  color: "#526879",
+                  font: {
+                    size: 10,
+                    weight: "bold"
+                  }
+                },
+                ticks: {
+                  color: "#526879",
+                  font: {
+                    size: 9,
+                    weight: "bold"
+                  }
+                },
+                grid: {
+                  color: "rgba(148,163,184,.18)"
+                }
+              }
+            }
+          }
+        }
+      );
+    }
+
     function createCountryChart(
       canvasId,
       rows,
@@ -1669,11 +1938,24 @@
                   label: context =>
                     Number(context.raw).toFixed(2) + " mb/d"
                 }
+              },
+              datalabels: {
+                anchor: "end",
+                align: "right",
+                offset: 5,
+                clip: false,
+                color: "#27485d",
+                font: {
+                  size: 10,
+                  weight: "bold"
+                },
+                formatter: value => Number(value).toFixed(2)
               }
             },
             scales: {
               x: {
                 beginAtZero: true,
+                grace: "12%",
                 title: {
                   display: true,
                   text: "millió hordó/nap · million barrels per day",
@@ -1921,6 +2203,7 @@
       renderProxyBalance(balance);
 
       renderGlobalBalance(globalBalance);
+      renderDemandRecoveryScenario(globalBalance);
       renderCountryModule(countryFlows);
 
       document.getElementById("forecastBrent").innerText =
