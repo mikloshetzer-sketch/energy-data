@@ -782,6 +782,163 @@
       position:relative;
     }
 
+
+    .stress-tools {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .duration-btn {
+      min-width: 66px;
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #ffffff;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .duration-btn.active {
+      background: var(--red);
+      border-color: var(--red);
+      color: #ffffff;
+    }
+
+    .stress-grid {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 15px;
+      align-items: stretch;
+    }
+
+    .stress-kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .stress-kpi {
+      padding: 15px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .stress-kpi.red {
+      border-top: 4px solid var(--red);
+    }
+
+    .stress-kpi.orange {
+      border-top: 4px solid var(--orange);
+    }
+
+    .stress-kpi.blue {
+      border-top: 4px solid var(--blue);
+    }
+
+    .stress-kpi-label {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .stress-kpi-value {
+      margin-top: 7px;
+      color: var(--navy);
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .stress-kpi-sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .inventory-chart-wrap {
+      height: 260px;
+      position: relative;
+    }
+
+    .matrix-wrap {
+      overflow-x: auto;
+    }
+
+    .scenario-matrix {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 7px;
+      table-layout: fixed;
+    }
+
+    .scenario-matrix th {
+      padding: 10px 8px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .scenario-matrix td {
+      padding: 15px 9px;
+      border-radius: 12px;
+      color: var(--navy);
+      font-size: 18px;
+      font-weight: 900;
+      text-align: center;
+      border: 1px solid rgba(0,0,0,.05);
+    }
+
+    .scenario-matrix td span {
+      display: block;
+      margin-top: 4px;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .matrix-surplus-strong {
+      background: #d8f4e8;
+      color: #06734f !important;
+    }
+
+    .matrix-surplus {
+      background: #e9f8f1;
+      color: #08765a !important;
+    }
+
+    .matrix-balanced {
+      background: #fff4dd;
+      color: #955400 !important;
+    }
+
+    .matrix-deficit {
+      background: #fee9e7;
+      color: #a72d24 !important;
+    }
+
+    .matrix-deficit-strong {
+      background: #fbd5d1;
+      color: #8f1e17 !important;
+    }
+
+    .matrix-note {
+      margin-top: 11px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
     canvas {
       width: 100% !important;
       height: 100% !important;
@@ -822,7 +979,8 @@
 
       .chart-grid-2,
       .analysis-grid,
-      .scenario-grid {
+      .scenario-grid,
+      .stress-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -1028,6 +1186,91 @@
         <div class="scenario-chart-wrap">
           <canvas id="scenarioChart"></canvas>
         </div>
+      </div>
+    </section>
+
+    <section class="section-card blue-top">
+      <div class="section-head">
+        <h2 class="section-title">
+          Becsült készletleépülés
+          <span>Estimated inventory draw under the selected deficit scenario</span>
+        </h2>
+
+        <div id="inventoryDurationSelector" class="stress-tools">
+          <button class="duration-btn active" data-days="30">30 nap</button>
+          <button class="duration-btn" data-days="90">90 nap</button>
+          <button class="duration-btn" data-days="180">180 nap</button>
+          <button class="duration-btn" data-days="365">365 nap</button>
+        </div>
+      </div>
+
+      <div class="stress-grid">
+        <div>
+          <div class="stress-kpi-grid">
+            <div class="stress-kpi red">
+              <div class="stress-kpi-label">Napi piaci hiány</div>
+              <div class="stress-kpi-value" id="inventoryDailyDeficit">–</div>
+              <div class="stress-kpi-sub">A what-if forgatókönyv alapján</div>
+            </div>
+
+            <div class="stress-kpi orange">
+              <div class="stress-kpi-label">Becsült készletleépülés</div>
+              <div class="stress-kpi-value" id="inventoryDrawTotal">–</div>
+              <div class="stress-kpi-sub" id="inventoryDrawPeriod">A kiválasztott időtávon</div>
+            </div>
+
+            <div class="stress-kpi blue">
+              <div class="stress-kpi-label">Alapeseti készletleépülés</div>
+              <div class="stress-kpi-value" id="inventoryBaseDraw">–</div>
+              <div class="stress-kpi-sub">A jelenlegi 2026-os előrejelzés szerint</div>
+            </div>
+
+            <div class="stress-kpi red">
+              <div class="stress-kpi-label">Többlet készletnyomás</div>
+              <div class="stress-kpi-value" id="inventoryExtraDraw">–</div>
+              <div class="stress-kpi-sub">A kereslet-visszatérés miatt</div>
+            </div>
+          </div>
+
+          <div class="scenario-text" id="inventoryInterpretation">
+            A készlethatás betöltése folyamatban.
+          </div>
+        </div>
+
+        <div class="inventory-chart-wrap">
+          <canvas id="inventoryDrawChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card orange-top">
+      <div class="section-head">
+        <h2 class="section-title">
+          2026 kínálati–keresleti forgatókönyv-mátrix
+          <span>Supply–demand scenario matrix</span>
+        </h2>
+
+        <div class="section-note">
+          A cellák a kínálat mínusz kereslet egyenlegét mutatják millió hordó/napban.
+        </div>
+      </div>
+
+      <div class="matrix-wrap">
+        <table class="scenario-matrix">
+          <thead>
+            <tr>
+              <th>Kínálat \ Kereslet</th>
+              <th id="matrixDemandLow">Gyenge kereslet</th>
+              <th id="matrixDemandBase">Alapeseti kereslet</th>
+              <th id="matrixDemandHigh">2025-ös kereslet</th>
+            </tr>
+          </thead>
+          <tbody id="scenarioMatrixBody"></tbody>
+        </table>
+      </div>
+
+      <div class="matrix-note">
+        A mátrix nem ár-előrejelzés. Azt mutatja meg, hogy az egyes kínálati és keresleti kombinációk milyen strukturális többletet vagy hiányt okoznának.
       </div>
     </section>
 
@@ -1321,11 +1564,17 @@
 
     Chart.register(ChartDataLabels);
 
+    Chart.defaults.plugins.datalabels = {
+      display: false
+    };
+
     Chart.defaults.font.family = "Arial, Helvetica, sans-serif";
     Chart.defaults.color = "#526879";
 
     let producerChartInstance = null;
     let importerChartInstance = null;
+    let inventoryDrawChartInstance = null;
+    let activeInventoryDays = 30;
 
     async function loadJsonSafe(url, fallback) {
       try {
@@ -1674,6 +1923,7 @@
                 }
               },
               datalabels: {
+                display: true,
                 anchor: "end",
                 align: "end",
                 offset: 2,
@@ -1846,6 +2096,7 @@
                 }
               },
               datalabels: {
+                display: true,
                 anchor: "end",
                 align: "end",
                 color: "#27485d",
@@ -1899,6 +2150,249 @@
       );
     }
 
+    function matrixClass(balance) {
+      if (balance >= 1.5) return "matrix-surplus-strong";
+      if (balance > 0.2) return "matrix-surplus";
+      if (balance >= -0.2) return "matrix-balanced";
+      if (balance > -1.5) return "matrix-deficit";
+      return "matrix-deficit-strong";
+    }
+
+    function matrixLabel(balance) {
+      if (balance >= 1.5) return "nagy többlet";
+      if (balance > 0.2) return "többlet";
+      if (balance >= -0.2) return "egyensúly";
+      if (balance > -1.5) return "hiány";
+      return "nagy hiány";
+    }
+
+    function renderScenarioMatrix(globalBalance) {
+      const series = globalBalance.series || [];
+      const row2025 = series.find(item => Number(item.year) === 2025);
+      const row2026 = series.find(item => Number(item.year) === 2026);
+
+      if (!row2025 || !row2026) return;
+
+      const demandLow = Number(row2026.demand_mbd) - 1.0;
+      const demandBase = Number(row2026.demand_mbd);
+      const demandHigh = Number(row2025.demand_mbd);
+
+      const supplyRecovery = Number(row2026.supply_mbd) + 1.06;
+      const supplyBase = Number(row2026.supply_mbd);
+      const supplyDisruption = Number(row2026.supply_mbd) - 1.94;
+
+      document.getElementById("matrixDemandLow").innerHTML =
+        "Gyenge kereslet<br>" + demandLow.toFixed(2) + " mb/d";
+
+      document.getElementById("matrixDemandBase").innerHTML =
+        "Alapeseti kereslet<br>" + demandBase.toFixed(2) + " mb/d";
+
+      document.getElementById("matrixDemandHigh").innerHTML =
+        "2025-ös kereslet<br>" + demandHigh.toFixed(2) + " mb/d";
+
+      const rows = [
+        {
+          label: "Kínálati helyreállás",
+          value: supplyRecovery
+        },
+        {
+          label: "Alapeseti kínálat",
+          value: supplyBase
+        },
+        {
+          label: "További zavar",
+          value: supplyDisruption
+        }
+      ];
+
+      const demands = [demandLow, demandBase, demandHigh];
+
+      document.getElementById("scenarioMatrixBody").innerHTML =
+        rows.map(row => {
+          const cells = demands.map(demand => {
+            const balance = row.value - demand;
+
+            return `
+              <td class="${matrixClass(balance)}">
+                ${balance > 0 ? "+" : ""}${balance.toFixed(2)}
+                <span>${matrixLabel(balance)}</span>
+              </td>
+            `;
+          }).join("");
+
+          return `
+            <tr>
+              <th>
+                ${row.label}<br>
+                ${row.value.toFixed(2)} mb/d
+              </th>
+              ${cells}
+            </tr>
+          `;
+        }).join("");
+    }
+
+    function updateInventoryDraw(globalBalance, days) {
+      const series = globalBalance.series || [];
+      const row2025 = series.find(item => Number(item.year) === 2025);
+      const row2026 = series.find(item => Number(item.year) === 2026);
+
+      if (!row2025 || !row2026) return;
+
+      activeInventoryDays = days;
+
+      const supply = Number(row2026.supply_mbd);
+      const baseDemand = Number(row2026.demand_mbd);
+      const stressDemand = Number(row2025.demand_mbd);
+
+      const baseDeficit = Math.max(0, baseDemand - supply);
+      const stressDeficit = Math.max(0, stressDemand - supply);
+
+      const baseDraw = baseDeficit * days;
+      const stressDraw = stressDeficit * days;
+      const extraDraw = stressDraw - baseDraw;
+
+      document.getElementById("inventoryDailyDeficit").innerText =
+        stressDeficit.toFixed(2) + " mb/d";
+
+      document.getElementById("inventoryDrawTotal").innerText =
+        stressDraw.toFixed(1) + " millió hordó";
+
+      document.getElementById("inventoryBaseDraw").innerText =
+        baseDraw.toFixed(1) + " millió hordó";
+
+      document.getElementById("inventoryExtraDraw").innerText =
+        extraDraw.toFixed(1) + " millió hordó";
+
+      document.getElementById("inventoryDrawPeriod").innerText =
+        days + " napos időtávon";
+
+      document.getElementById("inventoryInterpretation").innerHTML =
+        "A " + days + " napos időtávon a stresszforgatókönyv " +
+        stressDraw.toFixed(1) +
+        " millió hordó elméleti készletleépülést okozna, ha a termelés és a kereslet nem alkalmazkodna. " +
+        "Ez " + extraDraw.toFixed(1) +
+        " millió hordóval nagyobb készletnyomás az alapeseti 2026-os forgatókönyvhöz képest.";
+
+      document
+        .querySelectorAll(".duration-btn")
+        .forEach(button => {
+          button.classList.toggle(
+            "active",
+            Number(button.dataset.days) === Number(days)
+          );
+        });
+
+      const durations = [30, 90, 180, 365];
+      const baseSeries = durations.map(period => baseDeficit * period);
+      const stressSeries = durations.map(period => stressDeficit * period);
+
+      if (inventoryDrawChartInstance) {
+        inventoryDrawChartInstance.destroy();
+      }
+
+      inventoryDrawChartInstance = new Chart(
+        document.getElementById("inventoryDrawChart"),
+        {
+          type: "bar",
+          data: {
+            labels: durations.map(period => period + " nap"),
+            datasets: [
+              {
+                label: "Alapeseti készletleépülés",
+                data: baseSeries,
+                backgroundColor: "rgba(37,139,199,.78)",
+                borderColor: "#17648f",
+                borderWidth: 1,
+                borderRadius: 7
+              },
+              {
+                label: "Stresszhelyzeti készletleépülés",
+                data: stressSeries,
+                backgroundColor: "rgba(200,60,50,.78)",
+                borderColor: "#a92f28",
+                borderWidth: 1,
+                borderRadius: 7
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: {
+              legend: {
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: "rectRounded",
+                  font: {
+                    size: 9,
+                    weight: "bold"
+                  }
+                }
+              },
+              datalabels: {
+                display: false
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  color: "#27485d",
+                  font: {
+                    size: 9,
+                    weight: "bold"
+                  }
+                }
+              },
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "millió hordó",
+                  color: "#526879",
+                  font: {
+                    size: 10,
+                    weight: "bold"
+                  }
+                },
+                ticks: {
+                  color: "#526879",
+                  font: {
+                    size: 9,
+                    weight: "bold"
+                  }
+                },
+                grid: {
+                  color: "rgba(148,163,184,.18)"
+                }
+              }
+            }
+          }
+        }
+      );
+    }
+
+    function renderInventoryDrawModule(globalBalance) {
+      const selector = document.getElementById("inventoryDurationSelector");
+
+      selector
+        .querySelectorAll(".duration-btn")
+        .forEach(button => {
+          button.addEventListener("click", () => {
+            updateInventoryDraw(
+              globalBalance,
+              Number(button.dataset.days)
+            );
+          });
+        });
+
+      updateInventoryDraw(globalBalance, activeInventoryDays);
+    }
+
     function createCountryChart(
       canvasId,
       rows,
@@ -1940,6 +2434,7 @@
                 }
               },
               datalabels: {
+                display: true,
                 anchor: "end",
                 align: "right",
                 offset: 5,
@@ -2204,6 +2699,8 @@
 
       renderGlobalBalance(globalBalance);
       renderDemandRecoveryScenario(globalBalance);
+      renderInventoryDrawModule(globalBalance);
+      renderScenarioMatrix(globalBalance);
       renderCountryModule(countryFlows);
 
       document.getElementById("forecastBrent").innerText =
