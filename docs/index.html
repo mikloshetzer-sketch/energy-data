@@ -939,6 +939,265 @@
       line-height: 1.55;
     }
 
+
+    .coverage-grid {
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 15px;
+      align-items: stretch;
+    }
+
+    .coverage-kpis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .coverage-kpi {
+      padding: 15px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .coverage-kpi.blue { border-top: 4px solid var(--blue); }
+    .coverage-kpi.red { border-top: 4px solid var(--red); }
+    .coverage-kpi.orange { border-top: 4px solid var(--orange); }
+    .coverage-kpi.green { border-top: 4px solid var(--green); }
+
+    .coverage-label {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .coverage-value {
+      margin-top: 7px;
+      color: var(--navy);
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .coverage-sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .coverage-meter {
+      padding: 18px;
+      background: #f8fbfd;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .coverage-meter-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-end;
+    }
+
+    .coverage-meter-title {
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .coverage-meter-number {
+      color: var(--red);
+      font-size: 34px;
+      font-weight: 900;
+    }
+
+    .coverage-track {
+      height: 18px;
+      margin-top: 16px;
+      overflow: hidden;
+      border-radius: 999px;
+      background:
+        linear-gradient(
+          90deg,
+          #f7c7c1 0%,
+          #f7c7c1 25%,
+          #fde3b6 25%,
+          #fde3b6 50%,
+          #dff2e8 50%,
+          #dff2e8 100%
+        );
+      position: relative;
+    }
+
+    .coverage-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #c83c32, #d97706);
+      transition: width .35s ease;
+    }
+
+    .coverage-scale {
+      margin-top: 7px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .coverage-status {
+      margin-top: 14px;
+      padding: 13px 14px;
+      border-left: 5px solid var(--red);
+      border-radius: 11px;
+      background: #fff4f2;
+      color: #65413e;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .ompi-grid {
+      display: grid;
+      grid-template-columns: 0.72fr 1.28fr;
+      gap: 15px;
+      align-items: stretch;
+    }
+
+    .ompi-score-card {
+      min-height: 295px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(37,139,199,.15), transparent 42%),
+        #f8fbfd;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    .ompi-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .ompi-score {
+      margin-top: 8px;
+      color: var(--navy);
+      font-size: 66px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .ompi-score span {
+      color: var(--muted);
+      font-size: 19px;
+    }
+
+    .ompi-level {
+      margin-top: 13px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: #fff3dd;
+      border: 1px solid #f4d29d;
+      color: #965400;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .ompi-level.high,
+    .ompi-level.extreme {
+      background: #fee9e7;
+      border-color: #f3c5bf;
+      color: #a62820;
+    }
+
+    .ompi-level.low {
+      background: #e4f7ef;
+      border-color: #b8e9d5;
+      color: #087452;
+    }
+
+    .ompi-description {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
+    .ompi-components {
+      display: grid;
+      gap: 10px;
+    }
+
+    .ompi-row {
+      padding: 11px 13px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 11px;
+    }
+
+    .ompi-row-head {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      align-items: center;
+      color: var(--navy);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .ompi-weight {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .ompi-component-score {
+      min-width: 38px;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .ompi-bar-bg {
+      height: 7px;
+      margin-top: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e1eaf0;
+    }
+
+    .ompi-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--blue), var(--orange), var(--red));
+    }
+
+    .ompi-method {
+      margin-top: 12px;
+      padding: 13px 15px;
+      background: #f8fbfd;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.58;
+    }
+
     canvas {
       width: 100% !important;
       height: 100% !important;
@@ -980,7 +1239,9 @@
       .chart-grid-2,
       .analysis-grid,
       .scenario-grid,
-      .stress-grid {
+      .stress-grid,
+      .coverage-grid,
+      .ompi-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -1277,6 +1538,113 @@
     <section class="section-card teal-top">
       <div class="section-head">
         <h2 class="section-title">
+          OPEC+ hiánylefedési mutató
+          <span>OPEC+ Deficit Coverage Ratio</span>
+        </h2>
+
+        <div class="section-note">
+          Az IEA 2026. júliusi effektív, gyorsan mozgósítható OPEC+ tartalékkapacitása alapján.
+        </div>
+      </div>
+
+      <div class="coverage-grid">
+        <div class="coverage-kpis">
+          <div class="coverage-kpi red">
+            <div class="coverage-label">Stresszhelyzeti hiány</div>
+            <div class="coverage-value" id="coverageDeficit">–</div>
+            <div class="coverage-sub">2026 változatlan kínálat + 2025-ös kereslet</div>
+          </div>
+
+          <div class="coverage-kpi blue">
+            <div class="coverage-label">Effektív OPEC+ tartalék</div>
+            <div class="coverage-value" id="coverageSpareCapacity">–</div>
+            <div class="coverage-sub">IEA, 2026. július · gyorsan mozgósítható kapacitás</div>
+          </div>
+
+          <div class="coverage-kpi orange">
+            <div class="coverage-label">Lefedési arány</div>
+            <div class="coverage-value" id="coverageRatio">–</div>
+            <div class="coverage-sub">Tartalékkapacitás / piaci hiány</div>
+          </div>
+
+          <div class="coverage-kpi green">
+            <div class="coverage-label">Fedezetlen hiány</div>
+            <div class="coverage-value" id="coverageUncovered">–</div>
+            <div class="coverage-sub">A gyorsan mozgósítható kapacitás után fennmaradó rés</div>
+          </div>
+        </div>
+
+        <div class="coverage-meter">
+          <div class="coverage-meter-head">
+            <div>
+              <div class="coverage-meter-title">Deficit Coverage</div>
+              <div class="coverage-sub">100% felett a hiány elméletileg teljesen lefedhető.</div>
+            </div>
+
+            <div class="coverage-meter-number" id="coverageMeterNumber">–</div>
+          </div>
+
+          <div class="coverage-track">
+            <div class="coverage-fill" id="coverageFill"></div>
+          </div>
+
+          <div class="coverage-scale">
+            <span>0%</span>
+            <span>25%</span>
+            <span>50%</span>
+            <span>100%+</span>
+          </div>
+
+          <div class="coverage-status" id="coverageStatus">
+            A hiánylefedési mutató betöltése folyamatban.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card blue-top">
+      <div class="section-head">
+        <h2 class="section-title">
+          OMPI – Oil Market Pressure Index
+          <span>Saját, súlyozott olajpiaci árnyomási indikátor</span>
+        </h2>
+
+        <div class="section-note">
+          0–100 pont. Magasabb érték erősebb felfelé irányuló árnyomást és sérülékenyebb piaci szerkezetet jelez.
+        </div>
+      </div>
+
+      <div class="ompi-grid">
+        <div class="ompi-score-card">
+          <div class="ompi-label">Oil Market Pressure Index</div>
+
+          <div class="ompi-score">
+            <span id="ompiScore">–</span><span>/100</span>
+          </div>
+
+          <div class="ompi-level" id="ompiLevel">Betöltés...</div>
+
+          <div class="ompi-description" id="ompiDescription">
+            Az index számítása folyamatban.
+          </div>
+        </div>
+
+        <div>
+          <div class="ompi-components" id="ompiComponents"></div>
+
+          <div class="ompi-method">
+            Súlyok: kínálati–keresleti egyenleg 30%, készletleépülés 20%,
+            OPEC+ lefedési képesség 15%, geopolitikai kockázat 15%,
+            szoroskockázat 10%, kínai importkereslet 5%, Brent-momentum 5%.
+            Az OMPI nem hivatalos piaci index és nem közvetlen ár-előrejelzés.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card teal-top">
+      <div class="section-head">
+        <h2 class="section-title">
           Országos termelési és importstruktúra
           <span>Country production and crude import structure</span>
         </h2>
@@ -1543,6 +1911,9 @@
 
   <script>
     const BASE = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/";
+
+    const OPEC_EFFECTIVE_SPARE_CAPACITY_MBD = 0.17;
+    const OPEC_SPARE_CAPACITY_SOURCE_DATE = "2026-07";
 
     const URLS = {
       usa: BASE + "usa-oil-revenue.json",
@@ -2393,6 +2764,351 @@
       updateInventoryDraw(globalBalance, activeInventoryDays);
     }
 
+    function clamp(value, minimum, maximum) {
+      return Math.min(maximum, Math.max(minimum, value));
+    }
+
+    function calculateCoverage(globalBalance) {
+      const series = globalBalance.series || [];
+      const row2025 = series.find(item => Number(item.year) === 2025);
+      const row2026 = series.find(item => Number(item.year) === 2026);
+
+      if (!row2025 || !row2026) {
+        return null;
+      }
+
+      const supply = Number(row2026.supply_mbd);
+      const stressDemand = Number(row2025.demand_mbd);
+      const deficit = Math.max(0, stressDemand - supply);
+      const spare = OPEC_EFFECTIVE_SPARE_CAPACITY_MBD;
+
+      const ratio = deficit > 0
+        ? (spare / deficit) * 100
+        : 100;
+
+      const uncovered = Math.max(0, deficit - spare);
+
+      return {
+        deficit,
+        spare,
+        ratio,
+        uncovered
+      };
+    }
+
+    function coverageStatus(ratio) {
+      if (ratio >= 100) {
+        return {
+          label: "TELJES LEFEDETTSÉG",
+          text: "A gyorsan mozgósítható OPEC+ tartalékkapacitás elméletileg teljesen lefedné a vizsgált hiányt."
+        };
+      }
+
+      if (ratio >= 50) {
+        return {
+          label: "RÉSZLEGES LEFEDETTSÉG",
+          text: "Az OPEC+ a hiány jelentős részét pótolhatná, de a piac továbbra is készletleépülésre szorulna."
+        };
+      }
+
+      if (ratio >= 25) {
+        return {
+          label: "KORLÁTOZOTT LEFEDETTSÉG",
+          text: "A mozgósítható kapacitás csak a hiány kisebb részét fedezné, ezért tartós árnyomás maradna."
+        };
+      }
+
+      return {
+        label: "KRITIKUSAN ALACSONY FEDEZET",
+        text: "A gyorsan mozgósítható OPEC+ tartalék a hiány töredékét képes lefedni. A piac erősen függne a készletektől, a kereslet alkalmazkodásától és a kieső termelés helyreállásától."
+      };
+    }
+
+    function renderOpecCoverage(globalBalance) {
+      const coverage = calculateCoverage(globalBalance);
+
+      if (!coverage) {
+        return;
+      }
+
+      const status = coverageStatus(coverage.ratio);
+
+      document.getElementById("coverageDeficit").innerText =
+        coverage.deficit.toFixed(2) + " mb/d";
+
+      document.getElementById("coverageSpareCapacity").innerText =
+        coverage.spare.toFixed(2) + " mb/d";
+
+      document.getElementById("coverageRatio").innerText =
+        coverage.ratio.toFixed(1) + "%";
+
+      document.getElementById("coverageUncovered").innerText =
+        coverage.uncovered.toFixed(2) + " mb/d";
+
+      document.getElementById("coverageMeterNumber").innerText =
+        coverage.ratio.toFixed(1) + "%";
+
+      document.getElementById("coverageFill").style.width =
+        Math.min(100, coverage.ratio).toFixed(1) + "%";
+
+      document.getElementById("coverageStatus").innerHTML =
+        "<strong>" + status.label + "</strong><br>" +
+        status.text +
+        "<br><br>Forrásidőszak: " +
+        OPEC_SPARE_CAPACITY_SOURCE_DATE +
+        " · IEA effektív tartalékkapacitás.";
+    }
+
+    function scoreSupplyDemand(deficitMbd) {
+      if (deficitMbd <= 0) {
+        return clamp(20 + deficitMbd * 12, 0, 20);
+      }
+
+      return clamp(20 + deficitMbd * 32, 20, 100);
+    }
+
+    function scoreInventoryDraw(draw90DaysMillionBarrels) {
+      return clamp(
+        (draw90DaysMillionBarrels / 200) * 100,
+        0,
+        100
+      );
+    }
+
+    function scoreOpecCoverage(coverageRatio) {
+      return clamp(100 - coverageRatio, 0, 100);
+    }
+
+    function scoreChinaDemand(countryFlows) {
+      const current = countryFlows.years?.["2026"]?.importers || [];
+      const previous = countryFlows.years?.["2025"]?.importers || [];
+
+      const chinaCurrent = current.find(
+        item => item.country_en === "China"
+      );
+
+      const chinaPrevious = previous.find(
+        item => item.country_en === "China"
+      );
+
+      if (!chinaCurrent || !chinaPrevious || !chinaPrevious.value_mbd) {
+        return 50;
+      }
+
+      const changePercent =
+        (
+          (
+            Number(chinaCurrent.value_mbd) -
+            Number(chinaPrevious.value_mbd)
+          ) /
+          Number(chinaPrevious.value_mbd)
+        ) * 100;
+
+      return clamp(50 + changePercent * 12, 0, 100);
+    }
+
+    function scoreBrentMomentum(rows) {
+      if (!Array.isArray(rows) || rows.length < 20) {
+        return 50;
+      }
+
+      const values = rows
+        .map(row => Number(row.market_brent ?? row.brent))
+        .filter(value => Number.isFinite(value));
+
+      if (values.length < 20) {
+        return 50;
+      }
+
+      const recent = values.slice(-15);
+      const previous = values.slice(-30, -15);
+
+      if (!previous.length) {
+        return 50;
+      }
+
+      const recentAverage =
+        recent.reduce((sum, value) => sum + value, 0) /
+        recent.length;
+
+      const previousAverage =
+        previous.reduce((sum, value) => sum + value, 0) /
+        previous.length;
+
+      const changePercent =
+        ((recentAverage - previousAverage) / previousAverage) * 100;
+
+      return clamp(50 + changePercent * 4, 0, 100);
+    }
+
+    function ompiLevel(score) {
+      if (score >= 80) return {
+        label: "EXTREME",
+        className: "extreme",
+        description: "Rendkívül erős árnyomás és jelentős piaci sérülékenység."
+      };
+
+      if (score >= 65) return {
+        label: "HIGH",
+        className: "high",
+        description: "Erős felfelé irányuló árnyomás és korlátozott piaci alkalmazkodóképesség."
+      };
+
+      if (score >= 45) return {
+        label: "ELEVATED",
+        className: "",
+        description: "Emelkedett árnyomás, de a piac még részben képes alkalmazkodni."
+      };
+
+      if (score >= 25) return {
+        label: "MODERATE",
+        className: "",
+        description: "Mérsékelt árnyomás, közel kiegyensúlyozott fundamentumokkal."
+      };
+
+      return {
+        label: "LOW",
+        className: "low",
+        description: "Alacsony árnyomás, megfelelő kínálati és tartalékkapacitási háttérrel."
+      };
+    }
+
+    function renderOmpi(
+      globalBalance,
+      countryFlows,
+      interpretation,
+      marketRows
+    ) {
+      const series = globalBalance.series || [];
+      const row2025 = series.find(item => Number(item.year) === 2025);
+      const row2026 = series.find(item => Number(item.year) === 2026);
+      const coverage = calculateCoverage(globalBalance);
+
+      if (!row2025 || !row2026 || !coverage) {
+        return;
+      }
+
+      const stressDeficit = Math.max(
+        0,
+        Number(row2025.demand_mbd) -
+        Number(row2026.supply_mbd)
+      );
+
+      const inventoryDraw90 = stressDeficit * 90;
+
+      const latestMarket = Array.isArray(marketRows) && marketRows.length
+        ? marketRows[marketRows.length - 1]
+        : {};
+
+      const components = [
+        {
+          key: "balance",
+          label: "Kínálati–keresleti egyenleg",
+          labelEn: "Supply–demand balance",
+          weight: 0.30,
+          score: scoreSupplyDemand(stressDeficit)
+        },
+        {
+          key: "inventory",
+          label: "Becsült készletleépülés",
+          labelEn: "Estimated inventory draw",
+          weight: 0.20,
+          score: scoreInventoryDraw(inventoryDraw90)
+        },
+        {
+          key: "opec",
+          label: "OPEC+ lefedési képesség",
+          labelEn: "OPEC+ deficit coverage",
+          weight: 0.15,
+          score: scoreOpecCoverage(coverage.ratio)
+        },
+        {
+          key: "geopolitical",
+          label: "Geopolitikai kockázat",
+          labelEn: "Geopolitical risk",
+          weight: 0.15,
+          score: clamp(
+            Number(interpretation.combined_risk_score ?? 50),
+            0,
+            100
+          )
+        },
+        {
+          key: "chokepoint",
+          label: "Szoroskockázat",
+          labelEn: "Chokepoint risk",
+          weight: 0.10,
+          score: clamp(
+            Number(latestMarket.global_trade_risk_index ?? 50),
+            0,
+            100
+          )
+        },
+        {
+          key: "china",
+          label: "Kínai importkereslet",
+          labelEn: "China import demand",
+          weight: 0.05,
+          score: scoreChinaDemand(countryFlows)
+        },
+        {
+          key: "momentum",
+          label: "Brent-momentum",
+          labelEn: "Brent momentum",
+          weight: 0.05,
+          score: scoreBrentMomentum(marketRows)
+        }
+      ];
+
+      const totalScore = components.reduce(
+        (sum, component) =>
+          sum + component.score * component.weight,
+        0
+      );
+
+      const level = ompiLevel(totalScore);
+
+      document.getElementById("ompiScore").innerText =
+        totalScore.toFixed(1);
+
+      const levelElement = document.getElementById("ompiLevel");
+
+      levelElement.className =
+        "ompi-level " + level.className;
+
+      levelElement.innerText = level.label;
+
+      document.getElementById("ompiDescription").innerText =
+        level.description;
+
+      document.getElementById("ompiComponents").innerHTML =
+        components.map(component => `
+          <div class="ompi-row">
+            <div class="ompi-row-head">
+              <div>
+                ${component.label}<br>
+                <span class="ompi-weight">${component.labelEn}</span>
+              </div>
+
+              <div class="ompi-weight">
+                ${(component.weight * 100).toFixed(0)}%
+              </div>
+
+              <div class="ompi-component-score">
+                ${component.score.toFixed(1)}
+              </div>
+            </div>
+
+            <div class="ompi-bar-bg">
+              <div
+                class="ompi-bar-fill"
+                style="width:${component.score.toFixed(1)}%"
+              ></div>
+            </div>
+          </div>
+        `).join("");
+    }
+
     function createCountryChart(
       canvasId,
       rows,
@@ -2701,6 +3417,13 @@
       renderDemandRecoveryScenario(globalBalance);
       renderInventoryDrawModule(globalBalance);
       renderScenarioMatrix(globalBalance);
+      renderOpecCoverage(globalBalance);
+      renderOmpi(
+        globalBalance,
+        countryFlows,
+        interpretation,
+        rows
+      );
       renderCountryModule(countryFlows);
 
       document.getElementById("forecastBrent").innerText =
