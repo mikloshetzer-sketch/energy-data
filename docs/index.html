@@ -1960,8 +1960,8 @@
     <section class="section-card orange-top">
       <div class="section-head">
         <h2 class="section-title">
-          2026 What-if forgatókönyv
-          <span>Demand recovery stress scenario</span>
+          JODI-alapú Brent stresszforgatókönyv
+          <span>Current physical-market stress scenario</span>
         </h2>
 
         <div class="section-note">
@@ -2022,8 +2022,8 @@
     <section class="section-card blue-top">
       <div class="section-head">
         <h2 class="section-title">
-          Becsült készletleépülés
-          <span>Estimated inventory draw under the selected deficit scenario</span>
+          Becsült készletnyomás
+          <span>Estimated inventory pressure under the selected JODI stress scenario</span>
         </h2>
 
         <div id="inventoryDurationSelector" class="stress-tools">
@@ -2044,7 +2044,7 @@
             </div>
 
             <div class="stress-kpi orange">
-              <div class="stress-kpi-label">Becsült készletleépülés</div>
+              <div class="stress-kpi-label">Becsült készletnyomás</div>
               <div class="stress-kpi-value" id="inventoryDrawTotal">–</div>
               <div class="stress-kpi-sub" id="inventoryDrawPeriod">A kiválasztott időtávon</div>
             </div>
@@ -2099,8 +2099,8 @@
     <section class="section-card orange-top">
       <div class="section-head">
         <h2 class="section-title">
-          2026 kínálati–keresleti forgatókönyv-mátrix
-          <span>Supply–demand scenario matrix</span>
+          JODI-alapú kínálati–keresleti stresszmátrix
+          <span>JODI-adjusted supply–demand stress matrix</span>
         </h2>
 
         <div class="section-note">
@@ -3985,155 +3985,147 @@
       `;
     }
 
-    function renderDemandRecoveryScenario(globalBalance) {
-      const series = globalBalance.series || [];
-      const row2025 = series.find(item => Number(item.year) === 2025);
-      const row2026 = series.find(item => Number(item.year) === 2026);
 
-      if (!row2025 || !row2026) {
-        return;
-      }
+    function buildUnifiedMarketState(globalBalance, globalCrudeFundamentals, brentOutlook) {
+      const series = globalBalance?.series || [];
+      const row2026 = series.find(item => Number(item.year) === 2026) || {};
 
-      const supply2026 = Number(row2026.supply_mbd);
-      const baseDemand2026 = Number(row2026.demand_mbd);
-      const recoveredDemand = Number(row2025.demand_mbd);
+      const annual = Array.isArray(globalCrudeFundamentals?.annual_series)
+        ? globalCrudeFundamentals.annual_series
+        : [];
+      const jodiCurrent = [...annual]
+        .filter(item => Number(item?.year) === 2026 || item?.period_type === "ytd")
+        .sort((a, b) => Number(a?.year || 0) - Number(b?.year || 0))
+        .at(-1) || {};
 
-      const baseBalance = supply2026 - baseDemand2026;
-      const stressBalance = supply2026 - recoveredDemand;
+      const demandAnchor = firstFinite(row2026?.demand_mbd, row2026?.demand, 100);
+      const eiaSupply = firstFinite(row2026?.supply_mbd, row2026?.supply);
+      const eiaDemand = firstFinite(row2026?.demand_mbd, row2026?.demand);
+      const eiaBalance = Number.isFinite(eiaSupply) && Number.isFinite(eiaDemand)
+        ? eiaSupply - eiaDemand
+        : null;
+
+      const jodiGap = firstFinite(
+        jodiCurrent?.preliminary_average_common_country_gap_mbd,
+        jodiCurrent?.average_common_country_gap_mbd
+      );
+      const jodiProduction = firstFinite(
+        jodiCurrent?.preliminary_average_reported_production_mbd,
+        jodiCurrent?.average_reported_production_mbd
+      );
+      const jodiIntake = firstFinite(
+        jodiCurrent?.preliminary_average_reported_refinery_intake_mbd,
+        jodiCurrent?.average_reported_refinery_intake_mbd
+      );
+
+      /*
+       * JODI common-country gap is not a literal global supply-demand balance.
+       * For the scenario chain it is converted to a bounded stress-equivalent
+       * deficit proxy: each 10 mb/d of negative common-country gap represents
+       * 1 mb/d of modeled stress, capped at 3 mb/d.
+       */
+      const stressDeficit = Number.isFinite(jodiGap)
+        ? clamp(Math.abs(Math.min(0, jodiGap)) / 10, 0, 3)
+        : 0;
+
+      const currentBalanceProxy = -stressDeficit;
+      const currentDemandProxy = demandAnchor;
+      const currentSupplyProxy = currentDemandProxy + currentBalanceProxy;
+
+      const lower = firstFinite(brentOutlook?.outlook?.lower_price_usd);
+      const center = firstFinite(brentOutlook?.outlook?.center_price_usd);
+      const upper = firstFinite(brentOutlook?.outlook?.upper_price_usd);
+
+      return {
+        periodLabel: jodiCurrent?.period_label || "2026 YTD",
+        months: Number(jodiCurrent?.months_available || 0),
+        jodiGap,
+        jodiProduction,
+        jodiIntake,
+        stressDeficit,
+        currentBalanceProxy,
+        currentDemandProxy,
+        currentSupplyProxy,
+        eiaSupply,
+        eiaDemand,
+        eiaBalance,
+        brentLower: lower,
+        brentCenter: center,
+        brentUpper: upper
+      };
+    }
+
+    function renderDemandRecoveryScenario(marketState) {
+      if (!marketState || !Number.isFinite(marketState.currentDemandProxy)) return;
+
+      const supplyBase = marketState.currentSupplyProxy;
+      const demandBase = marketState.currentDemandProxy;
+      const baseBalance = supplyBase - demandBase;
+
+      const stressDemand = demandBase + 0.75;
+      const stressBalance = supplyBase - stressDemand;
       const deterioration = stressBalance - baseBalance;
 
-      document.getElementById("scenarioBaseBalance").innerText =
-        fmtBalance(baseBalance);
-
-      document.getElementById("scenarioStressBalance").innerText =
-        fmtBalance(stressBalance);
+      document.getElementById("scenarioBaseBalance").innerText = fmtBalance(baseBalance);
+      document.getElementById("scenarioStressBalance").innerText = fmtBalance(stressBalance);
 
       document.getElementById("scenarioInterpretation").innerHTML =
-        "Ha a globális kereslet 2026-ban visszatérne a 2025-ös " +
-        recoveredDemand.toFixed(2) +
-        " mb/d szintre, miközben a kínálat " +
-        supply2026.toFixed(2) +
-        " mb/d maradna, a piaci hiány " +
-        Math.abs(stressBalance).toFixed(2) +
-        " mb/d-re nőne. Ez " +
-        Math.abs(deterioration).toFixed(2) +
-        " mb/d-vel rosszabb egyenleg az alapesetnél. " +
-        "A valószínű következmény gyorsabb készletleépülés, erősebb Brent-áremelkedési nyomás és nagyobb OPEC+ termelésnövelési kényszer lenne. " +
-        "Pontos olajárat ebből önmagában nem lehet megbízhatóan számítani.";
+        "A JODI " + marketState.periodLabel + " common-country gap alapján képzett, korlátozott stresszproxy " +
+        Math.abs(baseBalance).toFixed(2) + " mb/d hiányt jelez. " +
+        "Ha a kereslet további 0,75 mb/d-vel erősödne változatlan kínálati proxy mellett, a modellezett hiány " +
+        Math.abs(stressBalance).toFixed(2) + " mb/d-re nőne. Ez " +
+        Math.abs(deterioration).toFixed(2) + " mb/d további romlás. " +
+        "A blokk nem állítja, hogy a JODI gap teljes globális hiány: az értéket a Brent-ársáv stressztesztjéhez normalizálja.";
 
-      new Chart(
-        document.getElementById("scenarioChart"),
-        {
-          type: "bar",
-          data: {
-            labels: [
-              "2026 alapeset",
-              "2026 kereslet-visszatérés"
-            ],
-            datasets: [
-              {
-                label: "Kínálat / Supply",
-                data: [supply2026, supply2026],
-                backgroundColor: "rgba(37,139,199,.84)",
-                borderColor: "#17648f",
-                borderWidth: 1,
-                borderRadius: 7,
-                maxBarThickness: 58
-              },
-              {
-                label: "Kereslet / Demand",
-                data: [baseDemand2026, recoveredDemand],
-                backgroundColor: [
-                  "rgba(217,119,6,.74)",
-                  "rgba(200,60,50,.82)"
-                ],
-                borderColor: [
-                  "#b45e08",
-                  "#a92f28"
-                ],
-                borderWidth: 1,
-                borderRadius: 7,
-                maxBarThickness: 58
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: false,
-            plugins: {
-              legend: {
-                labels: {
-                  usePointStyle: true,
-                  pointStyle: "rectRounded",
-                  font: {
-                    size: 10,
-                    weight: "bold"
-                  }
-                }
-              },
-              tooltip: {
-                callbacks: {
-                  label: context =>
-                    context.dataset.label +
-                    ": " +
-                    Number(context.raw).toFixed(2) +
-                    " mb/d"
-                }
-              },
-              datalabels: {
-                display: true,
-                anchor: "end",
-                align: "end",
-                color: "#27485d",
-                font: {
-                  size: 10,
-                  weight: "bold"
-                },
-                formatter: value => Number(value).toFixed(2)
-              }
+      const oldChart = Chart.getChart("scenarioChart");
+      if (oldChart) oldChart.destroy();
+
+      new Chart(document.getElementById("scenarioChart"), {
+        type: "bar",
+        data: {
+          labels: ["JODI-alapú jelenlegi proxy", "Keresleti stressz"],
+          datasets: [
+            {
+              label: "Kínálati proxy / Supply proxy",
+              data: [supplyBase, supplyBase],
+              backgroundColor: "rgba(37,139,199,.84)",
+              borderColor: "#17648f",
+              borderWidth: 1,
+              borderRadius: 7,
+              maxBarThickness: 58
             },
-            scales: {
-              x: {
-                grid: {
-                  display: false
-                },
-                ticks: {
-                  color: "#27485d",
-                  font: {
-                    size: 10,
-                    weight: "bold"
-                  }
-                }
-              },
-              y: {
-                beginAtZero: false,
-                suggestedMin: 100,
-                grace: "8%",
-                title: {
-                  display: true,
-                  text: "millió hordó/nap",
-                  color: "#526879",
-                  font: {
-                    size: 10,
-                    weight: "bold"
-                  }
-                },
-                ticks: {
-                  color: "#526879",
-                  font: {
-                    size: 9,
-                    weight: "bold"
-                  }
-                },
-                grid: {
-                  color: "rgba(148,163,184,.18)"
-                }
-              }
+            {
+              label: "Keresleti proxy / Demand proxy",
+              data: [demandBase, stressDemand],
+              backgroundColor: ["rgba(217,119,6,.74)", "rgba(200,60,50,.82)"],
+              borderColor: ["#b45e08", "#a92f28"],
+              borderWidth: 1,
+              borderRadius: 7,
+              maxBarThickness: 58
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: {
+            legend: { labels: { usePointStyle: true, pointStyle: "rectRounded", font: { size: 10, weight: "bold" } } },
+            tooltip: { callbacks: { label: context => context.dataset.label + ": " + Number(context.raw).toFixed(2) + " mb/d" } },
+            datalabels: { display: true, anchor: "end", align: "end", color: "#27485d", font: { size: 10, weight: "bold" }, formatter: value => Number(value).toFixed(2) }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: "#27485d", font: { size: 10, weight: "bold" } } },
+            y: {
+              beginAtZero: false,
+              grace: "8%",
+              title: { display: true, text: "millió hordó/nap · modellezett proxy", color: "#526879", font: { size: 10, weight: "bold" } },
+              ticks: { color: "#526879", font: { size: 9, weight: "bold" } },
+              grid: { color: "rgba(148,163,184,.18)" }
             }
           }
         }
-      );
+      });
     }
 
     function matrixClass(balance) {
@@ -4152,231 +4144,96 @@
       return "nagy hiány";
     }
 
-    function renderScenarioMatrix(globalBalance) {
-      const series = globalBalance.series || [];
-      const row2025 = series.find(item => Number(item.year) === 2025);
-      const row2026 = series.find(item => Number(item.year) === 2026);
+    function renderScenarioMatrix(marketState) {
+      if (!marketState || !Number.isFinite(marketState.currentDemandProxy)) return;
 
-      if (!row2025 || !row2026) return;
+      const demandLow = marketState.currentDemandProxy - 0.75;
+      const demandBase = marketState.currentDemandProxy;
+      const demandHigh = marketState.currentDemandProxy + 0.75;
 
-      const demandLow = Number(row2026.demand_mbd) - 1.0;
-      const demandBase = Number(row2026.demand_mbd);
-      const demandHigh = Number(row2025.demand_mbd);
+      const supplyRecovery = marketState.currentSupplyProxy + 1.0;
+      const supplyBase = marketState.currentSupplyProxy;
+      const supplyDisruption = marketState.currentSupplyProxy - 1.0;
 
-      const supplyRecovery = Number(row2026.supply_mbd) + 1.06;
-      const supplyBase = Number(row2026.supply_mbd);
-      const supplyDisruption = Number(row2026.supply_mbd) - 1.94;
-
-      document.getElementById("matrixDemandLow").innerHTML =
-        "Gyenge kereslet<br>" + demandLow.toFixed(2) + " mb/d";
-
-      document.getElementById("matrixDemandBase").innerHTML =
-        "Alapeseti kereslet<br>" + demandBase.toFixed(2) + " mb/d";
-
-      document.getElementById("matrixDemandHigh").innerHTML =
-        "2025-ös kereslet<br>" + demandHigh.toFixed(2) + " mb/d";
+      document.getElementById("matrixDemandLow").innerHTML = "Gyengébb kereslet<br>" + demandLow.toFixed(2) + " mb/d";
+      document.getElementById("matrixDemandBase").innerHTML = "Jelenlegi proxy<br>" + demandBase.toFixed(2) + " mb/d";
+      document.getElementById("matrixDemandHigh").innerHTML = "Erősebb kereslet<br>" + demandHigh.toFixed(2) + " mb/d";
 
       const rows = [
-        {
-          label: "Kínálati helyreállás",
-          value: supplyRecovery
-        },
-        {
-          label: "Alapeseti kínálat",
-          value: supplyBase
-        },
-        {
-          label: "További zavar",
-          value: supplyDisruption
-        }
+        { label: "Kínálati helyreállás", value: supplyRecovery },
+        { label: "Jelenlegi kínálati proxy", value: supplyBase },
+        { label: "További kínálati zavar", value: supplyDisruption }
       ];
-
       const demands = [demandLow, demandBase, demandHigh];
 
-      document.getElementById("scenarioMatrixBody").innerHTML =
-        rows.map(row => {
-          const cells = demands.map(demand => {
-            const balance = row.value - demand;
-
-            return `
-              <td class="${matrixClass(balance)}">
-                ${balance > 0 ? "+" : ""}${balance.toFixed(2)}
-                <span>${matrixLabel(balance)}</span>
-              </td>
-            `;
-          }).join("");
-
-          return `
-            <tr>
-              <th>
-                ${row.label}<br>
-                ${row.value.toFixed(2)} mb/d
-              </th>
-              ${cells}
-            </tr>
-          `;
+      document.getElementById("scenarioMatrixBody").innerHTML = rows.map(row => {
+        const cells = demands.map(demand => {
+          const balance = row.value - demand;
+          return `<td class="${matrixClass(balance)}">${balance > 0 ? "+" : ""}${balance.toFixed(2)}<span>${matrixLabel(balance)}</span></td>`;
         }).join("");
+        return `<tr><th>${row.label}<br>${row.value.toFixed(2)} mb/d</th>${cells}</tr>`;
+      }).join("");
     }
 
-    function updateInventoryDraw(globalBalance, days) {
-      const series = globalBalance.series || [];
-      const row2025 = series.find(item => Number(item.year) === 2025);
-      const row2026 = series.find(item => Number(item.year) === 2026);
-
-      if (!row2025 || !row2026) return;
-
+    function updateInventoryDraw(marketState, days) {
+      if (!marketState || !Number.isFinite(marketState.currentBalanceProxy)) return;
       activeInventoryDays = days;
 
-      const supply = Number(row2026.supply_mbd);
-      const baseDemand = Number(row2026.demand_mbd);
-      const stressDemand = Number(row2025.demand_mbd);
-
-      const baseDeficit = Math.max(0, baseDemand - supply);
-      const stressDeficit = Math.max(0, stressDemand - supply);
-
+      const baseDeficit = Math.max(0, -marketState.currentBalanceProxy);
+      const stressDeficit = baseDeficit + 0.75;
       const baseDraw = baseDeficit * days;
       const stressDraw = stressDeficit * days;
       const extraDraw = stressDraw - baseDraw;
 
-      document.getElementById("inventoryDailyDeficit").innerText =
-        stressDeficit.toFixed(2) + " mb/d";
-
-      document.getElementById("inventoryDrawTotal").innerText =
-        stressDraw.toFixed(1) + " millió hordó";
-
-      document.getElementById("inventoryBaseDraw").innerText =
-        baseDraw.toFixed(1) + " millió hordó";
-
-      document.getElementById("inventoryExtraDraw").innerText =
-        extraDraw.toFixed(1) + " millió hordó";
-
-      document.getElementById("inventoryDrawPeriod").innerText =
-        days + " napos időtávon";
+      document.getElementById("inventoryDailyDeficit").innerText = baseDeficit.toFixed(2) + " mb/d";
+      document.getElementById("inventoryDrawTotal").innerText = stressDraw.toFixed(1) + " millió hordó";
+      document.getElementById("inventoryBaseDraw").innerText = baseDraw.toFixed(1) + " millió hordó";
+      document.getElementById("inventoryExtraDraw").innerText = extraDraw.toFixed(1) + " millió hordó";
+      document.getElementById("inventoryDrawPeriod").innerText = days + " napos időtávon";
 
       document.getElementById("inventoryInterpretation").innerHTML =
-        "A " + days + " napos időtávon a stresszforgatókönyv " +
-        stressDraw.toFixed(1) +
-        " millió hordó elméleti készletleépülést okozna, ha a termelés és a kereslet nem alkalmazkodna. " +
-        "Ez " + extraDraw.toFixed(1) +
-        " millió hordóval nagyobb készletnyomás az alapeseti 2026-os forgatókönyvhöz képest.";
+        "A JODI-alapú stresszegyenleg változatlan fennmaradása " + days + " nap alatt " +
+        baseDraw.toFixed(1) + " millió hordó elméleti készletnyomást jelezne. " +
+        "A keresleti stresszpálya " + stressDraw.toFixed(1) + " millió hordóra emelné ezt. " +
+        "Ez forgatókönyv, nem közvetlenül megfigyelt globális készletváltozás.";
 
-      document
-        .querySelectorAll(".duration-btn")
-        .forEach(button => {
-          button.classList.toggle(
-            "active",
-            Number(button.dataset.days) === Number(days)
-          );
-        });
+      document.querySelectorAll(".duration-btn").forEach(button => {
+        button.classList.toggle("active", Number(button.dataset.days) === Number(days));
+      });
 
       const durations = [30, 90, 180, 365];
       const baseSeries = durations.map(period => baseDeficit * period);
       const stressSeries = durations.map(period => stressDeficit * period);
 
-      if (inventoryDrawChartInstance) {
-        inventoryDrawChartInstance.destroy();
-      }
-
-      inventoryDrawChartInstance = new Chart(
-        document.getElementById("inventoryDrawChart"),
-        {
-          type: "bar",
-          data: {
-            labels: durations.map(period => period + " nap"),
-            datasets: [
-              {
-                label: "Alapeseti készletleépülés",
-                data: baseSeries,
-                backgroundColor: "rgba(37,139,199,.78)",
-                borderColor: "#17648f",
-                borderWidth: 1,
-                borderRadius: 7
-              },
-              {
-                label: "Stresszhelyzeti készletleépülés",
-                data: stressSeries,
-                backgroundColor: "rgba(200,60,50,.78)",
-                borderColor: "#a92f28",
-                borderWidth: 1,
-                borderRadius: 7
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: false,
-            plugins: {
-              legend: {
-                labels: {
-                  usePointStyle: true,
-                  pointStyle: "rectRounded",
-                  font: {
-                    size: 9,
-                    weight: "bold"
-                  }
-                }
-              },
-              datalabels: {
-                display: false
-              }
-            },
-            scales: {
-              x: {
-                grid: {
-                  display: false
-                },
-                ticks: {
-                  color: "#27485d",
-                  font: {
-                    size: 9,
-                    weight: "bold"
-                  }
-                }
-              },
-              y: {
-                beginAtZero: true,
-                title: {
-                  display: true,
-                  text: "millió hordó",
-                  color: "#526879",
-                  font: {
-                    size: 10,
-                    weight: "bold"
-                  }
-                },
-                ticks: {
-                  color: "#526879",
-                  font: {
-                    size: 9,
-                    weight: "bold"
-                  }
-                },
-                grid: {
-                  color: "rgba(148,163,184,.18)"
-                }
-              }
-            }
+      if (inventoryDrawChartInstance) inventoryDrawChartInstance.destroy();
+      inventoryDrawChartInstance = new Chart(document.getElementById("inventoryDrawChart"), {
+        type: "bar",
+        data: {
+          labels: durations.map(period => period + " nap"),
+          datasets: [
+            { label: "JODI-alapú stresszproxy", data: baseSeries, backgroundColor: "rgba(37,139,199,.78)", borderColor: "#17648f", borderWidth: 1, borderRadius: 7 },
+            { label: "Keresleti stressz", data: stressSeries, backgroundColor: "rgba(200,60,50,.78)", borderColor: "#a92f28", borderWidth: 1, borderRadius: 7 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: { legend: { labels: { usePointStyle: true, pointStyle: "rectRounded", font: { size: 9, weight: "bold" } } }, datalabels: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: "#27485d", font: { size: 9, weight: "bold" } } },
+            y: { beginAtZero: true, title: { display: true, text: "millió hordó · elméleti stressz", color: "#526879", font: { size: 10, weight: "bold" } }, ticks: { color: "#526879", font: { size: 9, weight: "bold" } }, grid: { color: "rgba(148,163,184,.18)" } }
           }
         }
-      );
+      });
     }
 
-    function renderInventoryDrawModule(globalBalance) {
+    function renderInventoryDrawModule(marketState) {
       const selector = document.getElementById("inventoryDurationSelector");
-
-      selector
-        .querySelectorAll(".duration-btn")
-        .forEach(button => {
-          button.addEventListener("click", () => {
-            updateInventoryDraw(
-              globalBalance,
-              Number(button.dataset.days)
-            );
-          });
-        });
-
-      updateInventoryDraw(globalBalance, activeInventoryDays);
+      selector.querySelectorAll(".duration-btn").forEach(button => {
+        button.addEventListener("click", () => updateInventoryDraw(marketState, Number(button.dataset.days)));
+      });
+      updateInventoryDraw(marketState, activeInventoryDays);
     }
 
     function clamp(value, minimum, maximum) {
@@ -4588,7 +4445,7 @@
       };
     }
 
-    function renderOmpi(
+    function renderOmpiLegacy(
       globalBalance,
       countryFlows,
       interpretation,
@@ -4625,7 +4482,7 @@
         },
         {
           key: "inventory",
-          label: "Becsült készletleépülés",
+          label: "Becsült készletnyomás",
           labelEn: "Estimated inventory draw",
           weight: 0.20,
           score: scoreInventoryDraw(inventoryDraw90)
@@ -4778,7 +4635,7 @@
       };
     }
 
-    function renderPriceOutlook(globalBalance, marketRows) {
+    function renderPriceOutlookLegacy(globalBalance, marketRows) {
       const outlook = calculatePriceOutlook(globalBalance, marketRows);
 
       if (!outlook) return;
@@ -4816,7 +4673,7 @@
         "Az eredmény stresszteszt, nem kereskedési célár.";
     }
 
-    function renderMarketAssessment(globalBalance, marketRows) {
+    function renderMarketAssessmentLegacy(globalBalance, marketRows) {
       const series = globalBalance.series || [];
       const row2025 = series.find(item => Number(item.year) === 2025);
       const row2026 = series.find(item => Number(item.year) === 2026);
@@ -4903,7 +4760,7 @@
       };
     }
 
-    function renderRiskOutlook(
+    function renderRiskOutlookLegacy(
       globalBalance,
       countryFlows,
       interpretation,
@@ -5668,6 +5525,11 @@
       ]);
 
       const normalizedGlobalBalance = normalizeGlobalBalance(globalBalance);
+      const unifiedMarketState = buildUnifiedMarketState(
+        normalizedGlobalBalance,
+        globalCrudeFundamentals,
+        brentOutlook
+      );
       const inventoryStressScore = extractInventoryStressScore(inventory);
 
       const usaSeries = usa.series || [];
@@ -5767,9 +5629,9 @@
 
       renderGlobalCrudeFundamentals(globalCrudeFundamentals);
       renderGlobalBalance(normalizedGlobalBalance);
-      renderDemandRecoveryScenario(normalizedGlobalBalance);
-      renderInventoryDrawModule(normalizedGlobalBalance);
-      renderScenarioMatrix(normalizedGlobalBalance);
+      renderDemandRecoveryScenario(unifiedMarketState);
+      renderInventoryDrawModule(unifiedMarketState);
+      renderScenarioMatrix(unifiedMarketState);
       renderOpecCoverage(normalizedGlobalBalance);
       renderOmpi(ompiData);
       renderPriceOutlook(brentOutlook);
@@ -6241,4 +6103,5 @@
 
 </body>
 </html>
+
 
