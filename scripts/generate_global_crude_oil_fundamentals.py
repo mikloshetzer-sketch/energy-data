@@ -833,7 +833,7 @@ def build_output(
             "gazdasági értelmezését nem helyettesíti."
         ),
         "adjusted_balance_note_en": (
-            "Adjusted Crude Balance is an experimental mechanical indicator: "
+            "Adjusted Crude Balance is an experimental optional indicator: "
             "common_country_gap_mbd minus reported_stock_change_average_mbd. "
             "It is not a complete global crude-oil balance and does not "
             "replace economic interpretation of the STOCKCH sign."
