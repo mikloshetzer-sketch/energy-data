@@ -302,6 +302,85 @@
     .section-card.teal-top { border-top: 5px solid var(--teal); }
     .section-card.orange-top { border-top: 5px solid var(--orange); }
 
+    .fundamentals-layout {
+      display: grid;
+      grid-template-columns: 1.35fr 0.65fr;
+      gap: 15px;
+      align-items: stretch;
+    }
+
+    .fundamentals-balance-panel {
+      padding: 18px;
+      background: #f8fbfd;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+    }
+
+    .fundamentals-balance-panel h3 {
+      margin: 0 0 5px;
+      color: var(--navy);
+      font-size: 16px;
+    }
+
+    .fundamentals-balance-panel h3 span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .balance-chart-wrap {
+      height: 350px;
+      position: relative;
+    }
+
+    .fundamentals-kpis {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .fundamentals-kpi {
+      padding: 14px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--blue);
+      border-radius: 12px;
+    }
+
+    .fundamentals-kpi.demand { border-top-color: var(--orange); }
+    .fundamentals-kpi.deficit { border-top-color: var(--red); }
+    .fundamentals-kpi.message { border-top-color: var(--purple); }
+
+    .fundamentals-kpi-label {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .fundamentals-kpi-value {
+      margin-top: 7px;
+      color: var(--navy);
+      font-size: 23px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .fundamentals-kpi-value.negative { color: var(--red); }
+    .fundamentals-kpi-value.positive { color: var(--green); }
+
+    .fundamentals-kpi-sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
     .section-head {
       margin-bottom: 14px;
       display: flex;
@@ -1647,6 +1726,7 @@
 
       .chart-grid-2,
       .analysis-grid,
+      .fundamentals-layout,
       .scenario-grid,
       .stress-grid,
       .coverage-grid,
@@ -1686,7 +1766,8 @@
       }
 
       .context-grid,
-      .forecast-grid {
+      .forecast-grid,
+      .fundamentals-kpis {
         grid-template-columns: 1fr;
       }
     }
@@ -1804,17 +1885,55 @@
     <section class="section-card blue-top">
       <div class="section-head">
         <h2 class="section-title">
-          Globális olajpiaci fundamentumok
-          <span>Global oil market fundamentals</span>
+          Globális folyékonyüzemanyag-kínálat és -kereslet
+          <span>Global liquid fuels supply, demand and market balance</span>
         </h2>
 
         <div class="section-note">
-          A 2026-os globális adatok előrejelzések. A mutató petroleum and other liquid fuels kategóriát használ.
+          Az EIA petroleum and other liquid fuels kategóriája. A 2026-os értékek előrejelzések; a piaci egyenleg a kínálat és a kereslet különbsége.
         </div>
       </div>
 
-      <div class="chart-wrap large">
-        <canvas id="globalBalanceChart"></canvas>
+      <div class="fundamentals-layout">
+        <div class="chart-panel">
+          <h3>Globális kínálat és kereslet <span>Annual average · million barrels per day</span></h3>
+          <div class="chart-wrap large">
+            <canvas id="globalBalanceChart"></canvas>
+          </div>
+        </div>
+
+        <div class="fundamentals-balance-panel">
+          <h3>Piaci egyenleg <span>Supply minus demand · positive = surplus, negative = deficit</span></h3>
+          <div class="balance-chart-wrap">
+            <canvas id="globalNetBalanceChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="fundamentals-kpis">
+        <div class="fundamentals-kpi">
+          <div class="fundamentals-kpi-label">2026 kínálat változása</div>
+          <div class="fundamentals-kpi-value" id="fundamentalsSupplyChange">–</div>
+          <div class="fundamentals-kpi-sub">2026 vs. 2025 · mb/d</div>
+        </div>
+
+        <div class="fundamentals-kpi demand">
+          <div class="fundamentals-kpi-label">2026 kereslet változása</div>
+          <div class="fundamentals-kpi-value" id="fundamentalsDemandChange">–</div>
+          <div class="fundamentals-kpi-sub">2026 vs. 2025 · mb/d</div>
+        </div>
+
+        <div class="fundamentals-kpi deficit">
+          <div class="fundamentals-kpi-label">2026 piaci egyenleg</div>
+          <div class="fundamentals-kpi-value" id="fundamentalsBalance2026">–</div>
+          <div class="fundamentals-kpi-sub" id="fundamentalsBalanceStatus">Kínálat mínusz kereslet</div>
+        </div>
+
+        <div class="fundamentals-kpi message">
+          <div class="fundamentals-kpi-label">Fundamentális üzenet</div>
+          <div class="fundamentals-kpi-value" id="fundamentalsMessage">–</div>
+          <div class="fundamentals-kpi-sub" id="fundamentalsMessageSub">Betöltés...</div>
+        </div>
       </div>
 
       <div id="globalBalanceSummary" class="summary-box">
@@ -2807,6 +2926,8 @@
     let producerChartInstance = null;
     let importerChartInstance = null;
     let inventoryDrawChartInstance = null;
+    let globalBalanceChartInstance = null;
+    let globalNetBalanceChartInstance = null;
     let activeInventoryDays = 30;
     let validationChartInstance = null;
     let latestOmpiScore = null;
@@ -3215,38 +3336,37 @@
         return;
       }
 
-      new Chart(
+      if (globalBalanceChartInstance) globalBalanceChartInstance.destroy();
+      if (globalNetBalanceChartInstance) globalNetBalanceChartInstance.destroy();
+
+      globalBalanceChartInstance = new Chart(
         document.getElementById("globalBalanceChart"),
         {
-          type: "bar",
+          type: "line",
           data: {
             labels: series.map(item => String(item.year)),
             datasets: [
               {
                 label: "Kínálat / Supply",
                 data: series.map(item => item.supply_mbd),
-                backgroundColor: series.map(item =>
-                  item.status === "forecast"
-                    ? "rgba(37,139,199,.46)"
-                    : "rgba(37,139,199,.88)"
-                ),
                 borderColor: "#17648f",
-                borderWidth: 1,
-                borderRadius: 7,
-                maxBarThickness: 72
+                backgroundColor: "rgba(37,139,199,.14)",
+                borderWidth: 3,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                tension: .22,
+                fill: false
               },
               {
                 label: "Kereslet / Demand",
                 data: series.map(item => item.demand_mbd),
-                backgroundColor: series.map(item =>
-                  item.status === "forecast"
-                    ? "rgba(217,119,6,.46)"
-                    : "rgba(217,119,6,.88)"
-                ),
-                borderColor: "#b45e08",
-                borderWidth: 1,
-                borderRadius: 7,
-                maxBarThickness: 72
+                borderColor: "#d97706",
+                backgroundColor: "rgba(217,119,6,.14)",
+                borderWidth: 3,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                tension: .22,
+                fill: false
               }
             ]
           },
@@ -3254,83 +3374,120 @@
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
-            interaction: {
-              mode: "index",
-              intersect: false
-            },
+            interaction: { mode: "index", intersect: false },
             plugins: {
               legend: {
                 labels: {
                   usePointStyle: true,
-                  pointStyle: "rectRounded",
                   padding: 20,
-                  font: {
-                    size: 11,
-                    weight: "bold"
-                  }
+                  font: { size: 11, weight: "bold" }
                 }
               },
               tooltip: {
                 callbacks: {
                   label: context =>
-                    context.dataset.label +
-                    ": " +
-                    Number(context.raw).toFixed(2) +
-                    " mb/d",
-
+                    context.dataset.label + ": " + Number(context.raw).toFixed(2) + " mb/d",
                   afterBody: items => {
                     const row = series[items[0].dataIndex];
-
-                    return "Egyenleg / Balance: " +
-                      fmtBalance(row.balance_mbd);
+                    return "Egyenleg / Balance: " + fmtBalance(row.balance_mbd);
                   }
                 }
               },
               datalabels: {
                 display: true,
-                anchor: "end",
-                align: "end",
-                offset: 2,
-                color: "#27485d",
-                font: {
-                  size: 10,
-                  weight: "bold"
-                },
+                align: context => context.datasetIndex === 0 ? "top" : "bottom",
+                offset: 5,
+                color: context => context.datasetIndex === 0 ? "#17648f" : "#a65305",
+                font: { size: 10, weight: "bold" },
                 formatter: value => Number(value).toFixed(2)
               }
             },
             scales: {
               x: {
                 grid: { display: false },
-                ticks: {
-                  color: "#27485d",
-                  font: {
-                    size: 12,
-                    weight: "bold"
-                  }
-                }
+                ticks: { color: "#27485d", font: { size: 12, weight: "bold" } }
               },
               y: {
                 beginAtZero: false,
-                suggestedMin: 98,
+                suggestedMin: Math.floor(Math.min(...series.flatMap(item => [item.supply_mbd, item.demand_mbd])) - 1),
+                suggestedMax: Math.ceil(Math.max(...series.flatMap(item => [item.supply_mbd, item.demand_mbd])) + 1),
                 title: {
                   display: true,
                   text: "millió hordó/nap · million barrels per day",
                   color: "#526879",
-                  font: {
-                    size: 11,
-                    weight: "bold"
-                  }
+                  font: { size: 11, weight: "bold" }
                 },
-                ticks: {
+                ticks: { color: "#526879", font: { size: 10, weight: "bold" } },
+                grid: { color: "rgba(148,163,184,.20)" }
+              }
+            }
+          }
+        }
+      );
+
+      globalNetBalanceChartInstance = new Chart(
+        document.getElementById("globalNetBalanceChart"),
+        {
+          type: "bar",
+          data: {
+            labels: series.map(item => String(item.year)),
+            datasets: [{
+              label: "Piaci egyenleg / Market balance",
+              data: series.map(item => item.balance_mbd),
+              backgroundColor: series.map(item =>
+                item.balance_mbd < -0.05
+                  ? "rgba(200,60,50,.84)"
+                  : item.balance_mbd > 0.05
+                    ? "rgba(7,135,95,.82)"
+                    : "rgba(217,119,6,.78)"
+              ),
+              borderColor: series.map(item =>
+                item.balance_mbd < -0.05 ? "#a62820" : item.balance_mbd > 0.05 ? "#087452" : "#965400"
+              ),
+              borderWidth: 1,
+              borderRadius: 7,
+              maxBarThickness: 56
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: context => "Egyenleg: " + fmtBalance(Number(context.raw))
+                }
+              },
+              datalabels: {
+                display: true,
+                anchor: context => Number(context.raw) >= 0 ? "end" : "start",
+                align: context => Number(context.raw) >= 0 ? "end" : "start",
+                offset: 4,
+                color: context => Number(context.raw) < 0 ? "#a62820" : "#087452",
+                font: { size: 11, weight: "bold" },
+                formatter: value => (value > 0 ? "+" : "") + Number(value).toFixed(2)
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: "#27485d", font: { size: 11, weight: "bold" } }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "mb/d",
                   color: "#526879",
-                  font: {
-                    size: 10,
-                    weight: "bold"
-                  }
+                  font: { size: 10, weight: "bold" }
                 },
+                ticks: { color: "#526879", font: { size: 10, weight: "bold" } },
                 grid: {
-                  color: "rgba(148,163,184,.20)"
+                  color: context => context.tick.value === 0
+                    ? "rgba(17,47,67,.58)"
+                    : "rgba(148,163,184,.18)",
+                  lineWidth: context => context.tick.value === 0 ? 2 : 1
                 }
               }
             }
@@ -3338,24 +3495,68 @@
         }
       );
 
+      const row2025 = series.find(item => Number(item.year) === 2025);
+      const row2026 = series.find(item => Number(item.year) === 2026);
+
+      if (row2025 && row2026) {
+        const supplyChange = row2026.supply_mbd - row2025.supply_mbd;
+        const demandChange = row2026.demand_mbd - row2025.demand_mbd;
+        const balance2026 = row2026.balance_mbd;
+
+        const setSignedValue = (id, value) => {
+          const element = document.getElementById(id);
+          element.innerText = (value > 0 ? "+" : "") + value.toFixed(2) + " mb/d";
+          element.classList.remove("negative", "positive");
+          element.classList.add(value < 0 ? "negative" : value > 0 ? "positive" : "");
+        };
+
+        setSignedValue("fundamentalsSupplyChange", supplyChange);
+        setSignedValue("fundamentalsDemandChange", demandChange);
+        setSignedValue("fundamentalsBalance2026", balance2026);
+
+        document.getElementById("fundamentalsBalanceStatus").innerText =
+          balance2026 < -0.05
+            ? "HIÁNY · a kereslet meghaladja a kínálatot"
+            : balance2026 > 0.05
+              ? "TÖBBLET · a kínálat meghaladja a keresletet"
+              : "KÖZEL EGYENSÚLY";
+
+        const supplyFallsMore = supplyChange < demandChange;
+        const message =
+          balance2026 < -0.05
+            ? "Bullish"
+            : balance2026 > 0.05
+              ? "Bearish"
+              : "Semleges";
+
+        document.getElementById("fundamentalsMessage").innerText = message;
+        document.getElementById("fundamentalsMessageSub").innerText =
+          balance2026 < -0.05 && supplyFallsMore
+            ? "A kínálat gyorsabban csökken, mint a kereslet; a piac hiányossá válik."
+            : balance2026 < -0.05
+              ? "A 2026-os kínálat nem fedezi teljesen a keresletet."
+              : balance2026 > 0.05
+                ? "A kínálati többlet készletépülési és lefelé irányuló árnyomást jelez."
+                : "A kínálat és kereslet éves átlaga közel azonos.";
+      }
+
       const summary = document.getElementById("globalBalanceSummary");
-
       summary.innerHTML = `
-        <strong>Piaci egyenleg / Market balance</strong>
-
+        <strong>Piaci egyenleg és árjelzés / Market balance and price implication</strong>
         <ul>
           ${series.map(item => {
             const status =
-              item.balance_status === "surplus"
-                ? "kínálati többlet"
-                : item.balance_status === "deficit"
-                  ? "kínálati hiány"
+              item.balance_mbd > 0.05
+                ? "többlet · készletépülési nyomás"
+                : item.balance_mbd < -0.05
+                  ? "hiány · készletleépülési és felfelé irányuló árnyomás"
                   : "közel egyensúly";
 
             return `
               <li>
                 ${item.year}${item.status === "forecast" ? " – előrejelzés" : ""}:
-                ${fmtBalance(item.balance_mbd)} · ${status}
+                kínálat ${item.supply_mbd.toFixed(2)} mb/d · kereslet ${item.demand_mbd.toFixed(2)} mb/d ·
+                egyenleg ${fmtBalance(item.balance_mbd)} · ${status}
               </li>
             `;
           }).join("")}
