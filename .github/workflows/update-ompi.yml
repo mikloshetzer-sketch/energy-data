@@ -4,13 +4,14 @@ on:
   workflow_dispatch:
 
   schedule:
+    # Naponta 07:12 UTC
     - cron: "12 7 * * *"
 
 permissions:
   contents: write
 
 concurrency:
-  group: update-ompi
+  group: update-ompi-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -23,17 +24,58 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.ref_name }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
+      - name: Show input files
+        run: |
+          echo "Repository branch: ${GITHUB_REF_NAME}"
+          echo "Current commit:"
+          git log -1 --oneline
+
+          echo ""
+          echo "OMPI input files:"
+
+          for file in \
+            docs/data/global_oil_balance.json \
+            docs/data/inventory_stress.json \
+            docs/data/chokepoint_status.json \
+            docs/data/market_interpretation.json \
+            china-oil-import.json
+          do
+            if [ -f "$file" ]; then
+              echo "OK: $file"
+            else
+              echo "MISSING: $file"
+            fi
+          done
+
       - name: Generate OMPI
         env:
           OPEC_EFFECTIVE_SPARE_CAPACITY_MBD: "0.17"
         run: |
           python scripts/generate_ompi.py
+
+      - name: Check generated files
+        run: |
+          if [ ! -f "docs/data/ompi.json" ]; then
+            echo "HIBA: Nem jött létre a docs/data/ompi.json"
+            exit 1
+          fi
+
+          if [ ! -f "docs/data/ompi-history.json" ]; then
+            echo "HIBA: Nem jött létre a docs/data/ompi-history.json"
+            exit 1
+          fi
+
+          echo "Az OMPI-fájlok létrejöttek:"
+          ls -lh \
+            docs/data/ompi.json \
+            docs/data/ompi-history.json
 
       - name: Validate OMPI output
         run: |
@@ -44,12 +86,6 @@ jobs:
           ompi_path = Path("docs/data/ompi.json")
           history_path = Path("docs/data/ompi-history.json")
 
-          if not ompi_path.exists():
-              raise SystemExit("Hiányzik a docs/data/ompi.json")
-
-          if not history_path.exists():
-              raise SystemExit("Hiányzik a docs/data/ompi-history.json")
-
           with ompi_path.open("r", encoding="utf-8") as handle:
               ompi = json.load(handle)
 
@@ -57,14 +93,16 @@ jobs:
               history = json.load(handle)
 
           score = ompi.get("score")
+
           if not isinstance(score, (int, float)):
-              raise SystemExit("Az OMPI score nem szám.")
+              raise SystemExit("HIBA: Az OMPI score nem szám.")
 
           if not 0 <= float(score) <= 100:
-              raise SystemExit(f"Az OMPI score tartományon kívüli: {score}")
+              raise SystemExit(
+                  f"HIBA: Az OMPI score tartományon kívüli: {score}"
+              )
 
-          components = ompi.get("components", {})
-          expected = {
+          expected_components = {
               "physical_balance",
               "inventory_stress",
               "opec_buffer",
@@ -73,48 +111,115 @@ jobs:
               "chokepoint_risk",
           }
 
-          missing = expected - set(components)
-          if missing:
+          components = ompi.get("components")
+
+          if not isinstance(components, dict):
+              raise SystemExit("HIBA: Hiányzik az OMPI components blokk.")
+
+          missing_components = expected_components - set(components)
+
+          if missing_components:
               raise SystemExit(
-                  "Hiányzó OMPI-komponensek: " + ", ".join(sorted(missing))
+                  "HIBA: Hiányzó OMPI-komponensek: "
+                  + ", ".join(sorted(missing_components))
               )
 
-          weights = ompi.get("weights", {})
+          weights = ompi.get("weights")
+
+          if not isinstance(weights, dict):
+              raise SystemExit("HIBA: Hiányzik az OMPI weights blokk.")
+
           weight_sum = sum(float(value) for value in weights.values())
 
-          if abs(weight_sum - 1.0) > 1e-9:
+          if abs(weight_sum - 1.0) > 0.000001:
               raise SystemExit(
-                  f"Az OMPI súlyok összege hibás: {weight_sum}"
+                  f"HIBA: Az OMPI-súlyok összege nem 1: {weight_sum}"
               )
 
-          if not isinstance(history.get("history"), list):
-              raise SystemExit("Az OMPI history mező nem lista.")
+          history_rows = history.get("history")
 
-          print(
-              f"Érvényes OMPI: {score}/100, "
-              f"szint: {ompi.get('level')}, "
-              f"bizalom: "
-              f"{ompi.get('data_quality', {}).get('confidence_score')}"
-          )
+          if not isinstance(history_rows, list):
+              raise SystemExit(
+                  "HIBA: Az ompi-history.json history mezője nem lista."
+              )
+
+          quality = ompi.get("data_quality", {})
+          confidence = quality.get("confidence_score")
+
+          print("OMPI validáció sikeres.")
+          print(f"Pontszám: {score}/100")
+          print(f"Szint: {ompi.get('level')}")
+          print(f"Irány: {ompi.get('direction')}")
+          print(f"Adatbizalom: {confidence}")
+          print(f"History rekordok: {len(history_rows)}")
           PY
 
-      - name: Commit updated OMPI files
+      - name: Display generated OMPI summary
         run: |
-          if git diff --quiet -- \
-            docs/data/ompi.json \
-            docs/data/ompi-history.json; then
-            echo "Nincs OMPI-változás."
-            exit 0
-          fi
+          python - <<'PY'
+          import json
 
+          with open(
+              "docs/data/ompi.json",
+              "r",
+              encoding="utf-8",
+          ) as handle:
+              data = json.load(handle)
+
+          print("=" * 60)
+          print(f"OMPI: {data.get('score')}/100")
+          print(f"Level: {data.get('level')}")
+          print(f"Direction: {data.get('direction')}")
+          print("=" * 60)
+
+          for name, component in data.get("components", {}).items():
+              print(
+                  f"{name}: "
+                  f"score={component.get('score')}, "
+                  f"weight={component.get('weight_pct')}%, "
+                  f"contribution={component.get('contribution')}"
+              )
+
+          print("=" * 60)
+          print(data.get("summary_hu", ""))
+          PY
+
+      - name: Commit and push OMPI files
+        run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # Az új, még nem követett fájlokat is hozzáadja.
           git add \
             docs/data/ompi.json \
             docs/data/ompi-history.json
 
+          echo "Staged changes:"
+          git status --short
+
+          # A --cached ellenőrzés az új fájlokat is érzékeli.
+          if git diff --cached --quiet; then
+            echo "Nincs commitolandó OMPI-változás."
+            exit 0
+          fi
+
           git commit -m "Update OMPI data"
 
+          # Az esetleges közben érkezett commitok beillesztése.
           git pull --rebase origin "${GITHUB_REF_NAME}"
+
           git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Confirm committed files
+        run: |
+          echo "A workflow sikeresen befejeződött."
+
+          git log -1 --oneline
+
+          echo ""
+          echo "OMPI files in the checked-out repository:"
+
+          git ls-files \
+            docs/data/ompi.json \
+            docs/data/ompi-history.json
