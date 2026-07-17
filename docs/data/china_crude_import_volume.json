@@ -1,341 +1,2383 @@
 {
-  "metadata": {
-    "title": "China monthly crude oil import volume",
-    "description": "Monthly gross crude oil imports reported by China.",
-    "frequency": "monthly",
-    "reporter": "China",
-    "reporter_code": "156",
-    "partner": "World",
-    "partner_code": "0",
-    "flow": "imports",
-    "flow_code": "M",
-    "commodity_code": "2709",
-    "commodity_description": "Crude petroleum oils",
-    "primary_source": "UN Comtrade",
-    "source_url": "https://comtradeplus.un.org/",
-    "conversion_note": "One metric tonne of crude oil is approximated as 7.33 barrels.",
-    "data_policy": "Only available reported monthly World-total observations are used. Missing months are not estimated.",
-    "start_period": "2023-01",
-    "requested_end_period": "2026-06",
-    "latest_available_period": "2024-11",
-    "updated_at_utc": "2026-07-17T08:46:52.538725+00:00",
-    "generator_version": "3.0.0"
+  "generated_at": "2026-07-17T09:39:04+00:00",
+  "dataset": "china_crude_import_volume",
+  "title_hu": "Kína havi nyersolajimport-volumene",
+  "title_en": "China Monthly Crude Oil Import Volume",
+  "frequency": "monthly",
+  "unit": "thousand_barrels_per_day",
+  "unit_short": "kbd",
+  "source": {
+    "name": "JODI Oil World Database",
+    "provider": "Joint Organisations Data Initiative",
+    "download_url": "https://www.jodidata.org/_resources/files/downloads/oil-data/world_primary_csv.zip?iid=24",
+    "archive_member": "NewProcedure_Primary_CSV.csv",
+    "filters": {
+      "REF_AREA": "CN",
+      "ENERGY_PRODUCT": "CRUDEOIL",
+      "FLOW_BREAKDOWN": "TOTIMPSB",
+      "UNIT_MEASURE": "KBD"
+    }
   },
-  "availability": {
-    "requested_months": 42,
-    "available_months": 15,
-    "missing_months": [
-      "2023-02",
-      "2023-06",
-      "2023-08",
-      "2023-09",
-      "2023-11",
-      "2024-03",
-      "2024-07",
-      "2024-09",
-      "2024-12",
-      "2025-01",
-      "2025-02",
-      "2025-03",
-      "2025-04",
-      "2025-05",
-      "2025-06",
-      "2025-07",
-      "2025-08",
-      "2025-09",
-      "2025-10",
-      "2025-11",
-      "2025-12",
-      "2026-01",
-      "2026-02",
-      "2026-03",
-      "2026-04",
-      "2026-05",
-      "2026-06"
-    ],
-    "latest_requested_period": "2026-06",
-    "latest_available_period": "2024-11"
+  "methodology_hu": "A modul a JODI Oil World Database havi adataiból Kína (CN) nyersolajimportját (CRUDEOIL, TOTIMPSB) választja ki KBD egységben. A közölt érték közvetlen JODI-megfigyelés; nincs napi interpoláció, tonna-hordó átváltás vagy Brent-árral végzett becslés.",
+  "methodology_en": "The module selects China's (CN) monthly crude-oil imports (CRUDEOIL, TOTIMPSB) from the JODI Oil World Database in KBD. Values are direct JODI observations; no daily interpolation, tonne-to-barrel conversion, or Brent-price estimate is applied.",
+  "coverage": {
+    "start_period": "2002-01",
+    "end_period": "2026-04",
+    "observation_count": 292,
+    "matched_source_rows": 292
+  },
+  "latest": {
+    "period": "2026-04",
+    "import_volume_kbd": 9386.9,
+    "import_volume_mbd": 9.387,
+    "assessment_code": "3",
+    "assessment_label": "not assessed",
+    "month_on_month_change_pct": -20.46,
+    "year_on_year_change_pct": -19.94
   },
   "summary": {
-    "latest": {
-      "period": "2024-11",
-      "import_million_tonnes": 48.504,
-      "import_mbd": 11.851,
-      "trade_value_billion_usd": 26.406,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": 8.54,
-      "year_on_year_percent": null,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
-    },
-    "trend": {
-      "direction": "unavailable",
-      "change_mbd": null,
-      "note": "Three-month moving average is unavailable."
-    },
-    "interpretation_note": "Import volume is a physical market indicator, but it is not by itself a complete measure of Chinese oil demand."
+    "average_3m_kbd": 11077.5,
+    "average_6m_kbd": 11812.6,
+    "average_12m_kbd": 11645.7,
+    "historical_min_kbd": 1112.0,
+    "historical_max_kbd": 13214.5
   },
   "series": [
     {
+      "period": "2002-01",
+      "date": "2002-01-01",
+      "import_volume_kbd": 1112.0,
+      "import_volume_mbd": 1.112,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2002-02",
+      "date": "2002-02-01",
+      "import_volume_kbd": 1179.0,
+      "import_volume_mbd": 1.179,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2002-03",
+      "date": "2002-03-01",
+      "import_volume_kbd": 1268.2,
+      "import_volume_mbd": 1.268,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2002-04",
+      "date": "2002-04-01",
+      "import_volume_kbd": 1583.6,
+      "import_volume_mbd": 1.584,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2002-05",
+      "date": "2002-05-01",
+      "import_volume_kbd": 1310.5,
+      "import_volume_mbd": 1.311,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2002-06",
+      "date": "2002-06-01",
+      "import_volume_kbd": 1554.3,
+      "import_volume_mbd": 1.554,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2002-07",
+      "date": "2002-07-01",
+      "import_volume_kbd": 1419.1,
+      "import_volume_mbd": 1.419,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2002-08",
+      "date": "2002-08-01",
+      "import_volume_kbd": 1549.0,
+      "import_volume_mbd": 1.549,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2002-09",
+      "date": "2002-09-01",
+      "import_volume_kbd": 1517.7,
+      "import_volume_mbd": 1.518,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2002-10",
+      "date": "2002-10-01",
+      "import_volume_kbd": 1206.6,
+      "import_volume_mbd": 1.207,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2002-11",
+      "date": "2002-11-01",
+      "import_volume_kbd": 1788.5,
+      "import_volume_mbd": 1.789,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2002-12",
+      "date": "2002-12-01",
+      "import_volume_kbd": 1225.5,
+      "import_volume_mbd": 1.226,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2003-01",
+      "date": "2003-01-01",
+      "import_volume_kbd": 1974.0,
+      "import_volume_mbd": 1.974,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2003-02",
+      "date": "2003-02-01",
+      "import_volume_kbd": 1720.2,
+      "import_volume_mbd": 1.72,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2003-03",
+      "date": "2003-03-01",
+      "import_volume_kbd": 1719.0,
+      "import_volume_mbd": 1.719,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2003-04",
+      "date": "2003-04-01",
+      "import_volume_kbd": 1925.2,
+      "import_volume_mbd": 1.925,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2003-05",
+      "date": "2003-05-01",
+      "import_volume_kbd": 1426.2,
+      "import_volume_mbd": 1.426,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2003-06",
+      "date": "2003-06-01",
+      "import_volume_kbd": 1869.0,
+      "import_volume_mbd": 1.869,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2003-07",
+      "date": "2003-07-01",
+      "import_volume_kbd": 1612.8,
+      "import_volume_mbd": 1.613,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2003-08",
+      "date": "2003-08-01",
+      "import_volume_kbd": 1603.3,
+      "import_volume_mbd": 1.603,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2003-09",
+      "date": "2003-09-01",
+      "import_volume_kbd": 2388.8,
+      "import_volume_mbd": 2.389,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2003-10",
+      "date": "2003-10-01",
+      "import_volume_kbd": 1636.4,
+      "import_volume_mbd": 1.636,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2003-11",
+      "date": "2003-11-01",
+      "import_volume_kbd": 1864.2,
+      "import_volume_mbd": 1.864,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2003-12",
+      "date": "2003-12-01",
+      "import_volume_kbd": 2205.4,
+      "import_volume_mbd": 2.205,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2004-01",
+      "date": "2004-01-01",
+      "import_volume_kbd": 2432.1,
+      "import_volume_mbd": 2.432,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2004-02",
+      "date": "2004-02-01",
+      "import_volume_kbd": 2657.9,
+      "import_volume_mbd": 2.658,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2004-03",
+      "date": "2004-03-01",
+      "import_volume_kbd": 2200.7,
+      "import_volume_mbd": 2.201,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2004-04",
+      "date": "2004-04-01",
+      "import_volume_kbd": 2440.0,
+      "import_volume_mbd": 2.44,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2004-05",
+      "date": "2004-05-01",
+      "import_volume_kbd": 2271.6,
+      "import_volume_mbd": 2.272,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2004-06",
+      "date": "2004-06-01",
+      "import_volume_kbd": 2749.9,
+      "import_volume_mbd": 2.75,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2004-07",
+      "date": "2004-07-01",
+      "import_volume_kbd": 2269.2,
+      "import_volume_mbd": 2.269,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2004-08",
+      "date": "2004-08-01",
+      "import_volume_kbd": 2203.1,
+      "import_volume_mbd": 2.203,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2004-09",
+      "date": "2004-09-01",
+      "import_volume_kbd": 2525.4,
+      "import_volume_mbd": 2.525,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2004-10",
+      "date": "2004-10-01",
+      "import_volume_kbd": 2191.3,
+      "import_volume_mbd": 2.191,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2004-11",
+      "date": "2004-11-01",
+      "import_volume_kbd": 2713.3,
+      "import_volume_mbd": 2.713,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2004-12",
+      "date": "2004-12-01",
+      "import_volume_kbd": 2857.2,
+      "import_volume_mbd": 2.857,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2005-01",
+      "date": "2005-01-01",
+      "import_volume_kbd": 1846.5,
+      "import_volume_mbd": 1.847,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2005-02",
+      "date": "2005-02-01",
+      "import_volume_kbd": 2705.8,
+      "import_volume_mbd": 2.706,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2005-03",
+      "date": "2005-03-01",
+      "import_volume_kbd": 2708.4,
+      "import_volume_mbd": 2.708,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2005-04",
+      "date": "2005-04-01",
+      "import_volume_kbd": 2989.0,
+      "import_volume_mbd": 2.989,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2005-05",
+      "date": "2005-05-01",
+      "import_volume_kbd": 2458.1,
+      "import_volume_mbd": 2.458,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2005-06",
+      "date": "2005-06-01",
+      "import_volume_kbd": 2745.0,
+      "import_volume_mbd": 2.745,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2005-07",
+      "date": "2005-07-01",
+      "import_volume_kbd": 2613.9,
+      "import_volume_mbd": 2.614,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2005-08",
+      "date": "2005-08-01",
+      "import_volume_kbd": 2068.5,
+      "import_volume_mbd": 2.068,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2005-09",
+      "date": "2005-09-01",
+      "import_volume_kbd": 2647.4,
+      "import_volume_mbd": 2.647,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2005-10",
+      "date": "2005-10-01",
+      "import_volume_kbd": 2656.5,
+      "import_volume_mbd": 2.656,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2005-11",
+      "date": "2005-11-01",
+      "import_volume_kbd": 2520.5,
+      "import_volume_mbd": 2.521,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2005-12",
+      "date": "2005-12-01",
+      "import_volume_kbd": 2661.2,
+      "import_volume_mbd": 2.661,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2006-01",
+      "date": "2006-01-01",
+      "import_volume_kbd": 3124.0,
+      "import_volume_mbd": 3.124,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2006-02",
+      "date": "2006-02-01",
+      "import_volume_kbd": 2920.2,
+      "import_volume_mbd": 2.92,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2006-03",
+      "date": "2006-03-01",
+      "import_volume_kbd": 3005.9,
+      "import_volume_mbd": 3.006,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2006-04",
+      "date": "2006-04-01",
+      "import_volume_kbd": 2935.3,
+      "import_volume_mbd": 2.935,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2006-05",
+      "date": "2006-05-01",
+      "import_volume_kbd": 2925.6,
+      "import_volume_mbd": 2.926,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2006-06",
+      "date": "2006-06-01",
+      "import_volume_kbd": 2876.8,
+      "import_volume_mbd": 2.877,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2006-07",
+      "date": "2006-07-01",
+      "import_volume_kbd": 2512.4,
+      "import_volume_mbd": 2.512,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2006-08",
+      "date": "2006-08-01",
+      "import_volume_kbd": 2791.0,
+      "import_volume_mbd": 2.791,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2006-09",
+      "date": "2006-09-01",
+      "import_volume_kbd": 3284.2,
+      "import_volume_mbd": 3.284,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2006-10",
+      "date": "2006-10-01",
+      "import_volume_kbd": 2554.9,
+      "import_volume_mbd": 2.555,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2006-11",
+      "date": "2006-11-01",
+      "import_volume_kbd": 3303.8,
+      "import_volume_mbd": 3.304,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2006-12",
+      "date": "2006-12-01",
+      "import_volume_kbd": 2729.7,
+      "import_volume_mbd": 2.73,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2007-01",
+      "date": "2007-01-01",
+      "import_volume_kbd": 3232.6,
+      "import_volume_mbd": 3.233,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2007-02",
+      "date": "2007-02-01",
+      "import_volume_kbd": 3163.3,
+      "import_volume_mbd": 3.163,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2007-03",
+      "date": "2007-03-01",
+      "import_volume_kbd": 3272.7,
+      "import_volume_mbd": 3.273,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2007-04",
+      "date": "2007-04-01",
+      "import_volume_kbd": 3616.1,
+      "import_volume_mbd": 3.616,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2007-05",
+      "date": "2007-05-01",
+      "import_volume_kbd": 3062.6,
+      "import_volume_mbd": 3.063,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2007-06",
+      "date": "2007-06-01",
+      "import_volume_kbd": 3445.3,
+      "import_volume_mbd": 3.445,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2007-07",
+      "date": "2007-07-01",
+      "import_volume_kbd": 3501.8,
+      "import_volume_mbd": 3.502,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2007-08",
+      "date": "2007-08-01",
+      "import_volume_kbd": 3315.3,
+      "import_volume_mbd": 3.315,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2007-09",
+      "date": "2007-09-01",
+      "import_volume_kbd": 3333.0,
+      "import_volume_mbd": 3.333,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2007-10",
+      "date": "2007-10-01",
+      "import_volume_kbd": 2977.6,
+      "import_volume_mbd": 2.978,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2007-11",
+      "date": "2007-11-01",
+      "import_volume_kbd": 3320.8,
+      "import_volume_mbd": 3.321,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2007-12",
+      "date": "2007-12-01",
+      "import_volume_kbd": 3041.3,
+      "import_volume_mbd": 3.041,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2008-01",
+      "date": "2008-01-01",
+      "import_volume_kbd": 3291.6,
+      "import_volume_mbd": 3.292,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2008-02",
+      "date": "2008-02-01",
+      "import_volume_kbd": 3607.0,
+      "import_volume_mbd": 3.607,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2008-03",
+      "date": "2008-03-01",
+      "import_volume_kbd": 4085.0,
+      "import_volume_mbd": 4.085,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2008-04",
+      "date": "2008-04-01",
+      "import_volume_kbd": 3474.6,
+      "import_volume_mbd": 3.475,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2008-05",
+      "date": "2008-05-01",
+      "import_volume_kbd": 3825.3,
+      "import_volume_mbd": 3.825,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2008-06",
+      "date": "2008-06-01",
+      "import_volume_kbd": 3555.1,
+      "import_volume_mbd": 3.555,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2008-07",
+      "date": "2008-07-01",
+      "import_volume_kbd": 3256.2,
+      "import_volume_mbd": 3.256,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2008-08",
+      "date": "2008-08-01",
+      "import_volume_kbd": 3695.4,
+      "import_volume_mbd": 3.695,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2008-09",
+      "date": "2008-09-01",
+      "import_volume_kbd": 3667.3,
+      "import_volume_mbd": 3.667,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2008-10",
+      "date": "2008-10-01",
+      "import_volume_kbd": 3815.8,
+      "import_volume_mbd": 3.816,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2008-11",
+      "date": "2008-11-01",
+      "import_volume_kbd": 3259.8,
+      "import_volume_mbd": 3.26,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2008-12",
+      "date": "2008-12-01",
+      "import_volume_kbd": 3393.2,
+      "import_volume_mbd": 3.393,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2009-01",
+      "date": "2009-01-01",
+      "import_volume_kbd": 3027.2,
+      "import_volume_mbd": 3.027,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2009-02",
+      "date": "2009-02-01",
+      "import_volume_kbd": 3066.6,
+      "import_volume_mbd": 3.067,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2009-03",
+      "date": "2009-03-01",
+      "import_volume_kbd": 3858.3,
+      "import_volume_mbd": 3.858,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2009-04",
+      "date": "2009-04-01",
+      "import_volume_kbd": 3945.5,
+      "import_volume_mbd": 3.945,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2009-05",
+      "date": "2009-05-01",
+      "import_volume_kbd": 3818.2,
+      "import_volume_mbd": 3.818,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2009-06",
+      "date": "2009-06-01",
+      "import_volume_kbd": 4055.3,
+      "import_volume_mbd": 4.055,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2009-07",
+      "date": "2009-07-01",
+      "import_volume_kbd": 4635.2,
+      "import_volume_mbd": 4.635,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2009-08",
+      "date": "2009-08-01",
+      "import_volume_kbd": 4361.3,
+      "import_volume_mbd": 4.361,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2009-09",
+      "date": "2009-09-01",
+      "import_volume_kbd": 4196.8,
+      "import_volume_mbd": 4.197,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2009-10",
+      "date": "2009-10-01",
+      "import_volume_kbd": 4566.7,
+      "import_volume_mbd": 4.567,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2009-11",
+      "date": "2009-11-01",
+      "import_volume_kbd": 4177.3,
+      "import_volume_mbd": 4.177,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2009-12",
+      "date": "2009-12-01",
+      "import_volume_kbd": 5020.1,
+      "import_volume_mbd": 5.02,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2010-01",
+      "date": "2010-01-01",
+      "import_volume_kbd": 4037.8,
+      "import_volume_mbd": 4.038,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2010-02",
+      "date": "2010-02-01",
+      "import_volume_kbd": 4839.0,
+      "import_volume_mbd": 4.839,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2010-03",
+      "date": "2010-03-01",
+      "import_volume_kbd": 4972.9,
+      "import_volume_mbd": 4.973,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2010-04",
+      "date": "2010-04-01",
+      "import_volume_kbd": 5165.5,
+      "import_volume_mbd": 5.165,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2010-05",
+      "date": "2010-05-01",
+      "import_volume_kbd": 4212.5,
+      "import_volume_mbd": 4.213,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2010-06",
+      "date": "2010-06-01",
+      "import_volume_kbd": 5433.9,
+      "import_volume_mbd": 5.434,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2010-07",
+      "date": "2010-07-01",
+      "import_volume_kbd": 4486.5,
+      "import_volume_mbd": 4.486,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2010-08",
+      "date": "2010-08-01",
+      "import_volume_kbd": 4935.1,
+      "import_volume_mbd": 4.935,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2010-09",
+      "date": "2010-09-01",
+      "import_volume_kbd": 5682.8,
+      "import_volume_mbd": 5.683,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2010-10",
+      "date": "2010-10-01",
+      "import_volume_kbd": 3870.2,
+      "import_volume_mbd": 3.87,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2010-11",
+      "date": "2010-11-01",
+      "import_volume_kbd": 5102.0,
+      "import_volume_mbd": 5.102,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2010-12",
+      "date": "2010-12-01",
+      "import_volume_kbd": 4925.7,
+      "import_volume_mbd": 4.926,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2011-01",
+      "date": "2011-01-01",
+      "import_volume_kbd": 5147.6,
+      "import_volume_mbd": 5.148,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2011-02",
+      "date": "2011-02-01",
+      "import_volume_kbd": 5215.5,
+      "import_volume_mbd": 5.215,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2011-03",
+      "date": "2011-03-01",
+      "import_volume_kbd": 5116.9,
+      "import_volume_mbd": 5.117,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2011-04",
+      "date": "2011-04-01",
+      "import_volume_kbd": 5255.8,
+      "import_volume_mbd": 5.256,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2011-05",
+      "date": "2011-05-01",
+      "import_volume_kbd": 5088.6,
+      "import_volume_mbd": 5.089,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2011-06",
+      "date": "2011-06-01",
+      "import_volume_kbd": 4806.8,
+      "import_volume_mbd": 4.807,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2011-07",
+      "date": "2011-07-01",
+      "import_volume_kbd": 4588.0,
+      "import_volume_mbd": 4.588,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2011-08",
+      "date": "2011-08-01",
+      "import_volume_kbd": 4968.2,
+      "import_volume_mbd": 4.968,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2011-09",
+      "date": "2011-09-01",
+      "import_volume_kbd": 4989.8,
+      "import_volume_mbd": 4.99,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2011-10",
+      "date": "2011-10-01",
+      "import_volume_kbd": 4911.5,
+      "import_volume_mbd": 4.911,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2011-11",
+      "date": "2011-11-01",
+      "import_volume_kbd": 5536.4,
+      "import_volume_mbd": 5.536,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2011-12",
+      "date": "2011-12-01",
+      "import_volume_kbd": 5175.9,
+      "import_volume_mbd": 5.176,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2012-01",
+      "date": "2012-01-01",
+      "import_volume_kbd": 5527.8,
+      "import_volume_mbd": 5.528,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2012-02",
+      "date": "2012-02-01",
+      "import_volume_kbd": 5967.1,
+      "import_volume_mbd": 5.967,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2012-03",
+      "date": "2012-03-01",
+      "import_volume_kbd": 5560.8,
+      "import_volume_mbd": 5.561,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2012-04",
+      "date": "2012-04-01",
+      "import_volume_kbd": 5431.4,
+      "import_volume_mbd": 5.431,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2012-05",
+      "date": "2012-05-01",
+      "import_volume_kbd": 6016.6,
+      "import_volume_mbd": 6.017,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2012-06",
+      "date": "2012-06-01",
+      "import_volume_kbd": 5299.7,
+      "import_volume_mbd": 5.3,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2012-07",
+      "date": "2012-07-01",
+      "import_volume_kbd": 5154.7,
+      "import_volume_mbd": 5.155,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2012-08",
+      "date": "2012-08-01",
+      "import_volume_kbd": 4344.8,
+      "import_volume_mbd": 4.345,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2012-09",
+      "date": "2012-09-01",
+      "import_volume_kbd": 4899.5,
+      "import_volume_mbd": 4.9,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2012-10",
+      "date": "2012-10-01",
+      "import_volume_kbd": 5591.5,
+      "import_volume_mbd": 5.592,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2012-11",
+      "date": "2012-11-01",
+      "import_volume_kbd": 5702.3,
+      "import_volume_mbd": 5.702,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2012-12",
+      "date": "2012-12-01",
+      "import_volume_kbd": 5589.2,
+      "import_volume_mbd": 5.589,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2013-01",
+      "date": "2013-01-01",
+      "import_volume_kbd": 5938.6,
+      "import_volume_mbd": 5.939,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2013-02",
+      "date": "2013-02-01",
+      "import_volume_kbd": 5432.5,
+      "import_volume_mbd": 5.432,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2013-03",
+      "date": "2013-03-01",
+      "import_volume_kbd": 5442.8,
+      "import_volume_mbd": 5.443,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2013-04",
+      "date": "2013-04-01",
+      "import_volume_kbd": 5631.5,
+      "import_volume_mbd": 5.632,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2013-05",
+      "date": "2013-05-01",
+      "import_volume_kbd": 5655.3,
+      "import_volume_mbd": 5.655,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2013-06",
+      "date": "2013-06-01",
+      "import_volume_kbd": 5409.5,
+      "import_volume_mbd": 5.409,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2013-07",
+      "date": "2013-07-01",
+      "import_volume_kbd": 6165.3,
+      "import_volume_mbd": 6.165,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2013-08",
+      "date": "2013-08-01",
+      "import_volume_kbd": 5060.2,
+      "import_volume_mbd": 5.06,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2013-09",
+      "date": "2013-09-01",
+      "import_volume_kbd": 6265.9,
+      "import_volume_mbd": 6.266,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2013-10",
+      "date": "2013-10-01",
+      "import_volume_kbd": 4819.4,
+      "import_volume_mbd": 4.819,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2013-11",
+      "date": "2013-11-01",
+      "import_volume_kbd": 5748.6,
+      "import_volume_mbd": 5.749,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2013-12",
+      "date": "2013-12-01",
+      "import_volume_kbd": 6323.5,
+      "import_volume_mbd": 6.324,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2014-01",
+      "date": "2014-01-01",
+      "import_volume_kbd": 6647.0,
+      "import_volume_mbd": 6.647,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2014-02",
+      "date": "2014-02-01",
+      "import_volume_kbd": 6025.9,
+      "import_volume_mbd": 6.026,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2014-03",
+      "date": "2014-03-01",
+      "import_volume_kbd": 5553.8,
+      "import_volume_mbd": 5.554,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2014-04",
+      "date": "2014-04-01",
+      "import_volume_kbd": 6802.7,
+      "import_volume_mbd": 6.803,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2014-05",
+      "date": "2014-05-01",
+      "import_volume_kbd": 6158.2,
+      "import_volume_mbd": 6.158,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2014-06",
+      "date": "2014-06-01",
+      "import_volume_kbd": 5680.3,
+      "import_volume_mbd": 5.68,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2014-07",
+      "date": "2014-07-01",
+      "import_volume_kbd": 5610.4,
+      "import_volume_mbd": 5.61,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2014-08",
+      "date": "2014-08-01",
+      "import_volume_kbd": 5948.1,
+      "import_volume_mbd": 5.948,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2014-09",
+      "date": "2014-09-01",
+      "import_volume_kbd": 6729.5,
+      "import_volume_mbd": 6.73,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2014-10",
+      "date": "2014-10-01",
+      "import_volume_kbd": 5688.3,
+      "import_volume_mbd": 5.688,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2014-11",
+      "date": "2014-11-01",
+      "import_volume_kbd": 6200.0,
+      "import_volume_mbd": 6.2,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2014-12",
+      "date": "2014-12-01",
+      "import_volume_kbd": 7171.2,
+      "import_volume_mbd": 7.171,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2015-01",
+      "date": "2015-01-01",
+      "import_volume_kbd": 6641.4,
+      "import_volume_mbd": 6.641,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2015-02",
+      "date": "2015-02-01",
+      "import_volume_kbd": 6641.3,
+      "import_volume_mbd": 6.641,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2015-03",
+      "date": "2015-03-01",
+      "import_volume_kbd": 6330.6,
+      "import_volume_mbd": 6.331,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2015-04",
+      "date": "2015-04-01",
+      "import_volume_kbd": 7390.8,
+      "import_volume_mbd": 7.391,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2015-05",
+      "date": "2015-05-01",
+      "import_volume_kbd": 5487.6,
+      "import_volume_mbd": 5.488,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2015-06",
+      "date": "2015-06-01",
+      "import_volume_kbd": 7195.6,
+      "import_volume_mbd": 7.196,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2015-07",
+      "date": "2015-07-01",
+      "import_volume_kbd": 7251.5,
+      "import_volume_mbd": 7.252,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2015-08",
+      "date": "2015-08-01",
+      "import_volume_kbd": 6278.7,
+      "import_volume_mbd": 6.279,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2015-09",
+      "date": "2015-09-01",
+      "import_volume_kbd": 6819.8,
+      "import_volume_mbd": 6.82,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2015-10",
+      "date": "2015-10-01",
+      "import_volume_kbd": 6222.0,
+      "import_volume_mbd": 6.222,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2015-11",
+      "date": "2015-11-01",
+      "import_volume_kbd": 6671.0,
+      "import_volume_mbd": 6.671,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2015-12",
+      "date": "2015-12-01",
+      "import_volume_kbd": 7837.1,
+      "import_volume_mbd": 7.837,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2016-01",
+      "date": "2016-01-01",
+      "import_volume_kbd": 7135.8,
+      "import_volume_mbd": 7.136,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2016-02",
+      "date": "2016-02-01",
+      "import_volume_kbd": 7135.7,
+      "import_volume_mbd": 7.136,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2016-03",
+      "date": "2016-03-01",
+      "import_volume_kbd": 7700.2,
+      "import_volume_mbd": 7.7,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2016-04",
+      "date": "2016-04-01",
+      "import_volume_kbd": 7949.5,
+      "import_volume_mbd": 7.95,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2016-05",
+      "date": "2016-05-01",
+      "import_volume_kbd": 7612.8,
+      "import_volume_mbd": 7.613,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2016-06",
+      "date": "2016-06-01",
+      "import_volume_kbd": 7471.3,
+      "import_volume_mbd": 7.471,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2016-07",
+      "date": "2016-07-01",
+      "import_volume_kbd": 7336.5,
+      "import_volume_mbd": 7.337,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2016-08",
+      "date": "2016-08-01",
+      "import_volume_kbd": 7756.8,
+      "import_volume_mbd": 7.757,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2016-09",
+      "date": "2016-09-01",
+      "import_volume_kbd": 8066.6,
+      "import_volume_mbd": 8.067,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2016-10",
+      "date": "2016-10-01",
+      "import_volume_kbd": 6798.2,
+      "import_volume_mbd": 6.798,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2016-11",
+      "date": "2016-11-01",
+      "import_volume_kbd": 7893.4,
+      "import_volume_mbd": 7.893,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2016-12",
+      "date": "2016-12-01",
+      "import_volume_kbd": 8590.4,
+      "import_volume_mbd": 8.59,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2017-01",
+      "date": "2017-01-01",
+      "import_volume_kbd": 8161.1,
+      "import_volume_mbd": 8.161,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2017-02",
+      "date": "2017-02-01",
+      "import_volume_kbd": 8161.3,
+      "import_volume_mbd": 8.161,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2017-03",
+      "date": "2017-03-01",
+      "import_volume_kbd": 9197.2,
+      "import_volume_mbd": 9.197,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2017-04",
+      "date": "2017-04-01",
+      "import_volume_kbd": 8391.2,
+      "import_volume_mbd": 8.391,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2017-05",
+      "date": "2017-05-01",
+      "import_volume_kbd": 8784.0,
+      "import_volume_mbd": 8.784,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2017-06",
+      "date": "2017-06-01",
+      "import_volume_kbd": 8810.8,
+      "import_volume_mbd": 8.811,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2017-07",
+      "date": "2017-07-01",
+      "import_volume_kbd": 8203.1,
+      "import_volume_mbd": 8.203,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2017-08",
+      "date": "2017-08-01",
+      "import_volume_kbd": 8023.7,
+      "import_volume_mbd": 8.024,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2017-09",
+      "date": "2017-09-01",
+      "import_volume_kbd": 9030.4,
+      "import_volume_mbd": 9.03,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2017-10",
+      "date": "2017-10-01",
+      "import_volume_kbd": 7327.1,
+      "import_volume_mbd": 7.327,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2017-11",
+      "date": "2017-11-01",
+      "import_volume_kbd": 9037.8,
+      "import_volume_mbd": 9.038,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2017-12",
+      "date": "2017-12-01",
+      "import_volume_kbd": 7957.5,
+      "import_volume_mbd": 7.958,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2018-01",
+      "date": "2018-01-01",
+      "import_volume_kbd": 9044.5,
+      "import_volume_mbd": 9.044,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2018-02",
+      "date": "2018-02-01",
+      "import_volume_kbd": 9044.6,
+      "import_volume_mbd": 9.045,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2018-03",
+      "date": "2018-03-01",
+      "import_volume_kbd": 9249.2,
+      "import_volume_mbd": 9.249,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2018-04",
+      "date": "2018-04-01",
+      "import_volume_kbd": 9628.2,
+      "import_volume_mbd": 9.628,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2018-05",
+      "date": "2018-05-01",
+      "import_volume_kbd": 9220.8,
+      "import_volume_mbd": 9.221,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2018-06",
+      "date": "2018-06-01",
+      "import_volume_kbd": 8381.4,
+      "import_volume_mbd": 8.381,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2018-07",
+      "date": "2018-07-01",
+      "import_volume_kbd": 8505.4,
+      "import_volume_mbd": 8.505,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2018-08",
+      "date": "2018-08-01",
+      "import_volume_kbd": 9062.6,
+      "import_volume_mbd": 9.063,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2018-09",
+      "date": "2018-09-01",
+      "import_volume_kbd": 9079.2,
+      "import_volume_mbd": 9.079,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2018-10",
+      "date": "2018-10-01",
+      "import_volume_kbd": 9180.7,
+      "import_volume_mbd": 9.181,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2018-11",
+      "date": "2018-11-01",
+      "import_volume_kbd": 10460.3,
+      "import_volume_mbd": 10.46,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2018-12",
+      "date": "2018-12-01",
+      "import_volume_kbd": 10337.7,
+      "import_volume_mbd": 10.338,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2019-01",
+      "date": "2019-01-01",
+      "import_volume_kbd": 10228.2,
+      "import_volume_mbd": 10.228,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2019-02",
+      "date": "2019-02-01",
+      "import_volume_kbd": 10066.0,
+      "import_volume_mbd": 10.066,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2019-03",
+      "date": "2019-03-01",
+      "import_volume_kbd": 9289.3,
+      "import_volume_mbd": 9.289,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2019-04",
+      "date": "2019-04-01",
+      "import_volume_kbd": 10670.1,
+      "import_volume_mbd": 10.67,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2019-05",
+      "date": "2019-05-01",
+      "import_volume_kbd": 9499.5,
+      "import_volume_mbd": 9.499,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2019-06",
+      "date": "2019-06-01",
+      "import_volume_kbd": 9657.5,
+      "import_volume_mbd": 9.658,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2019-07",
+      "date": "2019-07-01",
+      "import_volume_kbd": 9690.7,
+      "import_volume_mbd": 9.691,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2019-08",
+      "date": "2019-08-01",
+      "import_volume_kbd": 9957.6,
+      "import_volume_mbd": 9.958,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2019-09",
+      "date": "2019-09-01",
+      "import_volume_kbd": 10062.6,
+      "import_volume_mbd": 10.063,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2019-10",
+      "date": "2019-10-01",
+      "import_volume_kbd": 10746.2,
+      "import_volume_mbd": 10.746,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2019-11",
+      "date": "2019-11-01",
+      "import_volume_kbd": 11160.6,
+      "import_volume_mbd": 11.161,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2019-12",
+      "date": "2019-12-01",
+      "import_volume_kbd": 10739.1,
+      "import_volume_mbd": 10.739,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2020-01",
+      "date": "2020-01-01",
+      "import_volume_kbd": 10420.4,
+      "import_volume_mbd": 10.42,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2020-02",
+      "date": "2020-02-01",
+      "import_volume_kbd": 10591.3,
+      "import_volume_mbd": 10.591,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2020-03",
+      "date": "2020-03-01",
+      "import_volume_kbd": 9704.9,
+      "import_volume_mbd": 9.705,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2020-04",
+      "date": "2020-04-01",
+      "import_volume_kbd": 9864.9,
+      "import_volume_mbd": 9.865,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2020-05",
+      "date": "2020-05-01",
+      "import_volume_kbd": 11327.1,
+      "import_volume_mbd": 11.327,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2020-06",
+      "date": "2020-06-01",
+      "import_volume_kbd": 12975.9,
+      "import_volume_mbd": 12.976,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2020-07",
+      "date": "2020-07-01",
+      "import_volume_kbd": 12111.1,
+      "import_volume_mbd": 12.111,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2020-08",
+      "date": "2020-08-01",
+      "import_volume_kbd": 11211.4,
+      "import_volume_mbd": 11.211,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2020-09",
+      "date": "2020-09-01",
+      "import_volume_kbd": 11829.6,
+      "import_volume_mbd": 11.83,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2020-10",
+      "date": "2020-10-01",
+      "import_volume_kbd": 10049.7,
+      "import_volume_mbd": 10.05,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2020-11",
+      "date": "2020-11-01",
+      "import_volume_kbd": 11067.8,
+      "import_volume_mbd": 11.068,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2020-12",
+      "date": "2020-12-01",
+      "import_volume_kbd": 9083.9,
+      "import_volume_mbd": 9.084,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2021-01",
+      "date": "2021-01-01",
+      "import_volume_kbd": 10731.8,
+      "import_volume_mbd": 10.732,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2021-02",
+      "date": "2021-02-01",
+      "import_volume_kbd": 11534.5,
+      "import_volume_mbd": 11.534,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2021-03",
+      "date": "2021-03-01",
+      "import_volume_kbd": 11725.9,
+      "import_volume_mbd": 11.726,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2021-04",
+      "date": "2021-04-01",
+      "import_volume_kbd": 9847.8,
+      "import_volume_mbd": 9.848,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2021-05",
+      "date": "2021-05-01",
+      "import_volume_kbd": 9673.7,
+      "import_volume_mbd": 9.674,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2021-06",
+      "date": "2021-06-01",
+      "import_volume_kbd": 9792.9,
+      "import_volume_mbd": 9.793,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2021-07",
+      "date": "2021-07-01",
+      "import_volume_kbd": 9738.0,
+      "import_volume_mbd": 9.738,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2021-08",
+      "date": "2021-08-01",
+      "import_volume_kbd": 10514.8,
+      "import_volume_mbd": 10.515,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2021-09",
+      "date": "2021-09-01",
+      "import_volume_kbd": 10016.2,
+      "import_volume_mbd": 10.016,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2021-10",
+      "date": "2021-10-01",
+      "import_volume_kbd": 8925.7,
+      "import_volume_mbd": 8.926,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2021-11",
+      "date": "2021-11-01",
+      "import_volume_kbd": 10196.8,
+      "import_volume_mbd": 10.197,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2021-12",
+      "date": "2021-12-01",
+      "import_volume_kbd": 10895.0,
+      "import_volume_mbd": 10.895,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2022-01",
+      "date": "2022-01-01",
+      "import_volume_kbd": 10015.2,
+      "import_volume_mbd": 10.015,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2022-02",
+      "date": "2022-02-01",
+      "import_volume_kbd": 11169.8,
+      "import_volume_mbd": 11.17,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2022-03",
+      "date": "2022-03-01",
+      "import_volume_kbd": 10085.1,
+      "import_volume_mbd": 10.085,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2022-04",
+      "date": "2022-04-01",
+      "import_volume_kbd": 10499.3,
+      "import_volume_mbd": 10.499,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2022-05",
+      "date": "2022-05-01",
+      "import_volume_kbd": 10819.4,
+      "import_volume_mbd": 10.819,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2022-06",
+      "date": "2022-06-01",
+      "import_volume_kbd": 8739.8,
+      "import_volume_mbd": 8.74,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2022-07",
+      "date": "2022-07-01",
+      "import_volume_kbd": 8814.2,
+      "import_volume_mbd": 8.814,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2022-08",
+      "date": "2022-08-01",
+      "import_volume_kbd": 9528.8,
+      "import_volume_mbd": 9.529,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2022-09",
+      "date": "2022-09-01",
+      "import_volume_kbd": 9819.0,
+      "import_volume_mbd": 9.819,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2022-10",
+      "date": "2022-10-01",
+      "import_volume_kbd": 10186.6,
+      "import_volume_mbd": 10.187,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2022-11",
+      "date": "2022-11-01",
+      "import_volume_kbd": 11404.6,
+      "import_volume_mbd": 11.405,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2022-12",
+      "date": "2022-12-01",
+      "import_volume_kbd": 11349.5,
+      "import_volume_mbd": 11.35,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
       "period": "2023-01",
-      "import_million_tonnes": 43.314,
-      "import_mbd": 10.242,
-      "trade_value_billion_usd": 25.952,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": null,
-      "year_on_year_percent": null,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
+      "date": "2023-01-01",
+      "import_volume_kbd": 9928.0,
+      "import_volume_mbd": 9.928,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
+    },
+    {
+      "period": "2023-02",
+      "date": "2023-02-01",
+      "import_volume_kbd": 10985.0,
+      "import_volume_mbd": 10.985,
+      "assessment_code": "1",
+      "assessment_label": "reasonable comparability"
     },
     {
       "period": "2023-03",
-      "import_million_tonnes": 52.298,
-      "import_mbd": 12.366,
-      "trade_value_billion_usd": 30.491,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": null,
-      "year_on_year_percent": null,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
+      "date": "2023-03-01",
+      "import_volume_kbd": 12351.4,
+      "import_volume_mbd": 12.351,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2023-04",
-      "import_million_tonnes": 42.212,
-      "import_mbd": 10.314,
-      "trade_value_billion_usd": 24.476,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": -19.29,
-      "year_on_year_percent": null,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
+      "date": "2023-04-01",
+      "import_volume_kbd": 10347.3,
+      "import_volume_mbd": 10.347,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2023-05",
-      "import_million_tonnes": 51.438,
-      "import_mbd": 12.163,
-      "trade_value_billion_usd": 30.387,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": 21.86,
-      "year_on_year_percent": null,
-      "rolling_3m_average_mbd": 11.614,
-      "rolling_12m_average_mbd": null
+      "date": "2023-05-01",
+      "import_volume_kbd": 12147.4,
+      "import_volume_mbd": 12.147,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2023-06",
+      "date": "2023-06-01",
+      "import_volume_kbd": 12703.1,
+      "import_volume_mbd": 12.703,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2023-07",
-      "import_million_tonnes": 43.677,
-      "import_mbd": 10.327,
-      "trade_value_billion_usd": 24.18,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": null,
-      "year_on_year_percent": null,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
+      "date": "2023-07-01",
+      "import_volume_kbd": 10315.5,
+      "import_volume_mbd": 10.316,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2023-08",
+      "date": "2023-08-01",
+      "import_volume_kbd": 12468.6,
+      "import_volume_mbd": 12.469,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2023-09",
+      "date": "2023-09-01",
+      "import_volume_kbd": 11160.6,
+      "import_volume_mbd": 11.161,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2023-10",
-      "import_million_tonnes": 48.957,
-      "import_mbd": 11.576,
-      "trade_value_billion_usd": 32.5,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": null,
-      "year_on_year_percent": null,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
+      "date": "2023-10-01",
+      "import_volume_kbd": 11563.0,
+      "import_volume_mbd": 11.563,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2023-11",
+      "date": "2023-11-01",
+      "import_volume_kbd": 10356.6,
+      "import_volume_mbd": 10.357,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2023-12",
-      "import_million_tonnes": 48.364,
-      "import_mbd": 11.436,
-      "trade_value_billion_usd": 29.392,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": null,
-      "year_on_year_percent": null,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
+      "date": "2023-12-01",
+      "import_volume_kbd": 11419.4,
+      "import_volume_mbd": 11.419,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2024-01",
-      "import_million_tonnes": 44.166,
-      "import_mbd": 10.443,
-      "trade_value_billion_usd": 25.879,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": -8.68,
-      "year_on_year_percent": 1.97,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
+      "date": "2024-01-01",
+      "import_volume_kbd": 11095.7,
+      "import_volume_mbd": 11.096,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2024-02",
-      "import_million_tonnes": 44.138,
-      "import_mbd": 11.156,
-      "trade_value_billion_usd": 26.077,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": -0.06,
-      "year_on_year_percent": null,
-      "rolling_3m_average_mbd": 11.012,
-      "rolling_12m_average_mbd": null
+      "date": "2024-02-01",
+      "import_volume_kbd": 10429.2,
+      "import_volume_mbd": 10.429,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2024-03",
+      "date": "2024-03-01",
+      "import_volume_kbd": 11582.6,
+      "import_volume_mbd": 11.583,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2024-04",
-      "import_million_tonnes": 44.712,
-      "import_mbd": 10.925,
-      "trade_value_billion_usd": 28.027,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": null,
-      "year_on_year_percent": 5.92,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
+      "date": "2024-04-01",
+      "import_volume_kbd": 10911.4,
+      "import_volume_mbd": 10.911,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2024-05",
-      "import_million_tonnes": 46.96,
-      "import_mbd": 11.104,
-      "trade_value_billion_usd": 29.745,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": 5.03,
-      "year_on_year_percent": -8.71,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
+      "date": "2024-05-01",
+      "import_volume_kbd": 11090.3,
+      "import_volume_mbd": 11.09,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2024-06",
-      "import_million_tonnes": 46.448,
-      "import_mbd": 11.349,
-      "trade_value_billion_usd": 28.469,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": -1.09,
-      "year_on_year_percent": null,
-      "rolling_3m_average_mbd": 11.126,
-      "rolling_12m_average_mbd": null
+      "date": "2024-06-01",
+      "import_volume_kbd": 11334.5,
+      "import_volume_mbd": 11.335,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2024-07",
+      "date": "2024-07-01",
+      "import_volume_kbd": 9997.2,
+      "import_volume_mbd": 9.997,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2024-08",
-      "import_million_tonnes": 49.089,
-      "import_mbd": 11.607,
-      "trade_value_billion_usd": 29.37,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": null,
-      "year_on_year_percent": null,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
+      "date": "2024-08-01",
+      "import_volume_kbd": 11594.6,
+      "import_volume_mbd": 11.595,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2024-09",
+      "date": "2024-09-01",
+      "import_volume_kbd": 11099.1,
+      "import_volume_mbd": 11.099,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2024-10",
-      "import_million_tonnes": 44.686,
-      "import_mbd": 10.566,
-      "trade_value_billion_usd": 24.348,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": null,
-      "year_on_year_percent": -8.72,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
+      "date": "2024-10-01",
+      "import_volume_kbd": 10554.0,
+      "import_volume_mbd": 10.554,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     },
     {
       "period": "2024-11",
-      "import_million_tonnes": 48.504,
-      "import_mbd": 11.851,
-      "trade_value_billion_usd": 26.406,
-      "status": "reported",
-      "source": "UN Comtrade; reporter China; partner World",
-      "reporter_code": "156",
-      "partner_code": "0",
-      "flow_code": "M",
-      "commodity_code": "2709",
-      "commodity_description": "Crude petroleum oils",
-      "month_on_month_percent": 8.54,
-      "year_on_year_percent": null,
-      "rolling_3m_average_mbd": null,
-      "rolling_12m_average_mbd": null
+      "date": "2024-11-01",
+      "import_volume_kbd": 11839.1,
+      "import_volume_mbd": 11.839,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2024-12",
+      "date": "2024-12-01",
+      "import_volume_kbd": 11296.6,
+      "import_volume_mbd": 11.297,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2025-01",
+      "date": "2025-01-01",
+      "import_volume_kbd": 10380.9,
+      "import_volume_mbd": 10.381,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2025-02",
+      "date": "2025-02-01",
+      "import_volume_kbd": 10428.9,
+      "import_volume_mbd": 10.429,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2025-03",
+      "date": "2025-03-01",
+      "import_volume_kbd": 12074.0,
+      "import_volume_mbd": 12.074,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2025-04",
+      "date": "2025-04-01",
+      "import_volume_kbd": 11724.4,
+      "import_volume_mbd": 11.724,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2025-05",
+      "date": "2025-05-01",
+      "import_volume_kbd": 11003.6,
+      "import_volume_mbd": 11.004,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2025-06",
+      "date": "2025-06-01",
+      "import_volume_kbd": 12171.5,
+      "import_volume_mbd": 12.171,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2025-07",
+      "date": "2025-07-01",
+      "import_volume_kbd": 11145.5,
+      "import_volume_mbd": 11.146,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2025-08",
+      "date": "2025-08-01",
+      "import_volume_kbd": 11686.5,
+      "import_volume_mbd": 11.686,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2025-09",
+      "date": "2025-09-01",
+      "import_volume_kbd": 11447.0,
+      "import_volume_mbd": 11.447,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2025-10",
+      "date": "2025-10-01",
+      "import_volume_kbd": 11418.5,
+      "import_volume_mbd": 11.418,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2025-11",
+      "date": "2025-11-01",
+      "import_volume_kbd": 12417.4,
+      "import_volume_mbd": 12.417,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2025-12",
+      "date": "2025-12-01",
+      "import_volume_kbd": 13214.5,
+      "import_volume_mbd": 13.214,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2026-01",
+      "date": "2026-01-01",
+      "import_volume_kbd": 12010.9,
+      "import_volume_mbd": 12.011,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2026-02",
+      "date": "2026-02-01",
+      "import_volume_kbd": 12043.5,
+      "import_volume_mbd": 12.043,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2026-03",
+      "date": "2026-03-01",
+      "import_volume_kbd": 11802.2,
+      "import_volume_mbd": 11.802,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
+    },
+    {
+      "period": "2026-04",
+      "date": "2026-04-01",
+      "import_volume_kbd": 9386.9,
+      "import_volume_mbd": 9.387,
+      "assessment_code": "3",
+      "assessment_label": "not assessed"
     }
   ]
 }
