@@ -5,7 +5,11 @@ EIA STEO-alapú globális olajpiaci fizikai mérleg.
 Kimenet:
     docs/data/global_oil_balance.json
 
-A mérleg definíciója:
+A fő dashboardérték mindig az aktuális naptári hónaphoz tartozó STEO-adat.
+A teljes idősor ettől függetlenül tartalmazza a történeti és előrejelzési
+hónapokat is.
+
+Mérleg:
     balance_mbd = global_supply_mbd - global_demand_mbd
 
 Pozitív érték: kínálati többlet.
@@ -39,7 +43,7 @@ SERIES_NAMES = {
 
 REQUEST_HEADERS = {
     "User-Agent": (
-        "energy-data-dashboard/2.0 "
+        "energy-data-dashboard/2.1 "
         "(https://github.com/mikloshetzer-sketch/energy-data)"
     )
 }
@@ -53,6 +57,10 @@ def iso_utc(value: datetime) -> str:
     return value.isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
+def current_month(value: datetime) -> str:
+    return value.strftime("%Y-%m")
+
+
 def save_json_atomic(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
@@ -64,7 +72,7 @@ def save_json_atomic(path: Path, payload: dict[str, Any]) -> None:
     temporary.replace(path)
 
 
-def request_steo_series(series_id: str, length: int = 48) -> list[dict[str, Any]]:
+def request_steo_series(series_id: str, length: int = 60) -> list[dict[str, Any]]:
     if not EIA_API_KEY:
         raise RuntimeError("Hiányzik az EIA_API_KEY GitHub secret.")
 
@@ -138,43 +146,57 @@ def classify_balance(balance: float) -> tuple[str, str, str]:
     return "surplus_high", "Jelentős többlet", "Material surplus"
 
 
-def build_summary_hu(period: str, supply: float, demand: float, balance: float) -> str:
+def build_summary_hu(label: str, row: dict[str, Any]) -> str:
+    supply = row["global_supply_mbd"]
+    demand = row["global_demand_mbd"]
+    balance = row["balance_mbd"]
+    period = row["period"]
+
     if balance < 0:
         return (
             f"Az EIA STEO {period} időszakra {supply:.2f} millió hordó/nap "
             f"globális folyékonyüzemanyag-kínálatot és {demand:.2f} millió "
-            f"hordó/nap fogyasztást jelez. A fizikai mérleg {balance:.2f} "
-            "millió hordó/nap, ami hiányt és készletlehívási igényt jelezhet."
+            f"hordó/nap fogyasztást jelez. A {label} fizikai mérleg "
+            f"{balance:.2f} millió hordó/nap, ami hiányt és készletlehívási "
+            "igényt jelezhet."
         )
 
     return (
         f"Az EIA STEO {period} időszakra {supply:.2f} millió hordó/nap "
         f"globális folyékonyüzemanyag-kínálatot és {demand:.2f} millió "
-        f"hordó/nap fogyasztást jelez. A fizikai mérleg +{balance:.2f} "
-        "millió hordó/nap, ami kínálati többletet és készletépítési "
-        "lehetőséget jelezhet."
+        f"hordó/nap fogyasztást jelez. A {label} fizikai mérleg "
+        f"+{balance:.2f} millió hordó/nap, ami kínálati többletet és "
+        "készletépítési lehetőséget jelezhet."
     )
 
 
-def build_summary_en(period: str, supply: float, demand: float, balance: float) -> str:
+def build_summary_en(label: str, row: dict[str, Any]) -> str:
+    supply = row["global_supply_mbd"]
+    demand = row["global_demand_mbd"]
+    balance = row["balance_mbd"]
+    period = row["period"]
+
     if balance < 0:
         return (
             f"For {period}, the EIA STEO indicates global liquid-fuels supply "
             f"of {supply:.2f} million barrels per day and consumption of "
-            f"{demand:.2f} million barrels per day. The physical balance is "
-            f"{balance:.2f} mb/d, indicating a deficit and potential inventory draw."
+            f"{demand:.2f} million barrels per day. The {label} physical "
+            f"balance is {balance:.2f} mb/d, indicating a deficit and "
+            "potential inventory draw."
         )
 
     return (
         f"For {period}, the EIA STEO indicates global liquid-fuels supply "
         f"of {supply:.2f} million barrels per day and consumption of "
-        f"{demand:.2f} million barrels per day. The physical balance is "
-        f"+{balance:.2f} mb/d, indicating a surplus and potential inventory build."
+        f"{demand:.2f} million barrels per day. The {label} physical "
+        f"balance is +{balance:.2f} mb/d, indicating a surplus and "
+        "potential inventory build."
     )
 
 
 def main() -> None:
     generated_at = utc_now()
+    current_period = current_month(generated_at)
 
     supply_rows = request_steo_series(SUPPLY_SERIES_ID)
     demand_rows = request_steo_series(DEMAND_SERIES_ID)
@@ -196,9 +218,17 @@ def main() -> None:
         balance = round(supply - demand, 4)
         state, state_hu, state_en = classify_balance(balance)
 
+        if period < current_period:
+            period_type = "historical_or_estimate"
+        elif period == current_period:
+            period_type = "current_month_estimate"
+        else:
+            period_type = "forecast"
+
         series.append(
             {
                 "period": period,
+                "period_type": period_type,
                 "global_supply_mbd": round(supply, 3),
                 "global_demand_mbd": round(demand, 3),
                 "balance_mbd": round(balance, 3),
@@ -208,19 +238,40 @@ def main() -> None:
             }
         )
 
-    latest = series[-1]
+    series_by_period = {row["period"]: row for row in series}
+
+    if current_period in series_by_period:
+        current = series_by_period[current_period]
+        current_selection_method = "exact_current_month"
+    else:
+        non_future_rows = [row for row in series if row["period"] <= current_period]
+
+        if not non_future_rows:
+            raise RuntimeError(
+                "Nincs az aktuális hónaphoz vagy azt megelőző időszakhoz "
+                "tartozó közös EIA STEO adat."
+            )
+
+        current = non_future_rows[-1]
+        current_selection_method = "latest_available_not_after_current_month"
+
+    forecast_rows = [row for row in series if row["period"] > current["period"]]
+    latest_forecast = forecast_rows[-1] if forecast_rows else None
+    next_month_forecast = forecast_rows[0] if forecast_rows else None
 
     output = {
         "meta": {
             "generated_at": iso_utc(generated_at),
             "generator": "scripts/update_global_oil_balance.py",
-            "generator_version": "1.0.0",
+            "generator_version": "1.1.0",
             "source": "U.S. Energy Information Administration (EIA), STEO",
             "source_url": "https://api.eia.gov/v2/steo/data/",
             "frequency": "monthly",
             "unit": "million barrels per day",
             "is_forecast_series": True,
-            "method_version": "physical_balance_v1",
+            "method_version": "physical_balance_v2_current_period",
+            "requested_current_period": current_period,
+            "current_selection_method": current_selection_method,
         },
         "series_definition": {
             "supply": {
@@ -237,25 +288,44 @@ def main() -> None:
                 "negative": "deficit / potential inventory draw",
             },
         },
-        "latest": latest,
-        "period": latest["period"],
-        "global_supply_mbd": latest["global_supply_mbd"],
-        "global_demand_mbd": latest["global_demand_mbd"],
-        "balance_mbd": latest["balance_mbd"],
-        "balance_state": latest["balance_state"],
-        "balance_state_hu": latest["balance_state_hu"],
-        "balance_state_en": latest["balance_state_en"],
-        "summary_hu": build_summary_hu(
-            latest["period"],
-            latest["global_supply_mbd"],
-            latest["global_demand_mbd"],
-            latest["balance_mbd"],
+
+        # Elsődleges, jelenlegi dashboardérték.
+        "current": current,
+        "current_period": current["period"],
+        "current_global_supply_mbd": current["global_supply_mbd"],
+        "current_global_demand_mbd": current["global_demand_mbd"],
+        "current_balance_mbd": current["balance_mbd"],
+        "current_balance_state": current["balance_state"],
+
+        # Előrejelzési referencia.
+        "next_month_forecast": next_month_forecast,
+        "latest_forecast": latest_forecast,
+        "forecast_until": (
+            latest_forecast["period"] if latest_forecast is not None else None
         ),
-        "summary_en": build_summary_en(
-            latest["period"],
-            latest["global_supply_mbd"],
-            latest["global_demand_mbd"],
-            latest["balance_mbd"],
+
+        # Visszafelé kompatibilis fő mezők. Ezek most már a jelenlegi hónapot
+        # jelentik, nem az idősor utolsó, távoli előrejelzési hónapját.
+        "latest": current,
+        "period": current["period"],
+        "global_supply_mbd": current["global_supply_mbd"],
+        "global_demand_mbd": current["global_demand_mbd"],
+        "balance_mbd": current["balance_mbd"],
+        "balance_state": current["balance_state"],
+        "balance_state_hu": current["balance_state_hu"],
+        "balance_state_en": current["balance_state_en"],
+
+        "summary_hu": build_summary_hu("jelenlegi havi", current),
+        "summary_en": build_summary_en("current-month", current),
+        "forecast_summary_hu": (
+            build_summary_hu("előrejelzési", latest_forecast)
+            if latest_forecast is not None
+            else None
+        ),
+        "forecast_summary_en": (
+            build_summary_en("forecast", latest_forecast)
+            if latest_forecast is not None
+            else None
         ),
         "series": series,
     }
@@ -264,10 +334,17 @@ def main() -> None:
 
     print(f"{OUTPUT_FILE.relative_to(ROOT)} frissítve.")
     print(
-        f"{latest['period']}: supply={latest['global_supply_mbd']:.3f}, "
-        f"demand={latest['global_demand_mbd']:.3f}, "
-        f"balance={latest['balance_mbd']:+.3f} mb/d"
+        f"Current period: {current['period']} | "
+        f"supply={current['global_supply_mbd']:.3f}, "
+        f"demand={current['global_demand_mbd']:.3f}, "
+        f"balance={current['balance_mbd']:+.3f} mb/d"
     )
+
+    if latest_forecast is not None:
+        print(
+            f"Forecast horizon: {latest_forecast['period']} | "
+            f"balance={latest_forecast['balance_mbd']:+.3f} mb/d"
+        )
 
 
 if __name__ == "__main__":
