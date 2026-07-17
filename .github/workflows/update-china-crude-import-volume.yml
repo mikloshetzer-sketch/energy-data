@@ -25,24 +25,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Show repository information
-        run: |
-          echo "Repository: $GITHUB_REPOSITORY"
-          echo "Ref: $GITHUB_REF"
-          echo "Branch: ${GITHUB_REF_NAME}"
-          echo "Event: $GITHUB_EVENT_NAME"
-          git status
-          git branch --show-current
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Run China crude import updater
+      - name: Generate JODI China crude import JSON
         env:
           CHINA_IMPORT_START_PERIOD: "2023-01"
-          UN_COMTRADE_API_KEY: ${{ secrets.UN_COMTRADE_API_KEY }}
         run: |
           python scripts/update_china_crude_import_volume.py
 
@@ -54,40 +44,29 @@ jobs:
           import json
           from pathlib import Path
 
-          path = Path(
-              "docs/data/china_crude_import_volume.json"
-          )
+          path = Path("docs/data/china_crude_import_volume.json")
 
-          with path.open(
-              "r",
-              encoding="utf-8",
-          ) as file:
+          with path.open("r", encoding="utf-8") as file:
               data = json.load(file)
 
-          required_top_level_fields = {
+          required_top_level = {
               "metadata",
               "availability",
               "summary",
               "series",
           }
 
-          missing_top_level = (
-              required_top_level_fields
-              - data.keys()
-          )
+          missing_top_level = required_top_level - data.keys()
 
           if missing_top_level:
               raise RuntimeError(
-                  "Missing top-level fields: "
-                  f"{sorted(missing_top_level)}"
+                  f"Missing top-level fields: {sorted(missing_top_level)}"
               )
 
           series = data["series"]
 
           if not isinstance(series, list) or not series:
-              raise RuntimeError(
-                  "The series list is missing or empty."
-              )
+              raise RuntimeError("The series list is missing or empty.")
 
           periods = []
 
@@ -100,122 +79,84 @@ jobs:
                   "source",
               }
 
-              missing_fields = (
-                  required_fields
-                  - row.keys()
-              )
+              missing_fields = required_fields - row.keys()
 
               if missing_fields:
                   raise RuntimeError(
-                      "Missing monthly record fields: "
-                      f"{sorted(missing_fields)}"
+                      f"Missing record fields: {sorted(missing_fields)}"
                   )
 
-              if row["status"] not in {
-                  "reported",
-                  "provisional",
-                  "estimated",
-              }:
-                  raise RuntimeError(
-                      "Invalid status for "
-                      f"{row['period']}: "
-                      f"{row['status']}"
-                  )
-
-              tonnes = row[
-                  "import_million_tonnes"
-              ]
-
-              mbd = row[
-                  "import_mbd"
-              ]
+              tonnes = row["import_million_tonnes"]
+              mbd = row["import_mbd"]
 
               if not 20 <= tonnes <= 80:
                   raise RuntimeError(
-                      "Implausible monthly import "
-                      f"volume for {row['period']}: "
-                      f"{tonnes} million tonnes"
+                      f"Implausible import volume: {row['period']} = {tonnes} Mt"
                   )
 
               if not 4 <= mbd <= 20:
                   raise RuntimeError(
-                      "Implausible monthly import rate "
-                      f"for {row['period']}: "
-                      f"{mbd} mb/d"
+                      f"Implausible import rate: {row['period']} = {mbd} mb/d"
                   )
 
-              periods.append(
-                  row["period"]
-              )
+              if row["status"] != "reported":
+                  raise RuntimeError(
+                      f"Invalid status: {row['period']} = {row['status']}"
+                  )
+
+              periods.append(row["period"])
 
           if periods != sorted(set(periods)):
               raise RuntimeError(
-                  "Monthly periods are duplicated "
-                  "or not sorted."
+                  "Monthly periods are duplicated or not sorted."
               )
 
-          latest = data[
-              "summary"
-          ].get("latest")
+          latest = data["summary"].get("latest")
 
           if not latest:
-              raise RuntimeError(
-                  "summary.latest is missing."
-              )
+              raise RuntimeError("summary.latest is missing.")
 
           if latest["period"] != periods[-1]:
               raise RuntimeError(
-                  "summary.latest does not match "
-                  "the final series record."
+                  "summary.latest does not match the final series record."
               )
 
           print("JSON validation successful.")
           print("Records:", len(series))
-          print(
-              "Latest period:",
-              latest["period"],
-          )
+          print("Latest period:", latest["period"])
           print(
               "Latest import:",
               latest["import_million_tonnes"],
               "million tonnes",
           )
+          print("Latest mb/d:", latest["import_mbd"])
           print(
-              "Latest mb/d:",
-              latest["import_mbd"],
+              "Missing months:",
+              len(data["availability"]["missing_months"]),
           )
           PY
 
       - name: Show generated file status
         run: |
-          echo "Generated file:"
           ls -lh docs/data/china_crude_import_volume.json
-
-          echo
-          echo "Git status:"
           git status --short
-
-          echo
-          echo "File diff:"
           git diff --stat -- docs/data/china_crude_import_volume.json
-          git diff -- docs/data/china_crude_import_volume.json | head -100
 
       - name: Commit and push generated data
         env:
           TARGET_BRANCH: ${{ github.ref_name }}
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add -f docs/data/china_crude_import_volume.json
 
           if git diff --cached --quiet; then
-            echo "No staged data changes detected."
-            echo "The generated file is already identical to the repository version."
+            echo "No data changes detected."
             exit 0
           fi
 
           git commit -m "Update China crude import volume data"
-
-          echo "Pushing commit to branch: ${TARGET_BRANCH}"
           git push origin "HEAD:${TARGET_BRANCH}"
+
