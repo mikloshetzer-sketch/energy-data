@@ -1,0 +1,108 @@
+name: Update Global Crude Oil Fundamentals
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every Monday at 06:20 UTC.
+    # JODI data are monthly, so a weekly check is sufficient.
+    - cron: "20 6 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-global-crude-oil-fundamentals
+  cancel-in-progress: false
+
+jobs:
+  update-global-crude-oil-fundamentals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Show Python version
+        run: python --version
+
+      - name: Run JODI crude oil generator
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: |
+          python scripts/generate_global_crude_oil_fundamentals.py
+
+      - name: Verify generated files exist
+        run: |
+          test -s docs/data/global_crude_oil_fundamentals.json
+          test -s docs/data/jodi_crude_code_audit.json
+
+      - name: Validate generated JSON
+        run: |
+          python -m json.tool \
+            docs/data/global_crude_oil_fundamentals.json \
+            > /dev/null
+
+          python -m json.tool \
+            docs/data/jodi_crude_code_audit.json \
+            > /dev/null
+
+      - name: Display generated dataset summary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("docs/data/global_crude_oil_fundamentals.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+
+          latest = data.get("latest", {})
+          coverage = data.get("coverage", {})
+
+          print("Dataset:", data.get("dataset"))
+          print("Generated at:", data.get("generated_at"))
+          print("Latest headline period:", latest.get("period"))
+          print("Production mb/d:", latest.get("reported_production_mbd"))
+          print("Refinery intake mb/d:", latest.get("reported_refinery_intake_mbd"))
+          print("Common-country gap mb/d:", latest.get("common_country_gap_mbd"))
+          print("Latest source period:", coverage.get("latest_source_period"))
+          PY
+
+      - name: Check for data changes
+        id: changes
+        shell: bash
+        run: |
+          if git diff --quiet -- \
+            docs/data/global_crude_oil_fundamentals.json \
+            docs/data/jodi_crude_code_audit.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No JODI crude-oil data changes detected."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "JODI crude-oil data changes detected."
+            git diff --stat -- \
+              docs/data/global_crude_oil_fundamentals.json \
+              docs/data/jodi_crude_code_audit.json
+          fi
+
+      - name: Commit and push updated data
+        if: steps.changes.outputs.changed == 'true'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            docs/data/global_crude_oil_fundamentals.json \
+            docs/data/jodi_crude_code_audit.json
+
+          git commit -m "Update global crude oil fundamentals"
+          git push
