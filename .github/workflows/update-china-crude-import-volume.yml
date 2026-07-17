@@ -1,12 +1,10 @@
-name: Update China crude import volume
+name: Update China Crude Import Volume
 
 on:
   workflow_dispatch:
 
   schedule:
-    # Minden hétfőn 08:40 UTC
-    # Magyar idő szerint télen 09:40, nyáron 10:40
-    - cron: "40 8 * * 1"
+    - cron: "30 6 * * 3"
 
 permissions:
   contents: write
@@ -17,29 +15,38 @@ concurrency:
 
 jobs:
   update-china-crude-import-volume:
+    name: Update China crude import data
     runs-on: ubuntu-latest
 
     steps:
-      - name: Repository letöltése
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: true
           fetch-depth: 0
+          persist-credentials: true
 
-      - name: Python telepítése
+      - name: Show repository information
+        run: |
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Ref: $GITHUB_REF"
+          echo "Branch: ${GITHUB_REF_NAME}"
+          echo "Event: $GITHUB_EVENT_NAME"
+          git status
+          git branch --show-current
+
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Kínai nyersolajimport-modul futtatása
+      - name: Run China crude import updater
         env:
-          # Nem kötelező. A public endpoint kulcs nélkül is használható.
-          UN_COMTRADE_API_KEY: ${{ secrets.UN_COMTRADE_API_KEY }}
           CHINA_IMPORT_START_PERIOD: "2023-01"
+          UN_COMTRADE_API_KEY: ${{ secrets.UN_COMTRADE_API_KEY }}
         run: |
           python scripts/update_china_crude_import_volume.py
 
-      - name: Generált JSON ellenőrzése
+      - name: Validate generated JSON
         run: |
           test -f docs/data/china_crude_import_volume.json
 
@@ -47,24 +54,45 @@ jobs:
           import json
           from pathlib import Path
 
-          path = Path("docs/data/china_crude_import_volume.json")
+          path = Path(
+              "docs/data/china_crude_import_volume.json"
+          )
 
-          with path.open("r", encoding="utf-8") as file:
+          with path.open(
+              "r",
+              encoding="utf-8",
+          ) as file:
               data = json.load(file)
 
-          for field in ("metadata", "summary", "series"):
-              if field not in data:
-                  raise RuntimeError(f"Hiányzó felső szintű mező: {field}")
+          required_top_level_fields = {
+              "metadata",
+              "availability",
+              "summary",
+              "series",
+          }
+
+          missing_top_level = (
+              required_top_level_fields
+              - data.keys()
+          )
+
+          if missing_top_level:
+              raise RuntimeError(
+                  "Missing top-level fields: "
+                  f"{sorted(missing_top_level)}"
+              )
 
           series = data["series"]
 
           if not isinstance(series, list) or not series:
-              raise RuntimeError("A series lista hiányzik vagy üres.")
+              raise RuntimeError(
+                  "The series list is missing or empty."
+              )
 
           periods = []
 
           for row in series:
-              required = {
+              required_fields = {
                   "period",
                   "import_million_tonnes",
                   "import_mbd",
@@ -72,11 +100,15 @@ jobs:
                   "source",
               }
 
-              missing = required - row.keys()
+              missing_fields = (
+                  required_fields
+                  - row.keys()
+              )
 
-              if missing:
+              if missing_fields:
                   raise RuntimeError(
-                      f"Hiányzó mezők a havi rekordban: {sorted(missing)}"
+                      "Missing monthly record fields: "
+                      f"{sorted(missing_fields)}"
                   )
 
               if row["status"] not in {
@@ -85,52 +117,105 @@ jobs:
                   "estimated",
               }:
                   raise RuntimeError(
-                      f"Érvénytelen státusz: {row['status']}"
+                      "Invalid status for "
+                      f"{row['period']}: "
+                      f"{row['status']}"
                   )
 
-              if row["import_million_tonnes"] <= 0:
+              tonnes = row[
+                  "import_million_tonnes"
+              ]
+
+              mbd = row[
+                  "import_mbd"
+              ]
+
+              if not 20 <= tonnes <= 80:
                   raise RuntimeError(
-                      f"Érvénytelen tonnaadat: {row['period']}"
+                      "Implausible monthly import "
+                      f"volume for {row['period']}: "
+                      f"{tonnes} million tonnes"
                   )
 
-              if row["import_mbd"] <= 0:
+              if not 4 <= mbd <= 20:
                   raise RuntimeError(
-                      f"Érvénytelen mb/d adat: {row['period']}"
+                      "Implausible monthly import rate "
+                      f"for {row['period']}: "
+                      f"{mbd} mb/d"
                   )
 
-              periods.append(row["period"])
+              periods.append(
+                  row["period"]
+              )
 
           if periods != sorted(set(periods)):
               raise RuntimeError(
-                  "A havi periódusok nem rendezettek vagy duplikáltak."
+                  "Monthly periods are duplicated "
+                  "or not sorted."
               )
 
-          latest = data["summary"].get("latest")
+          latest = data[
+              "summary"
+          ].get("latest")
 
           if not latest:
-              raise RuntimeError("A summary.latest mező hiányzik.")
+              raise RuntimeError(
+                  "summary.latest is missing."
+              )
+
+          if latest["period"] != periods[-1]:
+              raise RuntimeError(
+                  "summary.latest does not match "
+                  "the final series record."
+              )
 
           print("JSON validation successful.")
           print("Records:", len(series))
-          print("Latest period:", latest["period"])
+          print(
+              "Latest period:",
+              latest["period"],
+          )
           print(
               "Latest import:",
               latest["import_million_tonnes"],
               "million tonnes",
           )
-          print("Latest mb/d:", latest["import_mbd"])
+          print(
+              "Latest mb/d:",
+              latest["import_mbd"],
+          )
           PY
 
-      - name: Változások commitolása
+      - name: Show generated file status
         run: |
-          if git diff --quiet -- docs/data/china_crude_import_volume.json; then
-            echo "Nincs új változás."
-            exit 0
-          fi
+          echo "Generated file:"
+          ls -lh docs/data/china_crude_import_volume.json
 
+          echo
+          echo "Git status:"
+          git status --short
+
+          echo
+          echo "File diff:"
+          git diff --stat -- docs/data/china_crude_import_volume.json
+          git diff -- docs/data/china_crude_import_volume.json | head -100
+
+      - name: Commit and push generated data
+        env:
+          TARGET_BRANCH: ${{ github.ref_name }}
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add docs/data/china_crude_import_volume.json
-          git commit -m "Update China crude import volume"
-          git push
+          git add -f docs/data/china_crude_import_volume.json
+
+          if git diff --cached --quiet; then
+            echo "No staged data changes detected."
+            echo "The generated file is already identical to the repository version."
+            exit 0
+          fi
+
+          git commit -m "Update China crude import volume data"
+
+          echo "Pushing commit to branch: ${TARGET_BRANCH}"
+          git push origin "HEAD:${TARGET_BRANCH}"
