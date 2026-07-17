@@ -1,0 +1,136 @@
+name: Update China crude import volume
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    # Minden hétfőn 08:40 UTC
+    # Magyar idő szerint télen 09:40, nyáron 10:40
+    - cron: "40 8 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-china-crude-import-volume
+  cancel-in-progress: false
+
+jobs:
+  update-china-crude-import-volume:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository letöltése
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Python telepítése
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Kínai nyersolajimport-modul futtatása
+        env:
+          # Nem kötelező. A public endpoint kulcs nélkül is használható.
+          UN_COMTRADE_API_KEY: ${{ secrets.UN_COMTRADE_API_KEY }}
+          CHINA_IMPORT_START_PERIOD: "2023-01"
+        run: |
+          python scripts/update_china_crude_import_volume.py
+
+      - name: Generált JSON ellenőrzése
+        run: |
+          test -f docs/data/china_crude_import_volume.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("docs/data/china_crude_import_volume.json")
+
+          with path.open("r", encoding="utf-8") as file:
+              data = json.load(file)
+
+          for field in ("metadata", "summary", "series"):
+              if field not in data:
+                  raise RuntimeError(f"Hiányzó felső szintű mező: {field}")
+
+          series = data["series"]
+
+          if not isinstance(series, list) or not series:
+              raise RuntimeError("A series lista hiányzik vagy üres.")
+
+          periods = []
+
+          for row in series:
+              required = {
+                  "period",
+                  "import_million_tonnes",
+                  "import_mbd",
+                  "status",
+                  "source",
+              }
+
+              missing = required - row.keys()
+
+              if missing:
+                  raise RuntimeError(
+                      f"Hiányzó mezők a havi rekordban: {sorted(missing)}"
+                  )
+
+              if row["status"] not in {
+                  "reported",
+                  "provisional",
+                  "estimated",
+              }:
+                  raise RuntimeError(
+                      f"Érvénytelen státusz: {row['status']}"
+                  )
+
+              if row["import_million_tonnes"] <= 0:
+                  raise RuntimeError(
+                      f"Érvénytelen tonnaadat: {row['period']}"
+                  )
+
+              if row["import_mbd"] <= 0:
+                  raise RuntimeError(
+                      f"Érvénytelen mb/d adat: {row['period']}"
+                  )
+
+              periods.append(row["period"])
+
+          if periods != sorted(set(periods)):
+              raise RuntimeError(
+                  "A havi periódusok nem rendezettek vagy duplikáltak."
+              )
+
+          latest = data["summary"].get("latest")
+
+          if not latest:
+              raise RuntimeError("A summary.latest mező hiányzik.")
+
+          print("JSON validation successful.")
+          print("Records:", len(series))
+          print("Latest period:", latest["period"])
+          print(
+              "Latest import:",
+              latest["import_million_tonnes"],
+              "million tonnes",
+          )
+          print("Latest mb/d:", latest["import_mbd"])
+          PY
+
+      - name: Változások commitolása
+        run: |
+          if git diff --quiet -- docs/data/china_crude_import_volume.json; then
+            echo "Nincs új változás."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/data/china_crude_import_volume.json
+          git commit -m "Update China crude import volume"
+          git push
