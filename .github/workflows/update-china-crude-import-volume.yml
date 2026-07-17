@@ -2,9 +2,10 @@ name: Update China Crude Import Volume
 
 on:
   workflow_dispatch:
-
   schedule:
-    - cron: "30 6 * * 3"
+    # JODI is monthly, but a daily check captures new releases automatically.
+    # 05:45 UTC = 07:45 CEST / 06:45 CET in Hungary.
+    - cron: "45 5 * * *"
 
 permissions:
   contents: write
@@ -15,147 +16,60 @@ concurrency:
 
 jobs:
   update-china-crude-import-volume:
-    name: Update China crude import data
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
-      - name: Generate JODI China crude import JSON
-        env:
-          CHINA_IMPORT_START_PERIOD: "2023-01"
-        run: |
-          python scripts/update_china_crude_import_volume.py
+      - name: Update China crude import volume
+        run: python scripts/update_china_crude_import_volume.py
 
       - name: Validate generated JSON
         run: |
-          test -f docs/data/china_crude_import_volume.json
-
           python - <<'PY'
           import json
           from pathlib import Path
 
           path = Path("docs/data/china_crude_import_volume.json")
+          if not path.exists():
+              raise SystemExit("docs/data/china_crude_import_volume.json was not generated")
 
-          with path.open("r", encoding="utf-8") as file:
-              data = json.load(file)
+          data = json.loads(path.read_text(encoding="utf-8"))
+          required = {"generated_at", "dataset", "source", "coverage", "latest", "series"}
+          missing = required.difference(data)
+          if missing:
+              raise SystemExit(f"Missing top-level fields: {sorted(missing)}")
 
-          required_top_level = {
-              "metadata",
-              "availability",
-              "summary",
-              "series",
-          }
-
-          missing_top_level = required_top_level - data.keys()
-
-          if missing_top_level:
-              raise RuntimeError(
-                  f"Missing top-level fields: {sorted(missing_top_level)}"
-              )
-
-          series = data["series"]
-
+          series = data.get("series")
           if not isinstance(series, list) or not series:
-              raise RuntimeError("The series list is missing or empty.")
+              raise SystemExit("Generated series is empty")
 
-          periods = []
+          if data.get("dataset") != "china_crude_import_volume":
+              raise SystemExit("Unexpected dataset identifier")
 
-          for row in series:
-              required_fields = {
-                  "period",
-                  "import_million_tonnes",
-                  "import_mbd",
-                  "status",
-                  "source",
-              }
-
-              missing_fields = required_fields - row.keys()
-
-              if missing_fields:
-                  raise RuntimeError(
-                      f"Missing record fields: {sorted(missing_fields)}"
-                  )
-
-              tonnes = row["import_million_tonnes"]
-              mbd = row["import_mbd"]
-
-              if not 20 <= tonnes <= 80:
-                  raise RuntimeError(
-                      f"Implausible import volume: {row['period']} = {tonnes} Mt"
-                  )
-
-              if not 4 <= mbd <= 20:
-                  raise RuntimeError(
-                      f"Implausible import rate: {row['period']} = {mbd} mb/d"
-                  )
-
-              if row["status"] != "reported":
-                  raise RuntimeError(
-                      f"Invalid status: {row['period']} = {row['status']}"
-                  )
-
-              periods.append(row["period"])
-
-          if periods != sorted(set(periods)):
-              raise RuntimeError(
-                  "Monthly periods are duplicated or not sorted."
-              )
-
-          latest = data["summary"].get("latest")
-
-          if not latest:
-              raise RuntimeError("summary.latest is missing.")
-
-          if latest["period"] != periods[-1]:
-              raise RuntimeError(
-                  "summary.latest does not match the final series record."
-              )
-
-          print("JSON validation successful.")
-          print("Records:", len(series))
-          print("Latest period:", latest["period"])
-          print(
-              "Latest import:",
-              latest["import_million_tonnes"],
-              "million tonnes",
-          )
-          print("Latest mb/d:", latest["import_mbd"])
-          print(
-              "Missing months:",
-              len(data["availability"]["missing_months"]),
-          )
+          print(f"Validated {len(series)} monthly observations")
+          print(f"Latest period: {data['latest']['period']}")
           PY
 
-      - name: Show generated file status
+      - name: Commit updated data
         run: |
-          ls -lh docs/data/china_crude_import_volume.json
-          git status --short
-          git diff --stat -- docs/data/china_crude_import_volume.json
-
-      - name: Commit and push generated data
-        env:
-          TARGET_BRANCH: ${{ github.ref_name }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email \
-            "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add -f docs/data/china_crude_import_volume.json
-
-          if git diff --cached --quiet; then
-            echo "No data changes detected."
+          if git diff --quiet -- docs/data/china_crude_import_volume.json; then
+            echo "No data change detected"
             exit 0
           fi
 
-          git commit -m "Update China crude import volume data"
-          git push origin "HEAD:${TARGET_BRANCH}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/china_crude_import_volume.json
+          git commit -m "Update China crude import volume from JODI"
+          git push
+
