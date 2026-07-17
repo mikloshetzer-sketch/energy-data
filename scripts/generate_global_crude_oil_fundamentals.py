@@ -640,38 +640,122 @@ def build_annual(monthly: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     annual: list[dict[str, Any]] = []
     for year in sorted(grouped):
-        rows = grouped[year]
-        gap = safe_mean(
-            row.get("common_country_gap_mbd")
-            for row in rows
-            if row["coverage_quality"]["headline_usable"]
+        rows = sorted(grouped[year], key=lambda row: row["period"])
+        usable_rows = [
+            row for row in rows if row["coverage_quality"]["headline_usable"]
+        ]
+
+        validated_gap = safe_mean(
+            row.get("common_country_gap_mbd") for row in usable_rows
         )
-        adjusted_balance = safe_mean(
-            row.get("adjusted_crude_balance_mbd")
-            for row in rows
-            if row["coverage_quality"]["headline_usable"]
+        validated_adjusted = safe_mean(
+            row.get("adjusted_crude_balance_mbd") for row in usable_rows
         )
+
+        # Preliminary/YTD values intentionally use every available source month.
+        # They keep the current year visible even before the normal headline
+        # coverage threshold is reached. The output clearly marks these values
+        # as provisional and keeps the validated series separate.
+        preliminary_gap = safe_mean(
+            row.get("common_country_gap_mbd") for row in rows
+        )
+        preliminary_adjusted = safe_mean(
+            row.get("adjusted_crude_balance_mbd") for row in rows
+        )
+        preliminary_production = safe_mean(
+            row.get("reported_production_mbd") for row in rows
+        )
+        preliminary_intake = safe_mean(
+            row.get("reported_refinery_intake_mbd") for row in rows
+        )
+
+        months_available = len(rows)
+        latest_month = max(int(row["period"][5:7]) for row in rows)
+        period_type = "full_year" if months_available >= 12 else "ytd"
+        provisional = period_type == "ytd" or len(usable_rows) < months_available
+
+        comparison_rows = [
+            row
+            for row in grouped.get(year - 1, [])
+            if int(row["period"][5:7]) <= latest_month
+        ]
+        comparison_production = safe_mean(
+            row.get("reported_production_mbd") for row in comparison_rows
+        )
+        comparison_intake = safe_mean(
+            row.get("reported_refinery_intake_mbd") for row in comparison_rows
+        )
+        comparison_gap = safe_mean(
+            row.get("common_country_gap_mbd") for row in comparison_rows
+        )
+
         stock_values = [
             row["reported_stock_change_kbbl"]
             for row in rows
             if row["reported_stock_change_kbbl"] is not None
         ]
+
         annual.append(
             {
                 "year": year,
-                "months_available": len(rows),
-                "headline_usable_months": sum(
-                    1 for row in rows if row["coverage_quality"]["headline_usable"]
+                "period_type": period_type,
+                "period_label": (
+                    str(year)
+                    if period_type == "full_year"
+                    else f"{year} YTD Jan–{calendar.month_abbr[latest_month]}"
                 ),
+                "provisional": provisional,
+                "months_available": months_available,
+                "latest_month": latest_month,
+                "headline_usable_months": len(usable_rows),
                 "average_reported_production_mbd": round_or_none(
                     safe_mean(row.get("reported_production_mbd") for row in rows)
                 ),
                 "average_reported_refinery_intake_mbd": round_or_none(
                     safe_mean(row.get("reported_refinery_intake_mbd") for row in rows)
                 ),
-                "average_common_country_gap_mbd": round_or_none(gap),
+                "average_common_country_gap_mbd": round_or_none(validated_gap),
                 "average_adjusted_crude_balance_mbd": round_or_none(
-                    adjusted_balance
+                    validated_adjusted
+                ),
+                "preliminary_average_reported_production_mbd": round_or_none(
+                    preliminary_production
+                ),
+                "preliminary_average_reported_refinery_intake_mbd": round_or_none(
+                    preliminary_intake
+                ),
+                "preliminary_average_common_country_gap_mbd": round_or_none(
+                    preliminary_gap
+                ),
+                "preliminary_average_adjusted_crude_balance_mbd": round_or_none(
+                    preliminary_adjusted
+                ),
+                "comparison_year": year - 1 if comparison_rows else None,
+                "comparison_months": len(comparison_rows),
+                "comparison_average_reported_production_mbd": round_or_none(
+                    comparison_production
+                ),
+                "comparison_average_reported_refinery_intake_mbd": round_or_none(
+                    comparison_intake
+                ),
+                "comparison_average_common_country_gap_mbd": round_or_none(
+                    comparison_gap
+                ),
+                "production_change_same_period_mbd": round_or_none(
+                    preliminary_production - comparison_production
+                    if preliminary_production is not None
+                    and comparison_production is not None
+                    else None
+                ),
+                "refinery_intake_change_same_period_mbd": round_or_none(
+                    preliminary_intake - comparison_intake
+                    if preliminary_intake is not None and comparison_intake is not None
+                    else None
+                ),
+                "common_country_gap_change_same_period_mbd": round_or_none(
+                    preliminary_gap - comparison_gap
+                    if preliminary_gap is not None and comparison_gap is not None
+                    else None
                 ),
                 "total_reported_stock_change_kbbl": round_or_none(
                     sum(stock_values) if stock_values else None, 1
@@ -687,8 +771,12 @@ def build_annual(monthly: list[dict[str, Any]]) -> list[dict[str, Any]]:
                         for row in rows
                     )
                 ),
-                "gap_state": gap_state(gap),
-                "adjusted_balance_state": gap_state(adjusted_balance),
+                "gap_state": gap_state(validated_gap),
+                "adjusted_balance_state": gap_state(validated_adjusted),
+                "preliminary_gap_state": gap_state(preliminary_gap),
+                "preliminary_adjusted_balance_state": gap_state(
+                    preliminary_adjusted
+                ),
             }
         )
     return annual
@@ -805,7 +893,9 @@ def build_output(
             "megfigyelt legmagasabb jelentői létszám. Az arányok legfeljebb "
             "1 értéket vehetnek fel. Az Adjusted Crude Balance a "
             "common-country gap és a napi átlagra átszámított STOCKCH "
-            "mechanikus különbsége."
+            "mechanikus különbsége. A tárgyévi, még nem teljes lefedettségű "
+            "hónapok külön preliminary/YTD mezőkben jelennek meg, és az "
+            "előző év azonos hónapjaival hasonlíthatók össze."
         ),
         "methodology_en": (
             "The module uses CRUDEOIL rows from the JODI Oil World Primary "
@@ -817,7 +907,10 @@ def build_output(
             "same country set. Coverage ratios use the maximum reporter count observed during the "
             "latest 24 source months and are capped at one. Adjusted Crude Balance is the mechanical "
             "difference between the common-country gap and STOCKCH converted "
-            "to an average daily rate."
+            "to an average daily rate. Current-year months that have not yet "
+            "reached normal headline coverage are also published separately "
+            "as preliminary/YTD values and compared with the same months of "
+            "the previous year."
         ),
         "stock_sign_note_hu": (
             "A STOCKCH előjelének értelmezését a modul semlegesen kezeli. "
