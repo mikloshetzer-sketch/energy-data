@@ -247,62 +247,113 @@ def identify_column(fieldnames: Iterable[str], logical_name: str) -> str | None:
 
 def is_china(value: Any) -> bool:
     """
-    Accept both the JODI SDMX economy code and readable country names.
-
-    In the current JODI long-form CSV, China is stored as REF_AREA=CN.
+    Match China in readable, ISO-like and JODI/SDMX code forms.
     """
-    return compact(value) in {
+    code = compact(value)
+
+    exact = {
         "cn",
         "chn",
+        "156",
         "china",
         "chinamainland",
+        "mainlandchina",
         "peoplesrepublicofchina",
+        "peoplesrepofchina",
         "prchina",
     }
+
+    return code in exact or code.endswith("china")
 
 
 def is_crude(value: Any) -> bool:
     """
-    Accept both the JODI energy-product code and readable labels.
-
-    In the current JODI long-form CSV, crude oil is ENERGY_PRODUCT=CRUDEOIL.
+    Match the JODI crude-oil product in both code and label forms.
     """
-    return compact(value) in {
+    code = compact(value)
+
+    if code in {
         "crude",
         "crudeoil",
-    }
+        "crudeoils",
+        "crd",
+        "crdoil",
+    }:
+        return True
+
+    return "crude" in code and "product" not in code
 
 
 def is_import(value: Any) -> bool:
     """
-    Accept both the JODI flow code and readable labels.
-
-    In the current JODI long-form CSV, imports are FLOW_BREAKDOWN=TOTIMPSB.
+    Match JODI import-flow codes without depending on one exact code-list
+    revision. Export codes are explicitly excluded.
     """
-    return compact(value) in {
+    code = compact(value)
+
+    if not code:
+        return False
+
+    if "exp" in code or "export" in code:
+        return False
+
+    if code in {
+        "m",
+        "imp",
+        "imps",
         "import",
         "imports",
+        "totimp",
+        "totimps",
         "totimpsb",
-    }
+        "totalimports",
+    }:
+        return True
+
+    return "imp" in code or "import" in code
 
 
 def classify_unit(value: Any) -> str | None:
     text = normalise(value)
     packed = compact(value)
 
-    if packed in {"kbd", "kbpd"} or (
-        "thousand" in text and "barrel" in text and "day" in text
+    if packed in {
+        "kbd",
+        "kbpd",
+        "kbbld",
+        "kbblday",
+        "thousandbarrelsperday",
+    } or (
+        "barrel" in text
+        and "day" in text
+        and ("thousand" in text or packed.startswith("k"))
     ):
         return "kbd"
 
-    if packed in {"kmt", "kt", "kton", "ktons"} or (
-        "thousand" in text
-        and ("metric ton" in text or "metric tonne" in text)
+    if packed in {
+        "kmt",
+        "kt",
+        "kton",
+        "ktons",
+        "ktmt",
+        "thousandmetrictons",
+        "thousandmetrictonnes",
+    } or (
+        ("metricton" in packed or "metrictonne" in packed)
+        and ("thousand" in text or packed.startswith("k"))
     ):
         return "kmt"
 
-    if packed in {"kbbl", "kbbls"} or (
-        "thousand" in text and "barrel" in text and "day" not in text
+    if packed in {
+        "kbbl",
+        "kbbls",
+        "kbarrel",
+        "kbarrels",
+        "thousandbarrels",
+    } or (
+        "barrel" in text
+        and "day" not in text
+        and ("thousand" in text or packed.startswith("k"))
     ):
         return "kbbl"
 
@@ -473,6 +524,65 @@ def parse_jodi_csv(text: str) -> tuple[dict[str, Observation], list[str]]:
         layout = "wide"
 
     if not observations:
+        country_col = identify_column(fieldnames, "country")
+        product_col = identify_column(fieldnames, "product")
+        flow_col = identify_column(fieldnames, "flow")
+        unit_col = identify_column(fieldnames, "unit")
+
+        def unique_values(column: str | None, limit: int = 40) -> list[str]:
+            if not column:
+                return []
+            values = {
+                str(row.get(column, "")).strip()
+                for row in rows
+                if str(row.get(column, "")).strip()
+            }
+            return sorted(values)[:limit]
+
+        china_rows = [
+            row for row in rows
+            if country_col and is_china(row.get(country_col, ""))
+        ]
+
+        print("JODI parser diagnostics:", file=sys.stderr)
+        print(
+            "REF_AREA candidates:",
+            unique_values(country_col),
+            file=sys.stderr,
+        )
+        print(
+            "Matched China rows:",
+            len(china_rows),
+            file=sys.stderr,
+        )
+
+        if china_rows:
+            def china_values(column: str | None, limit: int = 60) -> list[str]:
+                if not column:
+                    return []
+                values = {
+                    str(row.get(column, "")).strip()
+                    for row in china_rows
+                    if str(row.get(column, "")).strip()
+                }
+                return sorted(values)[:limit]
+
+            print(
+                "China ENERGY_PRODUCT values:",
+                china_values(product_col),
+                file=sys.stderr,
+            )
+            print(
+                "China FLOW_BREAKDOWN values:",
+                china_values(flow_col),
+                file=sys.stderr,
+            )
+            print(
+                "China UNIT_MEASURE values:",
+                china_values(unit_col),
+                file=sys.stderr,
+            )
+
         raise RuntimeError(
             "No valid China / Crude Oil / Imports observations were found. "
             f"CSV columns: {fieldnames}"
@@ -651,7 +761,7 @@ def main() -> None:
             "requested_end_period": requested_end,
             "latest_available_period": latest["period"],
             "updated_at_utc": datetime.now(timezone.utc).isoformat(),
-            "generator_version": "4.0.1-jodi",
+            "generator_version": "4.0.2-jodi",
             "parser_layout": parser_info[0],
         },
         "availability": {
