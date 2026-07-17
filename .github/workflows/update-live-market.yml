@@ -1,69 +1,62 @@
-name: Update live market
+name: Update market price snapshot
 
 on:
-  schedule:
-    - cron: "15 * * * *"
   workflow_dispatch:
+
+  schedule:
+    # GitHub Actions cron UTC időzónát használ.
+    # A GitHub az ütemezett futásokat terhelés esetén késleltetheti.
+    - cron: "7,37 * * * *"
 
 permissions:
   contents: write
 
+concurrency:
+  group: update-market-price-snapshot
+  cancel-in-progress: false
+
 jobs:
-  update-live-market:
+  update:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout repository
+      - name: Repository checkout
         uses: actions/checkout@v4
         with:
-          persist-credentials: true
+          fetch-depth: 0
 
-      - name: Setup Python
+      - name: Python beállítása
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+          cache: pip
 
-      - name: Run live market updater
+      - name: Függőségek telepítése
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests
+
+      - name: Piaci pillanatkép frissítése
         run: python update_live_market.py
 
-      - name: Generate inventory stress
-        run: python scripts/generate_inventory_stress.py
-
-      - name: Generate market interpretation
-        run: python scripts/generate_market_interpretation.py
-
-      - name: Generate risk drivers
-        run: python scripts/generate_risk_drivers.py
-
-      - name: Generate historical context
-        run: python scripts/generate_historical_context.py
-
-      - name: Generate energy forecast
-        run: python scripts/generate_energy_forecast.py
-
-      - name: Generate chokepoint status
-        run: python scripts/generate_chokepoint_status.py
-
-      - name: Generate china exposure
-        run: python scripts/generate_china_exposure.py
-
-      - name: Generate supply demand balance
-        run: python scripts/generate_supply_demand_balance.py
-
-      - name: Commit updated live market intelligence data
+      - name: JSON ellenőrzése
         run: |
+          python -m json.tool live-market.json > /dev/null
+
+      - name: Változások mentése
+        shell: bash
+        run: |
+          if git diff --quiet -- live-market.json; then
+            echo "Nincs mentendő változás."
+            exit 0
+          fi
+
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add live-market.json
-          git add docs/data/inventory_stress.json
-          git add docs/data/market_interpretation.json
-          git add docs/data/risk_drivers.json
-          git add docs/data/historical_context.json
-          git add docs/data/energy_forecast.json
-          git add docs/data/chokepoint_status.json
-          git add docs/data/china_exposure.json
-          git add docs/data/supply_demand_balance.json
-
-          git diff --cached --quiet || git commit -m "Update live market intelligence data"
-          git push
+          git commit -m "Update market price snapshot"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
