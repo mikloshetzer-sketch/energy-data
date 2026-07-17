@@ -14,24 +14,22 @@ from urllib.request import Request, urlopen
 
 OUTPUT_FILE = Path("docs/data/china_crude_import_volume.json")
 
-# UN Comtrade beállítások
 API_URL = "https://comtradeapi.un.org/public/v1/preview/C/M/HS"
 
-REPORTER_CODE = "156"      # China
-PARTNER_CODE = "0"         # World
-FLOW_CODE = "M"            # Imports
-COMMODITY_CODE = "2709"    # Crude petroleum oils
+REPORTER_CODE = "156"
+FLOW_CODE = "M"
+COMMODITY_CODE = "2709"
 
 START_PERIOD = os.getenv(
     "CHINA_IMPORT_START_PERIOD",
-    "2023-01"
+    "2023-01",
 )
 
 BARRELS_PER_METRIC_TONNE = 7.33
 
 TIMEOUT_SECONDS = 90
 MAX_RETRIES = 3
-BATCH_SIZE = 12
+REQUEST_DELAY_SECONDS = 1
 
 
 def previous_complete_month() -> str:
@@ -49,20 +47,20 @@ def previous_complete_month() -> str:
 
 def month_range(
     start_period: str,
-    end_period: str
+    end_period: str,
 ) -> list[str]:
 
     start_year, start_month = map(
         int,
-        start_period.split("-")
+        start_period.split("-"),
     )
 
     end_year, end_month = map(
         int,
-        end_period.split("-")
+        end_period.split("-"),
     )
 
-    periods = []
+    periods: list[str] = []
 
     year = start_year
     month = start_month
@@ -83,12 +81,12 @@ def month_range(
 
 def shift_period(
     period: str,
-    months: int
+    months: int,
 ) -> str:
 
     year, month = map(
         int,
-        period.split("-")
+        period.split("-"),
     )
 
     month_index = (
@@ -110,18 +108,18 @@ def shift_period(
 def days_in_month(period: str) -> int:
     year, month = map(
         int,
-        period.split("-")
+        period.split("-"),
     )
 
     return calendar.monthrange(
         year,
-        month
+        month,
     )[1]
 
 
 def convert_to_mbd(
     period: str,
-    million_tonnes: float
+    million_tonnes: float,
 ) -> float:
 
     million_barrels = (
@@ -136,13 +134,13 @@ def convert_to_mbd(
 
 
 def safe_float(
-    value: Any
+    value: Any,
 ) -> float | None:
 
     if value in (
         None,
         "",
-        "null"
+        "null",
     ):
         return None
 
@@ -151,13 +149,36 @@ def safe_float(
 
     except (
         TypeError,
-        ValueError
+        ValueError,
     ):
         return None
 
 
+def build_api_url(
+    period: str,
+) -> str:
+
+    api_period = period.replace("-", "")
+
+    params = {
+        "period": api_period,
+        "reporterCode": REPORTER_CODE,
+        "cmdCode": COMMODITY_CODE,
+        "flowCode": FLOW_CODE,
+        "maxRecords": "500",
+        "format": "json",
+        "breakdownMode": "classic",
+        "includeDesc": "true",
+    }
+
+    return (
+        f"{API_URL}?"
+        f"{urlencode(params)}"
+    )
+
+
 def fetch_json(
-    url: str
+    url: str,
 ) -> dict[str, Any]:
 
     headers = {
@@ -166,12 +187,12 @@ def fetch_json(
             "energy-data-monitor"
         ),
         "Accept": "application/json",
-        "Connection": "close"
+        "Connection": "close",
     }
 
     api_key = os.getenv(
         "UN_COMTRADE_API_KEY",
-        ""
+        "",
     ).strip()
 
     if api_key:
@@ -179,11 +200,11 @@ def fetch_json(
             "Ocp-Apim-Subscription-Key"
         ] = api_key
 
-    last_error = None
+    last_error: Exception | None = None
 
     for attempt in range(
         1,
-        MAX_RETRIES + 1
+        MAX_RETRIES + 1,
     ):
 
         try:
@@ -194,34 +215,80 @@ def fetch_json(
 
             request = Request(
                 url,
-                headers=headers
+                headers=headers,
             )
 
             with urlopen(
                 request,
-                timeout=TIMEOUT_SECONDS
+                timeout=TIMEOUT_SECONDS,
             ) as response:
 
                 text = response.read().decode(
                     "utf-8",
-                    errors="replace"
+                    errors="replace",
                 )
 
-                return json.loads(text)
+                payload = json.loads(text)
+
+                if not isinstance(payload, dict):
+                    raise RuntimeError(
+                        "UN Comtrade returned "
+                        "an unexpected response format."
+                    )
+
+                return payload
+
+        except HTTPError as error:
+
+            error_body = ""
+
+            try:
+                error_body = error.read().decode(
+                    "utf-8",
+                    errors="replace",
+                )
+            except Exception:
+                pass
+
+            print(
+                f"HTTP error {error.code}: "
+                f"{error.reason}"
+            )
+
+            if error_body:
+                print(
+                    "UN Comtrade response: "
+                    f"{error_body[:1000]}"
+                )
+
+            if 400 <= error.code < 500:
+                raise RuntimeError(
+                    "UN Comtrade rejected the request. "
+                    f"HTTP {error.code}. "
+                    f"Response: {error_body[:500]}"
+                ) from error
+
+            last_error = error
 
         except (
-            HTTPError,
             URLError,
             TimeoutError,
-            json.JSONDecodeError
         ) as error:
 
             last_error = error
 
             print(
-                f"Request failed: {error}"
+                "Temporary request failure: "
+                f"{error}"
             )
 
+        except json.JSONDecodeError as error:
+
+            raise RuntimeError(
+                "UN Comtrade returned invalid JSON."
+            ) from error
+
+        if attempt < MAX_RETRIES:
             time.sleep(
                 attempt * 5
             )
@@ -232,38 +299,8 @@ def fetch_json(
     )
 
 
-def build_api_url(
-    periods: list[str]
-) -> str:
-
-    api_periods = [
-        period.replace("-", "")
-        for period in periods
-    ]
-
-    params = {
-        "period": ",".join(api_periods),
-        "reporterCode": REPORTER_CODE,
-        "cmdCode": COMMODITY_CODE,
-        "flowCode": FLOW_CODE,
-        "partnerCode": PARTNER_CODE,
-        "partner2Code": "0",
-        "customsCode": "C00",
-        "motCode": "0",
-        "maxRecords": "500",
-        "aggregateBy": "6",
-        "breakdownMode": "classic",
-        "includeDesc": "true"
-    }
-
-    return (
-        f"{API_URL}?"
-        f"{urlencode(params)}"
-    )
-
-
 def extract_period(
-    row: dict[str, Any]
+    row: dict[str, Any],
 ) -> str | None:
 
     raw_period = str(
@@ -291,13 +328,13 @@ def extract_period(
 
     except (
         TypeError,
-        ValueError
+        ValueError,
     ):
         return None
 
 
 def extract_million_tonnes(
-    row: dict[str, Any]
+    row: dict[str, Any],
 ) -> float | None:
 
     net_weight_kg = safe_float(
@@ -313,11 +350,34 @@ def extract_million_tonnes(
             / 1_000_000_000
         )
 
+    quantity = safe_float(
+        row.get("qty")
+    )
+
+    quantity_unit = str(
+        row.get("qtyUnitAbbr")
+        or row.get("qtyUnitCode")
+        or ""
+    ).lower()
+
+    if (
+        quantity is not None
+        and quantity > 0
+        and (
+            "kg" in quantity_unit
+            or quantity_unit == "8"
+        )
+    ):
+        return (
+            quantity
+            / 1_000_000_000
+        )
+
     return None
 
 
 def extract_trade_value_billion_usd(
-    row: dict[str, Any]
+    row: dict[str, Any],
 ) -> float | None:
 
     value = safe_float(
@@ -329,11 +389,14 @@ def extract_trade_value_billion_usd(
     if value is None:
         return None
 
-    return value / 1_000_000_000
+    return (
+        value
+        / 1_000_000_000
+    )
 
 
 def parse_api_response(
-    payload: dict[str, Any]
+    payload: dict[str, Any],
 ) -> dict[str, dict[str, Any]]:
 
     rows = payload.get("data")
@@ -341,7 +404,7 @@ def parse_api_response(
     if not isinstance(rows, list):
         return {}
 
-    records = {}
+    records: dict[str, dict[str, Any]] = {}
 
     for row in rows:
 
@@ -362,7 +425,7 @@ def parse_api_response(
 
         import_mbd = convert_to_mbd(
             period,
-            million_tonnes
+            million_tonnes,
         )
 
         trade_value = (
@@ -376,18 +439,18 @@ def parse_api_response(
 
             "import_million_tonnes": round(
                 million_tonnes,
-                3
+                3,
             ),
 
             "import_mbd": round(
                 import_mbd,
-                3
+                3,
             ),
 
             "trade_value_billion_usd": (
                 round(
                     trade_value,
-                    3
+                    3,
                 )
                 if trade_value is not None
                 else None
@@ -406,35 +469,35 @@ def parse_api_response(
 
             "commodity_description": (
                 "Crude petroleum oils"
-            )
+            ),
         }
 
     return records
 
 
 def download_all_records(
-    periods: list[str]
+    periods: list[str],
 ) -> dict[str, dict[str, Any]]:
 
-    records = {}
+    records: dict[str, dict[str, Any]] = {}
 
-    batches = [
-        periods[index:index + BATCH_SIZE]
-        for index in range(
-            0,
-            len(periods),
-            BATCH_SIZE
-        )
-    ]
+    successful_requests = 0
+    empty_requests = 0
+    failed_requests = 0
 
-    for batch in batches:
+    for index, period in enumerate(
+        periods,
+        start=1,
+    ):
 
+        print()
         print(
-            "Downloading periods: "
-            f"{batch[0]} – {batch[-1]}"
+            f"Downloading period "
+            f"{index}/{len(periods)}: "
+            f"{period}"
         )
 
-        url = build_api_url(batch)
+        url = build_api_url(period)
 
         try:
             payload = fetch_json(url)
@@ -443,27 +506,62 @@ def download_all_records(
                 payload
             )
 
-            records.update(parsed)
+            if parsed:
+                records.update(parsed)
 
-            print(
-                f"Received records: "
-                f"{len(parsed)}"
-            )
+                successful_requests += 1
+
+                print(
+                    f"Received records: "
+                    f"{len(parsed)}"
+                )
+
+            else:
+                empty_requests += 1
+
+                print(
+                    "No usable record returned "
+                    f"for {period}."
+                )
 
         except RuntimeError as error:
+            failed_requests += 1
+
             print(
-                "Batch skipped because "
+                "Period skipped because "
                 f"of error: {error}"
             )
 
-        time.sleep(1)
+        time.sleep(
+            REQUEST_DELAY_SECONDS
+        )
+
+    print()
+    print("UN Comtrade download summary")
+    print("-----------------------------")
+    print(
+        f"Successful months: "
+        f"{successful_requests}"
+    )
+    print(
+        f"Empty months: "
+        f"{empty_requests}"
+    )
+    print(
+        f"Failed months: "
+        f"{failed_requests}"
+    )
+    print(
+        f"Generated records: "
+        f"{len(records)}"
+    )
 
     return records
 
 
 def percentage_change(
     current: float,
-    previous: float | None
+    previous: float | None,
 ) -> float | None:
 
     if (
@@ -478,26 +576,26 @@ def percentage_change(
             - 1
         )
         * 100,
-        2
+        2,
     )
 
 
 def rolling_average(
     records: dict[str, dict[str, Any]],
     period: str,
-    months: int
+    months: int,
 ) -> float | None:
 
-    values = []
+    values: list[float] = []
 
     for offset in range(
         -(months - 1),
-        1
+        1,
     ):
 
         target_period = shift_period(
             period,
-            offset
+            offset,
         )
 
         record = records.get(
@@ -513,15 +611,15 @@ def rolling_average(
 
     return round(
         sum(values) / len(values),
-        3
+        3,
     )
 
 
 def enrich_records(
-    records: dict[str, dict[str, Any]]
+    records: dict[str, dict[str, Any]],
 ) -> list[dict[str, Any]]:
 
-    series = []
+    series: list[dict[str, Any]] = []
 
     for period in sorted(records):
 
@@ -532,14 +630,14 @@ def enrich_records(
         previous_month = records.get(
             shift_period(
                 period,
-                -1
+                -1,
             )
         )
 
         previous_year = records.get(
             shift_period(
                 period,
-                -12
+                -12,
             )
         )
 
@@ -555,7 +653,7 @@ def enrich_records(
                 ]
                 if previous_month
                 else None
-            )
+            ),
         )
 
         record[
@@ -570,7 +668,7 @@ def enrich_records(
                 ]
                 if previous_year
                 else None
-            )
+            ),
         )
 
         record[
@@ -578,7 +676,7 @@ def enrich_records(
         ] = rolling_average(
             records,
             period,
-            3
+            3,
         )
 
         record[
@@ -586,7 +684,7 @@ def enrich_records(
         ] = rolling_average(
             records,
             period,
-            12
+            12,
         )
 
         series.append(record)
@@ -595,7 +693,7 @@ def enrich_records(
 
 
 def determine_trend(
-    series: list[dict[str, Any]]
+    series: list[dict[str, Any]],
 ) -> dict[str, Any]:
 
     if len(series) < 2:
@@ -605,7 +703,7 @@ def determine_trend(
             "note": (
                 "Not enough data to "
                 "calculate trend."
-            )
+            ),
         }
 
     latest = series[-1]
@@ -629,13 +727,13 @@ def determine_trend(
             "note": (
                 "Three-month moving "
                 "average is unavailable."
-            )
+            ),
         }
 
     change = round(
         latest_average
         - previous_average,
-        3
+        3,
     )
 
     if change >= 0.15:
@@ -654,13 +752,13 @@ def determine_trend(
             "Direction is based on the "
             "change in the three-month "
             "moving average."
-        )
+        ),
     }
 
 
 def find_missing_periods(
     requested_periods: list[str],
-    records: dict[str, dict[str, Any]]
+    records: dict[str, dict[str, Any]],
 ) -> list[str]:
 
     return [
@@ -671,13 +769,13 @@ def find_missing_periods(
 
 
 def validate_series(
-    series: list[dict[str, Any]]
+    series: list[dict[str, Any]],
 ) -> None:
 
     if not series:
         raise RuntimeError(
-            "No China crude import "
-            "records were generated."
+            "No China crude import records "
+            "were generated."
         )
 
     periods = [
@@ -719,21 +817,25 @@ def main() -> None:
 
     requested_periods = month_range(
         START_PERIOD,
-        end_period
+        end_period,
     )
 
     records = download_all_records(
         requested_periods
     )
 
-    series = enrich_records(records)
+    series = enrich_records(
+        records
+    )
 
-    validate_series(series)
+    validate_series(
+        series
+    )
 
     missing_periods = (
         find_missing_periods(
             requested_periods,
-            records
+            records,
         )
     )
 
@@ -773,14 +875,13 @@ def main() -> None:
             ),
 
             "source_url": (
-                "https://comtradeplus."
-                "un.org/"
+                "https://comtradeplus.un.org/"
             ),
 
             "conversion_note": (
-                "One metric tonne of "
-                "crude oil is approximated "
-                f"as {BARRELS_PER_METRIC_TONNE} "
+                "One metric tonne of crude "
+                "oil is approximated as "
+                f"{BARRELS_PER_METRIC_TONNE} "
                 "barrels."
             ),
 
@@ -791,7 +892,9 @@ def main() -> None:
                 "not estimated."
             ),
 
-            "start_period": START_PERIOD,
+            "start_period": (
+                START_PERIOD
+            ),
 
             "requested_end_period": (
                 end_period
@@ -807,7 +910,9 @@ def main() -> None:
                 ).isoformat()
             ),
 
-            "generator_version": "2.0.0"
+            "generator_version": (
+                "2.1.0"
+            ),
         },
 
         "availability": {
@@ -829,7 +934,7 @@ def main() -> None:
 
             "latest_available_period": (
                 latest["period"]
-            )
+            ),
         },
 
         "summary": {
@@ -840,32 +945,31 @@ def main() -> None:
             ),
 
             "interpretation_note": (
-                "Import volume is a "
-                "physical market indicator, "
-                "but it is not by itself a "
-                "complete measure of Chinese "
-                "oil demand."
-            )
+                "Import volume is a physical "
+                "market indicator, but it is "
+                "not by itself a complete "
+                "measure of Chinese oil demand."
+            ),
         },
 
-        "series": series
+        "series": series,
     }
 
     OUTPUT_FILE.parent.mkdir(
         parents=True,
-        exist_ok=True
+        exist_ok=True,
     )
 
     with OUTPUT_FILE.open(
         "w",
-        encoding="utf-8"
+        encoding="utf-8",
     ) as file:
 
         json.dump(
             output,
             file,
             ensure_ascii=False,
-            indent=2
+            indent=2,
         )
 
     print()
