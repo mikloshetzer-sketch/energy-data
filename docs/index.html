@@ -3079,10 +3079,139 @@
         balance.summary_hu || "";
     }
 
+
+
+    function parseYearValue(value) {
+      if (value == null) return null;
+      const direct = Number(value);
+      if (Number.isInteger(direct) && direct >= 1900 && direct <= 2100) return direct;
+      const match = String(value).match(/(?:19|20)\d{2}/);
+      return match ? Number(match[0]) : null;
+    }
+
+    function finiteFromKeys(object, keys) {
+      if (!object || typeof object !== "object") return null;
+      for (const key of keys) {
+        const value = Number(object[key]);
+        if (Number.isFinite(value)) return value;
+      }
+      return null;
+    }
+
+    function collectObjectArrays(value, output = []) {
+      if (Array.isArray(value)) {
+        if (value.some(item => item && typeof item === "object" && !Array.isArray(item))) {
+          output.push(value);
+        }
+        value.forEach(item => collectObjectArrays(item, output));
+      } else if (value && typeof value === "object") {
+        Object.values(value).forEach(item => collectObjectArrays(item, output));
+      }
+      return output;
+    }
+
+    function normalizeGlobalBalance(payload) {
+      const supplyKeys = [
+        "supply_mbd", "supply", "total_supply_mbd", "global_supply_mbd",
+        "liquids_supply_mbd", "production_mbd", "supply_value"
+      ];
+      const demandKeys = [
+        "demand_mbd", "demand", "total_demand_mbd", "global_demand_mbd",
+        "liquids_demand_mbd", "consumption_mbd", "demand_value"
+      ];
+      const balanceKeys = ["balance_mbd", "balance", "market_balance_mbd", "surplus_deficit_mbd"];
+      const yearKeys = ["year", "period", "time_period", "date", "timestamp", "as_of"];
+
+      const candidates = [];
+      if (Array.isArray(payload?.series)) candidates.push(payload.series);
+      if (Array.isArray(payload?.annual_series)) candidates.push(payload.annual_series);
+      if (Array.isArray(payload?.annual_data)) candidates.push(payload.annual_data);
+      if (Array.isArray(payload?.data)) candidates.push(payload.data);
+      if (Array.isArray(payload?.records)) candidates.push(payload.records);
+      collectObjectArrays(payload).forEach(array => candidates.push(array));
+
+      const byYear = new Map();
+      const ensure = year => {
+        if (!byYear.has(year)) byYear.set(year, { year, supply_mbd: null, demand_mbd: null, balance_mbd: null, status: year >= 2026 ? "forecast" : "historical" });
+        return byYear.get(year);
+      };
+
+      for (const rows of candidates) {
+        for (const row of rows) {
+          if (!row || typeof row !== "object" || Array.isArray(row)) continue;
+          let year = null;
+          for (const key of yearKeys) {
+            year = parseYearValue(row[key]);
+            if (year) break;
+          }
+          if (!year) continue;
+
+          const target = ensure(year);
+          const supply = finiteFromKeys(row, supplyKeys);
+          const demand = finiteFromKeys(row, demandKeys);
+          const balance = finiteFromKeys(row, balanceKeys);
+
+          if (Number.isFinite(supply)) target.supply_mbd = supply;
+          if (Number.isFinite(demand)) target.demand_mbd = demand;
+          if (Number.isFinite(balance)) target.balance_mbd = balance;
+
+          const descriptor = String(row.metric ?? row.indicator ?? row.series_name ?? row.category ?? row.type ?? row.flow ?? "").toLowerCase();
+          const genericValue = finiteFromKeys(row, ["value", "obs_value", "amount", "mbd"]);
+          if (Number.isFinite(genericValue)) {
+            if (descriptor.includes("supply") || descriptor.includes("kínál")) target.supply_mbd = genericValue;
+            if (descriptor.includes("demand") || descriptor.includes("kereslet") || descriptor.includes("consumption")) target.demand_mbd = genericValue;
+            if (descriptor.includes("balance") || descriptor.includes("egyenleg")) target.balance_mbd = genericValue;
+          }
+
+          if (row.status) target.status = row.status;
+        }
+      }
+
+      // Support parallel supply/demand arrays inside nested objects.
+      const parallelSources = [payload, payload?.series, payload?.annual, payload?.data];
+      for (const source of parallelSources) {
+        if (!source || typeof source !== "object" || Array.isArray(source)) continue;
+        const supplyRows = source.supply ?? source.supply_series ?? source.global_supply;
+        const demandRows = source.demand ?? source.demand_series ?? source.global_demand;
+        for (const [kind, rows] of [["supply", supplyRows], ["demand", demandRows]]) {
+          if (!Array.isArray(rows)) continue;
+          rows.forEach((row, index) => {
+            const year = parseYearValue(row?.year ?? row?.period ?? row?.date ?? payload?.coverage?.start_year + index);
+            const value = typeof row === "number" ? row : finiteFromKeys(row, ["value", "mbd", "supply_mbd", "demand_mbd"]);
+            if (!year || !Number.isFinite(value)) return;
+            ensure(year)[kind + "_mbd"] = value;
+          });
+        }
+      }
+
+      const series = [...byYear.values()]
+        .filter(row => Number.isFinite(row.supply_mbd) && Number.isFinite(row.demand_mbd))
+        .map(row => ({
+          ...row,
+          balance_mbd: Number.isFinite(row.balance_mbd) ? row.balance_mbd : row.supply_mbd - row.demand_mbd
+        }))
+        .sort((a, b) => a.year - b.year);
+
+      return { ...payload, series };
+    }
+
+    function extractInventoryStressScore(payload) {
+      return firstFinite(
+        payload?.inventory_stress_score,
+        payload?.score,
+        payload?.current?.score,
+        payload?.latest?.score,
+        payload?.summary?.score,
+        payload?.summary?.latest_score
+      );
+    }
+
     function renderGlobalBalance(globalBalance) {
       const series = globalBalance.series || [];
 
       if (!series.length) {
+        document.getElementById("globalBalanceSummary").innerHTML =
+          "<strong>Adathiba</strong><ul><li>A global_oil_balance.json betöltődött, de nem található benne felismerhető éves kínálati és keresleti adatsor.</li></ul>";
         return;
       }
 
@@ -4791,7 +4920,7 @@
       const upper = firstFinite(brentOutlook?.outlook?.upper_price_usd);
       const direction = directionHu(brentOutlook?.outlook?.direction);
       const confidence = confidenceHu(brentOutlook?.outlook?.confidence);
-      const inventoryScore = firstFinite(inventory?.inventory_stress_score);
+      const inventoryScore = extractInventoryStressScore(inventory);
 
       const fundamental = deficit >= 1.5 ? "feszes" : deficit >= .5 ? "enyhén feszes" : "közel kiegyensúlyozott";
       const text = `A globális olajpiac ${fundamental} fundamentális szerkezetet mutat. ` +
@@ -4829,7 +4958,7 @@
 
       const deficit = Math.max(0, Number(row2025.demand_mbd) - Number(row2026.supply_mbd));
       const volatilityBand = firstFinite(brentOutlook?.signals?.volatility_band_pct) ?? 5;
-      const inventoryScore = firstFinite(inventory?.inventory_stress_score) ?? 50;
+      const inventoryScore = extractInventoryStressScore(inventory) ?? 50;
       const geopolitical = firstFinite(interpretation?.combined_risk_score) ?? 50;
       const chokepoint = extractChokepointRisk(chokepoints);
       const chinaMomentum = firstFinite(
@@ -4914,6 +5043,9 @@
         loadJsonSafe(URLS.chinaCrudeImportVolume, {})
       ]);
 
+      const normalizedGlobalBalance = normalizeGlobalBalance(globalBalance);
+      const inventoryStressScore = extractInventoryStressScore(inventory);
+
       const usaSeries = usa.series || [];
       const chinaSeries = china.series || [];
 
@@ -4938,9 +5070,8 @@
       const level = interpretation.risk_level || "MEDIUM";
 
       document.getElementById("dateBox").innerHTML =
-        (brentOutlook.generated_at || ompiData.generated_at || interpretation.generated_at ||
-          new Date().toISOString().slice(0, 10)) +
-        "<br>UTC";
+        new Date(brentOutlook.generated_at || ompiData.generated_at || interpretation.generated_at || Date.now())
+          .toISOString().replace("T", " ").replace(".000Z", " UTC");
 
       const pill = document.getElementById("topRiskPill");
 
@@ -4990,7 +5121,7 @@
         (interpretation.risk_label_en || "–");
 
       document.getElementById("inventoryStress").innerText =
-        fmtIndex(inventory.inventory_stress_score);
+        fmtIndex(inventoryStressScore);
 
       document.getElementById("inventoryStressSub").innerText =
         (inventory.inventory_stress_level_hu || "–") +
@@ -5010,16 +5141,16 @@
       renderChokepoints(chokepoints.chokepoints || []);
       renderProxyBalance(balance);
 
-      renderGlobalBalance(globalBalance);
-      renderDemandRecoveryScenario(globalBalance);
-      renderInventoryDrawModule(globalBalance);
-      renderScenarioMatrix(globalBalance);
-      renderOpecCoverage(globalBalance);
+      renderGlobalBalance(normalizedGlobalBalance);
+      renderDemandRecoveryScenario(normalizedGlobalBalance);
+      renderInventoryDrawModule(normalizedGlobalBalance);
+      renderScenarioMatrix(normalizedGlobalBalance);
+      renderOpecCoverage(normalizedGlobalBalance);
       renderOmpi(ompiData);
       renderPriceOutlook(brentOutlook);
-      renderMarketAssessment(globalBalance, brentOutlook, inventory, interpretation);
+      renderMarketAssessment(normalizedGlobalBalance, brentOutlook, inventory, interpretation);
       renderRiskOutlook(
-        globalBalance,
+        normalizedGlobalBalance,
         ompiData,
         brentOutlook,
         inventory,
