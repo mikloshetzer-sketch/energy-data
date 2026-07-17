@@ -1,22 +1,47 @@
 {
+  "generated_at": "2026-07-17T11:52:51Z",
   "index": "OMPI",
-  "method_version": "ompi_v2_fundamental_2026_07",
-  "updated_at": "2026-07-17T11:40:02Z",
+  "method_version": "ompi_v2_fundamental_2026_07_china_volume",
   "history": [
     {
       "date": "2026-07-17",
-      "generated_at": "2026-07-17T11:40:02Z",
-      "score": 73.1,
-      "level": "HIGH",
-      "direction": "BULLISH",
-      "confidence_score": 84.5,
+      "generated_at": "2026-07-17T11:52:51Z",
+      "score": 25.5,
+      "level": "VERY_LOW",
+      "direction": "STRONGLY_BEARISH",
+      "data_quality": "PARTIAL",
+      "confidence_score": 83.8,
       "components": {
-        "physical_balance": 100.0,
-        "inventory_stress": 50.0,
-        "opec_buffer": 94.2,
-        "geopolitical_risk": 48.5,
-        "china_import_momentum": 50.0,
-        "chokepoint_risk": 34.4
+        "physical_balance": {
+          "score": 0.0,
+          "contribution": 0.0,
+          "data_quality": "AVAILABLE"
+        },
+        "inventory_stress": {
+          "score": 50.0,
+          "contribution": 10.0,
+          "data_quality": "FALLBACK_PREVIOUS"
+        },
+        "opec_buffer": {
+          "score": 25.0,
+          "contribution": 3.75,
+          "data_quality": "PARTIAL_STATIC_PARAMETER"
+        },
+        "geopolitical_risk": {
+          "score": 48.5,
+          "contribution": 7.27,
+          "data_quality": "AVAILABLE"
+        },
+        "china_import_momentum": {
+          "score": 27.2,
+          "contribution": 2.72,
+          "data_quality": "PARTIAL_SHORT_HISTORY"
+        },
+        "chokepoint_risk": {
+          "score": 34.4,
+          "contribution": 1.72,
+          "data_quality": "AVAILABLE"
+        }
       }
     }
   ]

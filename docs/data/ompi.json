@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-17T11:40:02Z",
+  "generated_at": "2026-07-17T11:52:51Z",
   "index": "OMPI",
   "index_name": "Oil Market Pressure Index",
-  "method_version": "ompi_v2_fundamental_2026_07",
-  "score": 73.1,
-  "level": "HIGH",
-  "level_hu": "Magas",
-  "level_en": "High",
-  "direction": "BULLISH",
-  "direction_hu": "Felfelé mutató",
-  "direction_en": "Bullish",
-  "description_hu": "Erős felfelé irányuló árnyomás és korlátozott piaci alkalmazkodóképesség.",
-  "description_en": "Strong upward price pressure and limited market adjustment capacity.",
+  "method_version": "ompi_v2_fundamental_2026_07_china_volume",
+  "score": 25.5,
+  "level": "VERY_LOW",
+  "level_hu": "Nagyon alacsony",
+  "level_en": "Very low",
+  "direction": "STRONGLY_BEARISH",
+  "direction_hu": "Erősen lefelé mutató",
+  "direction_en": "Strongly bearish",
+  "description_hu": "Erős lefelé irányuló árnyomás és jelentős piaci tartalék.",
+  "description_en": "Strong downward price pressure and substantial market buffer capacity.",
   "weights": {
     "physical_balance": 0.35,
     "inventory_stress": 0.2,
@@ -22,16 +22,16 @@
   },
   "components": {
     "physical_balance": {
-      "score": 100.0,
+      "score": 0.0,
       "weight": 0.35,
       "weight_pct": 35.0,
-      "contribution": 35.0,
-      "period": "2026-07",
-      "global_supply_mbd": 99.232,
-      "global_demand_mbd": 101.574,
+      "contribution": 0.0,
+      "period": "2027-12",
+      "global_supply_mbd": 111.249,
+      "global_demand_mbd": 106.469,
       "source_generated_at": null,
       "data_quality": "AVAILABLE",
-      "balance_mbd": -2.342,
+      "balance_mbd": 4.78,
       "method": "clamp_50_minus_balance_times_25"
     },
     "inventory_stress": {
@@ -48,15 +48,15 @@
       "summary_en": "Fresh EIA inventory data could not be fetched, so the model applies a cautious medium inventory-side pressure estimate."
     },
     "opec_buffer": {
-      "score": 94.2,
+      "score": 25.0,
       "weight": 0.15,
       "weight_pct": 15.0,
-      "contribution": 14.13,
+      "contribution": 3.75,
       "effective_spare_capacity_mbd": 0.17,
-      "physical_deficit_mbd": 2.342,
-      "coverage_ratio": 0.0726,
-      "coverage_pct": 7.3,
-      "method": "effective_spare_capacity_divided_by_deficit",
+      "physical_deficit_mbd": 0.0,
+      "coverage_ratio": 1.0,
+      "coverage_pct": 100.0,
+      "method": "no_physical_deficit_low_pressure",
       "parameter_status": "TEMPORARY_STATIC_INPUT",
       "data_quality": "PARTIAL_STATIC_PARAMETER"
     },
@@ -77,13 +77,29 @@
       ]
     },
     "china_import_momentum": {
-      "score": 50.0,
+      "score": 27.2,
       "weight": 0.1,
       "weight_pct": 10.0,
-      "contribution": 5.0,
-      "data_quality": "INSUFFICIENT_HISTORY_FALLBACK",
-      "observation_count": 0,
-      "method": "neutral_fallback"
+      "contribution": 2.72,
+      "latest_month": "2026-05",
+      "latest_import_volume_mbd": 9.103,
+      "recent_average_mbd": 9.255,
+      "reference_average_mbd": 11.983,
+      "short_term_change_pct": -22.8,
+      "observation_count": 5,
+      "data_quality": "PARTIAL_SHORT_HISTORY",
+      "method": "latest_2m_average_vs_previous_months_average",
+      "source_file": "china-oil-import.json",
+      "source_fields": [
+        "monthly_inputs[].month",
+        "monthly_inputs[].estimated_import_volume_mbd"
+      ],
+      "excluded_source_fields": [
+        "series[].brent_usd_per_barrel",
+        "series[].estimated_import_value_billion_usd",
+        "summary.latest.brent_usd_per_barrel",
+        "summary.latest.estimated_import_value_billion_usd"
+      ]
     },
     "chokepoint_risk": {
       "score": 34.4,
@@ -102,13 +118,13 @@
       "available_route_weight": 1.0,
       "routes": [
         {
-          "id": "bab_el_mandeb",
-          "score": 41.5,
+          "id": "hormuz",
+          "score": 39.9,
           "level": "MEDIUM"
         },
         {
-          "id": "hormuz",
-          "score": 39.9,
+          "id": "bab_el_mandeb",
+          "score": 41.5,
           "level": "MEDIUM"
         },
         {
@@ -127,17 +143,16 @@
     }
   },
   "data_quality": {
-    "status": "LIMITED",
-    "confidence_score": 84.5,
-    "coverage_pct": 90.0,
-    "missing_components": [
-      "china_import_momentum"
-    ],
+    "status": "PARTIAL",
+    "confidence_score": 83.8,
+    "coverage_pct": 100.0,
+    "missing_components": [],
     "fallback_components": [
       "inventory_stress"
     ],
     "partial_components": [
-      "opec_buffer"
+      "opec_buffer",
+      "china_import_momentum"
     ]
   },
   "market_confirmation": {
@@ -151,8 +166,12 @@
     "chokepoint_weight_temporary": true,
     "chokepoint_overlap_warning": true,
     "opec_input_temporary_static": true,
-    "brent_excluded_from_score": true
+    "brent_excluded_from_score": true,
+    "china_source_files_modified": false,
+    "china_exposure_score_excluded": true,
+    "china_import_cost_excluded": true,
+    "china_brent_price_excluded": true
   },
-  "summary_hu": "Az OMPI értéke 73.1/100, ami magas olajpiaci nyomást jelez. A fizikai mérleg -2.34 millió hordó/nap. A legnagyobb súlyozott hozzájárulást jelenleg a fizikai kínálat–keresleti mérleg adja. Az adatbizalmi státusz: LIMITED (84.5/100).",
-  "summary_en": "The OMPI stands at 73.1/100, indicating high oil-market pressure. The physical balance is -2.34 million barrels per day. The largest weighted contribution currently comes from the physical supply-demand balance. Data-confidence status: LIMITED (84.5/100)."
+  "summary_hu": "Az OMPI értéke 25.5/100, ami nagyon alacsony olajpiaci nyomást jelez. A fizikai mérleg 4.78 millió hordó/nap. A legnagyobb súlyozott hozzájárulást jelenleg a készlethelyzet adja. Az adatbizalmi státusz: PARTIAL (83.8/100).",
+  "summary_en": "The OMPI stands at 25.5/100, indicating very low oil-market pressure. The physical balance is 4.78 million barrels per day. The largest weighted contribution currently comes from the inventory conditions. Data-confidence status: PARTIAL (83.8/100)."
 }
