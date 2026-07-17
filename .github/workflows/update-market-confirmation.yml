@@ -1,0 +1,110 @@
+name: Update Market Confirmation
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "35 8 * * *"
+
+  workflow_run:
+    workflows:
+      - Update OMPI
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+jobs:
+  update-market-confirmation:
+    if: >
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Python beállítása
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Piaci adatfájlok ellenőrzése
+        run: |
+          echo "Elérhető adatfájlok:"
+          find docs/data -maxdepth 1 -type f -name "*.json" -print | sort
+
+          if [ ! -f "docs/data/ompi.json" ]; then
+            echo "HIBA: A docs/data/ompi.json nem található."
+            exit 1
+          fi
+
+          MARKET_FILE_FOUND=false
+
+          for FILE in \
+            "docs/data/energy-market.json" \
+            "docs/data/energy_dashboard.json" \
+            "docs/data/market_data.json" \
+            "docs/data/energy-data.json" \
+            "energy-market.json"
+          do
+            if [ -f "$FILE" ]; then
+              echo "Piaci adatfájl megtalálva: $FILE"
+              MARKET_FILE_FOUND=true
+              break
+            fi
+          done
+
+          if [ "$MARKET_FILE_FOUND" != "true" ]; then
+            echo "HIBA: Nem található támogatott piaci adatfájl."
+            exit 1
+          fi
+
+      - name: Market Confirmation generálása
+        run: |
+          python scripts/generate_market_confirmation.py
+
+      - name: Kimeneti fájlok ellenőrzése
+        run: |
+          test -f docs/data/market-confirmation.json
+          test -f docs/data/market-confirmation-history.json
+
+          python -m json.tool \
+            docs/data/market-confirmation.json \
+            > /dev/null
+
+          python -m json.tool \
+            docs/data/market-confirmation-history.json \
+            > /dev/null
+
+          echo "A Market Confirmation fájlok érvényesek."
+
+      - name: Változások megjelenítése
+        run: |
+          git status --short
+          git diff -- docs/data/market-confirmation.json || true
+          git diff -- docs/data/market-confirmation-history.json || true
+
+      - name: Változások commitolása
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            docs/data/market-confirmation.json \
+            docs/data/market-confirmation-history.json
+
+          if git diff --cached --quiet; then
+            echo "Nincs új változás, nincs szükség commitra."
+            exit 0
+          fi
+
+          git commit -m "Update market confirmation data"
+
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
