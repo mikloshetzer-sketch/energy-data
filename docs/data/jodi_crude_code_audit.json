@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-17T17:21:48+00:00",
+  "generated_at": "2026-07-17T17:36:14+00:00",
   "dataset": "jodi_crude_code_audit",
   "source": {
     "name": "JODI Oil World Database",
@@ -19,31 +19,59 @@
     "all_rows": 6872400,
     "crude_oil_rows": 1718100
   },
-  "required_filter": {
+  "required_filters": {
     "ENERGY_PRODUCT": "CRUDEOIL",
-    "UNIT_MEASURE": "KBD"
+    "flows": {
+      "production": {
+        "code": "INDPROD",
+        "unit": "KBD"
+      },
+      "refinery_intake": {
+        "code": "REFINOBS",
+        "unit": "KBD"
+      },
+      "stock_change": {
+        "code": "STOCKCH",
+        "unit": "KBBL"
+      },
+      "closing_stocks": {
+        "code": "CLOSTLV",
+        "unit": "KBBL"
+      }
+    }
   },
   "configured_flows": {
     "production": {
       "code": "INDPROD",
-      "valid_kbd_observations": 24377,
+      "unit": "KBD",
+      "valid_observations": 24377,
       "reporting_areas": 104,
       "start_period": "2002-01",
       "end_period": "2026-04"
     },
     "refinery_intake": {
       "code": "REFINOBS",
-      "valid_kbd_observations": 24063,
+      "unit": "KBD",
+      "valid_observations": 24063,
       "reporting_areas": 104,
       "start_period": "2002-01",
       "end_period": "2026-04"
     },
     "stock_change": {
       "code": "STOCKCH",
-      "valid_kbd_observations": 0,
-      "reporting_areas": 0,
-      "start_period": null,
-      "end_period": null
+      "unit": "KBBL",
+      "valid_observations": 22626,
+      "reporting_areas": 99,
+      "start_period": "2002-01",
+      "end_period": "2026-04"
+    },
+    "closing_stocks": {
+      "code": "CLOSTLV",
+      "unit": "KBBL",
+      "valid_observations": 21859,
+      "reporting_areas": 95,
+      "start_period": "2002-01",
+      "end_period": "2026-04"
     }
   },
   "available_flow_breakdown_values": [

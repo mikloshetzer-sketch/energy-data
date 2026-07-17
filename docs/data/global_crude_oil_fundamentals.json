@@ -1,11 +1,13 @@
 {
-  "generated_at": "2026-07-17T17:21:49+00:00",
+  "generated_at": "2026-07-17T17:36:16+00:00",
   "dataset": "global_crude_oil_fundamentals",
   "title_hu": "Globális nyersolajpiaci fundamentumok",
   "title_en": "Global Crude Oil Fundamentals",
   "frequency": "monthly",
-  "unit": "million_barrels_per_day",
-  "unit_short": "mb/d",
+  "primary_flow_unit": "million_barrels_per_day",
+  "primary_flow_unit_short": "mb/d",
+  "stock_level_unit": "million_barrels",
+  "stock_change_source_unit": "thousand_barrels_per_month",
   "source": {
     "name": "JODI Oil World Database",
     "provider": "Joint Organisations Data Initiative",
@@ -13,11 +15,23 @@
     "archive_member": "NewProcedure_Primary_CSV.csv",
     "filters": {
       "ENERGY_PRODUCT": "CRUDEOIL",
-      "UNIT_MEASURE": "KBD",
-      "FLOW_BREAKDOWN": {
-        "production": "INDPROD",
-        "refinery_intake": "REFINOBS",
-        "stock_change": "STOCKCH"
+      "flows": {
+        "production": {
+          "code": "INDPROD",
+          "unit": "KBD"
+        },
+        "refinery_intake": {
+          "code": "REFINOBS",
+          "unit": "KBD"
+        },
+        "stock_change": {
+          "code": "STOCKCH",
+          "unit": "KBBL"
+        },
+        "closing_stocks": {
+          "code": "CLOSTLV",
+          "unit": "KBBL"
+        }
       }
     }
   },
@@ -30,25 +44,33 @@
     "common_country_refinery_intake_mbd": 70.012,
     "common_country_gap_mbd": -24.085,
     "gap_state": "intake_above_production",
-    "reported_stock_change_mbd": null,
-    "stock_state": "unavailable",
+    "reported_stock_change_kbbl": -19668.0,
+    "reported_stock_change_average_kbd": -634.5,
+    "reported_stock_change_average_mbd": -0.634,
+    "reported_closing_stocks_kbbl": 2035489.3,
+    "reported_closing_stocks_million_barrels": 2035.489,
     "coverage": {
       "production_reporters": 60,
       "refinery_intake_reporters": 59,
       "common_reporters": 58,
-      "stock_change_reporters": 0
+      "stock_change_reporters": 56,
+      "closing_stock_reporters": 57
     },
     "coverage_quality": {
       "production_ratio": 0.938,
       "refinery_intake_ratio": 0.908,
       "common_ratio": 0.935,
+      "stock_change_ratio": 0.933,
+      "closing_stock_ratio": 0.966,
       "headline_usable": true
     },
     "changes": {
       "production_mom_pct": -0.65,
       "production_yoy_pct": 3.36,
       "refinery_intake_mom_pct": 4.11,
-      "refinery_intake_yoy_pct": 2.71
+      "refinery_intake_yoy_pct": 2.71,
+      "closing_stocks_mom_pct": -0.93,
+      "closing_stocks_yoy_pct": 0.65
     }
   },
   "coverage": {
@@ -56,17 +78,21 @@
     "latest_source_period": "2026-04",
     "latest_headline_period": "2025-12",
     "monthly_period_count": 292,
-    "selected_valid_source_rows": 48440,
+    "selected_valid_source_rows": 92925,
     "recent_reference_reporter_counts": {
       "production_reporters": 64,
       "refinery_intake_reporters": 65,
-      "common_reporters": 62
+      "common_reporters": 62,
+      "stock_change_reporters": 60,
+      "closing_stock_reporters": 59
     },
     "headline_minimum_coverage_ratio": 0.85,
     "coverage_reference_lookback_months": 24
   },
-  "methodology_hu": "A modul a JODI Oil World Primary CSV CRUDEOIL terméksorait használja KBD egységben. A nyersolajtermelés INDPROD, a finomítói nyersolaj-betáplálás REFINOBS, a készletváltozás STOCKCH kódból származik. A termelés és a finomítói betáplálás különbségét azonos országkörön számítja, és csak megfelelő riporteri lefedettség mellett jelöli főértékként.",
-  "methodology_en": "The module uses CRUDEOIL rows from the JODI Oil World Primary CSV in KBD. Production is sourced from INDPROD, refinery crude intake from REFINOBS and stock change from STOCKCH. Production and intake are compared across the same country set, and only sufficiently covered periods are eligible for the headline value.",
+  "methodology_hu": "A modul a JODI Oil World Primary CSV CRUDEOIL terméksorait használja. A nyersolajtermelés INDPROD + KBD, a finomítói nyersolaj-betáplálás REFINOBS + KBD, a havi készletváltozás STOCKCH + KBBL, a zárókészlet pedig CLOSTLV + KBBL szűrésből származik. A havi készletváltozás napi átlagra történő átszámítása a hónap naptári napjainak számával történik. A termelés és a finomítói betáplálás különbségét azonos országkörön számítja.",
+  "methodology_en": "The module uses CRUDEOIL rows from the JODI Oil World Primary CSV. Crude-oil production uses INDPROD + KBD, refinery crude intake uses REFINOBS + KBD, monthly stock change uses STOCKCH + KBBL and closing stocks use CLOSTLV + KBBL. Monthly stock change is converted to an average daily rate using calendar days in the month. Production and refinery intake are compared across the same country set.",
+  "stock_sign_note_hu": "A STOCKCH előjelének értelmezését a modul semlegesen kezeli. Az érték nem kap automatikus készletépítés vagy készletleépítés minősítést.",
+  "stock_sign_note_en": "The STOCKCH sign is handled neutrally. The value is not automatically classified as a stock build or stock draw.",
   "summary_hu": "A legfrissebb megfelelő lefedettségű JODI-időszak 2025-12. A jelentett nyersolajtermelés 47.52 mb/d, a jelentett finomítói nyersolaj-betáplálás 70.01 mb/d. Az azonos 58 országkörön számított termelés–betáplálás különbsége -24.09 mb/d. Ez nem teljes globális kínálat–keresleti mérleg.",
   "summary_en": "The latest JODI period with sufficient coverage is 2025-12. Reported crude-oil production is 47.52 mb/d and reported refinery crude intake is 70.01 mb/d. Across the same set of 58 countries, the production-minus-intake gap is -24.09 mb/d. This is not a complete global supply-demand balance.",
   "annual_series": [
@@ -77,7 +103,9 @@
       "average_reported_production_mbd": 53.987,
       "average_reported_refinery_intake_mbd": 67.672,
       "average_common_country_gap_mbd": -15.232,
-      "average_reported_stock_change_mbd": null,
+      "total_reported_stock_change_kbbl": -39065.9,
+      "average_reported_stock_change_mbd": -0.099,
+      "average_reported_closing_stocks_million_barrels": 2088.072,
       "gap_state": "intake_above_production"
     },
     {
@@ -87,7 +115,9 @@
       "average_reported_production_mbd": 46.436,
       "average_reported_refinery_intake_mbd": 66.304,
       "average_common_country_gap_mbd": -21.339,
-      "average_reported_stock_change_mbd": null,
+      "total_reported_stock_change_kbbl": -4761.5,
+      "average_reported_stock_change_mbd": -0.005,
+      "average_reported_closing_stocks_million_barrels": 2049.267,
       "gap_state": "intake_above_production"
     },
     {
@@ -97,7 +127,9 @@
       "average_reported_production_mbd": 46.792,
       "average_reported_refinery_intake_mbd": 66.771,
       "average_common_country_gap_mbd": -22.072,
-      "average_reported_stock_change_mbd": null,
+      "total_reported_stock_change_kbbl": 19186.9,
+      "average_reported_stock_change_mbd": 0.051,
+      "average_reported_closing_stocks_million_barrels": 2031.41,
       "gap_state": "intake_above_production"
     },
     {
@@ -107,7 +139,9 @@
       "average_reported_production_mbd": 43.718,
       "average_reported_refinery_intake_mbd": 62.73,
       "average_common_country_gap_mbd": null,
-      "average_reported_stock_change_mbd": null,
+      "total_reported_stock_change_kbbl": -5985.9,
+      "average_reported_stock_change_mbd": -0.016,
+      "average_reported_closing_stocks_million_barrels": 2028.937,
       "gap_state": "unavailable"
     }
   ],
@@ -115,6 +149,7 @@
     {
       "period": "2016-05",
       "date": "2016-05-01",
+      "days_in_month": 31,
       "reported_production_kbd": 71226.3,
       "reported_production_mbd": 71.226,
       "reported_refinery_intake_kbd": 73551.0,
@@ -122,29 +157,39 @@
       "common_country_production_mbd": 69.911,
       "common_country_refinery_intake_mbd": 73.551,
       "common_country_gap_mbd": -3.64,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -1784.7,
+      "reported_stock_change_average_kbd": -57.6,
+      "reported_stock_change_average_mbd": -0.058,
+      "reported_closing_stocks_kbbl": 2826414.5,
+      "reported_closing_stocks_million_barrels": 2826.414,
       "coverage": {
         "production_reporters": 95,
         "refinery_intake_reporters": 94,
         "common_reporters": 93,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 88,
+        "closing_stock_reporters": 86
       },
       "coverage_quality": {
         "production_ratio": 1.484,
         "refinery_intake_ratio": 1.446,
         "common_ratio": 1.5,
+        "stock_change_ratio": 1.467,
+        "closing_stock_ratio": 1.458,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -4.25,
         "production_yoy_pct": -4.48,
         "refinery_intake_mom_pct": -2.46,
-        "refinery_intake_yoy_pct": -1.24
+        "refinery_intake_yoy_pct": -1.24,
+        "closing_stocks_mom_pct": 0.56,
+        "closing_stocks_yoy_pct": 0.92
       }
     },
     {
       "period": "2016-06",
       "date": "2016-06-01",
+      "days_in_month": 30,
       "reported_production_kbd": 74364.5,
       "reported_production_mbd": 74.365,
       "reported_refinery_intake_kbd": 75533.1,
@@ -152,29 +197,39 @@
       "common_country_production_mbd": 73.061,
       "common_country_refinery_intake_mbd": 75.533,
       "common_country_gap_mbd": -2.472,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -8735.2,
+      "reported_stock_change_average_kbd": -291.2,
+      "reported_stock_change_average_mbd": -0.291,
+      "reported_closing_stocks_kbbl": 2824831.3,
+      "reported_closing_stocks_million_barrels": 2824.831,
       "coverage": {
         "production_reporters": 96,
         "refinery_intake_reporters": 95,
         "common_reporters": 94,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 89,
+        "closing_stock_reporters": 87
       },
       "coverage_quality": {
         "production_ratio": 1.5,
         "refinery_intake_ratio": 1.462,
         "common_ratio": 1.516,
+        "stock_change_ratio": 1.483,
+        "closing_stock_ratio": 1.475,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 4.41,
         "production_yoy_pct": -0.47,
         "refinery_intake_mom_pct": 2.69,
-        "refinery_intake_yoy_pct": -0.88
+        "refinery_intake_yoy_pct": -0.88,
+        "closing_stocks_mom_pct": -0.06,
+        "closing_stocks_yoy_pct": 0.75
       }
     },
     {
       "period": "2016-07",
       "date": "2016-07-01",
+      "days_in_month": 31,
       "reported_production_kbd": 75054.2,
       "reported_production_mbd": 75.054,
       "reported_refinery_intake_kbd": 77447.1,
@@ -182,29 +237,39 @@
       "common_country_production_mbd": 73.746,
       "common_country_refinery_intake_mbd": 77.447,
       "common_country_gap_mbd": -3.701,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -35759.1,
+      "reported_stock_change_average_kbd": -1153.5,
+      "reported_stock_change_average_mbd": -1.154,
+      "reported_closing_stocks_kbbl": 2807029.0,
+      "reported_closing_stocks_million_barrels": 2807.029,
       "coverage": {
         "production_reporters": 96,
         "refinery_intake_reporters": 95,
         "common_reporters": 94,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 89,
+        "closing_stock_reporters": 87
       },
       "coverage_quality": {
         "production_ratio": 1.5,
         "refinery_intake_ratio": 1.462,
         "common_ratio": 1.516,
+        "stock_change_ratio": 1.483,
+        "closing_stock_ratio": 1.475,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.93,
         "production_yoy_pct": -0.31,
         "refinery_intake_mom_pct": 2.53,
-        "refinery_intake_yoy_pct": -0.14
+        "refinery_intake_yoy_pct": -0.14,
+        "closing_stocks_mom_pct": -0.63,
+        "closing_stocks_yoy_pct": 0.34
       }
     },
     {
       "period": "2016-08",
       "date": "2016-08-01",
+      "days_in_month": 31,
       "reported_production_kbd": 73953.8,
       "reported_production_mbd": 73.954,
       "reported_refinery_intake_kbd": 77103.4,
@@ -212,29 +277,39 @@
       "common_country_production_mbd": 72.813,
       "common_country_refinery_intake_mbd": 77.063,
       "common_country_gap_mbd": -4.25,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -28698.6,
+      "reported_stock_change_average_kbd": -925.8,
+      "reported_stock_change_average_mbd": -0.926,
+      "reported_closing_stocks_kbbl": 2774923.9,
+      "reported_closing_stocks_million_barrels": 2774.924,
       "coverage": {
         "production_reporters": 81,
         "refinery_intake_reporters": 80,
         "common_reporters": 77,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 76,
+        "closing_stock_reporters": 74
       },
       "coverage_quality": {
         "production_ratio": 1.266,
         "refinery_intake_ratio": 1.231,
         "common_ratio": 1.242,
+        "stock_change_ratio": 1.267,
+        "closing_stock_ratio": 1.254,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -1.47,
         "production_yoy_pct": -0.04,
         "refinery_intake_mom_pct": -0.44,
-        "refinery_intake_yoy_pct": 1.39
+        "refinery_intake_yoy_pct": 1.39,
+        "closing_stocks_mom_pct": -1.14,
+        "closing_stocks_yoy_pct": 0.03
       }
     },
     {
       "period": "2016-09",
       "date": "2016-09-01",
+      "days_in_month": 30,
       "reported_production_kbd": 74512.9,
       "reported_production_mbd": 74.513,
       "reported_refinery_intake_kbd": 75163.7,
@@ -242,29 +317,39 @@
       "common_country_production_mbd": 73.116,
       "common_country_refinery_intake_mbd": 75.125,
       "common_country_gap_mbd": -2.009,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 3784.7,
+      "reported_stock_change_average_kbd": 126.2,
+      "reported_stock_change_average_mbd": 0.126,
+      "reported_closing_stocks_kbbl": 2792683.5,
+      "reported_closing_stocks_million_barrels": 2792.684,
       "coverage": {
         "production_reporters": 81,
         "refinery_intake_reporters": 79,
         "common_reporters": 76,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 75,
+        "closing_stock_reporters": 74
       },
       "coverage_quality": {
         "production_ratio": 1.266,
         "refinery_intake_ratio": 1.215,
         "common_ratio": 1.226,
+        "stock_change_ratio": 1.25,
+        "closing_stock_ratio": 1.254,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.76,
         "production_yoy_pct": 0.37,
         "refinery_intake_mom_pct": -2.51,
-        "refinery_intake_yoy_pct": -0.34
+        "refinery_intake_yoy_pct": -0.34,
+        "closing_stocks_mom_pct": 0.64,
+        "closing_stocks_yoy_pct": -0.26
       }
     },
     {
       "period": "2016-10",
       "date": "2016-10-01",
+      "days_in_month": 31,
       "reported_production_kbd": 74664.7,
       "reported_production_mbd": 74.665,
       "reported_refinery_intake_kbd": 73674.9,
@@ -272,29 +357,39 @@
       "common_country_production_mbd": 73.149,
       "common_country_refinery_intake_mbd": 73.252,
       "common_country_gap_mbd": -0.104,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 7579.3,
+      "reported_stock_change_average_kbd": 244.5,
+      "reported_stock_change_average_mbd": 0.244,
+      "reported_closing_stocks_kbbl": 2810973.1,
+      "reported_closing_stocks_million_barrels": 2810.973,
       "coverage": {
         "production_reporters": 78,
         "refinery_intake_reporters": 80,
         "common_reporters": 75,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 74,
+        "closing_stock_reporters": 73
       },
       "coverage_quality": {
         "production_ratio": 1.219,
         "refinery_intake_ratio": 1.231,
         "common_ratio": 1.21,
+        "stock_change_ratio": 1.233,
+        "closing_stock_ratio": 1.237,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.2,
         "production_yoy_pct": -0.54,
         "refinery_intake_mom_pct": -1.98,
-        "refinery_intake_yoy_pct": 0.62
+        "refinery_intake_yoy_pct": 0.62,
+        "closing_stocks_mom_pct": 0.65,
+        "closing_stocks_yoy_pct": -1.42
       }
     },
     {
       "period": "2016-11",
       "date": "2016-11-01",
+      "days_in_month": 30,
       "reported_production_kbd": 75466.0,
       "reported_production_mbd": 75.466,
       "reported_refinery_intake_kbd": 76196.4,
@@ -302,29 +397,39 @@
       "common_country_production_mbd": 73.906,
       "common_country_refinery_intake_mbd": 75.796,
       "common_country_gap_mbd": -1.89,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -36862.6,
+      "reported_stock_change_average_kbd": -1228.8,
+      "reported_stock_change_average_mbd": -1.229,
+      "reported_closing_stocks_kbbl": 2778604.2,
+      "reported_closing_stocks_million_barrels": 2778.604,
       "coverage": {
         "production_reporters": 77,
         "refinery_intake_reporters": 79,
         "common_reporters": 74,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 74,
+        "closing_stock_reporters": 73
       },
       "coverage_quality": {
         "production_ratio": 1.203,
         "refinery_intake_ratio": 1.215,
         "common_ratio": 1.194,
+        "stock_change_ratio": 1.233,
+        "closing_stock_ratio": 1.237,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.07,
         "production_yoy_pct": 0.13,
         "refinery_intake_mom_pct": 3.42,
-        "refinery_intake_yoy_pct": 0.75
+        "refinery_intake_yoy_pct": 0.75,
+        "closing_stocks_mom_pct": -1.15,
+        "closing_stocks_yoy_pct": -1.95
       }
     },
     {
       "period": "2016-12",
       "date": "2016-12-01",
+      "days_in_month": 31,
       "reported_production_kbd": 74358.1,
       "reported_production_mbd": 74.358,
       "reported_refinery_intake_kbd": 78139.5,
@@ -332,29 +437,39 @@
       "common_country_production_mbd": 72.796,
       "common_country_refinery_intake_mbd": 77.677,
       "common_country_gap_mbd": -4.881,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -11473.8,
+      "reported_stock_change_average_kbd": -370.1,
+      "reported_stock_change_average_mbd": -0.37,
+      "reported_closing_stocks_kbbl": 2770744.5,
+      "reported_closing_stocks_million_barrels": 2770.745,
       "coverage": {
         "production_reporters": 77,
         "refinery_intake_reporters": 79,
         "common_reporters": 74,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 74,
+        "closing_stock_reporters": 73
       },
       "coverage_quality": {
         "production_ratio": 1.203,
         "refinery_intake_ratio": 1.215,
         "common_ratio": 1.194,
+        "stock_change_ratio": 1.233,
+        "closing_stock_ratio": 1.237,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -1.47,
         "production_yoy_pct": -1.88,
         "refinery_intake_mom_pct": 2.55,
-        "refinery_intake_yoy_pct": -0.42
+        "refinery_intake_yoy_pct": -0.42,
+        "closing_stocks_mom_pct": -0.28,
+        "closing_stocks_yoy_pct": -2.92
       }
     },
     {
       "period": "2017-01",
       "date": "2017-01-01",
+      "days_in_month": 31,
       "reported_production_kbd": 73650.0,
       "reported_production_mbd": 73.65,
       "reported_refinery_intake_kbd": 76425.0,
@@ -362,29 +477,39 @@
       "common_country_production_mbd": 69.865,
       "common_country_refinery_intake_mbd": 76.007,
       "common_country_gap_mbd": -6.142,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 37090.9,
+      "reported_stock_change_average_kbd": 1196.5,
+      "reported_stock_change_average_mbd": 1.196,
+      "reported_closing_stocks_kbbl": 2782459.1,
+      "reported_closing_stocks_million_barrels": 2782.459,
       "coverage": {
         "production_reporters": 79,
         "refinery_intake_reporters": 77,
         "common_reporters": 72,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.234,
         "refinery_intake_ratio": 1.185,
         "common_ratio": 1.161,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.95,
         "production_yoy_pct": -4.43,
         "refinery_intake_mom_pct": -2.19,
-        "refinery_intake_yoy_pct": -0.28
+        "refinery_intake_yoy_pct": -0.28,
+        "closing_stocks_mom_pct": 0.42,
+        "closing_stocks_yoy_pct": -1.38
       }
     },
     {
       "period": "2017-02",
       "date": "2017-02-01",
+      "days_in_month": 28,
       "reported_production_kbd": 73671.3,
       "reported_production_mbd": 73.671,
       "reported_refinery_intake_kbd": 75888.5,
@@ -392,29 +517,39 @@
       "common_country_production_mbd": 69.83,
       "common_country_refinery_intake_mbd": 75.466,
       "common_country_gap_mbd": -5.636,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 6457.0,
+      "reported_stock_change_average_kbd": 230.6,
+      "reported_stock_change_average_mbd": 0.231,
+      "reported_closing_stocks_kbbl": 2785795.4,
+      "reported_closing_stocks_million_barrels": 2785.795,
       "coverage": {
         "production_reporters": 79,
         "refinery_intake_reporters": 77,
         "common_reporters": 72,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.234,
         "refinery_intake_ratio": 1.185,
         "common_ratio": 1.161,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.03,
         "production_yoy_pct": -3.26,
         "refinery_intake_mom_pct": -0.7,
-        "refinery_intake_yoy_pct": -0.72
+        "refinery_intake_yoy_pct": -0.72,
+        "closing_stocks_mom_pct": 0.12,
+        "closing_stocks_yoy_pct": -1.35
       }
     },
     {
       "period": "2017-03",
       "date": "2017-03-01",
+      "days_in_month": 31,
       "reported_production_kbd": 73397.1,
       "reported_production_mbd": 73.397,
       "reported_refinery_intake_kbd": 76294.3,
@@ -422,29 +557,39 @@
       "common_country_production_mbd": 69.568,
       "common_country_refinery_intake_mbd": 75.917,
       "common_country_gap_mbd": -6.349,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 25656.8,
+      "reported_stock_change_average_kbd": 827.6,
+      "reported_stock_change_average_mbd": 0.828,
+      "reported_closing_stocks_kbbl": 2813551.2,
+      "reported_closing_stocks_million_barrels": 2813.551,
       "coverage": {
         "production_reporters": 79,
         "refinery_intake_reporters": 77,
         "common_reporters": 72,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.234,
         "refinery_intake_ratio": 1.185,
         "common_ratio": 1.161,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.37,
         "production_yoy_pct": -2.54,
         "refinery_intake_mom_pct": 0.53,
-        "refinery_intake_yoy_pct": 0.34
+        "refinery_intake_yoy_pct": 0.34,
+        "closing_stocks_mom_pct": 1.0,
+        "closing_stocks_yoy_pct": 0.36
       }
     },
     {
       "period": "2017-04",
       "date": "2017-04-01",
+      "days_in_month": 30,
       "reported_production_kbd": 73036.4,
       "reported_production_mbd": 73.036,
       "reported_refinery_intake_kbd": 76881.2,
@@ -452,29 +597,39 @@
       "common_country_production_mbd": 69.328,
       "common_country_refinery_intake_mbd": 76.494,
       "common_country_gap_mbd": -7.166,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -8079.8,
+      "reported_stock_change_average_kbd": -269.3,
+      "reported_stock_change_average_mbd": -0.269,
+      "reported_closing_stocks_kbbl": 2796362.9,
+      "reported_closing_stocks_million_barrels": 2796.363,
       "coverage": {
         "production_reporters": 78,
         "refinery_intake_reporters": 77,
         "common_reporters": 72,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.219,
         "refinery_intake_ratio": 1.185,
         "common_ratio": 1.161,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.49,
         "production_yoy_pct": -1.81,
         "refinery_intake_mom_pct": 0.77,
-        "refinery_intake_yoy_pct": 1.96
+        "refinery_intake_yoy_pct": 1.96,
+        "closing_stocks_mom_pct": -0.61,
+        "closing_stocks_yoy_pct": -0.51
       }
     },
     {
       "period": "2017-05",
       "date": "2017-05-01",
+      "days_in_month": 31,
       "reported_production_kbd": 72831.1,
       "reported_production_mbd": 72.831,
       "reported_refinery_intake_kbd": 76305.4,
@@ -482,29 +637,39 @@
       "common_country_production_mbd": 69.284,
       "common_country_refinery_intake_mbd": 76.268,
       "common_country_gap_mbd": -6.984,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -26376.0,
+      "reported_stock_change_average_kbd": -850.8,
+      "reported_stock_change_average_mbd": -0.851,
+      "reported_closing_stocks_kbbl": 2780265.4,
+      "reported_closing_stocks_million_barrels": 2780.265,
       "coverage": {
         "production_reporters": 78,
         "refinery_intake_reporters": 75,
         "common_reporters": 72,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.219,
         "refinery_intake_ratio": 1.154,
         "common_ratio": 1.161,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.28,
         "production_yoy_pct": 2.25,
         "refinery_intake_mom_pct": -0.75,
-        "refinery_intake_yoy_pct": 3.74
+        "refinery_intake_yoy_pct": 3.74,
+        "closing_stocks_mom_pct": -0.58,
+        "closing_stocks_yoy_pct": -1.63
       }
     },
     {
       "period": "2017-06",
       "date": "2017-06-01",
+      "days_in_month": 30,
       "reported_production_kbd": 73241.5,
       "reported_production_mbd": 73.242,
       "reported_refinery_intake_kbd": 75916.5,
@@ -512,29 +677,39 @@
       "common_country_production_mbd": 66.965,
       "common_country_refinery_intake_mbd": 75.536,
       "common_country_gap_mbd": -8.571,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -15254.0,
+      "reported_stock_change_average_kbd": -508.5,
+      "reported_stock_change_average_mbd": -0.508,
+      "reported_closing_stocks_kbbl": 2771356.5,
+      "reported_closing_stocks_million_barrels": 2771.357,
       "coverage": {
         "production_reporters": 78,
         "refinery_intake_reporters": 77,
         "common_reporters": 71,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.219,
         "refinery_intake_ratio": 1.185,
         "common_ratio": 1.145,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.56,
         "production_yoy_pct": -1.51,
         "refinery_intake_mom_pct": -0.51,
-        "refinery_intake_yoy_pct": 0.51
+        "refinery_intake_yoy_pct": 0.51,
+        "closing_stocks_mom_pct": -0.32,
+        "closing_stocks_yoy_pct": -1.89
       }
     },
     {
       "period": "2017-07",
       "date": "2017-07-01",
+      "days_in_month": 31,
       "reported_production_kbd": 73318.5,
       "reported_production_mbd": 73.318,
       "reported_refinery_intake_kbd": 77907.2,
@@ -542,29 +717,39 @@
       "common_country_production_mbd": 69.688,
       "common_country_refinery_intake_mbd": 77.868,
       "common_country_gap_mbd": -8.18,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -30322.6,
+      "reported_stock_change_average_kbd": -978.1,
+      "reported_stock_change_average_mbd": -0.978,
+      "reported_closing_stocks_kbbl": 2744910.8,
+      "reported_closing_stocks_million_barrels": 2744.911,
       "coverage": {
         "production_reporters": 78,
         "refinery_intake_reporters": 77,
         "common_reporters": 72,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.219,
         "refinery_intake_ratio": 1.185,
         "common_ratio": 1.161,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.1,
         "production_yoy_pct": -2.31,
         "refinery_intake_mom_pct": 2.62,
-        "refinery_intake_yoy_pct": 0.59
+        "refinery_intake_yoy_pct": 0.59,
+        "closing_stocks_mom_pct": -0.95,
+        "closing_stocks_yoy_pct": -2.21
       }
     },
     {
       "period": "2017-08",
       "date": "2017-08-01",
+      "days_in_month": 31,
       "reported_production_kbd": 68827.6,
       "reported_production_mbd": 68.828,
       "reported_refinery_intake_kbd": 76044.4,
@@ -572,29 +757,39 @@
       "common_country_production_mbd": 65.41,
       "common_country_refinery_intake_mbd": 76.002,
       "common_country_gap_mbd": -10.592,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -52290.6,
+      "reported_stock_change_average_kbd": -1686.8,
+      "reported_stock_change_average_mbd": -1.687,
+      "reported_closing_stocks_kbbl": 2695380.4,
+      "reported_closing_stocks_million_barrels": 2695.38,
       "coverage": {
         "production_reporters": 77,
         "refinery_intake_reporters": 75,
         "common_reporters": 71,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 70,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.203,
         "refinery_intake_ratio": 1.154,
         "common_ratio": 1.145,
+        "stock_change_ratio": 1.167,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -6.12,
         "production_yoy_pct": -6.93,
         "refinery_intake_mom_pct": -2.39,
-        "refinery_intake_yoy_pct": -1.37
+        "refinery_intake_yoy_pct": -1.37,
+        "closing_stocks_mom_pct": -1.8,
+        "closing_stocks_yoy_pct": -2.87
       }
     },
     {
       "period": "2017-09",
       "date": "2017-09-01",
+      "days_in_month": 30,
       "reported_production_kbd": 68908.3,
       "reported_production_mbd": 68.908,
       "reported_refinery_intake_kbd": 74860.4,
@@ -602,29 +797,39 @@
       "common_country_production_mbd": 65.445,
       "common_country_refinery_intake_mbd": 74.803,
       "common_country_gap_mbd": -9.358,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -30411.0,
+      "reported_stock_change_average_kbd": -1013.7,
+      "reported_stock_change_average_mbd": -1.014,
+      "reported_closing_stocks_kbbl": 2676963.8,
+      "reported_closing_stocks_million_barrels": 2676.964,
       "coverage": {
         "production_reporters": 77,
         "refinery_intake_reporters": 76,
         "common_reporters": 71,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 70,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.203,
         "refinery_intake_ratio": 1.169,
         "common_ratio": 1.145,
+        "stock_change_ratio": 1.167,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.12,
         "production_yoy_pct": -7.52,
         "refinery_intake_mom_pct": -1.56,
-        "refinery_intake_yoy_pct": -0.4
+        "refinery_intake_yoy_pct": -0.4,
+        "closing_stocks_mom_pct": -0.68,
+        "closing_stocks_yoy_pct": -4.14
       }
     },
     {
       "period": "2017-10",
       "date": "2017-10-01",
+      "days_in_month": 31,
       "reported_production_kbd": 69097.4,
       "reported_production_mbd": 69.097,
       "reported_refinery_intake_kbd": 72854.4,
@@ -632,29 +837,39 @@
       "common_country_production_mbd": 65.864,
       "common_country_refinery_intake_mbd": 72.791,
       "common_country_gap_mbd": -6.927,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -4573.5,
+      "reported_stock_change_average_kbd": -147.5,
+      "reported_stock_change_average_mbd": -0.148,
+      "reported_closing_stocks_kbbl": 2664607.7,
+      "reported_closing_stocks_million_barrels": 2664.608,
       "coverage": {
         "production_reporters": 77,
         "refinery_intake_reporters": 76,
         "common_reporters": 71,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 70,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.203,
         "refinery_intake_ratio": 1.169,
         "common_ratio": 1.145,
+        "stock_change_ratio": 1.167,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.27,
         "production_yoy_pct": -7.46,
         "refinery_intake_mom_pct": -2.68,
-        "refinery_intake_yoy_pct": -1.11
+        "refinery_intake_yoy_pct": -1.11,
+        "closing_stocks_mom_pct": -0.46,
+        "closing_stocks_yoy_pct": -5.21
       }
     },
     {
       "period": "2017-11",
       "date": "2017-11-01",
+      "days_in_month": 30,
       "reported_production_kbd": 73294.4,
       "reported_production_mbd": 73.294,
       "reported_refinery_intake_kbd": 78498.4,
@@ -662,29 +877,39 @@
       "common_country_production_mbd": 69.867,
       "common_country_refinery_intake_mbd": 78.424,
       "common_country_gap_mbd": -8.557,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -12917.8,
+      "reported_stock_change_average_kbd": -430.6,
+      "reported_stock_change_average_mbd": -0.431,
+      "reported_closing_stocks_kbbl": 2651079.1,
+      "reported_closing_stocks_million_barrels": 2651.079,
       "coverage": {
         "production_reporters": 78,
         "refinery_intake_reporters": 77,
         "common_reporters": 72,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.219,
         "refinery_intake_ratio": 1.185,
         "common_ratio": 1.161,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 6.07,
         "production_yoy_pct": -2.88,
         "refinery_intake_mom_pct": 7.75,
-        "refinery_intake_yoy_pct": 3.02
+        "refinery_intake_yoy_pct": 3.02,
+        "closing_stocks_mom_pct": -0.51,
+        "closing_stocks_yoy_pct": -4.59
       }
     },
     {
       "period": "2017-12",
       "date": "2017-12-01",
+      "days_in_month": 31,
       "reported_production_kbd": 72829.7,
       "reported_production_mbd": 72.83,
       "reported_refinery_intake_kbd": 77980.5,
@@ -692,29 +917,39 @@
       "common_country_production_mbd": 69.641,
       "common_country_refinery_intake_mbd": 77.882,
       "common_country_gap_mbd": -8.241,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -51491.4,
+      "reported_stock_change_average_kbd": -1661.0,
+      "reported_stock_change_average_mbd": -1.661,
+      "reported_closing_stocks_kbbl": 2595215.1,
+      "reported_closing_stocks_million_barrels": 2595.215,
       "coverage": {
         "production_reporters": 78,
         "refinery_intake_reporters": 77,
         "common_reporters": 72,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.219,
         "refinery_intake_ratio": 1.185,
         "common_ratio": 1.161,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.63,
         "production_yoy_pct": -2.05,
         "refinery_intake_mom_pct": -0.66,
-        "refinery_intake_yoy_pct": -0.2
+        "refinery_intake_yoy_pct": -0.2,
+        "closing_stocks_mom_pct": -2.11,
+        "closing_stocks_yoy_pct": -6.34
       }
     },
     {
       "period": "2018-01",
       "date": "2018-01-01",
+      "days_in_month": 31,
       "reported_production_kbd": 73400.9,
       "reported_production_mbd": 73.401,
       "reported_refinery_intake_kbd": 78370.6,
@@ -722,29 +957,39 @@
       "common_country_production_mbd": 70.063,
       "common_country_refinery_intake_mbd": 78.292,
       "common_country_gap_mbd": -8.228,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -29188.3,
+      "reported_stock_change_average_kbd": -941.6,
+      "reported_stock_change_average_mbd": -0.942,
+      "reported_closing_stocks_kbbl": 2558934.1,
+      "reported_closing_stocks_million_barrels": 2558.934,
       "coverage": {
         "production_reporters": 77,
         "refinery_intake_reporters": 76,
         "common_reporters": 72,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.203,
         "refinery_intake_ratio": 1.169,
         "common_ratio": 1.161,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.78,
         "production_yoy_pct": -0.34,
         "refinery_intake_mom_pct": 0.5,
-        "refinery_intake_yoy_pct": 2.55
+        "refinery_intake_yoy_pct": 2.55,
+        "closing_stocks_mom_pct": -1.4,
+        "closing_stocks_yoy_pct": -8.03
       }
     },
     {
       "period": "2018-02",
       "date": "2018-02-01",
+      "days_in_month": 28,
       "reported_production_kbd": 73307.0,
       "reported_production_mbd": 73.307,
       "reported_refinery_intake_kbd": 76566.9,
@@ -752,29 +997,39 @@
       "common_country_production_mbd": 70.108,
       "common_country_refinery_intake_mbd": 76.457,
       "common_country_gap_mbd": -6.349,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 9926.8,
+      "reported_stock_change_average_kbd": 354.5,
+      "reported_stock_change_average_mbd": 0.355,
+      "reported_closing_stocks_kbbl": 2594057.8,
+      "reported_closing_stocks_million_barrels": 2594.058,
       "coverage": {
         "production_reporters": 76,
         "refinery_intake_reporters": 76,
         "common_reporters": 71,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.188,
         "refinery_intake_ratio": 1.169,
         "common_ratio": 1.145,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.13,
         "production_yoy_pct": -0.49,
         "refinery_intake_mom_pct": -2.3,
-        "refinery_intake_yoy_pct": 0.89
+        "refinery_intake_yoy_pct": 0.89,
+        "closing_stocks_mom_pct": 1.37,
+        "closing_stocks_yoy_pct": -6.88
       }
     },
     {
       "period": "2018-03",
       "date": "2018-03-01",
+      "days_in_month": 31,
       "reported_production_kbd": 73288.6,
       "reported_production_mbd": 73.289,
       "reported_refinery_intake_kbd": 76659.1,
@@ -782,29 +1037,39 @@
       "common_country_production_mbd": 70.182,
       "common_country_refinery_intake_mbd": 76.544,
       "common_country_gap_mbd": -6.362,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -1758.8,
+      "reported_stock_change_average_kbd": -56.7,
+      "reported_stock_change_average_mbd": -0.057,
+      "reported_closing_stocks_kbbl": 2596393.9,
+      "reported_closing_stocks_million_barrels": 2596.394,
       "coverage": {
         "production_reporters": 76,
         "refinery_intake_reporters": 76,
         "common_reporters": 71,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.188,
         "refinery_intake_ratio": 1.169,
         "common_ratio": 1.145,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.02,
         "production_yoy_pct": -0.15,
         "refinery_intake_mom_pct": 0.12,
-        "refinery_intake_yoy_pct": 0.48
+        "refinery_intake_yoy_pct": 0.48,
+        "closing_stocks_mom_pct": 0.09,
+        "closing_stocks_yoy_pct": -7.72
       }
     },
     {
       "period": "2018-04",
       "date": "2018-04-01",
+      "days_in_month": 30,
       "reported_production_kbd": 73408.7,
       "reported_production_mbd": 73.409,
       "reported_refinery_intake_kbd": 76895.6,
@@ -812,29 +1077,39 @@
       "common_country_production_mbd": 70.31,
       "common_country_refinery_intake_mbd": 76.781,
       "common_country_gap_mbd": -6.471,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 8622.4,
+      "reported_stock_change_average_kbd": 287.4,
+      "reported_stock_change_average_mbd": 0.287,
+      "reported_closing_stocks_kbbl": 2570940.3,
+      "reported_closing_stocks_million_barrels": 2570.94,
       "coverage": {
         "production_reporters": 76,
         "refinery_intake_reporters": 76,
         "common_reporters": 71,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.188,
         "refinery_intake_ratio": 1.169,
         "common_ratio": 1.145,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.16,
         "production_yoy_pct": 0.51,
         "refinery_intake_mom_pct": 0.31,
-        "refinery_intake_yoy_pct": 0.02
+        "refinery_intake_yoy_pct": 0.02,
+        "closing_stocks_mom_pct": -0.98,
+        "closing_stocks_yoy_pct": -8.06
       }
     },
     {
       "period": "2018-05",
       "date": "2018-05-01",
+      "days_in_month": 31,
       "reported_production_kbd": 73315.4,
       "reported_production_mbd": 73.315,
       "reported_refinery_intake_kbd": 76578.0,
@@ -842,29 +1117,39 @@
       "common_country_production_mbd": 70.137,
       "common_country_refinery_intake_mbd": 76.478,
       "common_country_gap_mbd": -6.342,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 34438.0,
+      "reported_stock_change_average_kbd": 1110.9,
+      "reported_stock_change_average_mbd": 1.111,
+      "reported_closing_stocks_kbbl": 2594210.4,
+      "reported_closing_stocks_million_barrels": 2594.21,
       "coverage": {
         "production_reporters": 76,
         "refinery_intake_reporters": 76,
         "common_reporters": 71,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.188,
         "refinery_intake_ratio": 1.169,
         "common_ratio": 1.145,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.13,
         "production_yoy_pct": 0.66,
         "refinery_intake_mom_pct": -0.41,
-        "refinery_intake_yoy_pct": 0.36
+        "refinery_intake_yoy_pct": 0.36,
+        "closing_stocks_mom_pct": 0.91,
+        "closing_stocks_yoy_pct": -6.69
       }
     },
     {
       "period": "2018-06",
       "date": "2018-06-01",
+      "days_in_month": 30,
       "reported_production_kbd": 74164.4,
       "reported_production_mbd": 74.164,
       "reported_refinery_intake_kbd": 77886.0,
@@ -872,29 +1157,39 @@
       "common_country_production_mbd": 71.042,
       "common_country_refinery_intake_mbd": 77.803,
       "common_country_gap_mbd": -6.761,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -23623.9,
+      "reported_stock_change_average_kbd": -787.5,
+      "reported_stock_change_average_mbd": -0.787,
+      "reported_closing_stocks_kbbl": 2571146.8,
+      "reported_closing_stocks_million_barrels": 2571.147,
       "coverage": {
         "production_reporters": 76,
         "refinery_intake_reporters": 75,
         "common_reporters": 71,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.188,
         "refinery_intake_ratio": 1.154,
         "common_ratio": 1.145,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.16,
         "production_yoy_pct": 1.26,
         "refinery_intake_mom_pct": 1.71,
-        "refinery_intake_yoy_pct": 2.59
+        "refinery_intake_yoy_pct": 2.59,
+        "closing_stocks_mom_pct": -0.89,
+        "closing_stocks_yoy_pct": -7.22
       }
     },
     {
       "period": "2018-07",
       "date": "2018-07-01",
+      "days_in_month": 31,
       "reported_production_kbd": 74755.7,
       "reported_production_mbd": 74.756,
       "reported_refinery_intake_kbd": 78032.9,
@@ -902,29 +1197,39 @@
       "common_country_production_mbd": 71.668,
       "common_country_refinery_intake_mbd": 77.95,
       "common_country_gap_mbd": -6.282,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -7683.1,
+      "reported_stock_change_average_kbd": -247.8,
+      "reported_stock_change_average_mbd": -0.248,
+      "reported_closing_stocks_kbbl": 2556426.6,
+      "reported_closing_stocks_million_barrels": 2556.427,
       "coverage": {
         "production_reporters": 76,
         "refinery_intake_reporters": 75,
         "common_reporters": 71,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 71,
+        "closing_stock_reporters": 68
       },
       "coverage_quality": {
         "production_ratio": 1.188,
         "refinery_intake_ratio": 1.154,
         "common_ratio": 1.145,
+        "stock_change_ratio": 1.183,
+        "closing_stock_ratio": 1.153,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.8,
         "production_yoy_pct": 1.96,
         "refinery_intake_mom_pct": 0.19,
-        "refinery_intake_yoy_pct": 0.16
+        "refinery_intake_yoy_pct": 0.16,
+        "closing_stocks_mom_pct": -0.57,
+        "closing_stocks_yoy_pct": -6.87
       }
     },
     {
       "period": "2018-08",
       "date": "2018-08-01",
+      "days_in_month": 31,
       "reported_production_kbd": 71412.5,
       "reported_production_mbd": 71.413,
       "reported_refinery_intake_kbd": 77710.3,
@@ -932,29 +1237,39 @@
       "common_country_production_mbd": 68.519,
       "common_country_refinery_intake_mbd": 77.605,
       "common_country_gap_mbd": -9.086,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -8593.1,
+      "reported_stock_change_average_kbd": -277.2,
+      "reported_stock_change_average_mbd": -0.277,
+      "reported_closing_stocks_kbbl": 2541084.0,
+      "reported_closing_stocks_million_barrels": 2541.084,
       "coverage": {
         "production_reporters": 75,
         "refinery_intake_reporters": 75,
         "common_reporters": 70,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 70,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.172,
         "refinery_intake_ratio": 1.154,
         "common_ratio": 1.129,
+        "stock_change_ratio": 1.167,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -4.47,
         "production_yoy_pct": 3.76,
         "refinery_intake_mom_pct": -0.41,
-        "refinery_intake_yoy_pct": 2.19
+        "refinery_intake_yoy_pct": 2.19,
+        "closing_stocks_mom_pct": -0.6,
+        "closing_stocks_yoy_pct": -5.72
       }
     },
     {
       "period": "2018-09",
       "date": "2018-09-01",
+      "days_in_month": 30,
       "reported_production_kbd": 71489.2,
       "reported_production_mbd": 71.489,
       "reported_refinery_intake_kbd": 76549.0,
@@ -962,29 +1277,39 @@
       "common_country_production_mbd": 68.426,
       "common_country_refinery_intake_mbd": 76.444,
       "common_country_gap_mbd": -8.018,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -35692.4,
+      "reported_stock_change_average_kbd": -1189.7,
+      "reported_stock_change_average_mbd": -1.19,
+      "reported_closing_stocks_kbbl": 2497086.1,
+      "reported_closing_stocks_million_barrels": 2497.086,
       "coverage": {
         "production_reporters": 75,
         "refinery_intake_reporters": 75,
         "common_reporters": 70,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 70,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.172,
         "refinery_intake_ratio": 1.154,
         "common_ratio": 1.129,
+        "stock_change_ratio": 1.167,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.11,
         "production_yoy_pct": 3.75,
         "refinery_intake_mom_pct": -1.49,
-        "refinery_intake_yoy_pct": 2.26
+        "refinery_intake_yoy_pct": 2.26,
+        "closing_stocks_mom_pct": -1.73,
+        "closing_stocks_yoy_pct": -6.72
       }
     },
     {
       "period": "2018-10",
       "date": "2018-10-01",
+      "days_in_month": 31,
       "reported_production_kbd": 72276.4,
       "reported_production_mbd": 72.276,
       "reported_refinery_intake_kbd": 74389.1,
@@ -992,29 +1317,39 @@
       "common_country_production_mbd": 69.323,
       "common_country_refinery_intake_mbd": 74.283,
       "common_country_gap_mbd": -4.96,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 69732.4,
+      "reported_stock_change_average_kbd": 2249.4,
+      "reported_stock_change_average_mbd": 2.249,
+      "reported_closing_stocks_kbbl": 2552503.4,
+      "reported_closing_stocks_million_barrels": 2552.503,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 75,
         "common_reporters": 69,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 70,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.154,
         "common_ratio": 1.113,
+        "stock_change_ratio": 1.167,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.1,
         "production_yoy_pct": 4.6,
         "refinery_intake_mom_pct": -2.82,
-        "refinery_intake_yoy_pct": 2.11
+        "refinery_intake_yoy_pct": 2.11,
+        "closing_stocks_mom_pct": 2.22,
+        "closing_stocks_yoy_pct": -4.21
       }
     },
     {
       "period": "2018-11",
       "date": "2018-11-01",
+      "days_in_month": 30,
       "reported_production_kbd": 73010.5,
       "reported_production_mbd": 73.01,
       "reported_refinery_intake_kbd": 77475.9,
@@ -1022,29 +1357,39 @@
       "common_country_production_mbd": 69.856,
       "common_country_refinery_intake_mbd": 77.365,
       "common_country_gap_mbd": -7.509,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -12048.3,
+      "reported_stock_change_average_kbd": -401.6,
+      "reported_stock_change_average_mbd": -0.402,
+      "reported_closing_stocks_kbbl": 2521227.7,
+      "reported_closing_stocks_million_barrels": 2521.228,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 75,
         "common_reporters": 69,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 70,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.154,
         "common_ratio": 1.113,
+        "stock_change_ratio": 1.167,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.02,
         "production_yoy_pct": -0.39,
         "refinery_intake_mom_pct": 4.15,
-        "refinery_intake_yoy_pct": -1.3
+        "refinery_intake_yoy_pct": -1.3,
+        "closing_stocks_mom_pct": -1.23,
+        "closing_stocks_yoy_pct": -4.9
       }
     },
     {
       "period": "2018-12",
       "date": "2018-12-01",
+      "days_in_month": 31,
       "reported_production_kbd": 73175.0,
       "reported_production_mbd": 73.175,
       "reported_refinery_intake_kbd": 78720.3,
@@ -1052,29 +1397,39 @@
       "common_country_production_mbd": 70.0,
       "common_country_refinery_intake_mbd": 78.609,
       "common_country_gap_mbd": -8.609,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -27856.8,
+      "reported_stock_change_average_kbd": -898.6,
+      "reported_stock_change_average_mbd": -0.899,
+      "reported_closing_stocks_kbbl": 2518616.8,
+      "reported_closing_stocks_million_barrels": 2518.617,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 75,
         "common_reporters": 69,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 70,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.154,
         "common_ratio": 1.113,
+        "stock_change_ratio": 1.167,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.23,
         "production_yoy_pct": 0.47,
         "refinery_intake_mom_pct": 1.61,
-        "refinery_intake_yoy_pct": 0.95
+        "refinery_intake_yoy_pct": 0.95,
+        "closing_stocks_mom_pct": -0.1,
+        "closing_stocks_yoy_pct": -2.95
       }
     },
     {
       "period": "2019-01",
       "date": "2019-01-01",
+      "days_in_month": 31,
       "reported_production_kbd": 68048.7,
       "reported_production_mbd": 68.049,
       "reported_refinery_intake_kbd": 76091.4,
@@ -1082,29 +1437,39 @@
       "common_country_production_mbd": 64.879,
       "common_country_refinery_intake_mbd": 75.98,
       "common_country_gap_mbd": -11.101,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 22378.1,
+      "reported_stock_change_average_kbd": 721.9,
+      "reported_stock_change_average_mbd": 0.722,
+      "reported_closing_stocks_kbbl": 2538692.7,
+      "reported_closing_stocks_million_barrels": 2538.693,
       "coverage": {
         "production_reporters": 73,
         "refinery_intake_reporters": 74,
         "common_reporters": 68,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 69,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.141,
         "refinery_intake_ratio": 1.138,
         "common_ratio": 1.097,
+        "stock_change_ratio": 1.15,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -7.01,
         "production_yoy_pct": -7.29,
         "refinery_intake_mom_pct": -3.34,
-        "refinery_intake_yoy_pct": -2.91
+        "refinery_intake_yoy_pct": -2.91,
+        "closing_stocks_mom_pct": 0.8,
+        "closing_stocks_yoy_pct": -0.79
       }
     },
     {
       "period": "2019-02",
       "date": "2019-02-01",
+      "days_in_month": 28,
       "reported_production_kbd": 67520.7,
       "reported_production_mbd": 67.521,
       "reported_refinery_intake_kbd": 75074.1,
@@ -1112,29 +1477,39 @@
       "common_country_production_mbd": 64.405,
       "common_country_refinery_intake_mbd": 74.99,
       "common_country_gap_mbd": -10.585,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 16334.4,
+      "reported_stock_change_average_kbd": 583.4,
+      "reported_stock_change_average_mbd": 0.583,
+      "reported_closing_stocks_kbbl": 2528383.5,
+      "reported_closing_stocks_million_barrels": 2528.383,
       "coverage": {
         "production_reporters": 73,
         "refinery_intake_reporters": 74,
         "common_reporters": 68,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 69,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.141,
         "refinery_intake_ratio": 1.138,
         "common_ratio": 1.097,
+        "stock_change_ratio": 1.15,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.78,
         "production_yoy_pct": -7.89,
         "refinery_intake_mom_pct": -1.34,
-        "refinery_intake_yoy_pct": -1.95
+        "refinery_intake_yoy_pct": -1.95,
+        "closing_stocks_mom_pct": -0.41,
+        "closing_stocks_yoy_pct": -2.53
       }
     },
     {
       "period": "2019-03",
       "date": "2019-03-01",
+      "days_in_month": 31,
       "reported_production_kbd": 67084.0,
       "reported_production_mbd": 67.084,
       "reported_refinery_intake_kbd": 73318.3,
@@ -1142,29 +1517,39 @@
       "common_country_production_mbd": 64.511,
       "common_country_refinery_intake_mbd": 73.222,
       "common_country_gap_mbd": -8.711,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 11267.1,
+      "reported_stock_change_average_kbd": 363.5,
+      "reported_stock_change_average_mbd": 0.363,
+      "reported_closing_stocks_kbbl": 2528739.8,
+      "reported_closing_stocks_million_barrels": 2528.74,
       "coverage": {
         "production_reporters": 73,
         "refinery_intake_reporters": 74,
         "common_reporters": 68,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 69,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.141,
         "refinery_intake_ratio": 1.138,
         "common_ratio": 1.097,
+        "stock_change_ratio": 1.15,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.65,
         "production_yoy_pct": -8.47,
         "refinery_intake_mom_pct": -2.34,
-        "refinery_intake_yoy_pct": -4.36
+        "refinery_intake_yoy_pct": -4.36,
+        "closing_stocks_mom_pct": 0.01,
+        "closing_stocks_yoy_pct": -2.61
       }
     },
     {
       "period": "2019-04",
       "date": "2019-04-01",
+      "days_in_month": 30,
       "reported_production_kbd": 66034.5,
       "reported_production_mbd": 66.034,
       "reported_refinery_intake_kbd": 74681.6,
@@ -1172,29 +1557,39 @@
       "common_country_production_mbd": 63.605,
       "common_country_refinery_intake_mbd": 74.604,
       "common_country_gap_mbd": -10.999,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -3201.2,
+      "reported_stock_change_average_kbd": -106.7,
+      "reported_stock_change_average_mbd": -0.107,
+      "reported_closing_stocks_kbbl": 2528126.6,
+      "reported_closing_stocks_million_barrels": 2528.127,
       "coverage": {
         "production_reporters": 73,
         "refinery_intake_reporters": 72,
         "common_reporters": 67,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 68,
+        "closing_stock_reporters": 66
       },
       "coverage_quality": {
         "production_ratio": 1.141,
         "refinery_intake_ratio": 1.108,
         "common_ratio": 1.081,
+        "stock_change_ratio": 1.133,
+        "closing_stock_ratio": 1.119,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -1.57,
         "production_yoy_pct": -10.05,
         "refinery_intake_mom_pct": 1.86,
-        "refinery_intake_yoy_pct": -2.88
+        "refinery_intake_yoy_pct": -2.88,
+        "closing_stocks_mom_pct": -0.02,
+        "closing_stocks_yoy_pct": -1.67
       }
     },
     {
       "period": "2019-05",
       "date": "2019-05-01",
+      "days_in_month": 31,
       "reported_production_kbd": 67007.9,
       "reported_production_mbd": 67.008,
       "reported_refinery_intake_kbd": 73320.7,
@@ -1202,29 +1597,39 @@
       "common_country_production_mbd": 64.522,
       "common_country_refinery_intake_mbd": 73.243,
       "common_country_gap_mbd": -8.721,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 4926.7,
+      "reported_stock_change_average_kbd": 158.9,
+      "reported_stock_change_average_mbd": 0.159,
+      "reported_closing_stocks_kbbl": 2541960.6,
+      "reported_closing_stocks_million_barrels": 2541.961,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 74,
         "common_reporters": 69,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 69,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.138,
         "common_ratio": 1.113,
+        "stock_change_ratio": 1.15,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.47,
         "production_yoy_pct": -8.6,
         "refinery_intake_mom_pct": -1.82,
-        "refinery_intake_yoy_pct": -4.25
+        "refinery_intake_yoy_pct": -4.25,
+        "closing_stocks_mom_pct": 0.55,
+        "closing_stocks_yoy_pct": -2.01
       }
     },
     {
       "period": "2019-06",
       "date": "2019-06-01",
+      "days_in_month": 30,
       "reported_production_kbd": 67533.4,
       "reported_production_mbd": 67.533,
       "reported_refinery_intake_kbd": 74063.3,
@@ -1232,29 +1637,39 @@
       "common_country_production_mbd": 64.795,
       "common_country_refinery_intake_mbd": 73.985,
       "common_country_gap_mbd": -9.19,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -28841.4,
+      "reported_stock_change_average_kbd": -961.4,
+      "reported_stock_change_average_mbd": -0.961,
+      "reported_closing_stocks_kbbl": 2510811.7,
+      "reported_closing_stocks_million_barrels": 2510.812,
       "coverage": {
         "production_reporters": 75,
         "refinery_intake_reporters": 73,
         "common_reporters": 69,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 68,
+        "closing_stock_reporters": 66
       },
       "coverage_quality": {
         "production_ratio": 1.172,
         "refinery_intake_ratio": 1.123,
         "common_ratio": 1.113,
+        "stock_change_ratio": 1.133,
+        "closing_stock_ratio": 1.119,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.78,
         "production_yoy_pct": -8.94,
         "refinery_intake_mom_pct": 1.01,
-        "refinery_intake_yoy_pct": -4.91
+        "refinery_intake_yoy_pct": -4.91,
+        "closing_stocks_mom_pct": -1.23,
+        "closing_stocks_yoy_pct": -2.35
       }
     },
     {
       "period": "2019-07",
       "date": "2019-07-01",
+      "days_in_month": 31,
       "reported_production_kbd": 65917.0,
       "reported_production_mbd": 65.917,
       "reported_refinery_intake_kbd": 75212.3,
@@ -1262,29 +1677,39 @@
       "common_country_production_mbd": 63.33,
       "common_country_refinery_intake_mbd": 75.136,
       "common_country_gap_mbd": -11.806,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -51812.4,
+      "reported_stock_change_average_kbd": -1671.4,
+      "reported_stock_change_average_mbd": -1.671,
+      "reported_closing_stocks_kbbl": 2444330.8,
+      "reported_closing_stocks_million_barrels": 2444.331,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 72,
         "common_reporters": 68,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 68,
+        "closing_stock_reporters": 66
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.108,
         "common_ratio": 1.097,
+        "stock_change_ratio": 1.133,
+        "closing_stock_ratio": 1.119,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -2.39,
         "production_yoy_pct": -11.82,
         "refinery_intake_mom_pct": 1.55,
-        "refinery_intake_yoy_pct": -3.62
+        "refinery_intake_yoy_pct": -3.62,
+        "closing_stocks_mom_pct": -2.65,
+        "closing_stocks_yoy_pct": -4.38
       }
     },
     {
       "period": "2019-08",
       "date": "2019-08-01",
+      "days_in_month": 31,
       "reported_production_kbd": 66831.2,
       "reported_production_mbd": 66.831,
       "reported_refinery_intake_kbd": 76498.8,
@@ -1292,29 +1717,39 @@
       "common_country_production_mbd": 64.324,
       "common_country_refinery_intake_mbd": 76.415,
       "common_country_gap_mbd": -12.091,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -19121.0,
+      "reported_stock_change_average_kbd": -616.8,
+      "reported_stock_change_average_mbd": -0.617,
+      "reported_closing_stocks_kbbl": 2453225.0,
+      "reported_closing_stocks_million_barrels": 2453.225,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 73,
         "common_reporters": 69,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 68,
+        "closing_stock_reporters": 66
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.123,
         "common_ratio": 1.113,
+        "stock_change_ratio": 1.133,
+        "closing_stock_ratio": 1.119,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.39,
         "production_yoy_pct": -6.42,
         "refinery_intake_mom_pct": 1.71,
-        "refinery_intake_yoy_pct": -1.56
+        "refinery_intake_yoy_pct": -1.56,
+        "closing_stocks_mom_pct": 0.36,
+        "closing_stocks_yoy_pct": -3.46
       }
     },
     {
       "period": "2019-09",
       "date": "2019-09-01",
+      "days_in_month": 30,
       "reported_production_kbd": 67302.4,
       "reported_production_mbd": 67.302,
       "reported_refinery_intake_kbd": 74683.6,
@@ -1322,29 +1757,39 @@
       "common_country_production_mbd": 64.861,
       "common_country_refinery_intake_mbd": 74.601,
       "common_country_gap_mbd": -9.74,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -63461.4,
+      "reported_stock_change_average_kbd": -2115.4,
+      "reported_stock_change_average_mbd": -2.115,
+      "reported_closing_stocks_kbbl": 2412310.2,
+      "reported_closing_stocks_million_barrels": 2412.31,
       "coverage": {
         "production_reporters": 75,
         "refinery_intake_reporters": 74,
         "common_reporters": 70,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 69,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.172,
         "refinery_intake_ratio": 1.138,
         "common_ratio": 1.129,
+        "stock_change_ratio": 1.15,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.7,
         "production_yoy_pct": -5.86,
         "refinery_intake_mom_pct": -2.37,
-        "refinery_intake_yoy_pct": -2.44
+        "refinery_intake_yoy_pct": -2.44,
+        "closing_stocks_mom_pct": -1.67,
+        "closing_stocks_yoy_pct": -3.39
       }
     },
     {
       "period": "2019-10",
       "date": "2019-10-01",
+      "days_in_month": 31,
       "reported_production_kbd": 68625.2,
       "reported_production_mbd": 68.625,
       "reported_refinery_intake_kbd": 72901.4,
@@ -1352,29 +1797,39 @@
       "common_country_production_mbd": 66.156,
       "common_country_refinery_intake_mbd": 72.803,
       "common_country_gap_mbd": -6.647,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 40592.1,
+      "reported_stock_change_average_kbd": 1309.4,
+      "reported_stock_change_average_mbd": 1.309,
+      "reported_closing_stocks_kbbl": 2471701.2,
+      "reported_closing_stocks_million_barrels": 2471.701,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 74,
         "common_reporters": 69,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 69,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.138,
         "common_ratio": 1.113,
+        "stock_change_ratio": 1.15,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.97,
         "production_yoy_pct": -5.05,
         "refinery_intake_mom_pct": -2.39,
-        "refinery_intake_yoy_pct": -2.0
+        "refinery_intake_yoy_pct": -2.0,
+        "closing_stocks_mom_pct": 2.46,
+        "closing_stocks_yoy_pct": -3.17
       }
     },
     {
       "period": "2019-11",
       "date": "2019-11-01",
+      "days_in_month": 30,
       "reported_production_kbd": 68689.3,
       "reported_production_mbd": 68.689,
       "reported_refinery_intake_kbd": 73822.2,
@@ -1382,29 +1837,39 @@
       "common_country_production_mbd": 63.027,
       "common_country_refinery_intake_mbd": 73.713,
       "common_country_gap_mbd": -10.685,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 2814.3,
+      "reported_stock_change_average_kbd": 93.8,
+      "reported_stock_change_average_mbd": 0.094,
+      "reported_closing_stocks_kbbl": 2445211.5,
+      "reported_closing_stocks_million_barrels": 2445.212,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 73,
         "common_reporters": 68,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 69,
+        "closing_stock_reporters": 67
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.123,
         "common_ratio": 1.097,
+        "stock_change_ratio": 1.15,
+        "closing_stock_ratio": 1.136,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.09,
         "production_yoy_pct": -5.92,
         "refinery_intake_mom_pct": 1.26,
-        "refinery_intake_yoy_pct": -4.72
+        "refinery_intake_yoy_pct": -4.72,
+        "closing_stocks_mom_pct": -1.07,
+        "closing_stocks_yoy_pct": -3.02
       }
     },
     {
       "period": "2019-12",
       "date": "2019-12-01",
+      "days_in_month": 31,
       "reported_production_kbd": 68615.6,
       "reported_production_mbd": 68.616,
       "reported_refinery_intake_kbd": 75817.9,
@@ -1412,29 +1877,39 @@
       "common_country_production_mbd": 66.04,
       "common_country_refinery_intake_mbd": 75.727,
       "common_country_gap_mbd": -9.687,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -27781.0,
+      "reported_stock_change_average_kbd": -896.2,
+      "reported_stock_change_average_mbd": -0.896,
+      "reported_closing_stocks_kbbl": 2427960.4,
+      "reported_closing_stocks_million_barrels": 2427.96,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 73,
         "common_reporters": 69,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 68,
+        "closing_stock_reporters": 66
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.123,
         "common_ratio": 1.113,
+        "stock_change_ratio": 1.133,
+        "closing_stock_ratio": 1.119,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.11,
         "production_yoy_pct": -6.23,
         "refinery_intake_mom_pct": 2.7,
-        "refinery_intake_yoy_pct": -3.69
+        "refinery_intake_yoy_pct": -3.69,
+        "closing_stocks_mom_pct": -0.71,
+        "closing_stocks_yoy_pct": -3.6
       }
     },
     {
       "period": "2020-01",
       "date": "2020-01-01",
+      "days_in_month": 31,
       "reported_production_kbd": 67946.0,
       "reported_production_mbd": 67.946,
       "reported_refinery_intake_kbd": 74556.9,
@@ -1442,29 +1917,39 @@
       "common_country_production_mbd": 65.399,
       "common_country_refinery_intake_mbd": 74.444,
       "common_country_gap_mbd": -9.045,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 1003.9,
+      "reported_stock_change_average_kbd": 32.4,
+      "reported_stock_change_average_mbd": 0.032,
+      "reported_closing_stocks_kbbl": 2409736.8,
+      "reported_closing_stocks_million_barrels": 2409.737,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 73,
         "common_reporters": 68,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 68,
+        "closing_stock_reporters": 65
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.123,
         "common_ratio": 1.097,
+        "stock_change_ratio": 1.133,
+        "closing_stock_ratio": 1.102,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.98,
         "production_yoy_pct": -0.15,
         "refinery_intake_mom_pct": -1.66,
-        "refinery_intake_yoy_pct": -2.02
+        "refinery_intake_yoy_pct": -2.02,
+        "closing_stocks_mom_pct": -0.75,
+        "closing_stocks_yoy_pct": -5.08
       }
     },
     {
       "period": "2020-02",
       "date": "2020-02-01",
+      "days_in_month": 29,
       "reported_production_kbd": 67866.9,
       "reported_production_mbd": 67.867,
       "reported_refinery_intake_kbd": 73747.1,
@@ -1472,29 +1957,39 @@
       "common_country_production_mbd": 65.304,
       "common_country_refinery_intake_mbd": 73.653,
       "common_country_gap_mbd": -8.349,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 16199.0,
+      "reported_stock_change_average_kbd": 558.6,
+      "reported_stock_change_average_mbd": 0.559,
+      "reported_closing_stocks_kbbl": 2433843.5,
+      "reported_closing_stocks_million_barrels": 2433.843,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 73,
         "common_reporters": 68,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 68,
+        "closing_stock_reporters": 65
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.123,
         "common_ratio": 1.097,
+        "stock_change_ratio": 1.133,
+        "closing_stock_ratio": 1.102,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.12,
         "production_yoy_pct": 0.51,
         "refinery_intake_mom_pct": -1.09,
-        "refinery_intake_yoy_pct": -1.77
+        "refinery_intake_yoy_pct": -1.77,
+        "closing_stocks_mom_pct": 1.0,
+        "closing_stocks_yoy_pct": -3.74
       }
     },
     {
       "period": "2020-03",
       "date": "2020-03-01",
+      "days_in_month": 31,
       "reported_production_kbd": 67948.9,
       "reported_production_mbd": 67.949,
       "reported_refinery_intake_kbd": 70614.1,
@@ -1502,29 +1997,39 @@
       "common_country_production_mbd": 65.559,
       "common_country_refinery_intake_mbd": 70.518,
       "common_country_gap_mbd": -4.959,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 87363.9,
+      "reported_stock_change_average_kbd": 2818.2,
+      "reported_stock_change_average_mbd": 2.818,
+      "reported_closing_stocks_kbbl": 2485078.9,
+      "reported_closing_stocks_million_barrels": 2485.079,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 73,
         "common_reporters": 68,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 68,
+        "closing_stock_reporters": 65
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.123,
         "common_ratio": 1.097,
+        "stock_change_ratio": 1.133,
+        "closing_stock_ratio": 1.102,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.12,
         "production_yoy_pct": 1.29,
         "refinery_intake_mom_pct": -4.25,
-        "refinery_intake_yoy_pct": -3.69
+        "refinery_intake_yoy_pct": -3.69,
+        "closing_stocks_mom_pct": 2.11,
+        "closing_stocks_yoy_pct": -1.73
       }
     },
     {
       "period": "2020-04",
       "date": "2020-04-01",
+      "days_in_month": 30,
       "reported_production_kbd": 68800.3,
       "reported_production_mbd": 68.8,
       "reported_refinery_intake_kbd": 64153.3,
@@ -1532,29 +2037,39 @@
       "common_country_production_mbd": 66.386,
       "common_country_refinery_intake_mbd": 64.078,
       "common_country_gap_mbd": 2.308,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 81379.1,
+      "reported_stock_change_average_kbd": 2712.6,
+      "reported_stock_change_average_mbd": 2.713,
+      "reported_closing_stocks_kbbl": 2583571.4,
+      "reported_closing_stocks_million_barrels": 2583.571,
       "coverage": {
         "production_reporters": 72,
         "refinery_intake_reporters": 70,
         "common_reporters": 66,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 67,
+        "closing_stock_reporters": 64
       },
       "coverage_quality": {
         "production_ratio": 1.125,
         "refinery_intake_ratio": 1.077,
         "common_ratio": 1.065,
+        "stock_change_ratio": 1.117,
+        "closing_stock_ratio": 1.085,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.25,
         "production_yoy_pct": 4.19,
         "refinery_intake_mom_pct": -9.15,
-        "refinery_intake_yoy_pct": -14.1
+        "refinery_intake_yoy_pct": -14.1,
+        "closing_stocks_mom_pct": 3.96,
+        "closing_stocks_yoy_pct": 2.19
       }
     },
     {
       "period": "2020-05",
       "date": "2020-05-01",
+      "days_in_month": 31,
       "reported_production_kbd": 57975.1,
       "reported_production_mbd": 57.975,
       "reported_refinery_intake_kbd": 64571.8,
@@ -1562,29 +2077,39 @@
       "common_country_production_mbd": 55.919,
       "common_country_refinery_intake_mbd": 64.487,
       "common_country_gap_mbd": -8.568,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -19914.3,
+      "reported_stock_change_average_kbd": -642.4,
+      "reported_stock_change_average_mbd": -0.642,
+      "reported_closing_stocks_kbbl": 2597939.2,
+      "reported_closing_stocks_million_barrels": 2597.939,
       "coverage": {
         "production_reporters": 73,
         "refinery_intake_reporters": 72,
         "common_reporters": 67,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 69,
+        "closing_stock_reporters": 66
       },
       "coverage_quality": {
         "production_ratio": 1.141,
         "refinery_intake_ratio": 1.108,
         "common_ratio": 1.081,
+        "stock_change_ratio": 1.15,
+        "closing_stock_ratio": 1.119,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -15.73,
         "production_yoy_pct": -13.48,
         "refinery_intake_mom_pct": 0.65,
-        "refinery_intake_yoy_pct": -11.93
+        "refinery_intake_yoy_pct": -11.93,
+        "closing_stocks_mom_pct": 0.56,
+        "closing_stocks_yoy_pct": 2.2
       }
     },
     {
       "period": "2020-06",
       "date": "2020-06-01",
+      "days_in_month": 30,
       "reported_production_kbd": 57313.2,
       "reported_production_mbd": 57.313,
       "reported_refinery_intake_kbd": 67499.2,
@@ -1592,29 +2117,39 @@
       "common_country_production_mbd": 55.573,
       "common_country_refinery_intake_mbd": 67.458,
       "common_country_gap_mbd": -11.885,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 3392.3,
+      "reported_stock_change_average_kbd": 113.1,
+      "reported_stock_change_average_mbd": 0.113,
+      "reported_closing_stocks_kbbl": 2606512.6,
+      "reported_closing_stocks_million_barrels": 2606.513,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 70,
         "common_reporters": 68,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 68,
+        "closing_stock_reporters": 65
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.077,
         "common_ratio": 1.097,
+        "stock_change_ratio": 1.133,
+        "closing_stock_ratio": 1.102,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -1.14,
         "production_yoy_pct": -15.13,
         "refinery_intake_mom_pct": 4.53,
-        "refinery_intake_yoy_pct": -8.86
+        "refinery_intake_yoy_pct": -8.86,
+        "closing_stocks_mom_pct": 0.33,
+        "closing_stocks_yoy_pct": 3.81
       }
     },
     {
       "period": "2020-07",
       "date": "2020-07-01",
+      "days_in_month": 31,
       "reported_production_kbd": 59412.8,
       "reported_production_mbd": 59.413,
       "reported_refinery_intake_kbd": 68116.3,
@@ -1622,29 +2157,39 @@
       "common_country_production_mbd": 57.659,
       "common_country_refinery_intake_mbd": 68.038,
       "common_country_gap_mbd": -10.379,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 1578.5,
+      "reported_stock_change_average_kbd": 50.9,
+      "reported_stock_change_average_mbd": 0.051,
+      "reported_closing_stocks_kbbl": 2590366.6,
+      "reported_closing_stocks_million_barrels": 2590.367,
       "coverage": {
         "production_reporters": 74,
         "refinery_intake_reporters": 71,
         "common_reporters": 67,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 68,
+        "closing_stock_reporters": 65
       },
       "coverage_quality": {
         "production_ratio": 1.156,
         "refinery_intake_ratio": 1.092,
         "common_ratio": 1.081,
+        "stock_change_ratio": 1.133,
+        "closing_stock_ratio": 1.102,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 3.66,
         "production_yoy_pct": -9.87,
         "refinery_intake_mom_pct": 0.91,
-        "refinery_intake_yoy_pct": -9.43
+        "refinery_intake_yoy_pct": -9.43,
+        "closing_stocks_mom_pct": -0.62,
+        "closing_stocks_yoy_pct": 5.97
       }
     },
     {
       "period": "2020-08",
       "date": "2020-08-01",
+      "days_in_month": 31,
       "reported_production_kbd": 59166.8,
       "reported_production_mbd": 59.167,
       "reported_refinery_intake_kbd": 67471.8,
@@ -1652,29 +2197,39 @@
       "common_country_production_mbd": 57.374,
       "common_country_refinery_intake_mbd": 67.399,
       "common_country_gap_mbd": -10.025,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -24989.6,
+      "reported_stock_change_average_kbd": -806.1,
+      "reported_stock_change_average_mbd": -0.806,
+      "reported_closing_stocks_kbbl": 2542887.7,
+      "reported_closing_stocks_million_barrels": 2542.888,
       "coverage": {
         "production_reporters": 72,
         "refinery_intake_reporters": 70,
         "common_reporters": 66,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 65,
+        "closing_stock_reporters": 62
       },
       "coverage_quality": {
         "production_ratio": 1.125,
         "refinery_intake_ratio": 1.077,
         "common_ratio": 1.065,
+        "stock_change_ratio": 1.083,
+        "closing_stock_ratio": 1.051,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.41,
         "production_yoy_pct": -11.47,
         "refinery_intake_mom_pct": -0.95,
-        "refinery_intake_yoy_pct": -11.8
+        "refinery_intake_yoy_pct": -11.8,
+        "closing_stocks_mom_pct": -1.83,
+        "closing_stocks_yoy_pct": 3.65
       }
     },
     {
       "period": "2020-09",
       "date": "2020-09-01",
+      "days_in_month": 30,
       "reported_production_kbd": 59113.5,
       "reported_production_mbd": 59.113,
       "reported_refinery_intake_kbd": 68651.3,
@@ -1682,29 +2237,39 @@
       "common_country_production_mbd": 57.316,
       "common_country_refinery_intake_mbd": 68.582,
       "common_country_gap_mbd": -11.266,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -32715.8,
+      "reported_stock_change_average_kbd": -1090.5,
+      "reported_stock_change_average_mbd": -1.091,
+      "reported_closing_stocks_kbbl": 2538609.4,
+      "reported_closing_stocks_million_barrels": 2538.609,
       "coverage": {
         "production_reporters": 71,
         "refinery_intake_reporters": 69,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 65,
+        "closing_stock_reporters": 62
       },
       "coverage_quality": {
         "production_ratio": 1.109,
         "refinery_intake_ratio": 1.062,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.083,
+        "closing_stock_ratio": 1.051,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.09,
         "production_yoy_pct": -12.17,
         "refinery_intake_mom_pct": 1.75,
-        "refinery_intake_yoy_pct": -8.08
+        "refinery_intake_yoy_pct": -8.08,
+        "closing_stocks_mom_pct": -0.17,
+        "closing_stocks_yoy_pct": 5.24
       }
     },
     {
       "period": "2020-10",
       "date": "2020-10-01",
+      "days_in_month": 31,
       "reported_production_kbd": 59157.4,
       "reported_production_mbd": 59.157,
       "reported_refinery_intake_kbd": 65512.9,
@@ -1712,29 +2277,39 @@
       "common_country_production_mbd": 57.236,
       "common_country_refinery_intake_mbd": 65.469,
       "common_country_gap_mbd": -8.233,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -25490.2,
+      "reported_stock_change_average_kbd": -822.3,
+      "reported_stock_change_average_mbd": -0.822,
+      "reported_closing_stocks_kbbl": 2506459.3,
+      "reported_closing_stocks_million_barrels": 2506.459,
       "coverage": {
         "production_reporters": 71,
         "refinery_intake_reporters": 68,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 64,
+        "closing_stock_reporters": 62
       },
       "coverage_quality": {
         "production_ratio": 1.109,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.067,
+        "closing_stock_ratio": 1.051,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.07,
         "production_yoy_pct": -13.8,
         "refinery_intake_mom_pct": -4.57,
-        "refinery_intake_yoy_pct": -10.13
+        "refinery_intake_yoy_pct": -10.13,
+        "closing_stocks_mom_pct": -1.27,
+        "closing_stocks_yoy_pct": 1.41
       }
     },
     {
       "period": "2020-11",
       "date": "2020-11-01",
+      "days_in_month": 30,
       "reported_production_kbd": 60032.7,
       "reported_production_mbd": 60.033,
       "reported_refinery_intake_kbd": 68972.4,
@@ -1742,29 +2317,39 @@
       "common_country_production_mbd": 58.145,
       "common_country_refinery_intake_mbd": 68.952,
       "common_country_gap_mbd": -10.807,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -15417.9,
+      "reported_stock_change_average_kbd": -513.9,
+      "reported_stock_change_average_mbd": -0.514,
+      "reported_closing_stocks_kbbl": 2495630.0,
+      "reported_closing_stocks_million_barrels": 2495.63,
       "coverage": {
         "production_reporters": 72,
         "refinery_intake_reporters": 68,
         "common_reporters": 66,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 65,
+        "closing_stock_reporters": 63
       },
       "coverage_quality": {
         "production_ratio": 1.125,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.065,
+        "stock_change_ratio": 1.083,
+        "closing_stock_ratio": 1.068,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.48,
         "production_yoy_pct": -12.6,
         "refinery_intake_mom_pct": 5.28,
-        "refinery_intake_yoy_pct": -6.57
+        "refinery_intake_yoy_pct": -6.57,
+        "closing_stocks_mom_pct": -0.43,
+        "closing_stocks_yoy_pct": 2.06
       }
     },
     {
       "period": "2020-12",
       "date": "2020-12-01",
+      "days_in_month": 31,
       "reported_production_kbd": 60038.1,
       "reported_production_mbd": 60.038,
       "reported_refinery_intake_kbd": 66800.7,
@@ -1772,29 +2357,39 @@
       "common_country_production_mbd": 58.136,
       "common_country_refinery_intake_mbd": 66.757,
       "common_country_gap_mbd": -8.621,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -17069.9,
+      "reported_stock_change_average_kbd": -550.6,
+      "reported_stock_change_average_mbd": -0.551,
+      "reported_closing_stocks_kbbl": 2482139.2,
+      "reported_closing_stocks_million_barrels": 2482.139,
       "coverage": {
         "production_reporters": 72,
         "refinery_intake_reporters": 68,
         "common_reporters": 66,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 65,
+        "closing_stock_reporters": 63
       },
       "coverage_quality": {
         "production_ratio": 1.125,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.065,
+        "stock_change_ratio": 1.083,
+        "closing_stock_ratio": 1.068,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.01,
         "production_yoy_pct": -12.5,
         "refinery_intake_mom_pct": -3.15,
-        "refinery_intake_yoy_pct": -11.89
+        "refinery_intake_yoy_pct": -11.89,
+        "closing_stocks_mom_pct": -0.54,
+        "closing_stocks_yoy_pct": 2.23
       }
     },
     {
       "period": "2021-01",
       "date": "2021-01-01",
+      "days_in_month": 31,
       "reported_production_kbd": 60510.1,
       "reported_production_mbd": 60.51,
       "reported_refinery_intake_kbd": 68844.4,
@@ -1802,29 +2397,39 @@
       "common_country_production_mbd": 58.594,
       "common_country_refinery_intake_mbd": 68.789,
       "common_country_gap_mbd": -10.195,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -12061.6,
+      "reported_stock_change_average_kbd": -389.1,
+      "reported_stock_change_average_mbd": -0.389,
+      "reported_closing_stocks_kbbl": 2469924.6,
+      "reported_closing_stocks_million_barrels": 2469.925,
       "coverage": {
         "production_reporters": 71,
         "refinery_intake_reporters": 68,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 63,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.109,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.05,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.79,
         "production_yoy_pct": -10.94,
         "refinery_intake_mom_pct": 3.06,
-        "refinery_intake_yoy_pct": -7.66
+        "refinery_intake_yoy_pct": -7.66,
+        "closing_stocks_mom_pct": -0.49,
+        "closing_stocks_yoy_pct": 2.5
       }
     },
     {
       "period": "2021-02",
       "date": "2021-02-01",
+      "days_in_month": 28,
       "reported_production_kbd": 58471.6,
       "reported_production_mbd": 58.472,
       "reported_refinery_intake_kbd": 67364.4,
@@ -1832,29 +2437,39 @@
       "common_country_production_mbd": 56.386,
       "common_country_refinery_intake_mbd": 67.31,
       "common_country_gap_mbd": -10.924,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -7179.3,
+      "reported_stock_change_average_kbd": -256.4,
+      "reported_stock_change_average_mbd": -0.256,
+      "reported_closing_stocks_kbbl": 2467361.1,
+      "reported_closing_stocks_million_barrels": 2467.361,
       "coverage": {
         "production_reporters": 71,
         "refinery_intake_reporters": 68,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 63,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.109,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.05,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -3.37,
         "production_yoy_pct": -13.84,
         "refinery_intake_mom_pct": -2.15,
-        "refinery_intake_yoy_pct": -8.66
+        "refinery_intake_yoy_pct": -8.66,
+        "closing_stocks_mom_pct": -0.1,
+        "closing_stocks_yoy_pct": 1.38
       }
     },
     {
       "period": "2021-03",
       "date": "2021-03-01",
+      "days_in_month": 31,
       "reported_production_kbd": 60375.8,
       "reported_production_mbd": 60.376,
       "reported_refinery_intake_kbd": 69557.6,
@@ -1862,29 +2477,39 @@
       "common_country_production_mbd": 58.278,
       "common_country_refinery_intake_mbd": 69.504,
       "common_country_gap_mbd": -11.226,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 3941.1,
+      "reported_stock_change_average_kbd": 127.1,
+      "reported_stock_change_average_mbd": 0.127,
+      "reported_closing_stocks_kbbl": 2468829.7,
+      "reported_closing_stocks_million_barrels": 2468.83,
       "coverage": {
         "production_reporters": 71,
         "refinery_intake_reporters": 68,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 63,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.109,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.05,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 3.26,
         "production_yoy_pct": -11.15,
         "refinery_intake_mom_pct": 3.26,
-        "refinery_intake_yoy_pct": -1.5
+        "refinery_intake_yoy_pct": -1.5,
+        "closing_stocks_mom_pct": 0.06,
+        "closing_stocks_yoy_pct": -0.65
       }
     },
     {
       "period": "2021-04",
       "date": "2021-04-01",
+      "days_in_month": 30,
       "reported_production_kbd": 60403.6,
       "reported_production_mbd": 60.404,
       "reported_refinery_intake_kbd": 68665.7,
@@ -1892,29 +2517,39 @@
       "common_country_production_mbd": 58.424,
       "common_country_refinery_intake_mbd": 68.608,
       "common_country_gap_mbd": -10.184,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -54922.9,
+      "reported_stock_change_average_kbd": -1830.8,
+      "reported_stock_change_average_mbd": -1.831,
+      "reported_closing_stocks_kbbl": 2422677.0,
+      "reported_closing_stocks_million_barrels": 2422.677,
       "coverage": {
         "production_reporters": 72,
         "refinery_intake_reporters": 69,
         "common_reporters": 66,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 64,
+        "closing_stock_reporters": 62
       },
       "coverage_quality": {
         "production_ratio": 1.125,
         "refinery_intake_ratio": 1.062,
         "common_ratio": 1.065,
+        "stock_change_ratio": 1.067,
+        "closing_stock_ratio": 1.051,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.05,
         "production_yoy_pct": -12.2,
         "refinery_intake_mom_pct": -1.28,
-        "refinery_intake_yoy_pct": 7.03
+        "refinery_intake_yoy_pct": 7.03,
+        "closing_stocks_mom_pct": -1.87,
+        "closing_stocks_yoy_pct": -6.23
       }
     },
     {
       "period": "2021-05",
       "date": "2021-05-01",
+      "days_in_month": 31,
       "reported_production_kbd": 60579.4,
       "reported_production_mbd": 60.579,
       "reported_refinery_intake_kbd": 67739.1,
@@ -1922,29 +2557,39 @@
       "common_country_production_mbd": 58.484,
       "common_country_refinery_intake_mbd": 67.683,
       "common_country_gap_mbd": -9.2,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 7030.8,
+      "reported_stock_change_average_kbd": 226.8,
+      "reported_stock_change_average_mbd": 0.227,
+      "reported_closing_stocks_kbbl": 2456327.1,
+      "reported_closing_stocks_million_barrels": 2456.327,
       "coverage": {
         "production_reporters": 71,
         "refinery_intake_reporters": 68,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 63,
+        "closing_stock_reporters": 62
       },
       "coverage_quality": {
         "production_ratio": 1.109,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.05,
+        "closing_stock_ratio": 1.051,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.29,
         "production_yoy_pct": 4.49,
         "refinery_intake_mom_pct": -1.35,
-        "refinery_intake_yoy_pct": 4.9
+        "refinery_intake_yoy_pct": 4.9,
+        "closing_stocks_mom_pct": 1.39,
+        "closing_stocks_yoy_pct": -5.45
       }
     },
     {
       "period": "2021-06",
       "date": "2021-06-01",
+      "days_in_month": 30,
       "reported_production_kbd": 60871.4,
       "reported_production_mbd": 60.871,
       "reported_refinery_intake_kbd": 69090.1,
@@ -1952,29 +2597,39 @@
       "common_country_production_mbd": 58.728,
       "common_country_refinery_intake_mbd": 69.031,
       "common_country_gap_mbd": -10.304,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -49413.9,
+      "reported_stock_change_average_kbd": -1647.1,
+      "reported_stock_change_average_mbd": -1.647,
+      "reported_closing_stocks_kbbl": 2406716.4,
+      "reported_closing_stocks_million_barrels": 2406.716,
       "coverage": {
         "production_reporters": 70,
         "refinery_intake_reporters": 67,
         "common_reporters": 64,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.094,
         "refinery_intake_ratio": 1.031,
         "common_ratio": 1.032,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.48,
         "production_yoy_pct": 6.21,
         "refinery_intake_mom_pct": 1.99,
-        "refinery_intake_yoy_pct": 2.36
+        "refinery_intake_yoy_pct": 2.36,
+        "closing_stocks_mom_pct": -2.02,
+        "closing_stocks_yoy_pct": -7.67
       }
     },
     {
       "period": "2021-07",
       "date": "2021-07-01",
+      "days_in_month": 31,
       "reported_production_kbd": 62073.2,
       "reported_production_mbd": 62.073,
       "reported_refinery_intake_kbd": 69299.7,
@@ -1982,29 +2637,39 @@
       "common_country_production_mbd": 59.935,
       "common_country_refinery_intake_mbd": 69.241,
       "common_country_gap_mbd": -9.306,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -65140.8,
+      "reported_stock_change_average_kbd": -2101.3,
+      "reported_stock_change_average_mbd": -2.101,
+      "reported_closing_stocks_kbbl": 2350967.1,
+      "reported_closing_stocks_million_barrels": 2350.967,
       "coverage": {
         "production_reporters": 71,
         "refinery_intake_reporters": 68,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 63,
+        "closing_stock_reporters": 62
       },
       "coverage_quality": {
         "production_ratio": 1.109,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.05,
+        "closing_stock_ratio": 1.051,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.97,
         "production_yoy_pct": 4.48,
         "refinery_intake_mom_pct": 0.3,
-        "refinery_intake_yoy_pct": 1.74
+        "refinery_intake_yoy_pct": 1.74,
+        "closing_stocks_mom_pct": -2.32,
+        "closing_stocks_yoy_pct": -9.24
       }
     },
     {
       "period": "2021-08",
       "date": "2021-08-01",
+      "days_in_month": 31,
       "reported_production_kbd": 62159.1,
       "reported_production_mbd": 62.159,
       "reported_refinery_intake_kbd": 71100.2,
@@ -2012,29 +2677,39 @@
       "common_country_production_mbd": 60.214,
       "common_country_refinery_intake_mbd": 71.045,
       "common_country_gap_mbd": -10.831,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -22375.2,
+      "reported_stock_change_average_kbd": -721.8,
+      "reported_stock_change_average_mbd": -0.722,
+      "reported_closing_stocks_kbbl": 2347807.5,
+      "reported_closing_stocks_million_barrels": 2347.808,
       "coverage": {
         "production_reporters": 70,
         "refinery_intake_reporters": 67,
         "common_reporters": 64,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.094,
         "refinery_intake_ratio": 1.031,
         "common_ratio": 1.032,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.14,
         "production_yoy_pct": 5.06,
         "refinery_intake_mom_pct": 2.6,
-        "refinery_intake_yoy_pct": 5.38
+        "refinery_intake_yoy_pct": 5.38,
+        "closing_stocks_mom_pct": -0.13,
+        "closing_stocks_yoy_pct": -7.67
       }
     },
     {
       "period": "2021-09",
       "date": "2021-09-01",
+      "days_in_month": 30,
       "reported_production_kbd": 62030.9,
       "reported_production_mbd": 62.031,
       "reported_refinery_intake_kbd": 69593.0,
@@ -2042,29 +2717,39 @@
       "common_country_production_mbd": 59.95,
       "common_country_refinery_intake_mbd": 69.535,
       "common_country_gap_mbd": -9.585,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -64497.6,
+      "reported_stock_change_average_kbd": -2149.9,
+      "reported_stock_change_average_mbd": -2.15,
+      "reported_closing_stocks_kbbl": 2283803.3,
+      "reported_closing_stocks_million_barrels": 2283.803,
       "coverage": {
         "production_reporters": 69,
         "refinery_intake_reporters": 66,
         "common_reporters": 63,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 61,
+        "closing_stock_reporters": 60
       },
       "coverage_quality": {
         "production_ratio": 1.078,
         "refinery_intake_ratio": 1.015,
         "common_ratio": 1.016,
+        "stock_change_ratio": 1.017,
+        "closing_stock_ratio": 1.017,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.21,
         "production_yoy_pct": 4.94,
         "refinery_intake_mom_pct": -2.12,
-        "refinery_intake_yoy_pct": 1.37
+        "refinery_intake_yoy_pct": 1.37,
+        "closing_stocks_mom_pct": -2.73,
+        "closing_stocks_yoy_pct": -10.04
       }
     },
     {
       "period": "2021-10",
       "date": "2021-10-01",
+      "days_in_month": 31,
       "reported_production_kbd": 62911.6,
       "reported_production_mbd": 62.912,
       "reported_refinery_intake_kbd": 68787.1,
@@ -2072,29 +2757,39 @@
       "common_country_production_mbd": 60.513,
       "common_country_refinery_intake_mbd": 68.729,
       "common_country_gap_mbd": -8.216,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 20039.6,
+      "reported_stock_change_average_kbd": 646.4,
+      "reported_stock_change_average_mbd": 0.646,
+      "reported_closing_stocks_kbbl": 2329271.4,
+      "reported_closing_stocks_million_barrels": 2329.271,
       "coverage": {
         "production_reporters": 68,
         "refinery_intake_reporters": 66,
         "common_reporters": 63,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 61,
+        "closing_stock_reporters": 60
       },
       "coverage_quality": {
         "production_ratio": 1.062,
         "refinery_intake_ratio": 1.015,
         "common_ratio": 1.016,
+        "stock_change_ratio": 1.017,
+        "closing_stock_ratio": 1.017,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.42,
         "production_yoy_pct": 6.35,
         "refinery_intake_mom_pct": -1.16,
-        "refinery_intake_yoy_pct": 5.0
+        "refinery_intake_yoy_pct": 5.0,
+        "closing_stocks_mom_pct": 1.99,
+        "closing_stocks_yoy_pct": -7.07
       }
     },
     {
       "period": "2021-11",
       "date": "2021-11-01",
+      "days_in_month": 30,
       "reported_production_kbd": 63784.9,
       "reported_production_mbd": 63.785,
       "reported_refinery_intake_kbd": 72004.3,
@@ -2102,29 +2797,39 @@
       "common_country_production_mbd": 61.302,
       "common_country_refinery_intake_mbd": 71.946,
       "common_country_gap_mbd": -10.643,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -42732.1,
+      "reported_stock_change_average_kbd": -1424.4,
+      "reported_stock_change_average_mbd": -1.424,
+      "reported_closing_stocks_kbbl": 2278291.6,
+      "reported_closing_stocks_million_barrels": 2278.292,
       "coverage": {
         "production_reporters": 68,
         "refinery_intake_reporters": 66,
         "common_reporters": 63,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 61,
+        "closing_stock_reporters": 60
       },
       "coverage_quality": {
         "production_ratio": 1.062,
         "refinery_intake_ratio": 1.015,
         "common_ratio": 1.016,
+        "stock_change_ratio": 1.017,
+        "closing_stock_ratio": 1.017,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.39,
         "production_yoy_pct": 6.25,
         "refinery_intake_mom_pct": 4.68,
-        "refinery_intake_yoy_pct": 4.4
+        "refinery_intake_yoy_pct": 4.4,
+        "closing_stocks_mom_pct": -2.19,
+        "closing_stocks_yoy_pct": -8.71
       }
     },
     {
       "period": "2021-12",
       "date": "2021-12-01",
+      "days_in_month": 31,
       "reported_production_kbd": 63823.3,
       "reported_production_mbd": 63.823,
       "reported_refinery_intake_kbd": 72378.1,
@@ -2132,29 +2837,39 @@
       "common_country_production_mbd": 60.773,
       "common_country_refinery_intake_mbd": 72.325,
       "common_country_gap_mbd": -11.552,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -33603.4,
+      "reported_stock_change_average_kbd": -1084.0,
+      "reported_stock_change_average_mbd": -1.084,
+      "reported_closing_stocks_kbbl": 2250442.2,
+      "reported_closing_stocks_million_barrels": 2250.442,
       "coverage": {
         "production_reporters": 68,
         "refinery_intake_reporters": 65,
         "common_reporters": 62,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 61,
+        "closing_stock_reporters": 60
       },
       "coverage_quality": {
         "production_ratio": 1.062,
         "refinery_intake_ratio": 1.0,
         "common_ratio": 1.0,
+        "stock_change_ratio": 1.017,
+        "closing_stock_ratio": 1.017,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.06,
         "production_yoy_pct": 6.3,
         "refinery_intake_mom_pct": 0.52,
-        "refinery_intake_yoy_pct": 8.35
+        "refinery_intake_yoy_pct": 8.35,
+        "closing_stocks_mom_pct": -1.22,
+        "closing_stocks_yoy_pct": -9.33
       }
     },
     {
       "period": "2022-01",
       "date": "2022-01-01",
+      "days_in_month": 31,
       "reported_production_kbd": 63995.8,
       "reported_production_mbd": 63.996,
       "reported_refinery_intake_kbd": 71883.5,
@@ -2162,29 +2877,39 @@
       "common_country_production_mbd": 62.182,
       "common_country_refinery_intake_mbd": 71.592,
       "common_country_gap_mbd": -9.41,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -27872.7,
+      "reported_stock_change_average_kbd": -899.1,
+      "reported_stock_change_average_mbd": -0.899,
+      "reported_closing_stocks_kbbl": 2255494.3,
+      "reported_closing_stocks_million_barrels": 2255.494,
       "coverage": {
         "production_reporters": 69,
         "refinery_intake_reporters": 68,
         "common_reporters": 64,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 63,
+        "closing_stock_reporters": 62
       },
       "coverage_quality": {
         "production_ratio": 1.078,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.032,
+        "stock_change_ratio": 1.05,
+        "closing_stock_ratio": 1.051,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.27,
         "production_yoy_pct": 5.76,
         "refinery_intake_mom_pct": -0.68,
-        "refinery_intake_yoy_pct": 4.41
+        "refinery_intake_yoy_pct": 4.41,
+        "closing_stocks_mom_pct": 0.22,
+        "closing_stocks_yoy_pct": -8.68
       }
     },
     {
       "period": "2022-02",
       "date": "2022-02-01",
+      "days_in_month": 28,
       "reported_production_kbd": 64722.3,
       "reported_production_mbd": 64.722,
       "reported_refinery_intake_kbd": 73482.5,
@@ -2192,29 +2917,39 @@
       "common_country_production_mbd": 62.919,
       "common_country_refinery_intake_mbd": 73.168,
       "common_country_gap_mbd": -10.25,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 30071.8,
+      "reported_stock_change_average_kbd": 1074.0,
+      "reported_stock_change_average_mbd": 1.074,
+      "reported_closing_stocks_kbbl": 2305316.3,
+      "reported_closing_stocks_million_barrels": 2305.316,
       "coverage": {
         "production_reporters": 69,
         "refinery_intake_reporters": 69,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 64,
+        "closing_stock_reporters": 63
       },
       "coverage_quality": {
         "production_ratio": 1.078,
         "refinery_intake_ratio": 1.062,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.067,
+        "closing_stock_ratio": 1.068,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.13,
         "production_yoy_pct": 10.69,
         "refinery_intake_mom_pct": 2.23,
-        "refinery_intake_yoy_pct": 9.08
+        "refinery_intake_yoy_pct": 9.08,
+        "closing_stocks_mom_pct": 2.21,
+        "closing_stocks_yoy_pct": -6.57
       }
     },
     {
       "period": "2022-03",
       "date": "2022-03-01",
+      "days_in_month": 31,
       "reported_production_kbd": 64519.1,
       "reported_production_mbd": 64.519,
       "reported_refinery_intake_kbd": 71470.7,
@@ -2222,29 +2957,39 @@
       "common_country_production_mbd": 62.761,
       "common_country_refinery_intake_mbd": 71.168,
       "common_country_gap_mbd": -8.407,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -4019.1,
+      "reported_stock_change_average_kbd": -129.6,
+      "reported_stock_change_average_mbd": -0.13,
+      "reported_closing_stocks_kbbl": 2296007.3,
+      "reported_closing_stocks_million_barrels": 2296.007,
       "coverage": {
         "production_reporters": 68,
         "refinery_intake_reporters": 68,
         "common_reporters": 64,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 63,
+        "closing_stock_reporters": 62
       },
       "coverage_quality": {
         "production_ratio": 1.062,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.032,
+        "stock_change_ratio": 1.05,
+        "closing_stock_ratio": 1.051,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.31,
         "production_yoy_pct": 6.86,
         "refinery_intake_mom_pct": -2.74,
-        "refinery_intake_yoy_pct": 2.75
+        "refinery_intake_yoy_pct": 2.75,
+        "closing_stocks_mom_pct": -0.4,
+        "closing_stocks_yoy_pct": -7.0
       }
     },
     {
       "period": "2022-04",
       "date": "2022-04-01",
+      "days_in_month": 30,
       "reported_production_kbd": 63897.3,
       "reported_production_mbd": 63.897,
       "reported_refinery_intake_kbd": 71907.6,
@@ -2252,29 +2997,39 @@
       "common_country_production_mbd": 62.272,
       "common_country_refinery_intake_mbd": 71.848,
       "common_country_gap_mbd": -9.575,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 4818.3,
+      "reported_stock_change_average_kbd": 160.6,
+      "reported_stock_change_average_mbd": 0.161,
+      "reported_closing_stocks_kbbl": 2267900.9,
+      "reported_closing_stocks_million_barrels": 2267.901,
       "coverage": {
         "production_reporters": 69,
         "refinery_intake_reporters": 68,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 63,
+        "closing_stock_reporters": 62
       },
       "coverage_quality": {
         "production_ratio": 1.078,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.05,
+        "closing_stock_ratio": 1.051,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.96,
         "production_yoy_pct": 5.78,
         "refinery_intake_mom_pct": 0.61,
-        "refinery_intake_yoy_pct": 4.72
+        "refinery_intake_yoy_pct": 4.72,
+        "closing_stocks_mom_pct": -1.22,
+        "closing_stocks_yoy_pct": -6.39
       }
     },
     {
       "period": "2022-05",
       "date": "2022-05-01",
+      "days_in_month": 31,
       "reported_production_kbd": 63757.8,
       "reported_production_mbd": 63.758,
       "reported_refinery_intake_kbd": 73131.2,
@@ -2282,29 +3037,39 @@
       "common_country_production_mbd": 62.028,
       "common_country_refinery_intake_mbd": 73.069,
       "common_country_gap_mbd": -11.041,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -43652.5,
+      "reported_stock_change_average_kbd": -1408.1,
+      "reported_stock_change_average_mbd": -1.408,
+      "reported_closing_stocks_kbbl": 2248116.8,
+      "reported_closing_stocks_million_barrels": 2248.117,
       "coverage": {
         "production_reporters": 69,
         "refinery_intake_reporters": 68,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 63,
+        "closing_stock_reporters": 62
       },
       "coverage_quality": {
         "production_ratio": 1.078,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.05,
+        "closing_stock_ratio": 1.051,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.22,
         "production_yoy_pct": 5.25,
         "refinery_intake_mom_pct": 1.7,
-        "refinery_intake_yoy_pct": 7.96
+        "refinery_intake_yoy_pct": 7.96,
+        "closing_stocks_mom_pct": -0.87,
+        "closing_stocks_yoy_pct": -8.48
       }
     },
     {
       "period": "2022-06",
       "date": "2022-06-01",
+      "days_in_month": 30,
       "reported_production_kbd": 64023.1,
       "reported_production_mbd": 64.023,
       "reported_refinery_intake_kbd": 72311.3,
@@ -2312,29 +3077,39 @@
       "common_country_production_mbd": 62.628,
       "common_country_refinery_intake_mbd": 72.266,
       "common_country_gap_mbd": -9.639,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -87453.0,
+      "reported_stock_change_average_kbd": -2915.1,
+      "reported_stock_change_average_mbd": -2.915,
+      "reported_closing_stocks_kbbl": 2161162.7,
+      "reported_closing_stocks_million_barrels": 2161.163,
       "coverage": {
         "production_reporters": 69,
         "refinery_intake_reporters": 67,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 63,
+        "closing_stock_reporters": 62
       },
       "coverage_quality": {
         "production_ratio": 1.078,
         "refinery_intake_ratio": 1.031,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.05,
+        "closing_stock_ratio": 1.051,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.42,
         "production_yoy_pct": 5.18,
         "refinery_intake_mom_pct": -1.12,
-        "refinery_intake_yoy_pct": 4.66
+        "refinery_intake_yoy_pct": 4.66,
+        "closing_stocks_mom_pct": -3.87,
+        "closing_stocks_yoy_pct": -10.2
       }
     },
     {
       "period": "2022-07",
       "date": "2022-07-01",
+      "days_in_month": 31,
       "reported_production_kbd": 64849.0,
       "reported_production_mbd": 64.849,
       "reported_refinery_intake_kbd": 72053.5,
@@ -2342,29 +3117,39 @@
       "common_country_production_mbd": 63.287,
       "common_country_refinery_intake_mbd": 72.002,
       "common_country_gap_mbd": -8.714,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 20037.7,
+      "reported_stock_change_average_kbd": 646.4,
+      "reported_stock_change_average_mbd": 0.646,
+      "reported_closing_stocks_kbbl": 2196508.5,
+      "reported_closing_stocks_million_barrels": 2196.508,
       "coverage": {
         "production_reporters": 68,
         "refinery_intake_reporters": 67,
         "common_reporters": 64,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.062,
         "refinery_intake_ratio": 1.031,
         "common_ratio": 1.032,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.29,
         "production_yoy_pct": 4.47,
         "refinery_intake_mom_pct": -0.36,
-        "refinery_intake_yoy_pct": 3.97
+        "refinery_intake_yoy_pct": 3.97,
+        "closing_stocks_mom_pct": 1.64,
+        "closing_stocks_yoy_pct": -6.57
       }
     },
     {
       "period": "2022-08",
       "date": "2022-08-01",
+      "days_in_month": 31,
       "reported_production_kbd": 65231.5,
       "reported_production_mbd": 65.232,
       "reported_refinery_intake_kbd": 73074.7,
@@ -2372,29 +3157,39 @@
       "common_country_production_mbd": 63.844,
       "common_country_refinery_intake_mbd": 73.029,
       "common_country_gap_mbd": -9.185,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -10133.0,
+      "reported_stock_change_average_kbd": -326.9,
+      "reported_stock_change_average_mbd": -0.327,
+      "reported_closing_stocks_kbbl": 2166722.0,
+      "reported_closing_stocks_million_barrels": 2166.722,
       "coverage": {
         "production_reporters": 69,
         "refinery_intake_reporters": 67,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.078,
         "refinery_intake_ratio": 1.031,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.59,
         "production_yoy_pct": 4.94,
         "refinery_intake_mom_pct": 1.42,
-        "refinery_intake_yoy_pct": 2.78
+        "refinery_intake_yoy_pct": 2.78,
+        "closing_stocks_mom_pct": -1.36,
+        "closing_stocks_yoy_pct": -7.71
       }
     },
     {
       "period": "2022-09",
       "date": "2022-09-01",
+      "days_in_month": 30,
       "reported_production_kbd": 65585.0,
       "reported_production_mbd": 65.585,
       "reported_refinery_intake_kbd": 72139.6,
@@ -2402,29 +3197,39 @@
       "common_country_production_mbd": 64.083,
       "common_country_refinery_intake_mbd": 72.107,
       "common_country_gap_mbd": -8.024,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -8801.3,
+      "reported_stock_change_average_kbd": -293.4,
+      "reported_stock_change_average_mbd": -0.293,
+      "reported_closing_stocks_kbbl": 2166733.0,
+      "reported_closing_stocks_million_barrels": 2166.733,
       "coverage": {
         "production_reporters": 69,
         "refinery_intake_reporters": 67,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.078,
         "refinery_intake_ratio": 1.031,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.54,
         "production_yoy_pct": 5.73,
         "refinery_intake_mom_pct": -1.28,
-        "refinery_intake_yoy_pct": 3.66
+        "refinery_intake_yoy_pct": 3.66,
+        "closing_stocks_mom_pct": 0.0,
+        "closing_stocks_yoy_pct": -5.13
       }
     },
     {
       "period": "2022-10",
       "date": "2022-10-01",
+      "days_in_month": 31,
       "reported_production_kbd": 65735.3,
       "reported_production_mbd": 65.735,
       "reported_refinery_intake_kbd": 71306.6,
@@ -2432,29 +3237,39 @@
       "common_country_production_mbd": 64.157,
       "common_country_refinery_intake_mbd": 71.259,
       "common_country_gap_mbd": -7.101,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -1710.8,
+      "reported_stock_change_average_kbd": -55.2,
+      "reported_stock_change_average_mbd": -0.055,
+      "reported_closing_stocks_kbbl": 2119530.0,
+      "reported_closing_stocks_million_barrels": 2119.53,
       "coverage": {
         "production_reporters": 67,
         "refinery_intake_reporters": 66,
         "common_reporters": 63,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 61,
+        "closing_stock_reporters": 60
       },
       "coverage_quality": {
         "production_ratio": 1.047,
         "refinery_intake_ratio": 1.015,
         "common_ratio": 1.016,
+        "stock_change_ratio": 1.017,
+        "closing_stock_ratio": 1.017,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.23,
         "production_yoy_pct": 4.49,
         "refinery_intake_mom_pct": -1.15,
-        "refinery_intake_yoy_pct": 3.66
+        "refinery_intake_yoy_pct": 3.66,
+        "closing_stocks_mom_pct": -2.18,
+        "closing_stocks_yoy_pct": -9.0
       }
     },
     {
       "period": "2022-11",
       "date": "2022-11-01",
+      "days_in_month": 30,
       "reported_production_kbd": 65405.2,
       "reported_production_mbd": 65.405,
       "reported_refinery_intake_kbd": 74025.9,
@@ -2462,29 +3277,39 @@
       "common_country_production_mbd": 63.599,
       "common_country_refinery_intake_mbd": 73.953,
       "common_country_gap_mbd": -10.354,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 595.8,
+      "reported_stock_change_average_kbd": 19.9,
+      "reported_stock_change_average_mbd": 0.02,
+      "reported_closing_stocks_kbbl": 2143702.7,
+      "reported_closing_stocks_million_barrels": 2143.703,
       "coverage": {
         "production_reporters": 67,
         "refinery_intake_reporters": 66,
         "common_reporters": 63,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 61,
+        "closing_stock_reporters": 60
       },
       "coverage_quality": {
         "production_ratio": 1.047,
         "refinery_intake_ratio": 1.015,
         "common_ratio": 1.016,
+        "stock_change_ratio": 1.017,
+        "closing_stock_ratio": 1.017,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.5,
         "production_yoy_pct": 2.54,
         "refinery_intake_mom_pct": 3.81,
-        "refinery_intake_yoy_pct": 2.81
+        "refinery_intake_yoy_pct": 2.81,
+        "closing_stocks_mom_pct": 1.14,
+        "closing_stocks_yoy_pct": -5.91
       }
     },
     {
       "period": "2022-12",
       "date": "2022-12-01",
+      "days_in_month": 31,
       "reported_production_kbd": 64864.5,
       "reported_production_mbd": 64.864,
       "reported_refinery_intake_kbd": 73460.9,
@@ -2492,29 +3317,39 @@
       "common_country_production_mbd": 63.048,
       "common_country_refinery_intake_mbd": 73.411,
       "common_country_gap_mbd": -10.364,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -29757.1,
+      "reported_stock_change_average_kbd": -959.9,
+      "reported_stock_change_average_mbd": -0.96,
+      "reported_closing_stocks_kbbl": 2111006.6,
+      "reported_closing_stocks_million_barrels": 2111.007,
       "coverage": {
         "production_reporters": 67,
         "refinery_intake_reporters": 66,
         "common_reporters": 63,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 61,
+        "closing_stock_reporters": 60
       },
       "coverage_quality": {
         "production_ratio": 1.047,
         "refinery_intake_ratio": 1.015,
         "common_ratio": 1.016,
+        "stock_change_ratio": 1.017,
+        "closing_stock_ratio": 1.017,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.83,
         "production_yoy_pct": 1.63,
         "refinery_intake_mom_pct": -0.76,
-        "refinery_intake_yoy_pct": 1.5
+        "refinery_intake_yoy_pct": 1.5,
+        "closing_stocks_mom_pct": -1.53,
+        "closing_stocks_yoy_pct": -6.2
       }
     },
     {
       "period": "2023-01",
       "date": "2023-01-01",
+      "days_in_month": 31,
       "reported_production_kbd": 62419.2,
       "reported_production_mbd": 62.419,
       "reported_refinery_intake_kbd": 70188.0,
@@ -2522,29 +3357,39 @@
       "common_country_production_mbd": 60.606,
       "common_country_refinery_intake_mbd": 70.123,
       "common_country_gap_mbd": -9.516,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 23933.2,
+      "reported_stock_change_average_kbd": 772.0,
+      "reported_stock_change_average_mbd": 0.772,
+      "reported_closing_stocks_kbbl": 2093267.8,
+      "reported_closing_stocks_million_barrels": 2093.268,
       "coverage": {
         "production_reporters": 68,
         "refinery_intake_reporters": 67,
         "common_reporters": 64,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.062,
         "refinery_intake_ratio": 1.031,
         "common_ratio": 1.032,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -3.77,
         "production_yoy_pct": -2.46,
         "refinery_intake_mom_pct": -4.46,
-        "refinery_intake_yoy_pct": -2.36
+        "refinery_intake_yoy_pct": -2.36,
+        "closing_stocks_mom_pct": -0.84,
+        "closing_stocks_yoy_pct": -7.19
       }
     },
     {
       "period": "2023-02",
       "date": "2023-02-01",
+      "days_in_month": 28,
       "reported_production_kbd": 63131.5,
       "reported_production_mbd": 63.131,
       "reported_refinery_intake_kbd": 72149.0,
@@ -2552,29 +3397,39 @@
       "common_country_production_mbd": 61.356,
       "common_country_refinery_intake_mbd": 72.085,
       "common_country_gap_mbd": -10.729,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 20572.8,
+      "reported_stock_change_average_kbd": 734.7,
+      "reported_stock_change_average_mbd": 0.735,
+      "reported_closing_stocks_kbbl": 2116754.7,
+      "reported_closing_stocks_million_barrels": 2116.755,
       "coverage": {
         "production_reporters": 68,
         "refinery_intake_reporters": 67,
         "common_reporters": 64,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.062,
         "refinery_intake_ratio": 1.031,
         "common_ratio": 1.032,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.14,
         "production_yoy_pct": -2.46,
         "refinery_intake_mom_pct": 2.79,
-        "refinery_intake_yoy_pct": -1.82
+        "refinery_intake_yoy_pct": -1.82,
+        "closing_stocks_mom_pct": 1.12,
+        "closing_stocks_yoy_pct": -8.18
       }
     },
     {
       "period": "2023-03",
       "date": "2023-03-01",
+      "days_in_month": 31,
       "reported_production_kbd": 62719.1,
       "reported_production_mbd": 62.719,
       "reported_refinery_intake_kbd": 72049.4,
@@ -2582,29 +3437,39 @@
       "common_country_production_mbd": 61.118,
       "common_country_refinery_intake_mbd": 71.984,
       "common_country_gap_mbd": -10.866,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 6719.7,
+      "reported_stock_change_average_kbd": 216.8,
+      "reported_stock_change_average_mbd": 0.217,
+      "reported_closing_stocks_kbbl": 2119378.7,
+      "reported_closing_stocks_million_barrels": 2119.379,
       "coverage": {
         "production_reporters": 68,
         "refinery_intake_reporters": 68,
         "common_reporters": 65,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.062,
         "refinery_intake_ratio": 1.046,
         "common_ratio": 1.048,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.65,
         "production_yoy_pct": -2.79,
         "refinery_intake_mom_pct": -0.14,
-        "refinery_intake_yoy_pct": 0.81
+        "refinery_intake_yoy_pct": 0.81,
+        "closing_stocks_mom_pct": 0.12,
+        "closing_stocks_yoy_pct": -7.69
       }
     },
     {
       "period": "2023-04",
       "date": "2023-04-01",
+      "days_in_month": 30,
       "reported_production_kbd": 51771.6,
       "reported_production_mbd": 51.772,
       "reported_refinery_intake_kbd": 65541.4,
@@ -2612,29 +3477,39 @@
       "common_country_production_mbd": 50.155,
       "common_country_refinery_intake_mbd": 65.478,
       "common_country_gap_mbd": -15.323,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 103.9,
+      "reported_stock_change_average_kbd": 3.5,
+      "reported_stock_change_average_mbd": 0.003,
+      "reported_closing_stocks_kbbl": 2121024.9,
+      "reported_closing_stocks_million_barrels": 2121.025,
       "coverage": {
         "production_reporters": 67,
         "refinery_intake_reporters": 67,
         "common_reporters": 64,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.047,
         "refinery_intake_ratio": 1.031,
         "common_ratio": 1.032,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -17.45,
         "production_yoy_pct": -18.98,
         "refinery_intake_mom_pct": -9.03,
-        "refinery_intake_yoy_pct": -8.85
+        "refinery_intake_yoy_pct": -8.85,
+        "closing_stocks_mom_pct": 0.08,
+        "closing_stocks_yoy_pct": -6.48
       }
     },
     {
       "period": "2023-05",
       "date": "2023-05-01",
+      "days_in_month": 31,
       "reported_production_kbd": 51363.9,
       "reported_production_mbd": 51.364,
       "reported_refinery_intake_kbd": 67180.3,
@@ -2642,29 +3517,39 @@
       "common_country_production_mbd": 49.801,
       "common_country_refinery_intake_mbd": 67.121,
       "common_country_gap_mbd": -17.32,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -18121.4,
+      "reported_stock_change_average_kbd": -584.6,
+      "reported_stock_change_average_mbd": -0.585,
+      "reported_closing_stocks_kbbl": 2124338.5,
+      "reported_closing_stocks_million_barrels": 2124.338,
       "coverage": {
         "production_reporters": 67,
         "refinery_intake_reporters": 67,
         "common_reporters": 64,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.047,
         "refinery_intake_ratio": 1.031,
         "common_ratio": 1.032,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.79,
         "production_yoy_pct": -19.44,
         "refinery_intake_mom_pct": 2.5,
-        "refinery_intake_yoy_pct": -8.14
+        "refinery_intake_yoy_pct": -8.14,
+        "closing_stocks_mom_pct": 0.16,
+        "closing_stocks_yoy_pct": -5.51
       }
     },
     {
       "period": "2023-06",
       "date": "2023-06-01",
+      "days_in_month": 30,
       "reported_production_kbd": 51696.5,
       "reported_production_mbd": 51.696,
       "reported_refinery_intake_kbd": 67819.3,
@@ -2672,29 +3557,39 @@
       "common_country_production_mbd": 50.133,
       "common_country_refinery_intake_mbd": 67.767,
       "common_country_gap_mbd": -17.634,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -16154.7,
+      "reported_stock_change_average_kbd": -538.5,
+      "reported_stock_change_average_mbd": -0.538,
+      "reported_closing_stocks_kbbl": 2116320.8,
+      "reported_closing_stocks_million_barrels": 2116.321,
       "coverage": {
         "production_reporters": 67,
         "refinery_intake_reporters": 67,
         "common_reporters": 64,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.047,
         "refinery_intake_ratio": 1.031,
         "common_ratio": 1.032,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.65,
         "production_yoy_pct": -19.25,
         "refinery_intake_mom_pct": 0.95,
-        "refinery_intake_yoy_pct": -6.21
+        "refinery_intake_yoy_pct": -6.21,
+        "closing_stocks_mom_pct": -0.38,
+        "closing_stocks_yoy_pct": -2.07
       }
     },
     {
       "period": "2023-07",
       "date": "2023-07-01",
+      "days_in_month": 31,
       "reported_production_kbd": 50455.5,
       "reported_production_mbd": 50.455,
       "reported_refinery_intake_kbd": 65660.3,
@@ -2702,29 +3597,39 @@
       "common_country_production_mbd": 48.968,
       "common_country_refinery_intake_mbd": 65.606,
       "common_country_gap_mbd": -16.638,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -22031.7,
+      "reported_stock_change_average_kbd": -710.7,
+      "reported_stock_change_average_mbd": -0.711,
+      "reported_closing_stocks_kbbl": 2088434.3,
+      "reported_closing_stocks_million_barrels": 2088.434,
       "coverage": {
         "production_reporters": 67,
         "refinery_intake_reporters": 67,
         "common_reporters": 64,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.047,
         "refinery_intake_ratio": 1.031,
         "common_ratio": 1.032,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -2.4,
         "production_yoy_pct": -22.2,
         "refinery_intake_mom_pct": -3.18,
-        "refinery_intake_yoy_pct": -8.87
+        "refinery_intake_yoy_pct": -8.87,
+        "closing_stocks_mom_pct": -1.32,
+        "closing_stocks_yoy_pct": -4.92
       }
     },
     {
       "period": "2023-08",
       "date": "2023-08-01",
+      "days_in_month": 31,
       "reported_production_kbd": 50469.2,
       "reported_production_mbd": 50.469,
       "reported_refinery_intake_kbd": 68646.0,
@@ -2732,29 +3637,39 @@
       "common_country_production_mbd": 49.032,
       "common_country_refinery_intake_mbd": 68.591,
       "common_country_gap_mbd": -19.558,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -47205.8,
+      "reported_stock_change_average_kbd": -1522.8,
+      "reported_stock_change_average_mbd": -1.523,
+      "reported_closing_stocks_kbbl": 2049258.0,
+      "reported_closing_stocks_million_barrels": 2049.258,
       "coverage": {
         "production_reporters": 66,
         "refinery_intake_reporters": 66,
         "common_reporters": 63,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.031,
         "refinery_intake_ratio": 1.015,
         "common_ratio": 1.016,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.03,
         "production_yoy_pct": -22.63,
         "refinery_intake_mom_pct": 4.55,
-        "refinery_intake_yoy_pct": -6.06
+        "refinery_intake_yoy_pct": -6.06,
+        "closing_stocks_mom_pct": -1.88,
+        "closing_stocks_yoy_pct": -5.42
       }
     },
     {
       "period": "2023-09",
       "date": "2023-09-01",
+      "days_in_month": 30,
       "reported_production_kbd": 50937.4,
       "reported_production_mbd": 50.937,
       "reported_refinery_intake_kbd": 66603.6,
@@ -2762,29 +3677,39 @@
       "common_country_production_mbd": 49.356,
       "common_country_refinery_intake_mbd": 66.548,
       "common_country_gap_mbd": -17.191,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 1195.3,
+      "reported_stock_change_average_kbd": 39.8,
+      "reported_stock_change_average_mbd": 0.04,
+      "reported_closing_stocks_kbbl": 2050149.6,
+      "reported_closing_stocks_million_barrels": 2050.15,
       "coverage": {
         "production_reporters": 66,
         "refinery_intake_reporters": 66,
         "common_reporters": 63,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 62,
+        "closing_stock_reporters": 61
       },
       "coverage_quality": {
         "production_ratio": 1.031,
         "refinery_intake_ratio": 1.015,
         "common_ratio": 1.016,
+        "stock_change_ratio": 1.033,
+        "closing_stock_ratio": 1.034,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.93,
         "production_yoy_pct": -22.33,
         "refinery_intake_mom_pct": -2.97,
-        "refinery_intake_yoy_pct": -7.67
+        "refinery_intake_yoy_pct": -7.67,
+        "closing_stocks_mom_pct": 0.04,
+        "closing_stocks_yoy_pct": -5.38
       }
     },
     {
       "period": "2023-10",
       "date": "2023-10-01",
+      "days_in_month": 31,
       "reported_production_kbd": 51316.5,
       "reported_production_mbd": 51.317,
       "reported_refinery_intake_kbd": 64377.9,
@@ -2792,29 +3717,39 @@
       "common_country_production_mbd": 49.717,
       "common_country_refinery_intake_mbd": 64.36,
       "common_country_gap_mbd": -14.644,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 20173.3,
+      "reported_stock_change_average_kbd": 650.8,
+      "reported_stock_change_average_mbd": 0.651,
+      "reported_closing_stocks_kbbl": 2065686.2,
+      "reported_closing_stocks_million_barrels": 2065.686,
       "coverage": {
         "production_reporters": 66,
         "refinery_intake_reporters": 66,
         "common_reporters": 63,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 61,
+        "closing_stock_reporters": 60
       },
       "coverage_quality": {
         "production_ratio": 1.031,
         "refinery_intake_ratio": 1.015,
         "common_ratio": 1.016,
+        "stock_change_ratio": 1.017,
+        "closing_stock_ratio": 1.017,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.75,
         "production_yoy_pct": -21.93,
         "refinery_intake_mom_pct": -3.34,
-        "refinery_intake_yoy_pct": -9.72
+        "refinery_intake_yoy_pct": -9.72,
+        "closing_stocks_mom_pct": 0.76,
+        "closing_stocks_yoy_pct": -2.54
       }
     },
     {
       "period": "2023-11",
       "date": "2023-11-01",
+      "days_in_month": 30,
       "reported_production_kbd": 51193.2,
       "reported_production_mbd": 51.193,
       "reported_refinery_intake_kbd": 64238.0,
@@ -2822,29 +3757,39 @@
       "common_country_production_mbd": 49.652,
       "common_country_refinery_intake_mbd": 64.199,
       "common_country_gap_mbd": -14.547,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 18297.8,
+      "reported_stock_change_average_kbd": 609.9,
+      "reported_stock_change_average_mbd": 0.61,
+      "reported_closing_stocks_kbbl": 2076114.1,
+      "reported_closing_stocks_million_barrels": 2076.114,
       "coverage": {
         "production_reporters": 65,
         "refinery_intake_reporters": 66,
         "common_reporters": 62,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 61,
+        "closing_stock_reporters": 60
       },
       "coverage_quality": {
         "production_ratio": 1.016,
         "refinery_intake_ratio": 1.015,
         "common_ratio": 1.0,
+        "stock_change_ratio": 1.017,
+        "closing_stock_ratio": 1.017,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.24,
         "production_yoy_pct": -21.73,
         "refinery_intake_mom_pct": -0.22,
-        "refinery_intake_yoy_pct": -13.22
+        "refinery_intake_yoy_pct": -13.22,
+        "closing_stocks_mom_pct": 0.5,
+        "closing_stocks_yoy_pct": -3.15
       }
     },
     {
       "period": "2023-12",
       "date": "2023-12-01",
+      "days_in_month": 31,
       "reported_production_kbd": 50375.0,
       "reported_production_mbd": 50.375,
       "reported_refinery_intake_kbd": 67618.0,
@@ -2852,29 +3797,39 @@
       "common_country_production_mbd": 48.789,
       "common_country_refinery_intake_mbd": 67.601,
       "common_country_gap_mbd": -18.812,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -26548.3,
+      "reported_stock_change_average_kbd": -856.4,
+      "reported_stock_change_average_mbd": -0.856,
+      "reported_closing_stocks_kbbl": 2036141.5,
+      "reported_closing_stocks_million_barrels": 2036.141,
       "coverage": {
         "production_reporters": 65,
         "refinery_intake_reporters": 65,
         "common_reporters": 62,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 61,
+        "closing_stock_reporters": 60
       },
       "coverage_quality": {
         "production_ratio": 1.016,
         "refinery_intake_ratio": 1.0,
         "common_ratio": 1.0,
+        "stock_change_ratio": 1.017,
+        "closing_stock_ratio": 1.017,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -1.6,
         "production_yoy_pct": -22.34,
         "refinery_intake_mom_pct": 5.26,
-        "refinery_intake_yoy_pct": -7.95
+        "refinery_intake_yoy_pct": -7.95,
+        "closing_stocks_mom_pct": -1.93,
+        "closing_stocks_yoy_pct": -3.55
       }
     },
     {
       "period": "2024-01",
       "date": "2024-01-01",
+      "days_in_month": 31,
       "reported_production_kbd": 49341.5,
       "reported_production_mbd": 49.341,
       "reported_refinery_intake_kbd": 66349.7,
@@ -2882,29 +3837,39 @@
       "common_country_production_mbd": 47.753,
       "common_country_refinery_intake_mbd": 66.333,
       "common_country_gap_mbd": -18.58,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 10711.9,
+      "reported_stock_change_average_kbd": 345.5,
+      "reported_stock_change_average_mbd": 0.346,
+      "reported_closing_stocks_kbbl": 2046971.8,
+      "reported_closing_stocks_million_barrels": 2046.972,
       "coverage": {
         "production_reporters": 65,
         "refinery_intake_reporters": 65,
         "common_reporters": 62,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 61,
+        "closing_stock_reporters": 60
       },
       "coverage_quality": {
         "production_ratio": 1.016,
         "refinery_intake_ratio": 1.0,
         "common_ratio": 1.0,
+        "stock_change_ratio": 1.017,
+        "closing_stock_ratio": 1.017,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -2.05,
         "production_yoy_pct": -20.95,
         "refinery_intake_mom_pct": -1.88,
-        "refinery_intake_yoy_pct": -5.47
+        "refinery_intake_yoy_pct": -5.47,
+        "closing_stocks_mom_pct": 0.53,
+        "closing_stocks_yoy_pct": -2.21
       }
     },
     {
       "period": "2024-02",
       "date": "2024-02-01",
+      "days_in_month": 29,
       "reported_production_kbd": 49380.9,
       "reported_production_mbd": 49.381,
       "reported_refinery_intake_kbd": 64767.3,
@@ -2912,29 +3877,39 @@
       "common_country_production_mbd": 47.801,
       "common_country_refinery_intake_mbd": 64.752,
       "common_country_gap_mbd": -16.951,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 21072.4,
+      "reported_stock_change_average_kbd": 726.6,
+      "reported_stock_change_average_mbd": 0.727,
+      "reported_closing_stocks_kbbl": 2068769.9,
+      "reported_closing_stocks_million_barrels": 2068.77,
       "coverage": {
         "production_reporters": 64,
         "refinery_intake_reporters": 65,
         "common_reporters": 62,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 61,
+        "closing_stock_reporters": 60
       },
       "coverage_quality": {
         "production_ratio": 1.0,
         "refinery_intake_ratio": 1.0,
         "common_ratio": 1.0,
+        "stock_change_ratio": 1.017,
+        "closing_stock_ratio": 1.017,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.08,
         "production_yoy_pct": -21.78,
         "refinery_intake_mom_pct": -2.39,
-        "refinery_intake_yoy_pct": -10.23
+        "refinery_intake_yoy_pct": -10.23,
+        "closing_stocks_mom_pct": 1.06,
+        "closing_stocks_yoy_pct": -2.27
       }
     },
     {
       "period": "2024-03",
       "date": "2024-03-01",
+      "days_in_month": 31,
       "reported_production_kbd": 48719.7,
       "reported_production_mbd": 48.72,
       "reported_refinery_intake_kbd": 66400.1,
@@ -2942,29 +3917,39 @@
       "common_country_production_mbd": 47.136,
       "common_country_refinery_intake_mbd": 66.383,
       "common_country_gap_mbd": -19.247,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -23677.3,
+      "reported_stock_change_average_kbd": -763.8,
+      "reported_stock_change_average_mbd": -0.764,
+      "reported_closing_stocks_kbbl": 2031459.2,
+      "reported_closing_stocks_million_barrels": 2031.459,
       "coverage": {
         "production_reporters": 63,
         "refinery_intake_reporters": 64,
         "common_reporters": 61,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 60,
+        "closing_stock_reporters": 59
       },
       "coverage_quality": {
         "production_ratio": 0.984,
         "refinery_intake_ratio": 0.985,
         "common_ratio": 0.984,
+        "stock_change_ratio": 1.0,
+        "closing_stock_ratio": 1.0,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -1.34,
         "production_yoy_pct": -22.32,
         "refinery_intake_mom_pct": 2.52,
-        "refinery_intake_yoy_pct": -7.84
+        "refinery_intake_yoy_pct": -7.84,
+        "closing_stocks_mom_pct": -1.8,
+        "closing_stocks_yoy_pct": -4.15
       }
     },
     {
       "period": "2024-04",
       "date": "2024-04-01",
+      "days_in_month": 30,
       "reported_production_kbd": 45547.8,
       "reported_production_mbd": 45.548,
       "reported_refinery_intake_kbd": 65090.1,
@@ -2972,29 +3957,39 @@
       "common_country_production_mbd": 43.992,
       "common_country_refinery_intake_mbd": 65.09,
       "common_country_gap_mbd": -21.098,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 62932.0,
+      "reported_stock_change_average_kbd": 2097.7,
+      "reported_stock_change_average_mbd": 2.098,
+      "reported_closing_stocks_kbbl": 2094098.4,
+      "reported_closing_stocks_million_barrels": 2094.098,
       "coverage": {
         "production_reporters": 63,
         "refinery_intake_reporters": 63,
         "common_reporters": 61,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 60,
+        "closing_stock_reporters": 59
       },
       "coverage_quality": {
         "production_ratio": 0.984,
         "refinery_intake_ratio": 0.969,
         "common_ratio": 0.984,
+        "stock_change_ratio": 1.0,
+        "closing_stock_ratio": 1.0,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -6.51,
         "production_yoy_pct": -12.02,
         "refinery_intake_mom_pct": -1.97,
-        "refinery_intake_yoy_pct": -0.69
+        "refinery_intake_yoy_pct": -0.69,
+        "closing_stocks_mom_pct": 3.08,
+        "closing_stocks_yoy_pct": -1.27
       }
     },
     {
       "period": "2024-05",
       "date": "2024-05-01",
+      "days_in_month": 31,
       "reported_production_kbd": 45313.9,
       "reported_production_mbd": 45.314,
       "reported_refinery_intake_kbd": 66401.0,
@@ -3002,29 +3997,39 @@
       "common_country_production_mbd": 43.849,
       "common_country_refinery_intake_mbd": 66.353,
       "common_country_gap_mbd": -22.504,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -19597.9,
+      "reported_stock_change_average_kbd": -632.2,
+      "reported_stock_change_average_mbd": -0.632,
+      "reported_closing_stocks_kbbl": 2079716.8,
+      "reported_closing_stocks_million_barrels": 2079.717,
       "coverage": {
         "production_reporters": 63,
         "refinery_intake_reporters": 64,
         "common_reporters": 61,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 60,
+        "closing_stock_reporters": 59
       },
       "coverage_quality": {
         "production_ratio": 0.984,
         "refinery_intake_ratio": 0.985,
         "common_ratio": 0.984,
+        "stock_change_ratio": 1.0,
+        "closing_stock_ratio": 1.0,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.51,
         "production_yoy_pct": -11.78,
         "refinery_intake_mom_pct": 2.01,
-        "refinery_intake_yoy_pct": -1.16
+        "refinery_intake_yoy_pct": -1.16,
+        "closing_stocks_mom_pct": -0.69,
+        "closing_stocks_yoy_pct": -2.1
       }
     },
     {
       "period": "2024-06",
       "date": "2024-06-01",
+      "days_in_month": 30,
       "reported_production_kbd": 45398.7,
       "reported_production_mbd": 45.399,
       "reported_refinery_intake_kbd": 67180.0,
@@ -3032,29 +4037,39 @@
       "common_country_production_mbd": 43.846,
       "common_country_refinery_intake_mbd": 67.13,
       "common_country_gap_mbd": -23.284,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -18474.8,
+      "reported_stock_change_average_kbd": -615.8,
+      "reported_stock_change_average_mbd": -0.616,
+      "reported_closing_stocks_kbbl": 2054468.3,
+      "reported_closing_stocks_million_barrels": 2054.468,
       "coverage": {
         "production_reporters": 64,
         "refinery_intake_reporters": 65,
         "common_reporters": 62,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 60,
+        "closing_stock_reporters": 59
       },
       "coverage_quality": {
         "production_ratio": 1.0,
         "refinery_intake_ratio": 1.0,
         "common_ratio": 1.0,
+        "stock_change_ratio": 1.0,
+        "closing_stock_ratio": 1.0,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.19,
         "production_yoy_pct": -12.18,
         "refinery_intake_mom_pct": 1.17,
-        "refinery_intake_yoy_pct": -0.94
+        "refinery_intake_yoy_pct": -0.94,
+        "closing_stocks_mom_pct": -1.21,
+        "closing_stocks_yoy_pct": -2.92
       }
     },
     {
       "period": "2024-07",
       "date": "2024-07-01",
+      "days_in_month": 31,
       "reported_production_kbd": 45580.8,
       "reported_production_mbd": 45.581,
       "reported_refinery_intake_kbd": 65505.6,
@@ -3062,29 +4077,39 @@
       "common_country_production_mbd": 44.024,
       "common_country_refinery_intake_mbd": 65.456,
       "common_country_gap_mbd": -21.432,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -4351.8,
+      "reported_stock_change_average_kbd": -140.4,
+      "reported_stock_change_average_mbd": -0.14,
+      "reported_closing_stocks_kbbl": 2045103.6,
+      "reported_closing_stocks_million_barrels": 2045.104,
       "coverage": {
         "production_reporters": 63,
         "refinery_intake_reporters": 64,
         "common_reporters": 61,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 59,
+        "closing_stock_reporters": 59
       },
       "coverage_quality": {
         "production_ratio": 0.984,
         "refinery_intake_ratio": 0.985,
         "common_ratio": 0.984,
+        "stock_change_ratio": 0.983,
+        "closing_stock_ratio": 1.0,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.4,
         "production_yoy_pct": -9.66,
         "refinery_intake_mom_pct": -2.49,
-        "refinery_intake_yoy_pct": -0.23
+        "refinery_intake_yoy_pct": -0.23,
+        "closing_stocks_mom_pct": -0.46,
+        "closing_stocks_yoy_pct": -2.07
       }
     },
     {
       "period": "2024-08",
       "date": "2024-08-01",
+      "days_in_month": 31,
       "reported_production_kbd": 45497.4,
       "reported_production_mbd": 45.497,
       "reported_refinery_intake_kbd": 67853.5,
@@ -3092,29 +4117,39 @@
       "common_country_production_mbd": 44.038,
       "common_country_refinery_intake_mbd": 67.796,
       "common_country_gap_mbd": -23.758,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -16900.6,
+      "reported_stock_change_average_kbd": -545.2,
+      "reported_stock_change_average_mbd": -0.545,
+      "reported_closing_stocks_kbbl": 2033582.1,
+      "reported_closing_stocks_million_barrels": 2033.582,
       "coverage": {
         "production_reporters": 63,
         "refinery_intake_reporters": 64,
         "common_reporters": 61,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 59,
+        "closing_stock_reporters": 59
       },
       "coverage_quality": {
         "production_ratio": 0.984,
         "refinery_intake_ratio": 0.985,
         "common_ratio": 0.984,
+        "stock_change_ratio": 0.983,
+        "closing_stock_ratio": 1.0,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.18,
         "production_yoy_pct": -9.85,
         "refinery_intake_mom_pct": 3.58,
-        "refinery_intake_yoy_pct": -1.15
+        "refinery_intake_yoy_pct": -1.15,
+        "closing_stocks_mom_pct": -0.56,
+        "closing_stocks_yoy_pct": -0.76
       }
     },
     {
       "period": "2024-09",
       "date": "2024-09-01",
+      "days_in_month": 30,
       "reported_production_kbd": 45151.0,
       "reported_production_mbd": 45.151,
       "reported_refinery_intake_kbd": 65803.2,
@@ -3122,29 +4157,39 @@
       "common_country_production_mbd": 43.542,
       "common_country_refinery_intake_mbd": 65.741,
       "common_country_gap_mbd": -22.199,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -5772.2,
+      "reported_stock_change_average_kbd": -192.4,
+      "reported_stock_change_average_mbd": -0.192,
+      "reported_closing_stocks_kbbl": 2031471.8,
+      "reported_closing_stocks_million_barrels": 2031.472,
       "coverage": {
         "production_reporters": 62,
         "refinery_intake_reporters": 64,
         "common_reporters": 60,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 59,
+        "closing_stock_reporters": 59
       },
       "coverage_quality": {
         "production_ratio": 0.969,
         "refinery_intake_ratio": 0.985,
         "common_ratio": 0.968,
+        "stock_change_ratio": 0.983,
+        "closing_stock_ratio": 1.0,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.76,
         "production_yoy_pct": -11.36,
         "refinery_intake_mom_pct": -3.02,
-        "refinery_intake_yoy_pct": -1.2
+        "refinery_intake_yoy_pct": -1.2,
+        "closing_stocks_mom_pct": -0.1,
+        "closing_stocks_yoy_pct": -0.91
       }
     },
     {
       "period": "2024-10",
       "date": "2024-10-01",
+      "days_in_month": 31,
       "reported_production_kbd": 45655.2,
       "reported_production_mbd": 45.655,
       "reported_refinery_intake_kbd": 65013.2,
@@ -3152,29 +4197,39 @@
       "common_country_production_mbd": 44.361,
       "common_country_refinery_intake_mbd": 64.951,
       "common_country_gap_mbd": -20.59,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 11464.5,
+      "reported_stock_change_average_kbd": 369.8,
+      "reported_stock_change_average_mbd": 0.37,
+      "reported_closing_stocks_kbbl": 2039319.2,
+      "reported_closing_stocks_million_barrels": 2039.319,
       "coverage": {
         "production_reporters": 62,
         "refinery_intake_reporters": 64,
         "common_reporters": 60,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 59,
+        "closing_stock_reporters": 59
       },
       "coverage_quality": {
         "production_ratio": 0.969,
         "refinery_intake_ratio": 0.985,
         "common_ratio": 0.968,
+        "stock_change_ratio": 0.983,
+        "closing_stock_ratio": 1.0,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.12,
         "production_yoy_pct": -11.03,
         "refinery_intake_mom_pct": -1.2,
-        "refinery_intake_yoy_pct": 0.99
+        "refinery_intake_yoy_pct": 0.99,
+        "closing_stocks_mom_pct": 0.39,
+        "closing_stocks_yoy_pct": -1.28
       }
     },
     {
       "period": "2024-11",
       "date": "2024-11-01",
+      "days_in_month": 30,
       "reported_production_kbd": 45665.4,
       "reported_production_mbd": 45.665,
       "reported_refinery_intake_kbd": 67119.2,
@@ -3182,29 +4237,39 @@
       "common_country_production_mbd": 44.214,
       "common_country_refinery_intake_mbd": 67.072,
       "common_country_gap_mbd": -22.858,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 3899.5,
+      "reported_stock_change_average_kbd": 130.0,
+      "reported_stock_change_average_mbd": 0.13,
+      "reported_closing_stocks_kbbl": 2043856.0,
+      "reported_closing_stocks_million_barrels": 2043.856,
       "coverage": {
         "production_reporters": 62,
         "refinery_intake_reporters": 63,
         "common_reporters": 60,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 58,
+        "closing_stock_reporters": 58
       },
       "coverage_quality": {
         "production_ratio": 0.969,
         "refinery_intake_ratio": 0.969,
         "common_ratio": 0.968,
+        "stock_change_ratio": 0.967,
+        "closing_stock_ratio": 0.983,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.02,
         "production_yoy_pct": -10.8,
         "refinery_intake_mom_pct": 3.24,
-        "refinery_intake_yoy_pct": 4.48
+        "refinery_intake_yoy_pct": 4.48,
+        "closing_stocks_mom_pct": 0.22,
+        "closing_stocks_yoy_pct": -1.55
       }
     },
     {
       "period": "2024-12",
       "date": "2024-12-01",
+      "days_in_month": 31,
       "reported_production_kbd": 45979.8,
       "reported_production_mbd": 45.98,
       "reported_refinery_intake_kbd": 68167.5,
@@ -3212,29 +4277,39 @@
       "common_country_production_mbd": 44.549,
       "common_country_refinery_intake_mbd": 68.12,
       "common_country_gap_mbd": -23.571,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -26067.2,
+      "reported_stock_change_average_kbd": -840.9,
+      "reported_stock_change_average_mbd": -0.841,
+      "reported_closing_stocks_kbbl": 2022392.8,
+      "reported_closing_stocks_million_barrels": 2022.393,
       "coverage": {
         "production_reporters": 62,
         "refinery_intake_reporters": 63,
         "common_reporters": 60,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 59,
+        "closing_stock_reporters": 59
       },
       "coverage_quality": {
         "production_ratio": 0.969,
         "refinery_intake_ratio": 0.969,
         "common_ratio": 0.968,
+        "stock_change_ratio": 0.983,
+        "closing_stock_ratio": 1.0,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.69,
         "production_yoy_pct": -8.72,
         "refinery_intake_mom_pct": 1.56,
-        "refinery_intake_yoy_pct": 0.81
+        "refinery_intake_yoy_pct": 0.81,
+        "closing_stocks_mom_pct": -1.05,
+        "closing_stocks_yoy_pct": -0.68
       }
     },
     {
       "period": "2025-01",
       "date": "2025-01-01",
+      "days_in_month": 31,
       "reported_production_kbd": 45797.4,
       "reported_production_mbd": 45.797,
       "reported_refinery_intake_kbd": 65556.9,
@@ -3242,29 +4317,39 @@
       "common_country_production_mbd": 44.236,
       "common_country_refinery_intake_mbd": 65.491,
       "common_country_gap_mbd": -21.255,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 14537.5,
+      "reported_stock_change_average_kbd": 469.0,
+      "reported_stock_change_average_mbd": 0.469,
+      "reported_closing_stocks_kbbl": 2028372.7,
+      "reported_closing_stocks_million_barrels": 2028.373,
       "coverage": {
         "production_reporters": 62,
         "refinery_intake_reporters": 63,
         "common_reporters": 60,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 58,
+        "closing_stock_reporters": 59
       },
       "coverage_quality": {
         "production_ratio": 0.969,
         "refinery_intake_ratio": 0.969,
         "common_ratio": 0.968,
+        "stock_change_ratio": 0.967,
+        "closing_stock_ratio": 1.0,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.4,
         "production_yoy_pct": -7.18,
         "refinery_intake_mom_pct": -3.83,
-        "refinery_intake_yoy_pct": -1.2
+        "refinery_intake_yoy_pct": -1.2,
+        "closing_stocks_mom_pct": 0.3,
+        "closing_stocks_yoy_pct": -0.91
       }
     },
     {
       "period": "2025-02",
       "date": "2025-02-01",
+      "days_in_month": 28,
       "reported_production_kbd": 45864.8,
       "reported_production_mbd": 45.865,
       "reported_refinery_intake_kbd": 64653.5,
@@ -3272,29 +4357,39 @@
       "common_country_production_mbd": 43.038,
       "common_country_refinery_intake_mbd": 64.59,
       "common_country_gap_mbd": -21.552,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 2814.2,
+      "reported_stock_change_average_kbd": 100.5,
+      "reported_stock_change_average_mbd": 0.101,
+      "reported_closing_stocks_kbbl": 2016614.9,
+      "reported_closing_stocks_million_barrels": 2016.615,
       "coverage": {
         "production_reporters": 62,
         "refinery_intake_reporters": 62,
         "common_reporters": 59,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 57,
+        "closing_stock_reporters": 58
       },
       "coverage_quality": {
         "production_ratio": 0.969,
         "refinery_intake_ratio": 0.954,
         "common_ratio": 0.952,
+        "stock_change_ratio": 0.95,
+        "closing_stock_ratio": 0.983,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.15,
         "production_yoy_pct": -7.12,
         "refinery_intake_mom_pct": -1.38,
-        "refinery_intake_yoy_pct": -0.17
+        "refinery_intake_yoy_pct": -0.17,
+        "closing_stocks_mom_pct": -0.58,
+        "closing_stocks_yoy_pct": -2.52
       }
     },
     {
       "period": "2025-03",
       "date": "2025-03-01",
+      "days_in_month": 31,
       "reported_production_kbd": 46576.2,
       "reported_production_mbd": 46.576,
       "reported_refinery_intake_kbd": 66685.6,
@@ -3302,29 +4397,39 @@
       "common_country_production_mbd": 43.684,
       "common_country_refinery_intake_mbd": 66.618,
       "common_country_gap_mbd": -22.935,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 11335.0,
+      "reported_stock_change_average_kbd": 365.6,
+      "reported_stock_change_average_mbd": 0.366,
+      "reported_closing_stocks_kbbl": 2030648.6,
+      "reported_closing_stocks_million_barrels": 2030.649,
       "coverage": {
         "production_reporters": 62,
         "refinery_intake_reporters": 62,
         "common_reporters": 59,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 57,
+        "closing_stock_reporters": 58
       },
       "coverage_quality": {
         "production_ratio": 0.969,
         "refinery_intake_ratio": 0.954,
         "common_ratio": 0.952,
+        "stock_change_ratio": 0.95,
+        "closing_stock_ratio": 0.983,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.55,
         "production_yoy_pct": -4.4,
         "refinery_intake_mom_pct": 3.14,
-        "refinery_intake_yoy_pct": 0.43
+        "refinery_intake_yoy_pct": 0.43,
+        "closing_stocks_mom_pct": 0.7,
+        "closing_stocks_yoy_pct": -0.04
       }
     },
     {
       "period": "2025-04",
       "date": "2025-04-01",
+      "days_in_month": 30,
       "reported_production_kbd": 46438.7,
       "reported_production_mbd": 46.439,
       "reported_refinery_intake_kbd": 66433.4,
@@ -3332,29 +4437,39 @@
       "common_country_production_mbd": 43.603,
       "common_country_refinery_intake_mbd": 66.384,
       "common_country_gap_mbd": -22.782,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 7625.3,
+      "reported_stock_change_average_kbd": 254.2,
+      "reported_stock_change_average_mbd": 0.254,
+      "reported_closing_stocks_kbbl": 2042055.6,
+      "reported_closing_stocks_million_barrels": 2042.056,
       "coverage": {
         "production_reporters": 62,
         "refinery_intake_reporters": 61,
         "common_reporters": 59,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 56,
+        "closing_stock_reporters": 57
       },
       "coverage_quality": {
         "production_ratio": 0.969,
         "refinery_intake_ratio": 0.938,
         "common_ratio": 0.952,
+        "stock_change_ratio": 0.933,
+        "closing_stock_ratio": 0.966,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.29,
         "production_yoy_pct": 1.96,
         "refinery_intake_mom_pct": -0.38,
-        "refinery_intake_yoy_pct": 2.06
+        "refinery_intake_yoy_pct": 2.06,
+        "closing_stocks_mom_pct": 0.56,
+        "closing_stocks_yoy_pct": -2.49
       }
     },
     {
       "period": "2025-05",
       "date": "2025-05-01",
+      "days_in_month": 31,
       "reported_production_kbd": 46145.4,
       "reported_production_mbd": 46.145,
       "reported_refinery_intake_kbd": 65438.5,
@@ -3362,29 +4477,39 @@
       "common_country_production_mbd": 43.365,
       "common_country_refinery_intake_mbd": 65.119,
       "common_country_gap_mbd": -21.754,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -2122.4,
+      "reported_stock_change_average_kbd": -68.5,
+      "reported_stock_change_average_mbd": -0.068,
+      "reported_closing_stocks_kbbl": 2031820.2,
+      "reported_closing_stocks_million_barrels": 2031.82,
       "coverage": {
         "production_reporters": 61,
         "refinery_intake_reporters": 61,
         "common_reporters": 58,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 56,
+        "closing_stock_reporters": 57
       },
       "coverage_quality": {
         "production_ratio": 0.953,
         "refinery_intake_ratio": 0.938,
         "common_ratio": 0.935,
+        "stock_change_ratio": 0.933,
+        "closing_stock_ratio": 0.966,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.63,
         "production_yoy_pct": 1.83,
         "refinery_intake_mom_pct": -1.5,
-        "refinery_intake_yoy_pct": -1.45
+        "refinery_intake_yoy_pct": -1.45,
+        "closing_stocks_mom_pct": -0.5,
+        "closing_stocks_yoy_pct": -2.3
       }
     },
     {
       "period": "2025-06",
       "date": "2025-06-01",
+      "days_in_month": 30,
       "reported_production_kbd": 46776.8,
       "reported_production_mbd": 46.777,
       "reported_refinery_intake_kbd": 68112.9,
@@ -3392,29 +4517,39 @@
       "common_country_production_mbd": 43.865,
       "common_country_refinery_intake_mbd": 67.687,
       "common_country_gap_mbd": -23.822,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -19158.4,
+      "reported_stock_change_average_kbd": -638.6,
+      "reported_stock_change_average_mbd": -0.639,
+      "reported_closing_stocks_kbbl": 2009702.3,
+      "reported_closing_stocks_million_barrels": 2009.702,
       "coverage": {
         "production_reporters": 60,
         "refinery_intake_reporters": 61,
         "common_reporters": 57,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 56,
+        "closing_stock_reporters": 57
       },
       "coverage_quality": {
         "production_ratio": 0.938,
         "refinery_intake_ratio": 0.938,
         "common_ratio": 0.919,
+        "stock_change_ratio": 0.933,
+        "closing_stock_ratio": 0.966,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.37,
         "production_yoy_pct": 3.04,
         "refinery_intake_mom_pct": 4.09,
-        "refinery_intake_yoy_pct": 1.39
+        "refinery_intake_yoy_pct": 1.39,
+        "closing_stocks_mom_pct": -1.09,
+        "closing_stocks_yoy_pct": -2.18
       }
     },
     {
       "period": "2025-07",
       "date": "2025-07-01",
+      "days_in_month": 31,
       "reported_production_kbd": 46671.7,
       "reported_production_mbd": 46.672,
       "reported_refinery_intake_kbd": 67750.3,
@@ -3422,29 +4557,39 @@
       "common_country_production_mbd": 44.869,
       "common_country_refinery_intake_mbd": 67.307,
       "common_country_gap_mbd": -22.438,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 9832.2,
+      "reported_stock_change_average_kbd": 317.2,
+      "reported_stock_change_average_mbd": 0.317,
+      "reported_closing_stocks_kbbl": 2045002.3,
+      "reported_closing_stocks_million_barrels": 2045.002,
       "coverage": {
         "production_reporters": 59,
         "refinery_intake_reporters": 61,
         "common_reporters": 57,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 57,
+        "closing_stock_reporters": 57
       },
       "coverage_quality": {
         "production_ratio": 0.922,
         "refinery_intake_ratio": 0.938,
         "common_ratio": 0.919,
+        "stock_change_ratio": 0.95,
+        "closing_stock_ratio": 0.966,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.22,
         "production_yoy_pct": 2.39,
         "refinery_intake_mom_pct": -0.53,
-        "refinery_intake_yoy_pct": 3.43
+        "refinery_intake_yoy_pct": 3.43,
+        "closing_stocks_mom_pct": 1.76,
+        "closing_stocks_yoy_pct": -0.0
       }
     },
     {
       "period": "2025-08",
       "date": "2025-08-01",
+      "days_in_month": 31,
       "reported_production_kbd": 47364.2,
       "reported_production_mbd": 47.364,
       "reported_refinery_intake_kbd": 68166.0,
@@ -3452,29 +4597,39 @@
       "common_country_production_mbd": 45.516,
       "common_country_refinery_intake_mbd": 67.921,
       "common_country_gap_mbd": -22.405,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -17429.7,
+      "reported_stock_change_average_kbd": -562.2,
+      "reported_stock_change_average_mbd": -0.562,
+      "reported_closing_stocks_kbbl": 2030044.1,
+      "reported_closing_stocks_million_barrels": 2030.044,
       "coverage": {
         "production_reporters": 60,
         "refinery_intake_reporters": 62,
         "common_reporters": 58,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 57,
+        "closing_stock_reporters": 58
       },
       "coverage_quality": {
         "production_ratio": 0.938,
         "refinery_intake_ratio": 0.954,
         "common_ratio": 0.935,
+        "stock_change_ratio": 0.95,
+        "closing_stock_ratio": 0.983,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.48,
         "production_yoy_pct": 4.1,
         "refinery_intake_mom_pct": 0.61,
-        "refinery_intake_yoy_pct": 0.46
+        "refinery_intake_yoy_pct": 0.46,
+        "closing_stocks_mom_pct": -0.73,
+        "closing_stocks_yoy_pct": -0.17
       }
     },
     {
       "period": "2025-09",
       "date": "2025-09-01",
+      "days_in_month": 30,
       "reported_production_kbd": 46993.3,
       "reported_production_mbd": 46.993,
       "reported_refinery_intake_kbd": 66500.7,
@@ -3482,29 +4637,39 @@
       "common_country_production_mbd": 44.038,
       "common_country_refinery_intake_mbd": 65.94,
       "common_country_gap_mbd": -21.902,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -8587.7,
+      "reported_stock_change_average_kbd": -286.3,
+      "reported_stock_change_average_mbd": -0.286,
+      "reported_closing_stocks_kbbl": 2001094.7,
+      "reported_closing_stocks_million_barrels": 2001.095,
       "coverage": {
         "production_reporters": 59,
         "refinery_intake_reporters": 59,
         "common_reporters": 56,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 56,
+        "closing_stock_reporters": 57
       },
       "coverage_quality": {
         "production_ratio": 0.922,
         "refinery_intake_ratio": 0.908,
         "common_ratio": 0.903,
+        "stock_change_ratio": 0.933,
+        "closing_stock_ratio": 0.966,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.78,
         "production_yoy_pct": 4.08,
         "refinery_intake_mom_pct": -2.44,
-        "refinery_intake_yoy_pct": 1.06
+        "refinery_intake_yoy_pct": 1.06,
+        "closing_stocks_mom_pct": -1.43,
+        "closing_stocks_yoy_pct": -1.5
       }
     },
     {
       "period": "2025-10",
       "date": "2025-10-01",
+      "days_in_month": 31,
       "reported_production_kbd": 47520.6,
       "reported_production_mbd": 47.521,
       "reported_refinery_intake_kbd": 64688.7,
@@ -3512,29 +4677,39 @@
       "common_country_production_mbd": 45.874,
       "common_country_refinery_intake_mbd": 64.689,
       "common_country_gap_mbd": -18.815,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 32632.1,
+      "reported_stock_change_average_kbd": 1052.6,
+      "reported_stock_change_average_mbd": 1.053,
+      "reported_closing_stocks_kbbl": 2051384.7,
+      "reported_closing_stocks_million_barrels": 2051.385,
       "coverage": {
         "production_reporters": 60,
         "refinery_intake_reporters": 59,
         "common_reporters": 58,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 56,
+        "closing_stock_reporters": 57
       },
       "coverage_quality": {
         "production_ratio": 0.938,
         "refinery_intake_ratio": 0.908,
         "common_ratio": 0.935,
+        "stock_change_ratio": 0.933,
+        "closing_stock_ratio": 0.966,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 1.12,
         "production_yoy_pct": 4.09,
         "refinery_intake_mom_pct": -2.72,
-        "refinery_intake_yoy_pct": -0.5
+        "refinery_intake_yoy_pct": -0.5,
+        "closing_stocks_mom_pct": 2.51,
+        "closing_stocks_yoy_pct": 0.59
       }
     },
     {
       "period": "2025-11",
       "date": "2025-11-01",
+      "days_in_month": 30,
       "reported_production_kbd": 47834.7,
       "reported_production_mbd": 47.835,
       "reported_refinery_intake_kbd": 67249.2,
@@ -3542,29 +4717,39 @@
       "common_country_production_mbd": 46.133,
       "common_country_refinery_intake_mbd": 67.249,
       "common_country_gap_mbd": -21.116,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 7376.8,
+      "reported_stock_change_average_kbd": 245.9,
+      "reported_stock_change_average_mbd": 0.246,
+      "reported_closing_stocks_kbbl": 2054688.5,
+      "reported_closing_stocks_million_barrels": 2054.688,
       "coverage": {
         "production_reporters": 60,
         "refinery_intake_reporters": 59,
         "common_reporters": 58,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 56,
+        "closing_stock_reporters": 57
       },
       "coverage_quality": {
         "production_ratio": 0.938,
         "refinery_intake_ratio": 0.908,
         "common_ratio": 0.935,
+        "stock_change_ratio": 0.933,
+        "closing_stock_ratio": 0.966,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": 0.66,
         "production_yoy_pct": 4.75,
         "refinery_intake_mom_pct": 3.96,
-        "refinery_intake_yoy_pct": 0.19
+        "refinery_intake_yoy_pct": 0.19,
+        "closing_stocks_mom_pct": 0.16,
+        "closing_stocks_yoy_pct": 0.53
       }
     },
     {
       "period": "2025-12",
       "date": "2025-12-01",
+      "days_in_month": 31,
       "reported_production_kbd": 47524.8,
       "reported_production_mbd": 47.525,
       "reported_refinery_intake_kbd": 70012.4,
@@ -3572,29 +4757,39 @@
       "common_country_production_mbd": 45.927,
       "common_country_refinery_intake_mbd": 70.012,
       "common_country_gap_mbd": -24.085,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -19668.0,
+      "reported_stock_change_average_kbd": -634.5,
+      "reported_stock_change_average_mbd": -0.634,
+      "reported_closing_stocks_kbbl": 2035489.3,
+      "reported_closing_stocks_million_barrels": 2035.489,
       "coverage": {
         "production_reporters": 60,
         "refinery_intake_reporters": 59,
         "common_reporters": 58,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 56,
+        "closing_stock_reporters": 57
       },
       "coverage_quality": {
         "production_ratio": 0.938,
         "refinery_intake_ratio": 0.908,
         "common_ratio": 0.935,
+        "stock_change_ratio": 0.933,
+        "closing_stock_ratio": 0.966,
         "headline_usable": true
       },
       "changes": {
         "production_mom_pct": -0.65,
         "production_yoy_pct": 3.36,
         "refinery_intake_mom_pct": 4.11,
-        "refinery_intake_yoy_pct": 2.71
+        "refinery_intake_yoy_pct": 2.71,
+        "closing_stocks_mom_pct": -0.93,
+        "closing_stocks_yoy_pct": 0.65
       }
     },
     {
       "period": "2026-01",
       "date": "2026-01-01",
+      "days_in_month": 31,
       "reported_production_kbd": 46004.0,
       "reported_production_mbd": 46.004,
       "reported_refinery_intake_kbd": 67033.9,
@@ -3602,29 +4797,39 @@
       "common_country_production_mbd": 44.955,
       "common_country_refinery_intake_mbd": 66.75,
       "common_country_gap_mbd": -21.796,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 2859.4,
+      "reported_stock_change_average_kbd": 92.2,
+      "reported_stock_change_average_mbd": 0.092,
+      "reported_closing_stocks_kbbl": 2034328.9,
+      "reported_closing_stocks_million_barrels": 2034.329,
       "coverage": {
         "production_reporters": 55,
         "refinery_intake_reporters": 55,
         "common_reporters": 53,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 54,
+        "closing_stock_reporters": 53
       },
       "coverage_quality": {
         "production_ratio": 0.859,
         "refinery_intake_ratio": 0.846,
         "common_ratio": 0.855,
+        "stock_change_ratio": 0.9,
+        "closing_stock_ratio": 0.898,
         "headline_usable": false
       },
       "changes": {
         "production_mom_pct": -3.2,
         "production_yoy_pct": 0.45,
         "refinery_intake_mom_pct": -4.25,
-        "refinery_intake_yoy_pct": 2.25
+        "refinery_intake_yoy_pct": 2.25,
+        "closing_stocks_mom_pct": -0.06,
+        "closing_stocks_yoy_pct": 0.29
       }
     },
     {
       "period": "2026-02",
       "date": "2026-02-01",
+      "days_in_month": 28,
       "reported_production_kbd": 47757.3,
       "reported_production_mbd": 47.757,
       "reported_refinery_intake_kbd": 66566.1,
@@ -3632,29 +4837,39 @@
       "common_country_production_mbd": 46.23,
       "common_country_refinery_intake_mbd": 66.536,
       "common_country_gap_mbd": -20.307,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": 52590.9,
+      "reported_stock_change_average_kbd": 1878.2,
+      "reported_stock_change_average_mbd": 1.878,
+      "reported_closing_stocks_kbbl": 2091222.7,
+      "reported_closing_stocks_million_barrels": 2091.223,
       "coverage": {
         "production_reporters": 55,
         "refinery_intake_reporters": 55,
         "common_reporters": 53,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 54,
+        "closing_stock_reporters": 53
       },
       "coverage_quality": {
         "production_ratio": 0.859,
         "refinery_intake_ratio": 0.846,
         "common_ratio": 0.855,
+        "stock_change_ratio": 0.9,
+        "closing_stock_ratio": 0.898,
         "headline_usable": false
       },
       "changes": {
         "production_mom_pct": 3.81,
         "production_yoy_pct": 4.13,
         "refinery_intake_mom_pct": -0.7,
-        "refinery_intake_yoy_pct": 2.96
+        "refinery_intake_yoy_pct": 2.96,
+        "closing_stocks_mom_pct": 2.8,
+        "closing_stocks_yoy_pct": 3.7
       }
     },
     {
       "period": "2026-03",
       "date": "2026-03-01",
+      "days_in_month": 31,
       "reported_production_kbd": 42460.9,
       "reported_production_mbd": 42.461,
       "reported_refinery_intake_kbd": 63919.3,
@@ -3662,29 +4877,39 @@
       "common_country_production_mbd": 40.872,
       "common_country_refinery_intake_mbd": 63.957,
       "common_country_gap_mbd": -23.084,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -14918.4,
+      "reported_stock_change_average_kbd": -481.2,
+      "reported_stock_change_average_mbd": -0.481,
+      "reported_closing_stocks_kbbl": 2068620.9,
+      "reported_closing_stocks_million_barrels": 2068.621,
       "coverage": {
         "production_reporters": 54,
         "refinery_intake_reporters": 54,
         "common_reporters": 52,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 52,
+        "closing_stock_reporters": 52
       },
       "coverage_quality": {
         "production_ratio": 0.844,
         "refinery_intake_ratio": 0.831,
         "common_ratio": 0.839,
+        "stock_change_ratio": 0.867,
+        "closing_stock_ratio": 0.881,
         "headline_usable": false
       },
       "changes": {
         "production_mom_pct": -11.09,
         "production_yoy_pct": -8.84,
         "refinery_intake_mom_pct": -3.98,
-        "refinery_intake_yoy_pct": -4.15
+        "refinery_intake_yoy_pct": -4.15,
+        "closing_stocks_mom_pct": -1.08,
+        "closing_stocks_yoy_pct": 1.87
       }
     },
     {
       "period": "2026-04",
       "date": "2026-04-01",
+      "days_in_month": 30,
       "reported_production_kbd": 38648.0,
       "reported_production_mbd": 38.648,
       "reported_refinery_intake_kbd": 53400.8,
@@ -3692,24 +4917,33 @@
       "common_country_production_mbd": 36.774,
       "common_country_refinery_intake_mbd": 53.401,
       "common_country_gap_mbd": -16.627,
-      "reported_stock_change_mbd": null,
+      "reported_stock_change_kbbl": -46517.8,
+      "reported_stock_change_average_kbd": -1550.6,
+      "reported_stock_change_average_mbd": -1.551,
+      "reported_closing_stocks_kbbl": 1921576.5,
+      "reported_closing_stocks_million_barrels": 1921.576,
       "coverage": {
         "production_reporters": 45,
         "refinery_intake_reporters": 43,
         "common_reporters": 43,
-        "stock_change_reporters": 0
+        "stock_change_reporters": 43,
+        "closing_stock_reporters": 43
       },
       "coverage_quality": {
         "production_ratio": 0.703,
         "refinery_intake_ratio": 0.662,
         "common_ratio": 0.694,
+        "stock_change_ratio": 0.717,
+        "closing_stock_ratio": 0.729,
         "headline_usable": false
       },
       "changes": {
         "production_mom_pct": -8.98,
         "production_yoy_pct": -16.78,
         "refinery_intake_mom_pct": -16.46,
-        "refinery_intake_yoy_pct": -19.62
+        "refinery_intake_yoy_pct": -19.62,
+        "closing_stocks_mom_pct": -7.11,
+        "closing_stocks_yoy_pct": -5.9
       }
     }
   ],
