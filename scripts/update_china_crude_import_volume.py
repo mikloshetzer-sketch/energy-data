@@ -246,21 +246,44 @@ def identify_column(fieldnames: Iterable[str], logical_name: str) -> str | None:
 
 
 def is_china(value: Any) -> bool:
-    return normalise(value) in {
-        "china", "china mainland", "peoples republic of china",
-        "people s republic of china", "pr china", "chn",
+    """
+    Accept both the JODI SDMX economy code and readable country names.
+
+    In the current JODI long-form CSV, China is stored as REF_AREA=CN.
+    """
+    return compact(value) in {
+        "cn",
+        "chn",
+        "china",
+        "chinamainland",
+        "peoplesrepublicofchina",
+        "prchina",
     }
 
 
 def is_crude(value: Any) -> bool:
-    text = normalise(value)
-    return text in {"crude", "crude oil"} or (
-        "crude oil" in text and "total" not in text
-    )
+    """
+    Accept both the JODI energy-product code and readable labels.
+
+    In the current JODI long-form CSV, crude oil is ENERGY_PRODUCT=CRUDEOIL.
+    """
+    return compact(value) in {
+        "crude",
+        "crudeoil",
+    }
 
 
 def is_import(value: Any) -> bool:
-    return normalise(value) in {"import", "imports"}
+    """
+    Accept both the JODI flow code and readable labels.
+
+    In the current JODI long-form CSV, imports are FLOW_BREAKDOWN=TOTIMPSB.
+    """
+    return compact(value) in {
+        "import",
+        "imports",
+        "totimpsb",
+    }
 
 
 def classify_unit(value: Any) -> str | None:
@@ -628,7 +651,7 @@ def main() -> None:
             "requested_end_period": requested_end,
             "latest_available_period": latest["period"],
             "updated_at_utc": datetime.now(timezone.utc).isoformat(),
-            "generator_version": "4.0.0-jodi",
+            "generator_version": "4.0.1-jodi",
             "parser_layout": parser_info[0],
         },
         "availability": {
@@ -676,4 +699,5 @@ if __name__ == "__main__":
     except Exception as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         raise
+
 
