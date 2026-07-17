@@ -1889,8 +1889,8 @@
           <span>Global crude oil production, refinery intake and crude balance proxy</span>
         </h2>
 
-        <div class="section-note">
-          JODI CRUDEOIL adatok. A termelés a kínálati oldalt, a finomítói nyersolaj-betáplálás a keresleti oldal közvetlen ipari proxyját mutatja. Ez nem teljes globális kínálat–keresleti mérleg.
+        <div class="section-note" id="crudeSectionNote">
+          JODI CRUDEOIL adatok. A teljes évek validált éves átlagok; a tárgyév YTD adata előzetes, és az előző év azonos hónapjaival hasonlítható össze. Ez nem teljes globális kínálat–keresleti mérleg.
         </div>
       </div>
 
@@ -1898,7 +1898,7 @@
         <div class="chart-panel">
           <h3>
             Nyersolajtermelés és finomítói betáplálás
-            <span>Annual average · million barrels per day</span>
+            <span>Annual average; current year shown as YTD preliminary · million barrels per day</span>
           </h3>
           <div class="chart-wrap large">
             <canvas id="crudeFundamentalsChart"></canvas>
@@ -3409,22 +3409,45 @@
     function renderGlobalCrudeFundamentals(payload) {
       const annual = Array.isArray(payload?.annual_series)
         ? payload.annual_series
+            .map(item => {
+              const validated = Number(item?.headline_usable_months) > 0;
+              const productionRaw = validated
+                ? item?.average_reported_production_mbd
+                : item?.preliminary_average_reported_production_mbd;
+              const intakeRaw = validated
+                ? item?.average_reported_refinery_intake_mbd
+                : item?.preliminary_average_reported_refinery_intake_mbd;
+              const gapRaw = validated
+                ? item?.average_common_country_gap_mbd
+                : item?.preliminary_average_common_country_gap_mbd;
+
+              return {
+                year: Number(item?.year),
+                label: item?.period_type === "ytd"
+                  ? String(item?.year) + " YTD"
+                  : String(item?.year),
+                periodLabel: item?.period_label || String(item?.year),
+                periodType: item?.period_type || "full_year",
+                provisional: Boolean(item?.provisional) || !validated,
+                months: Number(item?.months_available || 0),
+                usableMonths: Number(item?.headline_usable_months || 0),
+                latestMonth: Number(item?.latest_month || 12),
+                production: Number(productionRaw),
+                intake: Number(intakeRaw),
+                gap: Number(gapRaw),
+                productionChangeSamePeriod: Number(item?.production_change_same_period_mbd),
+                intakeChangeSamePeriod: Number(item?.refinery_intake_change_same_period_mbd),
+                gapChangeSamePeriod: Number(item?.common_country_gap_change_same_period_mbd),
+                comparisonYear: Number(item?.comparison_year),
+                comparisonMonths: Number(item?.comparison_months || 0)
+              };
+            })
             .filter(item =>
-              Number(item?.headline_usable_months) > 0 &&
-              Number.isFinite(Number(item?.average_reported_production_mbd)) &&
-              Number.isFinite(Number(item?.average_reported_refinery_intake_mbd)) &&
-              Number.isFinite(Number(item?.average_common_country_gap_mbd))
+              Number.isFinite(item.year) &&
+              Number.isFinite(item.production) &&
+              Number.isFinite(item.intake) &&
+              Number.isFinite(item.gap)
             )
-            .map(item => ({
-              year: Number(item.year),
-              months: Number(item.headline_usable_months),
-              production: Number(item.average_reported_production_mbd),
-              intake: Number(item.average_reported_refinery_intake_mbd),
-              gap: Number(item.average_common_country_gap_mbd),
-              adjusted: Number.isFinite(Number(item.average_adjusted_crude_balance_mbd))
-                ? Number(item.average_adjusted_crude_balance_mbd)
-                : null
-            }))
             .sort((a, b) => a.year - b.year)
         : [];
 
@@ -3432,7 +3455,7 @@
 
       if (!annual.length) {
         summary.innerHTML =
-          "<strong>Adathiba</strong><ul><li>A global_crude_oil_fundamentals.json nem tartalmaz megjeleníthető, megfelelő lefedettségű éves adatot.</li></ul>";
+          "<strong>Adathiba</strong><ul><li>A global_crude_oil_fundamentals.json nem tartalmaz megjeleníthető éves vagy tárgyévi YTD adatot.</li></ul>";
         return;
       }
 
@@ -3444,7 +3467,7 @@
         {
           type: "line",
           data: {
-            labels: annual.map(item => String(item.year)),
+            labels: annual.map(item => item.label),
             datasets: [
               {
                 label: "Nyersolajtermelés / Crude production",
@@ -3452,8 +3475,9 @@
                 borderColor: "#17648f",
                 backgroundColor: "rgba(37,139,199,.14)",
                 borderWidth: 3,
-                pointRadius: 5,
-                pointHoverRadius: 7,
+                pointRadius: annual.map(item => item.provisional ? 7 : 5),
+                pointHoverRadius: 8,
+                pointStyle: annual.map(item => item.provisional ? "rectRot" : "circle"),
                 tension: .22,
                 fill: false
               },
@@ -3463,8 +3487,9 @@
                 borderColor: "#d97706",
                 backgroundColor: "rgba(217,119,6,.14)",
                 borderWidth: 3,
-                pointRadius: 5,
-                pointHoverRadius: 7,
+                pointRadius: annual.map(item => item.provisional ? 7 : 5),
+                pointHoverRadius: 8,
+                pointStyle: annual.map(item => item.provisional ? "rectRot" : "circle"),
                 tension: .22,
                 fill: false
               }
@@ -3485,13 +3510,17 @@
               },
               tooltip: {
                 callbacks: {
+                  title: items => annual[items[0].dataIndex].periodLabel,
                   label: context =>
                     context.dataset.label + ": " + Number(context.raw).toFixed(2) + " mb/d",
                   afterBody: items => {
                     const row = annual[items[0].dataIndex];
                     return [
                       "Common-country gap: " + fmtBalance(row.gap),
-                      "Használható hónapok / Usable months: " + row.months
+                      "Elérhető hónapok / Available months: " + row.months,
+                      row.provisional
+                        ? "Státusz: ELŐZETES YTD / PRELIMINARY YTD"
+                        : "Státusz: validált éves átlag"
                     ];
                   }
                 }
@@ -3533,21 +3562,29 @@
         {
           type: "bar",
           data: {
-            labels: annual.map(item => String(item.year)),
+            labels: annual.map(item => item.label),
             datasets: [{
               label: "Common-country gap",
               data: annual.map(item => item.gap),
-              backgroundColor: annual.map(item =>
-                item.gap < -0.05
+              backgroundColor: annual.map(item => {
+                if (item.provisional) {
+                  return item.gap < -0.05
+                    ? "rgba(200,60,50,.52)"
+                    : item.gap > 0.05
+                      ? "rgba(7,135,95,.50)"
+                      : "rgba(217,119,6,.50)";
+                }
+                return item.gap < -0.05
                   ? "rgba(200,60,50,.84)"
                   : item.gap > 0.05
                     ? "rgba(7,135,95,.82)"
-                    : "rgba(217,119,6,.78)"
-              ),
+                    : "rgba(217,119,6,.78)";
+              }),
               borderColor: annual.map(item =>
                 item.gap < -0.05 ? "#a62820" : item.gap > 0.05 ? "#087452" : "#965400"
               ),
-              borderWidth: 1,
+              borderWidth: annual.map(item => item.provisional ? 2 : 1),
+              borderDash: annual.map(item => item.provisional ? [6, 4] : []),
               borderRadius: 7,
               maxBarThickness: 58
             }]
@@ -3560,7 +3597,11 @@
               legend: { display: false },
               tooltip: {
                 callbacks: {
-                  label: context => "Egyenleg proxy: " + fmtBalance(Number(context.raw))
+                  title: items => annual[items[0].dataIndex].periodLabel,
+                  label: context => "Egyenleg proxy: " + fmtBalance(Number(context.raw)),
+                  afterLabel: context => annual[context.dataIndex].provisional
+                    ? "Előzetes YTD adat / Preliminary YTD"
+                    : "Validált éves átlag"
                 }
               },
               datalabels: {
@@ -3613,36 +3654,49 @@
         }
       };
 
-      const productionChange = previous ? latest.production - previous.production : null;
-      const intakeChange = previous ? latest.intake - previous.intake : null;
+      const productionChange = Number.isFinite(latest.productionChangeSamePeriod)
+        ? latest.productionChangeSamePeriod
+        : previous ? latest.production - previous.production : null;
+      const intakeChange = Number.isFinite(latest.intakeChangeSamePeriod)
+        ? latest.intakeChangeSamePeriod
+        : previous ? latest.intake - previous.intake : null;
 
       setSigned("crudeProductionChange", productionChange);
       setSigned("crudeIntakeChange", intakeChange);
       setSigned("crudeGapLatest", latest.gap);
 
-      if (previous) {
-        document.getElementById("crudeProductionChangeLabel").innerText =
-          latest.year + " termelés változása";
-        document.getElementById("crudeIntakeChangeLabel").innerText =
-          latest.year + " finomítói betáplálás változása";
-        document.getElementById("crudeProductionChangeSub").innerText =
-          latest.year + " vs. " + previous.year + " · mb/d";
-        document.getElementById("crudeIntakeChangeSub").innerText =
-          latest.year + " vs. " + previous.year + " · mb/d";
-      }
+      const periodText = latest.periodType === "ytd"
+        ? latest.year + " YTD (" + latest.months + " hó)"
+        : String(latest.year);
+      const comparisonText = latest.periodType === "ytd" && latest.comparisonYear
+        ? latest.year + " Jan–" + latest.latestMonth + " vs. " + latest.comparisonYear + " Jan–" + latest.latestMonth
+        : previous
+          ? latest.year + " vs. " + previous.year
+          : "nincs összehasonlítás";
+
+      document.getElementById("crudeProductionChangeLabel").innerText =
+        periodText + " termelés változása";
+      document.getElementById("crudeIntakeChangeLabel").innerText =
+        periodText + " finomítói betáplálás változása";
+      document.getElementById("crudeProductionChangeSub").innerText =
+        comparisonText + " · azonos időszak · mb/d";
+      document.getElementById("crudeIntakeChangeSub").innerText =
+        comparisonText + " · azonos időszak · mb/d";
 
       document.getElementById("crudeGapLabel").innerText =
-        latest.year + " éves egyenleg proxy";
+        periodText + " egyenleg proxy";
 
       document.getElementById("crudeGapStatus").innerText =
-        latest.gap < -0.05
-          ? "A finomítói betáplálás meghaladja a jelentett termelést"
+        (latest.provisional ? "ELŐZETES YTD · " : "") +
+        (latest.gap < -0.05
+          ? "a finomítói betáplálás meghaladja a jelentett termelést"
           : latest.gap > 0.05
-            ? "A jelentett termelés meghaladja a finomítói betáplálást"
-            : "Közel azonos termelési és finomítói volumen";
+            ? "a jelentett termelés meghaladja a finomítói betáplálást"
+            : "közel azonos termelési és finomítói volumen");
 
-      const tightening =
-        previous && latest.gap < previous.gap;
+      const tightening = Number.isFinite(latest.gapChangeSamePeriod)
+        ? latest.gapChangeSamePeriod < 0
+        : previous && latest.gap < previous.gap;
 
       document.getElementById("crudeMessage").innerText =
         latest.gap < -0.05
@@ -3652,21 +3706,33 @@
             : "Semleges";
 
       document.getElementById("crudeMessageSub").innerText =
-        latest.gap < -0.05
+        (latest.provisional ? "Előzetes YTD jelzés. " : "") +
+        (latest.gap < -0.05
           ? "A közös országkör finomítói felhasználása meghaladja a jelentett kitermelést; az import és a készletoldal szerepe meghatározó."
           : latest.gap > 0.05
             ? "A közös országkörben a jelentett kitermelés meghaladja a finomítói felhasználást."
-            : "A közös országkör termelési és finomítói volumene közel egyensúlyban van.";
+            : "A közös országkör termelési és finomítói volumene közel egyensúlyban van.");
+
+      const sourcePeriod = payload?.coverage?.latest_source_period || "–";
+      const headlinePeriod = payload?.coverage?.latest_headline_period || "–";
+      const sectionNote = document.getElementById("crudeSectionNote");
+      if (sectionNote) {
+        sectionNote.innerText =
+          "JODI CRUDEOIL adatok. Legfrissebb forráshónap: " + sourcePeriod +
+          ". Legfrissebb validált headline: " + headlinePeriod +
+          ". A " + latest.label + " adat előzetes és az előző év azonos hónapjaival hasonlítható össze.";
+      }
 
       summary.innerHTML = `
-        <strong>Nyersolajpiaci éves helyzetkép / Annual crude oil fundamentals</strong>
+        <strong>Nyersolajpiaci éves és YTD helyzetkép / Annual and YTD crude oil fundamentals</strong>
         <ul>
           ${annual.map(item => `
             <li>
-              ${item.year}: termelés ${item.production.toFixed(2)} mb/d ·
+              ${item.periodLabel}${item.provisional ? " – előzetes / preliminary" : ""}:
+              termelés ${item.production.toFixed(2)} mb/d ·
               finomítói betáplálás ${item.intake.toFixed(2)} mb/d ·
               common-country gap ${fmtBalance(item.gap)} ·
-              ${item.months} használható hónap
+              ${item.months} elérhető hónap
             </li>
           `).join("")}
         </ul>
@@ -3676,7 +3742,8 @@
       if (method && payload?.methodology_hu) {
         method.innerText =
           payload.methodology_hu +
-          " A finomítói betáplálás itt keresleti oldali ipari proxy, nem teljes végfelhasználói kereslet.";
+          " A finomítói betáplálás itt keresleti oldali ipari proxy, nem teljes végfelhasználói kereslet. " +
+          "A tárgyévi YTD értékek előzetesek; a változáskártyák az előző év azonos hónapjaival hasonlítanak.";
       }
     }
 
@@ -6174,3 +6241,4 @@
 
 </body>
 </html>
+
