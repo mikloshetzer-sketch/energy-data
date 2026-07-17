@@ -1,14 +1,16 @@
 {
   "meta": {
-    "generated_at": "2026-07-17T07:20:06Z",
+    "generated_at": "2026-07-17T07:28:39Z",
     "generator": "scripts/update_global_oil_balance.py",
-    "generator_version": "1.0.0",
+    "generator_version": "1.1.0",
     "source": "U.S. Energy Information Administration (EIA), STEO",
     "source_url": "https://api.eia.gov/v2/steo/data/",
     "frequency": "monthly",
     "unit": "million barrels per day",
     "is_forecast_series": true,
-    "method_version": "physical_balance_v1"
+    "method_version": "physical_balance_v2_current_period",
+    "requested_current_period": "2026-07",
+    "current_selection_method": "exact_current_month"
   },
   "series_definition": {
     "supply": {
@@ -25,8 +27,34 @@
       "negative": "deficit / potential inventory draw"
     }
   },
-  "latest": {
+  "current": {
+    "period": "2026-07",
+    "period_type": "current_month_estimate",
+    "global_supply_mbd": 99.232,
+    "global_demand_mbd": 101.574,
+    "balance_mbd": -2.342,
+    "balance_state": "deficit_high",
+    "balance_state_hu": "Jelentős hiány",
+    "balance_state_en": "Material deficit"
+  },
+  "current_period": "2026-07",
+  "current_global_supply_mbd": 99.232,
+  "current_global_demand_mbd": 101.574,
+  "current_balance_mbd": -2.342,
+  "current_balance_state": "deficit_high",
+  "next_month_forecast": {
+    "period": "2026-08",
+    "period_type": "forecast",
+    "global_supply_mbd": 101.455,
+    "global_demand_mbd": 104.387,
+    "balance_mbd": -2.932,
+    "balance_state": "deficit_high",
+    "balance_state_hu": "Jelentős hiány",
+    "balance_state_en": "Material deficit"
+  },
+  "latest_forecast": {
     "period": "2027-12",
+    "period_type": "forecast",
     "global_supply_mbd": 111.249,
     "global_demand_mbd": 106.469,
     "balance_mbd": 4.78,
@@ -34,18 +62,152 @@
     "balance_state_hu": "Jelentős többlet",
     "balance_state_en": "Material surplus"
   },
-  "period": "2027-12",
-  "global_supply_mbd": 111.249,
-  "global_demand_mbd": 106.469,
-  "balance_mbd": 4.78,
-  "balance_state": "surplus_high",
-  "balance_state_hu": "Jelentős többlet",
-  "balance_state_en": "Material surplus",
-  "summary_hu": "Az EIA STEO 2027-12 időszakra 111.25 millió hordó/nap globális folyékonyüzemanyag-kínálatot és 106.47 millió hordó/nap fogyasztást jelez. A fizikai mérleg +4.78 millió hordó/nap, ami kínálati többletet és készletépítési lehetőséget jelezhet.",
-  "summary_en": "For 2027-12, the EIA STEO indicates global liquid-fuels supply of 111.25 million barrels per day and consumption of 106.47 million barrels per day. The physical balance is +4.78 mb/d, indicating a surplus and potential inventory build.",
+  "forecast_until": "2027-12",
+  "latest": {
+    "period": "2026-07",
+    "period_type": "current_month_estimate",
+    "global_supply_mbd": 99.232,
+    "global_demand_mbd": 101.574,
+    "balance_mbd": -2.342,
+    "balance_state": "deficit_high",
+    "balance_state_hu": "Jelentős hiány",
+    "balance_state_en": "Material deficit"
+  },
+  "period": "2026-07",
+  "global_supply_mbd": 99.232,
+  "global_demand_mbd": 101.574,
+  "balance_mbd": -2.342,
+  "balance_state": "deficit_high",
+  "balance_state_hu": "Jelentős hiány",
+  "balance_state_en": "Material deficit",
+  "summary_hu": "Az EIA STEO 2026-07 időszakra 99.23 millió hordó/nap globális folyékonyüzemanyag-kínálatot és 101.57 millió hordó/nap fogyasztást jelez. A jelenlegi havi fizikai mérleg -2.34 millió hordó/nap, ami hiányt és készletlehívási igényt jelezhet.",
+  "summary_en": "For 2026-07, the EIA STEO indicates global liquid-fuels supply of 99.23 million barrels per day and consumption of 101.57 million barrels per day. The current-month physical balance is -2.34 mb/d, indicating a deficit and potential inventory draw.",
+  "forecast_summary_hu": "Az EIA STEO 2027-12 időszakra 111.25 millió hordó/nap globális folyékonyüzemanyag-kínálatot és 106.47 millió hordó/nap fogyasztást jelez. A előrejelzési fizikai mérleg +4.78 millió hordó/nap, ami kínálati többletet és készletépítési lehetőséget jelezhet.",
+  "forecast_summary_en": "For 2027-12, the EIA STEO indicates global liquid-fuels supply of 111.25 million barrels per day and consumption of 106.47 million barrels per day. The forecast physical balance is +4.78 mb/d, indicating a surplus and potential inventory build.",
   "series": [
     {
+      "period": "2023-01",
+      "period_type": "historical_or_estimate",
+      "global_supply_mbd": 101.385,
+      "global_demand_mbd": 97.931,
+      "balance_mbd": 3.454,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2023-02",
+      "period_type": "historical_or_estimate",
+      "global_supply_mbd": 101.979,
+      "global_demand_mbd": 101.553,
+      "balance_mbd": 0.426,
+      "balance_state": "surplus",
+      "balance_state_hu": "Többlet",
+      "balance_state_en": "Surplus"
+    },
+    {
+      "period": "2023-03",
+      "period_type": "historical_or_estimate",
+      "global_supply_mbd": 102.339,
+      "global_demand_mbd": 101.009,
+      "balance_mbd": 1.33,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2023-04",
+      "period_type": "historical_or_estimate",
+      "global_supply_mbd": 102.104,
+      "global_demand_mbd": 100.03,
+      "balance_mbd": 2.074,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2023-05",
+      "period_type": "historical_or_estimate",
+      "global_supply_mbd": 101.627,
+      "global_demand_mbd": 101.449,
+      "balance_mbd": 0.178,
+      "balance_state": "balanced",
+      "balance_state_hu": "Közel egyensúly",
+      "balance_state_en": "Near balance"
+    },
+    {
+      "period": "2023-06",
+      "period_type": "historical_or_estimate",
+      "global_supply_mbd": 102.497,
+      "global_demand_mbd": 103.144,
+      "balance_mbd": -0.647,
+      "balance_state": "deficit",
+      "balance_state_hu": "Hiány",
+      "balance_state_en": "Deficit"
+    },
+    {
+      "period": "2023-07",
+      "period_type": "historical_or_estimate",
+      "global_supply_mbd": 101.994,
+      "global_demand_mbd": 101.792,
+      "balance_mbd": 0.202,
+      "balance_state": "balanced",
+      "balance_state_hu": "Közel egyensúly",
+      "balance_state_en": "Near balance"
+    },
+    {
+      "period": "2023-08",
+      "period_type": "historical_or_estimate",
+      "global_supply_mbd": 101.747,
+      "global_demand_mbd": 102.055,
+      "balance_mbd": -0.308,
+      "balance_state": "deficit",
+      "balance_state_hu": "Hiány",
+      "balance_state_en": "Deficit"
+    },
+    {
+      "period": "2023-09",
+      "period_type": "historical_or_estimate",
+      "global_supply_mbd": 102.82,
+      "global_demand_mbd": 102.017,
+      "balance_mbd": 0.803,
+      "balance_state": "surplus",
+      "balance_state_hu": "Többlet",
+      "balance_state_en": "Surplus"
+    },
+    {
+      "period": "2023-10",
+      "period_type": "historical_or_estimate",
+      "global_supply_mbd": 103.096,
+      "global_demand_mbd": 101.465,
+      "balance_mbd": 1.63,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2023-11",
+      "period_type": "historical_or_estimate",
+      "global_supply_mbd": 103.884,
+      "global_demand_mbd": 102.371,
+      "balance_mbd": 1.513,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2023-12",
+      "period_type": "historical_or_estimate",
+      "global_supply_mbd": 103.874,
+      "global_demand_mbd": 102.559,
+      "balance_mbd": 1.315,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
       "period": "2024-01",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 101.421,
       "global_demand_mbd": 99.741,
       "balance_mbd": 1.679,
@@ -55,6 +217,7 @@
     },
     {
       "period": "2024-02",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 102.667,
       "global_demand_mbd": 101.905,
       "balance_mbd": 0.762,
@@ -64,6 +227,7 @@
     },
     {
       "period": "2024-03",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 103.482,
       "global_demand_mbd": 101.323,
       "balance_mbd": 2.159,
@@ -73,6 +237,7 @@
     },
     {
       "period": "2024-04",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 103.373,
       "global_demand_mbd": 102.154,
       "balance_mbd": 1.219,
@@ -82,6 +247,7 @@
     },
     {
       "period": "2024-05",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 102.974,
       "global_demand_mbd": 103.138,
       "balance_mbd": -0.164,
@@ -91,6 +257,7 @@
     },
     {
       "period": "2024-06",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 102.982,
       "global_demand_mbd": 103.808,
       "balance_mbd": -0.826,
@@ -100,6 +267,7 @@
     },
     {
       "period": "2024-07",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 103.097,
       "global_demand_mbd": 103.992,
       "balance_mbd": -0.895,
@@ -109,6 +277,7 @@
     },
     {
       "period": "2024-08",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 103.46,
       "global_demand_mbd": 103.522,
       "balance_mbd": -0.062,
@@ -118,6 +287,7 @@
     },
     {
       "period": "2024-09",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 102.304,
       "global_demand_mbd": 103.397,
       "balance_mbd": -1.093,
@@ -127,6 +297,7 @@
     },
     {
       "period": "2024-10",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 103.653,
       "global_demand_mbd": 103.718,
       "balance_mbd": -0.065,
@@ -136,6 +307,7 @@
     },
     {
       "period": "2024-11",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 103.75,
       "global_demand_mbd": 103.343,
       "balance_mbd": 0.406,
@@ -145,6 +317,7 @@
     },
     {
       "period": "2024-12",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 103.655,
       "global_demand_mbd": 103.565,
       "balance_mbd": 0.09,
@@ -154,6 +327,7 @@
     },
     {
       "period": "2025-01",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 102.59,
       "global_demand_mbd": 101.718,
       "balance_mbd": 0.872,
@@ -163,6 +337,7 @@
     },
     {
       "period": "2025-02",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 103.13,
       "global_demand_mbd": 103.21,
       "balance_mbd": -0.081,
@@ -172,6 +347,7 @@
     },
     {
       "period": "2025-03",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 104.573,
       "global_demand_mbd": 102.296,
       "balance_mbd": 2.277,
@@ -181,6 +357,7 @@
     },
     {
       "period": "2025-04",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 104.254,
       "global_demand_mbd": 103.275,
       "balance_mbd": 0.979,
@@ -190,6 +367,7 @@
     },
     {
       "period": "2025-05",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 104.778,
       "global_demand_mbd": 103.2,
       "balance_mbd": 1.579,
@@ -199,6 +377,7 @@
     },
     {
       "period": "2025-06",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 106.007,
       "global_demand_mbd": 105.421,
       "balance_mbd": 0.586,
@@ -208,6 +387,7 @@
     },
     {
       "period": "2025-07",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 107.028,
       "global_demand_mbd": 105.121,
       "balance_mbd": 1.907,
@@ -217,6 +397,7 @@
     },
     {
       "period": "2025-08",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 107.561,
       "global_demand_mbd": 104.191,
       "balance_mbd": 3.37,
@@ -226,6 +407,7 @@
     },
     {
       "period": "2025-09",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 108.68,
       "global_demand_mbd": 105.548,
       "balance_mbd": 3.132,
@@ -235,6 +417,7 @@
     },
     {
       "period": "2025-10",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 108.376,
       "global_demand_mbd": 104.146,
       "balance_mbd": 4.23,
@@ -244,6 +427,7 @@
     },
     {
       "period": "2025-11",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 108.447,
       "global_demand_mbd": 103.935,
       "balance_mbd": 4.512,
@@ -253,6 +437,7 @@
     },
     {
       "period": "2025-12",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 107.785,
       "global_demand_mbd": 105.909,
       "balance_mbd": 1.876,
@@ -262,6 +447,7 @@
     },
     {
       "period": "2026-01",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 105.957,
       "global_demand_mbd": 102.335,
       "balance_mbd": 3.622,
@@ -271,6 +457,7 @@
     },
     {
       "period": "2026-02",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 108.695,
       "global_demand_mbd": 104.279,
       "balance_mbd": 4.416,
@@ -280,6 +467,7 @@
     },
     {
       "period": "2026-03",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 97.382,
       "global_demand_mbd": 101.982,
       "balance_mbd": -4.6,
@@ -289,6 +477,7 @@
     },
     {
       "period": "2026-04",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 94.901,
       "global_demand_mbd": 99.91,
       "balance_mbd": -5.009,
@@ -298,6 +487,7 @@
     },
     {
       "period": "2026-05",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 93.478,
       "global_demand_mbd": 99.764,
       "balance_mbd": -6.287,
@@ -307,6 +497,7 @@
     },
     {
       "period": "2026-06",
+      "period_type": "historical_or_estimate",
       "global_supply_mbd": 97.46,
       "global_demand_mbd": 101.407,
       "balance_mbd": -3.948,
@@ -316,6 +507,7 @@
     },
     {
       "period": "2026-07",
+      "period_type": "current_month_estimate",
       "global_supply_mbd": 99.232,
       "global_demand_mbd": 101.574,
       "balance_mbd": -2.342,
@@ -325,6 +517,7 @@
     },
     {
       "period": "2026-08",
+      "period_type": "forecast",
       "global_supply_mbd": 101.455,
       "global_demand_mbd": 104.387,
       "balance_mbd": -2.932,
@@ -334,6 +527,7 @@
     },
     {
       "period": "2026-09",
+      "period_type": "forecast",
       "global_supply_mbd": 103.246,
       "global_demand_mbd": 104.614,
       "balance_mbd": -1.368,
@@ -343,6 +537,7 @@
     },
     {
       "period": "2026-10",
+      "period_type": "forecast",
       "global_supply_mbd": 105.895,
       "global_demand_mbd": 103.533,
       "balance_mbd": 2.362,
@@ -352,6 +547,7 @@
     },
     {
       "period": "2026-11",
+      "period_type": "forecast",
       "global_supply_mbd": 107.547,
       "global_demand_mbd": 104.268,
       "balance_mbd": 3.28,
@@ -361,6 +557,7 @@
     },
     {
       "period": "2026-12",
+      "period_type": "forecast",
       "global_supply_mbd": 107.981,
       "global_demand_mbd": 105.406,
       "balance_mbd": 2.575,
@@ -370,6 +567,7 @@
     },
     {
       "period": "2027-01",
+      "period_type": "forecast",
       "global_supply_mbd": 108.154,
       "global_demand_mbd": 102.34,
       "balance_mbd": 5.814,
@@ -379,6 +577,7 @@
     },
     {
       "period": "2027-02",
+      "period_type": "forecast",
       "global_supply_mbd": 108.441,
       "global_demand_mbd": 104.63,
       "balance_mbd": 3.81,
@@ -388,6 +587,7 @@
     },
     {
       "period": "2027-03",
+      "period_type": "forecast",
       "global_supply_mbd": 108.621,
       "global_demand_mbd": 103.325,
       "balance_mbd": 5.296,
@@ -397,6 +597,7 @@
     },
     {
       "period": "2027-04",
+      "period_type": "forecast",
       "global_supply_mbd": 109.085,
       "global_demand_mbd": 104.198,
       "balance_mbd": 4.887,
@@ -406,6 +607,7 @@
     },
     {
       "period": "2027-05",
+      "period_type": "forecast",
       "global_supply_mbd": 109.352,
       "global_demand_mbd": 104.397,
       "balance_mbd": 4.956,
@@ -415,6 +617,7 @@
     },
     {
       "period": "2027-06",
+      "period_type": "forecast",
       "global_supply_mbd": 109.4,
       "global_demand_mbd": 105.898,
       "balance_mbd": 3.502,
@@ -424,6 +627,7 @@
     },
     {
       "period": "2027-07",
+      "period_type": "forecast",
       "global_supply_mbd": 110.168,
       "global_demand_mbd": 105.591,
       "balance_mbd": 4.577,
@@ -433,6 +637,7 @@
     },
     {
       "period": "2027-08",
+      "period_type": "forecast",
       "global_supply_mbd": 110.366,
       "global_demand_mbd": 105.478,
       "balance_mbd": 4.888,
@@ -442,6 +647,7 @@
     },
     {
       "period": "2027-09",
+      "period_type": "forecast",
       "global_supply_mbd": 110.487,
       "global_demand_mbd": 105.655,
       "balance_mbd": 4.832,
@@ -451,6 +657,7 @@
     },
     {
       "period": "2027-10",
+      "period_type": "forecast",
       "global_supply_mbd": 111.084,
       "global_demand_mbd": 104.487,
       "balance_mbd": 6.597,
@@ -460,6 +667,7 @@
     },
     {
       "period": "2027-11",
+      "period_type": "forecast",
       "global_supply_mbd": 111.564,
       "global_demand_mbd": 105.265,
       "balance_mbd": 6.299,
@@ -469,6 +677,7 @@
     },
     {
       "period": "2027-12",
+      "period_type": "forecast",
       "global_supply_mbd": 111.249,
       "global_demand_mbd": 106.469,
       "balance_mbd": 4.78,
