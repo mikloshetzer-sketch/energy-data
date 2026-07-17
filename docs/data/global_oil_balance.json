@@ -1,96 +1,480 @@
 {
-  "generated_at": "2026-07-16T14:26:37+00:00",
-  "dataset": "global_oil_supply_demand",
-  "title_hu": "Globális olajkínálat és kereslet",
-  "title_en": "Global Oil Supply and Demand",
-  "unit": "million_barrels_per_day",
-  "unit_short": "mb/d",
-  "coverage": {
-    "start_year": 2023,
-    "end_year": 2026
+  "meta": {
+    "generated_at": "2026-07-17T07:20:06Z",
+    "generator": "scripts/update_global_oil_balance.py",
+    "generator_version": "1.0.0",
+    "source": "U.S. Energy Information Administration (EIA), STEO",
+    "source_url": "https://api.eia.gov/v2/steo/data/",
+    "frequency": "monthly",
+    "unit": "million barrels per day",
+    "is_forecast_series": true,
+    "method_version": "physical_balance_v1"
   },
-  "latest_year": 2026,
-  "latest_balance_mbd": -0.85,
-  "latest_balance_status": "deficit",
-  "methodology_hu": "A kínálat az OPEC- és nem OPEC-országok folyékonyüzemanyag-termelésének összege. A kereslet az OECD- és nem OECD-országok folyékonyüzemanyag-fogyasztásának összege. Az éves értékek a havi adatok számtani átlagai. A piaci egyenleg a kínálat és a kereslet különbsége.",
-  "methodology_en": "Supply is calculated as OPEC plus non-OPEC liquid fuels production. Demand is calculated as OECD plus non-OECD liquid fuels consumption. Annual values are arithmetic averages of monthly data. Market balance equals supply minus demand.",
-  "interpretation_hu": {
-    "surplus": "A pozitív érték kínálati többletet jelez, ami általában lefelé irányuló árnyomást okozhat.",
-    "balanced": "A nullához közeli érték közel kiegyensúlyozott piacot jelez.",
-    "deficit": "A negatív érték kínálati hiányt vagy készletleépülést jelezhet, ami árfelhajtó hatású lehet."
+  "series_definition": {
+    "supply": {
+      "series_id": "PAPR_WORLD",
+      "name": "World petroleum and other liquid fuels production"
+    },
+    "demand": {
+      "series_id": "PATC_WORLD",
+      "name": "World petroleum and other liquid fuels consumption"
+    },
+    "balance_formula": "global_supply_mbd - global_demand_mbd",
+    "interpretation": {
+      "positive": "surplus / potential inventory build",
+      "negative": "deficit / potential inventory draw"
+    }
   },
-  "interpretation_en": {
-    "surplus": "A positive value indicates a supply surplus that can create downward price pressure.",
-    "balanced": "A value close to zero indicates a broadly balanced market.",
-    "deficit": "A negative value indicates a supply deficit or inventory draw, which can support prices."
+  "latest": {
+    "period": "2027-12",
+    "global_supply_mbd": 111.249,
+    "global_demand_mbd": 106.469,
+    "balance_mbd": 4.78,
+    "balance_state": "surplus_high",
+    "balance_state_hu": "Jelentős többlet",
+    "balance_state_en": "Material surplus"
   },
+  "period": "2027-12",
+  "global_supply_mbd": 111.249,
+  "global_demand_mbd": 106.469,
+  "balance_mbd": 4.78,
+  "balance_state": "surplus_high",
+  "balance_state_hu": "Jelentős többlet",
+  "balance_state_en": "Material surplus",
+  "summary_hu": "Az EIA STEO 2027-12 időszakra 111.25 millió hordó/nap globális folyékonyüzemanyag-kínálatot és 106.47 millió hordó/nap fogyasztást jelez. A fizikai mérleg +4.78 millió hordó/nap, ami kínálati többletet és készletépítési lehetőséget jelezhet.",
+  "summary_en": "For 2027-12, the EIA STEO indicates global liquid-fuels supply of 111.25 million barrels per day and consumption of 106.47 million barrels per day. The physical balance is +4.78 mb/d, indicating a surplus and potential inventory build.",
   "series": [
     {
-      "year": 2023,
-      "supply_mbd": 101.84,
-      "demand_mbd": 101.78,
-      "status": "historical",
-      "source_type": "annual_baseline",
-      "balance_mbd": 0.06,
-      "balance_status": "balanced",
-      "months_available": 12,
-      "supply_change_mbd": null,
-      "demand_change_mbd": null,
-      "balance_change_mbd": null
+      "period": "2024-01",
+      "global_supply_mbd": 101.421,
+      "global_demand_mbd": 99.741,
+      "balance_mbd": 1.679,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
     },
     {
-      "year": 2024,
-      "supply_mbd": 103.07,
-      "demand_mbd": 102.8,
-      "balance_mbd": 0.27,
-      "balance_status": "surplus",
-      "months_available": 12,
-      "status": "historical",
-      "source_type": "eia_monthly_average",
-      "supply_change_mbd": 1.23,
-      "demand_change_mbd": 1.02,
-      "balance_change_mbd": 0.21
+      "period": "2024-02",
+      "global_supply_mbd": 102.667,
+      "global_demand_mbd": 101.905,
+      "balance_mbd": 0.762,
+      "balance_state": "surplus",
+      "balance_state_hu": "Többlet",
+      "balance_state_en": "Surplus"
     },
     {
-      "year": 2025,
-      "supply_mbd": 106.1,
-      "demand_mbd": 104.0,
-      "balance_mbd": 2.1,
-      "balance_status": "surplus",
-      "months_available": 12,
-      "status": "historical",
-      "source_type": "eia_monthly_average",
-      "supply_change_mbd": 3.03,
-      "demand_change_mbd": 1.2,
-      "balance_change_mbd": 1.83
+      "period": "2024-03",
+      "global_supply_mbd": 103.482,
+      "global_demand_mbd": 101.323,
+      "balance_mbd": 2.159,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
     },
     {
-      "year": 2026,
-      "supply_mbd": 101.94,
-      "demand_mbd": 102.79,
-      "balance_mbd": -0.85,
-      "balance_status": "deficit",
-      "months_available": 12,
-      "status": "forecast",
-      "source_type": "eia_monthly_average",
-      "supply_change_mbd": -4.16,
-      "demand_change_mbd": -1.21,
-      "balance_change_mbd": -2.95
+      "period": "2024-04",
+      "global_supply_mbd": 103.373,
+      "global_demand_mbd": 102.154,
+      "balance_mbd": 1.219,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2024-05",
+      "global_supply_mbd": 102.974,
+      "global_demand_mbd": 103.138,
+      "balance_mbd": -0.164,
+      "balance_state": "balanced",
+      "balance_state_hu": "Közel egyensúly",
+      "balance_state_en": "Near balance"
+    },
+    {
+      "period": "2024-06",
+      "global_supply_mbd": 102.982,
+      "global_demand_mbd": 103.808,
+      "balance_mbd": -0.826,
+      "balance_state": "deficit",
+      "balance_state_hu": "Hiány",
+      "balance_state_en": "Deficit"
+    },
+    {
+      "period": "2024-07",
+      "global_supply_mbd": 103.097,
+      "global_demand_mbd": 103.992,
+      "balance_mbd": -0.895,
+      "balance_state": "deficit",
+      "balance_state_hu": "Hiány",
+      "balance_state_en": "Deficit"
+    },
+    {
+      "period": "2024-08",
+      "global_supply_mbd": 103.46,
+      "global_demand_mbd": 103.522,
+      "balance_mbd": -0.062,
+      "balance_state": "balanced",
+      "balance_state_hu": "Közel egyensúly",
+      "balance_state_en": "Near balance"
+    },
+    {
+      "period": "2024-09",
+      "global_supply_mbd": 102.304,
+      "global_demand_mbd": 103.397,
+      "balance_mbd": -1.093,
+      "balance_state": "deficit_high",
+      "balance_state_hu": "Jelentős hiány",
+      "balance_state_en": "Material deficit"
+    },
+    {
+      "period": "2024-10",
+      "global_supply_mbd": 103.653,
+      "global_demand_mbd": 103.718,
+      "balance_mbd": -0.065,
+      "balance_state": "balanced",
+      "balance_state_hu": "Közel egyensúly",
+      "balance_state_en": "Near balance"
+    },
+    {
+      "period": "2024-11",
+      "global_supply_mbd": 103.75,
+      "global_demand_mbd": 103.343,
+      "balance_mbd": 0.406,
+      "balance_state": "surplus",
+      "balance_state_hu": "Többlet",
+      "balance_state_en": "Surplus"
+    },
+    {
+      "period": "2024-12",
+      "global_supply_mbd": 103.655,
+      "global_demand_mbd": 103.565,
+      "balance_mbd": 0.09,
+      "balance_state": "balanced",
+      "balance_state_hu": "Közel egyensúly",
+      "balance_state_en": "Near balance"
+    },
+    {
+      "period": "2025-01",
+      "global_supply_mbd": 102.59,
+      "global_demand_mbd": 101.718,
+      "balance_mbd": 0.872,
+      "balance_state": "surplus",
+      "balance_state_hu": "Többlet",
+      "balance_state_en": "Surplus"
+    },
+    {
+      "period": "2025-02",
+      "global_supply_mbd": 103.13,
+      "global_demand_mbd": 103.21,
+      "balance_mbd": -0.081,
+      "balance_state": "balanced",
+      "balance_state_hu": "Közel egyensúly",
+      "balance_state_en": "Near balance"
+    },
+    {
+      "period": "2025-03",
+      "global_supply_mbd": 104.573,
+      "global_demand_mbd": 102.296,
+      "balance_mbd": 2.277,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2025-04",
+      "global_supply_mbd": 104.254,
+      "global_demand_mbd": 103.275,
+      "balance_mbd": 0.979,
+      "balance_state": "surplus",
+      "balance_state_hu": "Többlet",
+      "balance_state_en": "Surplus"
+    },
+    {
+      "period": "2025-05",
+      "global_supply_mbd": 104.778,
+      "global_demand_mbd": 103.2,
+      "balance_mbd": 1.579,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2025-06",
+      "global_supply_mbd": 106.007,
+      "global_demand_mbd": 105.421,
+      "balance_mbd": 0.586,
+      "balance_state": "surplus",
+      "balance_state_hu": "Többlet",
+      "balance_state_en": "Surplus"
+    },
+    {
+      "period": "2025-07",
+      "global_supply_mbd": 107.028,
+      "global_demand_mbd": 105.121,
+      "balance_mbd": 1.907,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2025-08",
+      "global_supply_mbd": 107.561,
+      "global_demand_mbd": 104.191,
+      "balance_mbd": 3.37,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2025-09",
+      "global_supply_mbd": 108.68,
+      "global_demand_mbd": 105.548,
+      "balance_mbd": 3.132,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2025-10",
+      "global_supply_mbd": 108.376,
+      "global_demand_mbd": 104.146,
+      "balance_mbd": 4.23,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2025-11",
+      "global_supply_mbd": 108.447,
+      "global_demand_mbd": 103.935,
+      "balance_mbd": 4.512,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2025-12",
+      "global_supply_mbd": 107.785,
+      "global_demand_mbd": 105.909,
+      "balance_mbd": 1.876,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2026-01",
+      "global_supply_mbd": 105.957,
+      "global_demand_mbd": 102.335,
+      "balance_mbd": 3.622,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2026-02",
+      "global_supply_mbd": 108.695,
+      "global_demand_mbd": 104.279,
+      "balance_mbd": 4.416,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2026-03",
+      "global_supply_mbd": 97.382,
+      "global_demand_mbd": 101.982,
+      "balance_mbd": -4.6,
+      "balance_state": "deficit_high",
+      "balance_state_hu": "Jelentős hiány",
+      "balance_state_en": "Material deficit"
+    },
+    {
+      "period": "2026-04",
+      "global_supply_mbd": 94.901,
+      "global_demand_mbd": 99.91,
+      "balance_mbd": -5.009,
+      "balance_state": "deficit_high",
+      "balance_state_hu": "Jelentős hiány",
+      "balance_state_en": "Material deficit"
+    },
+    {
+      "period": "2026-05",
+      "global_supply_mbd": 93.478,
+      "global_demand_mbd": 99.764,
+      "balance_mbd": -6.287,
+      "balance_state": "deficit_high",
+      "balance_state_hu": "Jelentős hiány",
+      "balance_state_en": "Material deficit"
+    },
+    {
+      "period": "2026-06",
+      "global_supply_mbd": 97.46,
+      "global_demand_mbd": 101.407,
+      "balance_mbd": -3.948,
+      "balance_state": "deficit_high",
+      "balance_state_hu": "Jelentős hiány",
+      "balance_state_en": "Material deficit"
+    },
+    {
+      "period": "2026-07",
+      "global_supply_mbd": 99.232,
+      "global_demand_mbd": 101.574,
+      "balance_mbd": -2.342,
+      "balance_state": "deficit_high",
+      "balance_state_hu": "Jelentős hiány",
+      "balance_state_en": "Material deficit"
+    },
+    {
+      "period": "2026-08",
+      "global_supply_mbd": 101.455,
+      "global_demand_mbd": 104.387,
+      "balance_mbd": -2.932,
+      "balance_state": "deficit_high",
+      "balance_state_hu": "Jelentős hiány",
+      "balance_state_en": "Material deficit"
+    },
+    {
+      "period": "2026-09",
+      "global_supply_mbd": 103.246,
+      "global_demand_mbd": 104.614,
+      "balance_mbd": -1.368,
+      "balance_state": "deficit_high",
+      "balance_state_hu": "Jelentős hiány",
+      "balance_state_en": "Material deficit"
+    },
+    {
+      "period": "2026-10",
+      "global_supply_mbd": 105.895,
+      "global_demand_mbd": 103.533,
+      "balance_mbd": 2.362,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2026-11",
+      "global_supply_mbd": 107.547,
+      "global_demand_mbd": 104.268,
+      "balance_mbd": 3.28,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2026-12",
+      "global_supply_mbd": 107.981,
+      "global_demand_mbd": 105.406,
+      "balance_mbd": 2.575,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2027-01",
+      "global_supply_mbd": 108.154,
+      "global_demand_mbd": 102.34,
+      "balance_mbd": 5.814,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2027-02",
+      "global_supply_mbd": 108.441,
+      "global_demand_mbd": 104.63,
+      "balance_mbd": 3.81,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2027-03",
+      "global_supply_mbd": 108.621,
+      "global_demand_mbd": 103.325,
+      "balance_mbd": 5.296,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2027-04",
+      "global_supply_mbd": 109.085,
+      "global_demand_mbd": 104.198,
+      "balance_mbd": 4.887,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2027-05",
+      "global_supply_mbd": 109.352,
+      "global_demand_mbd": 104.397,
+      "balance_mbd": 4.956,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2027-06",
+      "global_supply_mbd": 109.4,
+      "global_demand_mbd": 105.898,
+      "balance_mbd": 3.502,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2027-07",
+      "global_supply_mbd": 110.168,
+      "global_demand_mbd": 105.591,
+      "balance_mbd": 4.577,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2027-08",
+      "global_supply_mbd": 110.366,
+      "global_demand_mbd": 105.478,
+      "balance_mbd": 4.888,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2027-09",
+      "global_supply_mbd": 110.487,
+      "global_demand_mbd": 105.655,
+      "balance_mbd": 4.832,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2027-10",
+      "global_supply_mbd": 111.084,
+      "global_demand_mbd": 104.487,
+      "balance_mbd": 6.597,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2027-11",
+      "global_supply_mbd": 111.564,
+      "global_demand_mbd": 105.265,
+      "balance_mbd": 6.299,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
+    },
+    {
+      "period": "2027-12",
+      "global_supply_mbd": 111.249,
+      "global_demand_mbd": 106.469,
+      "balance_mbd": 4.78,
+      "balance_state": "surplus_high",
+      "balance_state_hu": "Jelentős többlet",
+      "balance_state_en": "Material surplus"
     }
-  ],
-  "sources": [
-    {
-      "name": "U.S. Energy Information Administration",
-      "report": "Short-Term Energy Outlook – World liquid fuels production and consumption",
-      "url": "https://www.eia.gov/outlooks/steo/xls/Fig3.xlsx",
-      "used_for": "2024-2026 monthly series"
-    },
-    {
-      "name": "U.S. Energy Information Administration",
-      "report": "Historical world petroleum and other liquid fuels annual data",
-      "used_for": "2023 annual baseline"
-    }
-  ],
-  "disclaimer_hu": "A 2026-os adat előrejelzés. Az értékek az EIA következő havi STEO kiadásában módosulhatnak. A mutató petroleum and other liquid fuels kategóriát használ, ezért nem kizárólag nyersolajat tartalmaz.",
-  "disclaimer_en": "The 2026 value is a forecast and may change in subsequent EIA STEO releases. The dataset covers petroleum and other liquid fuels, not crude oil only."
+  ]
 }

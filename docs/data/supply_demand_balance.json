@@ -1,27 +1,70 @@
 {
-  "generated_at": "2026-07-17",
-  "method_hu": "A supply-demand balance egy proxy indikátor, amely a kínai importmennyiség, a Brent ármozgás, az USA termelési értéke, a készletoldali nyomás és az összesített kockázati pontszám alapján becsüli a piaci egyensúlyt.",
-  "method_en": "The supply-demand balance is a proxy indicator using China import volume, Brent price movement, U.S. production value, inventory stress and the combined risk score to estimate market balance.",
+  "generated_at": "2026-07-17T07:20:06Z",
+  "meta": {
+    "generated_at": "2026-07-17T07:20:06Z",
+    "generator": "scripts/generate_supply_demand_balance.py",
+    "generator_version": "2.0.0",
+    "indicator_type": "short_term_oil_market_pressure",
+    "method_version": "pressure_v2_with_eia_physical_balance",
+    "compatibility_fields_retained": true
+  },
+  "indicator_type": "short_term_oil_market_pressure",
+  "short_term_pressure_score": 22.0,
+  "market_tightness": "loose",
+  "market_tightness_hu": "Laza piac",
+  "market_tightness_en": "Loose market",
+  "market_direction": "BEARISH",
+  "market_direction_hu": "Árcsökkentő",
+  "market_direction_en": "Bearish",
+  "fundamental_balance": {
+    "period": "2027-12",
+    "global_supply_mbd": 111.249,
+    "global_demand_mbd": 106.469,
+    "balance_mbd": 4.78,
+    "balance_state": "surplus_high",
+    "source": "EIA STEO"
+  },
+  "component_scores": {
+    "fundamental_balance": 0.0,
+    "inventory_tightness": 50.0,
+    "china_import_momentum": 37.1,
+    "brent_momentum": 62.5,
+    "geopolitical_supply_risk": 51.4
+  },
+  "component_weights": {
+    "fundamental_balance": 0.55,
+    "inventory_tightness": 0.2,
+    "china_import_momentum": 0.1,
+    "brent_momentum": 0.05,
+    "geopolitical_supply_risk": 0.1
+  },
+  "drivers": {
+    "physical_balance_mbd": 4.78,
+    "brent_change_pct": 6.25,
+    "china_import_volume_change_pct": -3.23,
+    "inventory_stress_score": 50.0,
+    "combined_risk_score": 51.4,
+    "brent_lookback_observations": 30,
+    "china_lookback_observations": 30,
+    "usa_production_value_change_pct": null
+  },
+  "data_freshness": {
+    "fundamental_period": "2027-12",
+    "brent_lookback_observations": 30,
+    "china_lookback_observations": 30
+  },
+  "method_hu": "A rövid távú olajpiaci nyomásindikátor elsődleges alapja az EIA STEO globális fizikai kínálat–keresleti mérlege. Ezt az amerikai készlethelyzet, a kínai importmomentum, a Brent ármomentum és a geopolitikai ellátási kockázat egészíti ki. A mutató nem árfolyam-előrejelzés.",
+  "method_en": "The short-term oil-market pressure indicator is anchored in the EIA STEO global physical supply-demand balance. It is supplemented by U.S. inventory conditions, China import momentum, Brent price momentum and geopolitical supply risk. The indicator is not a price forecast.",
+  "summary_hu": "Az EIA STEO fizikai mérlege 2027-12 időszakra +4.78 millió hordó/nap. A fundamentális mérleg, a készlethelyzet és a rövid távú piaci jelek alapján az összesített nyomás 22.0/100, ami laza piac állapotot jelez.",
+  "summary_en": "The EIA STEO physical balance for 2027-12 is +4.78 million barrels per day. Based on the fundamental balance, inventories and short-term signals, the combined pressure score is 22.0/100, indicating a loose market condition.",
   "lookback_days": 30,
-  "supply_pressure": 44.4,
-  "supply_level": "MEDIUM",
-  "supply_level_hu": "Közepes",
-  "supply_level_en": "Medium",
-  "demand_pressure": 46.3,
+  "supply_pressure": 84.9,
+  "supply_level": "HIGH",
+  "supply_level_hu": "Magas",
+  "supply_level_en": "High",
+  "demand_pressure": 44.7,
   "demand_level": "MEDIUM",
   "demand_level_hu": "Közepes",
   "demand_level_en": "Medium",
-  "balance_score": 1.9,
-  "market_direction": "NEUTRAL",
-  "market_direction_hu": "Semleges",
-  "market_direction_en": "Neutral",
-  "drivers": {
-    "brent_change_pct": 6.25,
-    "china_import_volume_change_pct": -3.23,
-    "usa_production_value_change_pct": -14.55,
-    "inventory_stress_score": 50.0,
-    "combined_risk_score": 51.4
-  },
-  "summary_hu": "A piaci egyensúly proxy mutatója szerint a keresleti nyomás 46.3/100, a kínálati nyomás 44.4/100. A különbség +1.9 pont, ami semleges piaci irányt jelez.",
-  "summary_en": "The market balance proxy indicates demand pressure at 46.3/100 and supply pressure at 44.4/100. The spread is +1.9 points, indicating a neutral market direction."
+  "balance_score": -56.0
 }
