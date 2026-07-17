@@ -64,7 +64,6 @@ REQUIRED_COLUMNS = {
 MONTHS_TO_KEEP = 120
 ANNUAL_START_YEAR = 2023
 MIN_COVERAGE_RATIO = 0.85
-COVERAGE_LOOKBACK_MONTHS = 24
 USER_AGENT = "Energy-Intelligence-Dashboard/1.0"
 
 
@@ -484,6 +483,15 @@ def build_monthly(
                     if closing_stocks_total_kbbl is not None
                     else None
                 ),
+                "adjusted_crude_balance_mbd": round_or_none(
+                    (
+                        common_gap_kbd / 1000
+                        - stock_change_average_kbd / 1000
+                    )
+                    if common_gap_kbd is not None
+                    and stock_change_average_kbd is not None
+                    else None
+                ),
                 "coverage": {
                     "production_reporters": len(production_areas),
                     "refinery_intake_reporters": len(intake_areas),
@@ -497,9 +505,8 @@ def build_monthly(
     if not monthly:
         raise RuntimeError("No usable monthly JODI crude-oil rows were produced.")
 
-    recent = monthly[-COVERAGE_LOOKBACK_MONTHS:]
     references = {
-        field: max(row["coverage"][field] for row in recent)
+        field: max(row["coverage"][field] for row in monthly)
         for field in (
             "production_reporters",
             "refinery_intake_reporters",
@@ -514,7 +521,9 @@ def build_monthly(
 
         def ratio(field: str) -> float:
             reference = references[field]
-            return coverage[field] / reference if reference else 0.0
+            if not reference:
+                return 0.0
+            return min(1.0, coverage[field] / reference)
 
         production_ratio = ratio("production_reporters")
         intake_ratio = ratio("refinery_intake_reporters")
@@ -635,6 +644,11 @@ def build_annual(monthly: list[dict[str, Any]]) -> list[dict[str, Any]]:
             for row in rows
             if row["coverage_quality"]["headline_usable"]
         )
+        adjusted_balance = safe_mean(
+            row.get("adjusted_crude_balance_mbd")
+            for row in rows
+            if row["coverage_quality"]["headline_usable"]
+        )
         stock_values = [
             row["reported_stock_change_kbbl"]
             for row in rows
@@ -654,6 +668,9 @@ def build_annual(monthly: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     safe_mean(row.get("reported_refinery_intake_mbd") for row in rows)
                 ),
                 "average_common_country_gap_mbd": round_or_none(gap),
+                "average_adjusted_crude_balance_mbd": round_or_none(
+                    adjusted_balance
+                ),
                 "total_reported_stock_change_kbbl": round_or_none(
                     sum(stock_values) if stock_values else None, 1
                 ),
@@ -669,6 +686,7 @@ def build_annual(monthly: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     )
                 ),
                 "gap_state": gap_state(gap),
+                "adjusted_balance_state": gap_state(adjusted_balance),
             }
         )
     return annual
@@ -686,20 +704,25 @@ def build_output(
     production = latest["reported_production_mbd"]
     intake = latest["reported_refinery_intake_mbd"]
     reporters = latest["coverage"]["common_reporters"]
+    adjusted_balance = latest["adjusted_crude_balance_mbd"]
 
     summary_hu = (
         f"A legfrissebb megfelelő lefedettségű JODI-időszak {latest['period']}. "
         f"A jelentett nyersolajtermelés {production:.2f} mb/d, a jelentett "
         f"finomítói nyersolaj-betáplálás {intake:.2f} mb/d. Az azonos "
         f"{reporters} országkörön számított termelés–betáplálás különbsége "
-        f"{gap:+.2f} mb/d. Ez nem teljes globális kínálat–keresleti mérleg."
+        f"{gap:+.2f} mb/d. A készletváltozással mechanikusan korrigált "
+        f"kísérleti mutató {adjusted_balance:+.2f} mb/d. Ez nem teljes "
+        f"globális kínálat–keresleti mérleg."
     )
     summary_en = (
         f"The latest JODI period with sufficient coverage is {latest['period']}. "
         f"Reported crude-oil production is {production:.2f} mb/d and reported "
         f"refinery crude intake is {intake:.2f} mb/d. Across the same set of "
         f"{reporters} countries, the production-minus-intake gap is "
-        f"{gap:+.2f} mb/d. This is not a complete global supply-demand balance."
+        f"{gap:+.2f} mb/d. The mechanically stock-adjusted experimental "
+        f"indicator is {adjusted_balance:+.2f} mb/d. This is not a complete "
+        f"global supply-demand balance."
     )
 
     return {
@@ -735,6 +758,8 @@ def build_output(
             ],
             "common_country_gap_mbd": gap,
             "gap_state": gap_state(gap),
+            "adjusted_crude_balance_mbd": adjusted_balance,
+            "adjusted_balance_state": gap_state(adjusted_balance),
             "reported_stock_change_kbbl": latest["reported_stock_change_kbbl"],
             "reported_stock_change_average_kbd": latest[
                 "reported_stock_change_average_kbd"
@@ -758,9 +783,11 @@ def build_output(
             "latest_headline_period": latest["period"],
             "monthly_period_count": len(monthly),
             "selected_valid_source_rows": selected_count,
-            "recent_reference_reporter_counts": references,
+            "full_series_reference_reporter_counts": references,
             "headline_minimum_coverage_ratio": MIN_COVERAGE_RATIO,
-            "coverage_reference_lookback_months": COVERAGE_LOOKBACK_MONTHS,
+            "coverage_reference_method": (
+                "maximum reporter count observed across the full monthly series"
+            ),
         },
         "methodology_hu": (
             "A modul a JODI Oil World Primary CSV CRUDEOIL terméksorait "
@@ -770,7 +797,11 @@ def build_output(
             "származik. A havi készletváltozás napi átlagra történő "
             "átszámítása a hónap naptári napjainak számával történik. A "
             "termelés és a finomítói betáplálás különbségét azonos "
-            "országkörön számítja."
+            "országkörön számítja. A lefedettségi arányok nevezője az egész "
+            "idősorban megfigyelt legmagasabb jelentői létszám, ezért az "
+            "arányok 0 és 1 között maradnak. Az Adjusted Crude Balance a "
+            "common-country gap és a napi átlagra átszámított STOCKCH "
+            "mechanikus különbsége."
         ),
         "methodology_en": (
             "The module uses CRUDEOIL rows from the JODI Oil World Primary "
@@ -779,7 +810,11 @@ def build_output(
             "KBBL and closing stocks use CLOSTLV + KBBL. Monthly stock change "
             "is converted to an average daily rate using calendar days in the "
             "month. Production and refinery intake are compared across the "
-            "same country set."
+            "same country set. Coverage ratios use the maximum reporter "
+            "count observed across the full time series, keeping ratios "
+            "between zero and one. Adjusted Crude Balance is the mechanical "
+            "difference between the common-country gap and STOCKCH converted "
+            "to an average daily rate."
         ),
         "stock_sign_note_hu": (
             "A STOCKCH előjelének értelmezését a modul semlegesen kezeli. "
@@ -789,6 +824,19 @@ def build_output(
         "stock_sign_note_en": (
             "The STOCKCH sign is handled neutrally. The value is not "
             "automatically classified as a stock build or stock draw."
+        ),
+        "adjusted_balance_note_hu": (
+            "Az Adjusted Crude Balance kísérleti, mechanikusan számított "
+            "mutató: common_country_gap_mbd mínusz "
+            "reported_stock_change_average_mbd. Nem tekinthető teljes "
+            "globális nyersolaj-egyenlegnek, és a STOCKCH előjelének "
+            "gazdasági értelmezését nem helyettesíti."
+        ),
+        "adjusted_balance_note_en": (
+            "Adjusted Crude Balance is an experimental mechanical indicator: "
+            "common_country_gap_mbd minus reported_stock_change_average_mbd. "
+            "It is not a complete global crude-oil balance and does not "
+            "replace economic interpretation of the STOCKCH sign."
         ),
         "summary_hu": summary_hu,
         "summary_en": summary_en,
@@ -845,7 +893,8 @@ def main() -> None:
         f"Latest headline period: {latest['period']} | "
         f"production={latest['reported_production_mbd']:.3f} mb/d | "
         f"refinery intake={latest['reported_refinery_intake_mbd']:.3f} mb/d | "
-        f"common-country gap={latest['common_country_gap_mbd']:+.3f} mb/d"
+        f"common-country gap={latest['common_country_gap_mbd']:+.3f} mb/d | "
+        f"adjusted balance={latest['adjusted_crude_balance_mbd']:+.3f} mb/d"
     )
     print(
         "Latest stock fields: "
@@ -860,4 +909,3 @@ if __name__ == "__main__":
     except Exception as exc:
         print(f"Error: {exc}", file=sys.stderr)
         sys.exit(1)
-
