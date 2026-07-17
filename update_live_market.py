@@ -94,9 +94,10 @@ def iso_utc_from_unix(timestamp: int | float | None) -> str | None:
 def extract_spot_prices(oil_data: dict[str, Any]) -> dict[str, Any]:
     candidates: list[tuple[Any, Any]] = []
 
-    market = oil_data.get("market")
-    if isinstance(market, dict):
-        candidates.append((market.get("brent"), market.get("wti")))
+    # Az oil-data.json valódi EIA spot blokkja az elsődleges.
+    spot = oil_data.get("spot")
+    if isinstance(spot, dict):
+        candidates.append((spot.get("brent"), spot.get("wti")))
 
     prices = oil_data.get("prices")
     if isinstance(prices, dict):
@@ -106,6 +107,10 @@ def extract_spot_prices(oil_data: dict[str, Any]) -> dict[str, Any]:
                 prices.get("spot_wti", prices.get("wti")),
             )
         )
+
+    market = oil_data.get("market")
+    if isinstance(market, dict):
+        candidates.append((market.get("brent"), market.get("wti")))
 
     candidates.append((oil_data.get("brent"), oil_data.get("wti")))
 
@@ -264,6 +269,7 @@ def main() -> None:
 
     now = datetime.now(timezone.utc)
     generated_at = now.isoformat().replace("+00:00", "Z")
+    legacy_updated = now.strftime("%Y-%m-%d %H:%M UTC")
 
     spot_prices = extract_spot_prices(oil_data)
     market_result = fetch_market_prices()
@@ -297,7 +303,11 @@ def main() -> None:
 
     payload = {
         "meta": {
-            "updated": generated_at,
+            # Régi mezők változatlanul megmaradnak.
+            "updated": legacy_updated,
+            "source_mode": "live",
+            # Új, pontosabb metaadatok.
+            "generated_at": generated_at,
             "update_interval_minutes": 30,
             "data_mode": "periodic_market_snapshot",
             "is_streaming": False,
@@ -390,3 +400,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
