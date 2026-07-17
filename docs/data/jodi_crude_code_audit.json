@@ -1,0 +1,247 @@
+{
+  "generated_at": "2026-07-17T17:21:48+00:00",
+  "dataset": "jodi_crude_code_audit",
+  "source": {
+    "name": "JODI Oil World Database",
+    "download_url": "https://www.jodidata.org/_resources/files/downloads/oil-data/world_primary_csv.zip?iid=24",
+    "archive_member": "NewProcedure_Primary_CSV.csv"
+  },
+  "csv_columns": [
+    "REF_AREA",
+    "TIME_PERIOD",
+    "ENERGY_PRODUCT",
+    "FLOW_BREAKDOWN",
+    "UNIT_MEASURE",
+    "OBS_VALUE",
+    "ASSESSMENT_CODE"
+  ],
+  "row_counts": {
+    "all_rows": 6872400,
+    "crude_oil_rows": 1718100
+  },
+  "required_filter": {
+    "ENERGY_PRODUCT": "CRUDEOIL",
+    "UNIT_MEASURE": "KBD"
+  },
+  "configured_flows": {
+    "production": {
+      "code": "INDPROD",
+      "valid_kbd_observations": 24377,
+      "reporting_areas": 104,
+      "start_period": "2002-01",
+      "end_period": "2026-04"
+    },
+    "refinery_intake": {
+      "code": "REFINOBS",
+      "valid_kbd_observations": 24063,
+      "reporting_areas": 104,
+      "start_period": "2002-01",
+      "end_period": "2026-04"
+    },
+    "stock_change": {
+      "code": "STOCKCH",
+      "valid_kbd_observations": 0,
+      "reporting_areas": 0,
+      "start_period": null,
+      "end_period": null
+    }
+  },
+  "available_flow_breakdown_values": [
+    {
+      "code": "CLOSTLV",
+      "row_count": 171810
+    },
+    {
+      "code": "DIRECUSE",
+      "row_count": 171810
+    },
+    {
+      "code": "INDPROD",
+      "row_count": 171810
+    },
+    {
+      "code": "OSOURCES",
+      "row_count": 171810
+    },
+    {
+      "code": "REFINOBS",
+      "row_count": 171810
+    },
+    {
+      "code": "STATDIFF",
+      "row_count": 171810
+    },
+    {
+      "code": "STOCKCH",
+      "row_count": 171810
+    },
+    {
+      "code": "TOTEXPSB",
+      "row_count": 171810
+    },
+    {
+      "code": "TOTIMPSB",
+      "row_count": 171810
+    },
+    {
+      "code": "TRANSBAK",
+      "row_count": 171810
+    }
+  ],
+  "available_unit_measure_values": [
+    {
+      "code": "CONVBBL",
+      "row_count": 343620
+    },
+    {
+      "code": "KBBL",
+      "row_count": 343620
+    },
+    {
+      "code": "KBD",
+      "row_count": 343620
+    },
+    {
+      "code": "KL",
+      "row_count": 343620
+    },
+    {
+      "code": "KTONS",
+      "row_count": 343620
+    }
+  ],
+  "assessment_code_values": [
+    {
+      "code": "1",
+      "row_count": 316987
+    },
+    {
+      "code": "2",
+      "row_count": 27748
+    },
+    {
+      "code": "3",
+      "row_count": 1373365
+    }
+  ],
+  "crude_reporting_areas": [
+    "AE",
+    "AL",
+    "AM",
+    "AO",
+    "AR",
+    "AT",
+    "AU",
+    "AZ",
+    "BB",
+    "BD",
+    "BE",
+    "BG",
+    "BH",
+    "BM",
+    "BN",
+    "BO",
+    "BR",
+    "BY",
+    "BZ",
+    "CA",
+    "CH",
+    "CL",
+    "CN",
+    "CO",
+    "CR",
+    "CU",
+    "CY",
+    "CZ",
+    "DE",
+    "DK",
+    "DO",
+    "DZ",
+    "EC",
+    "EE",
+    "EG",
+    "ES",
+    "FI",
+    "FR",
+    "GA",
+    "GB",
+    "GD",
+    "GE",
+    "GM",
+    "GQ",
+    "GR",
+    "GT",
+    "GY",
+    "HK",
+    "HN",
+    "HR",
+    "HT",
+    "HU",
+    "ID",
+    "IE",
+    "IN",
+    "IQ",
+    "IR",
+    "IS",
+    "IT",
+    "JM",
+    "JP",
+    "KR",
+    "KW",
+    "KZ",
+    "LT",
+    "LU",
+    "LV",
+    "LY",
+    "MA",
+    "MD",
+    "MK",
+    "MM",
+    "MT",
+    "MU",
+    "MX",
+    "MY",
+    "NE",
+    "NG",
+    "NI",
+    "NL",
+    "NO",
+    "NP",
+    "NZ",
+    "OM",
+    "PA",
+    "PE",
+    "PG",
+    "PH",
+    "PL",
+    "PT",
+    "PY",
+    "QA",
+    "RO",
+    "RS",
+    "RU",
+    "SA",
+    "SD",
+    "SE",
+    "SG",
+    "SI",
+    "SK",
+    "SR",
+    "SV",
+    "SY",
+    "SZ",
+    "TH",
+    "TJ",
+    "TN",
+    "TR",
+    "TT",
+    "TW",
+    "UA",
+    "US",
+    "UY",
+    "VE",
+    "VN",
+    "YE",
+    "ZA"
+  ]
+}
