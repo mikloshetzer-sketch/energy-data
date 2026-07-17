@@ -2139,10 +2139,11 @@
           <div class="ompi-components" id="ompiComponents"></div>
 
           <div class="ompi-method">
-            Súlyok: kínálati–keresleti egyenleg 30%, készletleépülés 20%,
-            OPEC+ lefedési képesség 15%, geopolitikai kockázat 15%,
-            szoroskockázat 10%, kínai importkereslet 5%, Brent-momentum 5%.
-            Az OMPI nem hivatalos piaci index és nem közvetlen ár-előrejelzés.
+            Az OMPI kizárólag fizikai és fundamentális olajpiaci tényezőket használ.
+            Súlyok: fizikai kínálati–keresleti egyenleg 35%, készletstressz 20%,
+            OPEC+ tartalékkapacitás 15%, közel-keleti konfliktuskockázat 15%,
+            kínai importmomentum 10%, tengeri szűkületi kockázat 5%.
+            Brent-, WTI-, futures- és egyéb piaci árfolyamadat nem része az indexnek.
           </div>
         </div>
       </div>
@@ -2150,7 +2151,7 @@
         <div class="explain-grid">
           <div class="explain-item">
             <div class="explain-title">Mit mutat?</div>
-            <div class="explain-text">A dashboard saját, 0–100 közötti összesített olajpiaci árnyomási indexét és annak hét komponensét mutatja.</div>
+            <div class="explain-text">A dashboard saját, 0–100 közötti fundamentális olajpiaci nyomásindexét és annak hat komponensét mutatja.</div>
           </div>
 
           <div class="explain-item">
@@ -2160,7 +2161,7 @@
 
           <div class="explain-item">
             <div class="explain-title">Mire jó?</div>
-            <div class="explain-text">Egyetlen áttekinthető mutatóba sűríti a fundamentális, készlet-, OPEC+, geopolitikai, szoros-, kínai keresleti és Brent-momentum tényezőket.</div>
+            <div class="explain-text">Egyetlen áttekinthető mutatóba sűríti a fizikai mérleg, készlet-, OPEC+, konfliktus-, szoros- és kínai importtényezőket, piaci árfolyamok nélkül.</div>
           </div>
         </div>
 
@@ -2177,11 +2178,11 @@
       <div class="section-head">
         <h2 class="section-title">
           Brent Price Outlook
-          <span>Óvatos, OMPI-alapú rövid távú ársáv</span>
+          <span>30 napos fundamentális és piaci forgatókönyvsáv</span>
         </h2>
 
         <div class="section-note">
-          Heurisztikus becslés. Nem kereskedési ajánlás és nem validált célármodell.
+          A backend által számított volatilitásalapú forgatókönyvsáv. Nem kereskedési ajánlás és nem célár.
         </div>
       </div>
 
@@ -2270,7 +2271,7 @@
         </h2>
 
         <div class="section-note">
-          A dashboard aktuális mutatóiból generált összefoglaló.
+          Az új fundamentális és Brent Outlook adatokból generált, szabályalapú összefoglaló.
         </div>
       </div>
 
@@ -2785,7 +2786,13 @@
       balance: BASE + "docs/data/supply_demand_balance.json",
 
       globalBalance: BASE + "docs/data/global_oil_balance.json",
-      countryFlows: BASE + "docs/data/oil_country_flows.json"
+      countryFlows: BASE + "docs/data/oil_country_flows.json",
+
+      ompi: BASE + "docs/data/ompi.json",
+      ompiHistory: BASE + "docs/data/ompi-history.json",
+      brentOutlook: BASE + "docs/data/brent-outlook.json",
+      brentOutlookHistory: BASE + "docs/data/brent-outlook-history.json",
+      chinaCrudeImportVolume: BASE + "docs/data/china_crude_import_volume.json"
     };
 
     Chart.register(ChartDataLabels);
@@ -4563,6 +4570,307 @@
       renderCountryYear(countryFlows, defaultYear);
     }
 
+
+    function firstFinite(...values) {
+      for (const value of values) {
+        const number = Number(value);
+        if (Number.isFinite(number)) return number;
+      }
+      return null;
+    }
+
+    function extractOmpiScore(ompiData) {
+      return firstFinite(
+        ompiData?.score,
+        ompiData?.ompi_score,
+        ompiData?.current_score,
+        ompiData?.latest_score,
+        ompiData?.index,
+        ompiData?.value,
+        ompiData?.current?.score,
+        ompiData?.summary?.score,
+        ompiData?.ompi?.score
+      );
+    }
+
+    function extractOmpiComponents(ompiData) {
+      const source =
+        ompiData?.components ??
+        ompiData?.component_scores ??
+        ompiData?.scores ??
+        ompiData?.breakdown ??
+        ompiData?.ompi?.components ??
+        [];
+
+      const labels = {
+        physical_balance: ["Fizikai kínálati–keresleti egyenleg", "Physical Balance", 35],
+        supply_demand: ["Fizikai kínálati–keresleti egyenleg", "Physical Balance", 35],
+        balance: ["Fizikai kínálati–keresleti egyenleg", "Physical Balance", 35],
+        inventory_stress: ["Készletstressz", "Inventory Stress", 20],
+        inventory: ["Készletstressz", "Inventory Stress", 20],
+        opec_spare_capacity: ["OPEC+ tartalékkapacitás", "OPEC+ Spare Capacity", 15],
+        spare_capacity: ["OPEC+ tartalékkapacitás", "OPEC+ Spare Capacity", 15],
+        opec: ["OPEC+ tartalékkapacitás", "OPEC+ Spare Capacity", 15],
+        middle_east_conflict: ["Közel-keleti konfliktuskockázat", "Middle East Conflict", 15],
+        geopolitical: ["Közel-keleti konfliktuskockázat", "Middle East Conflict", 15],
+        conflict: ["Közel-keleti konfliktuskockázat", "Middle East Conflict", 15],
+        china_import_momentum: ["Kínai importmomentum", "China Import Momentum", 10],
+        china_import: ["Kínai importmomentum", "China Import Momentum", 10],
+        china: ["Kínai importmomentum", "China Import Momentum", 10],
+        chokepoint_risk: ["Tengeri szűkületi kockázat", "Chokepoint Risk", 5],
+        chokepoint: ["Tengeri szűkületi kockázat", "Chokepoint Risk", 5]
+      };
+
+      const normalize = value => String(value ?? "")
+        .trim().toLowerCase().replace(/[\s-]+/g, "_");
+
+      if (Array.isArray(source)) {
+        return source.map((item, index) => {
+          const key = normalize(item.key ?? item.id ?? item.name ?? item.component ?? index);
+          const preset = labels[key] || [];
+          const rawWeight = firstFinite(item.weight_pct, item.weight_percent, item.weight);
+          const weight = rawWeight == null ? preset[2] : rawWeight <= 1 ? rawWeight * 100 : rawWeight;
+          return {
+            key,
+            label: item.label_hu ?? item.label ?? preset[0] ?? String(item.name ?? key),
+            labelEn: item.label_en ?? preset[1] ?? "Fundamental component",
+            weight: weight ?? 0,
+            score: firstFinite(item.score, item.value, item.normalized_score, item.component_score) ?? 0
+          };
+        });
+      }
+
+      if (source && typeof source === "object") {
+        return Object.entries(source).map(([rawKey, rawValue]) => {
+          const key = normalize(rawKey);
+          const preset = labels[key] || [];
+          const item = rawValue && typeof rawValue === "object" ? rawValue : { score: rawValue };
+          const rawWeight = firstFinite(item.weight_pct, item.weight_percent, item.weight);
+          const weight = rawWeight == null ? preset[2] : rawWeight <= 1 ? rawWeight * 100 : rawWeight;
+          return {
+            key,
+            label: item.label_hu ?? item.label ?? preset[0] ?? rawKey,
+            labelEn: item.label_en ?? preset[1] ?? "Fundamental component",
+            weight: weight ?? 0,
+            score: firstFinite(item.score, item.value, item.normalized_score, item.component_score) ?? 0
+          };
+        });
+      }
+
+      return [];
+    }
+
+    function renderOmpi(ompiData) {
+      const score = extractOmpiScore(ompiData);
+      if (!Number.isFinite(score)) {
+        document.getElementById("ompiDescription").innerText =
+          "Az ompi.json nem tartalmaz felismerhető aktuális pontszámot.";
+        return;
+      }
+
+      latestOmpiScore = score;
+      const level = ompiLevel(score);
+      document.getElementById("ompiScore").innerText = score.toFixed(1);
+
+      const levelElement = document.getElementById("ompiLevel");
+      levelElement.className = "ompi-level " + level.className;
+      levelElement.innerText = ompiData?.level ?? ompiData?.status ?? level.label;
+      document.getElementById("ompiDescription").innerText =
+        ompiData?.interpretation_hu ?? ompiData?.description_hu ?? level.description;
+
+      const components = extractOmpiComponents(ompiData);
+      document.getElementById("ompiComponents").innerHTML = components.length
+        ? components.map(component => `
+          <div class="ompi-row">
+            <div class="ompi-row-head">
+              <div>${component.label}<br><span class="ompi-weight">${component.labelEn}</span></div>
+              <div class="ompi-weight">${Number(component.weight).toFixed(0)}%</div>
+              <div class="ompi-component-score">${clamp(Number(component.score), 0, 100).toFixed(1)}</div>
+            </div>
+            <div class="ompi-bar-bg"><div class="ompi-bar-fill" style="width:${clamp(Number(component.score), 0, 100).toFixed(1)}%"></div></div>
+          </div>`).join("")
+        : '<div class="ompi-method">A teljes OMPI-pontszám elérhető, de a komponensbontás nem található az adatfájlban.</div>';
+    }
+
+    function directionHu(value) {
+      const key = String(value ?? "").toUpperCase();
+      if (key === "STRONGLY_BULLISH") return "Erősen emelkedő";
+      if (key === "BULLISH") return "Emelkedő";
+      if (key === "STRONGLY_BEARISH") return "Erősen csökkenő";
+      if (key === "BEARISH") return "Csökkenő";
+      return "Semleges";
+    }
+
+    function confidenceHu(value) {
+      const key = String(value ?? "").toUpperCase();
+      if (key === "HIGH") return "Magas";
+      if (key === "MEDIUM") return "Közepes";
+      return "Alacsony";
+    }
+
+    function renderPriceOutlook(brentOutlook) {
+      const current = firstFinite(brentOutlook?.current?.price_usd);
+      const ompi = firstFinite(brentOutlook?.signals?.ompi_score, latestOmpiScore);
+      const center = firstFinite(brentOutlook?.outlook?.center_price_usd);
+      const lower = firstFinite(brentOutlook?.outlook?.lower_price_usd);
+      const upper = firstFinite(brentOutlook?.outlook?.upper_price_usd);
+      if (![current, center, lower, upper].every(Number.isFinite)) return;
+
+      document.getElementById("priceOutlookCurrent").innerText = current.toFixed(2) + " USD";
+      document.getElementById("priceOutlookOmpi").innerText = Number.isFinite(ompi) ? ompi.toFixed(1) + "/100" : "–";
+      document.getElementById("priceOutlookDirection").innerText = directionHu(brentOutlook?.outlook?.direction);
+      document.getElementById("priceOutlookConfidence").innerText = confidenceHu(brentOutlook?.outlook?.confidence);
+      document.getElementById("priceOutlookRange").innerText = lower.toFixed(0) + "–" + upper.toFixed(0);
+
+      const markerPosition = upper > lower ? clamp(((current - lower) / (upper - lower)) * 100, 0, 100) : 50;
+      document.getElementById("priceOutlookMarker").style.left = markerPosition.toFixed(1) + "%";
+
+      const band = firstFinite(brentOutlook?.signals?.volatility_band_pct);
+      const totalShift = firstFinite(brentOutlook?.signals?.total_center_shift_pct);
+      document.getElementById("priceOutlookNote").innerHTML =
+        `Központi forgatókönyv: <strong>${center.toFixed(2)} USD/hordó</strong>. ` +
+        `A középár teljes korrekciója ${Number.isFinite(totalShift) ? totalShift.toFixed(2) : "–"}%, ` +
+        `a volatilitásalapú sáv szélessége ±${Number.isFinite(band) ? band.toFixed(2) : "–"}%. ` +
+        `A modell ${brentOutlook?.horizon_days ?? 30} napos forgatókönyvsáv, nem kereskedési célár.`;
+    }
+
+    function renderHistoricalValidation(marketRows, ompiHistory, brentOutlookHistory, brentOutlook) {
+      const parsed = (Array.isArray(marketRows) ? marketRows : [])
+        .map(row => ({ date: row.date ?? row.timestamp ?? row.updated_at, value: firstFinite(row.market_brent, row.brent) }))
+        .filter(row => Number.isFinite(row.value));
+
+      const ompiRecords = Array.isArray(ompiHistory)
+        ? ompiHistory
+        : ompiHistory?.history ?? ompiHistory?.records ?? ompiHistory?.data ?? [];
+      const outlookRecords = Array.isArray(brentOutlookHistory)
+        ? brentOutlookHistory
+        : brentOutlookHistory?.history ?? brentOutlookHistory?.records ?? brentOutlookHistory?.data ?? [];
+
+      const currentOmpi = firstFinite(brentOutlook?.signals?.ompi_score, latestOmpiScore);
+      let changePercent = firstFinite(brentOutlook?.market_metrics?.change_20d_pct);
+      if (!Number.isFinite(changePercent) && parsed.length > 1) {
+        const earlier = parsed[Math.max(0, parsed.length - 21)].value;
+        changePercent = earlier ? ((parsed.at(-1).value - earlier) / earlier) * 100 : 0;
+      }
+
+      const ompiDirection = currentOmpi >= 55 ? "up" : currentOmpi <= 40 ? "down" : "neutral";
+      const brentDirection = changePercent > 1 ? "up" : changePercent < -1 ? "down" : "neutral";
+      const directionMatches = ompiDirection === brentDirection || ompiDirection === "neutral" || brentDirection === "neutral";
+
+      document.getElementById("validationOmpi").innerText = Number.isFinite(currentOmpi) ? currentOmpi.toFixed(1) + "/100" : "–";
+      document.getElementById("validationBrentChange").innerText = Number.isFinite(changePercent) ? (changePercent > 0 ? "+" : "") + changePercent.toFixed(1) + "%" : "–";
+      document.getElementById("validationDirection").innerText = directionMatches ? "Igen" : "Nem";
+      document.getElementById("validationStatus").innerText = directionMatches ? "Konzisztens" : "Eltérés";
+
+      const availablePairs = Math.min(ompiRecords.length, outlookRecords.length);
+      document.getElementById("validationWarning").innerText = availablePairs >= 30
+        ? `Előzetes validáció ${availablePairs} közös napi megfigyelés alapján. Ez még nem teljes statisztikai visszateszt.`
+        : `Az OMPI- és Brent Outlook-history jelenleg ${availablePairs} közös napi megfigyelést tesz lehetővé. Az eredmény előzetes iránykonzisztencia, nem teljes visszateszt.`;
+
+      if (!parsed.length) return;
+      const chartRows = parsed.slice(-60);
+      if (validationChartInstance) validationChartInstance.destroy();
+      validationChartInstance = new Chart(document.getElementById("validationChart"), {
+        type: "line",
+        data: { labels: chartRows.map(row => row.date ?? ""), datasets: [{ label: "Brent", data: chartRows.map(row => row.value), borderColor: "#258bc7", backgroundColor: "rgba(37,139,199,.10)", borderWidth: 2, pointRadius: 0, tension: .25, fill: true }] },
+        options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { x: { grid: { display: false }, ticks: { display: false } }, y: { title: { display: true, text: "USD/hordó", color: "#526879", font: { size: 10, weight: "bold" } }, ticks: { color: "#526879", font: { size: 9, weight: "bold" } }, grid: { color: "rgba(148,163,184,.18)" } } } }
+      });
+    }
+
+    function renderMarketAssessment(globalBalance, brentOutlook, inventory, interpretation) {
+      const series = globalBalance?.series || [];
+      const row2025 = series.find(item => Number(item.year) === 2025);
+      const row2026 = series.find(item => Number(item.year) === 2026);
+      const coverage = calculateCoverage(globalBalance);
+      if (!row2025 || !row2026 || !coverage) return;
+
+      const deficit = Math.max(0, Number(row2025.demand_mbd) - Number(row2026.supply_mbd));
+      const ompi = firstFinite(brentOutlook?.signals?.ompi_score, latestOmpiScore) ?? 50;
+      const current = firstFinite(brentOutlook?.current?.price_usd);
+      const lower = firstFinite(brentOutlook?.outlook?.lower_price_usd);
+      const upper = firstFinite(brentOutlook?.outlook?.upper_price_usd);
+      const direction = directionHu(brentOutlook?.outlook?.direction);
+      const confidence = confidenceHu(brentOutlook?.outlook?.confidence);
+      const inventoryScore = firstFinite(inventory?.inventory_stress_score);
+
+      const fundamental = deficit >= 1.5 ? "feszes" : deficit >= .5 ? "enyhén feszes" : "közel kiegyensúlyozott";
+      const text = `A globális olajpiac ${fundamental} fundamentális szerkezetet mutat. ` +
+        `A 2025-ös kereslet változatlan 2026-os kínálat mellett ${deficit.toFixed(2)} mb/d stresszhiányt okozna, ` +
+        `amelynek ${coverage.ratio.toFixed(1)}%-át fedezné a gyorsan mozgósítható OPEC+ puffer. ` +
+        `Az OMPI ${ompi.toFixed(1)}/100 ponton áll, ezért a fundamentális árnyomás emelkedett. ` +
+        (Number.isFinite(current) && Number.isFinite(lower) && Number.isFinite(upper)
+          ? `A Brent aktuális ára ${current.toFixed(2)} USD, a 30 napos forgatókönyvsáv ${lower.toFixed(0)}–${upper.toFixed(0)} USD. `
+          : "") +
+        `A rövid távú irány ${direction.toLowerCase()}, ${confidence.toLowerCase()} megbízhatósággal. ` +
+        (Number.isFinite(inventoryScore) ? `A készletstressz ${inventoryScore.toFixed(1)}/100 pont. ` : "") +
+        `Az értékelés szabályalapú összegzés, nem önálló előrejelzési modell.`;
+
+      document.getElementById("marketAssessmentText").innerText = text;
+      document.getElementById("assessmentFundamental").innerText = deficit >= 1.5 ? "Stresszhiány" : deficit >= .5 ? "Feszes egyenleg" : "Közel egyensúly";
+      document.getElementById("assessmentConstraint").innerText = coverage.ratio < 25 ? "Alacsony OPEC+ puffer" : coverage.ratio < 75 ? "Korlátozott puffer" : "Érdemi puffer";
+      document.getElementById("assessmentOutcome").innerText = `${direction} · ${confidence}`;
+    }
+
+    function extractChokepointRisk(chokepoints) {
+      const rows = chokepoints?.chokepoints ?? chokepoints ?? [];
+      if (!Array.isArray(rows) || !rows.length) return 50;
+      const scores = rows.map(item => firstFinite(item.risk_score, item.score, item.risk_index)).filter(Number.isFinite);
+      if (scores.length) return Math.max(...scores.map(value => clamp(value, 0, 100)));
+      const levels = rows.map(item => String(item.risk_level ?? item.status ?? "").toUpperCase());
+      return levels.includes("CRITICAL") ? 90 : levels.includes("HIGH") ? 75 : levels.includes("MEDIUM") ? 50 : 25;
+    }
+
+    function renderRiskOutlook(globalBalance, ompiData, brentOutlook, inventory, interpretation, chokepoints, chinaVolume) {
+      const series = globalBalance?.series || [];
+      const row2025 = series.find(item => Number(item.year) === 2025);
+      const row2026 = series.find(item => Number(item.year) === 2026);
+      const coverage = calculateCoverage(globalBalance);
+      if (!row2025 || !row2026 || !coverage) return;
+
+      const deficit = Math.max(0, Number(row2025.demand_mbd) - Number(row2026.supply_mbd));
+      const volatilityBand = firstFinite(brentOutlook?.signals?.volatility_band_pct) ?? 5;
+      const inventoryScore = firstFinite(inventory?.inventory_stress_score) ?? 50;
+      const geopolitical = firstFinite(interpretation?.combined_risk_score) ?? 50;
+      const chokepoint = extractChokepointRisk(chokepoints);
+      const chinaMomentum = firstFinite(
+        chinaVolume?.momentum_score,
+        chinaVolume?.china_import_momentum_score,
+        chinaVolume?.summary?.momentum_score,
+        extractOmpiComponents(ompiData).find(item => item.key.includes("china"))?.score
+      ) ?? 50;
+
+      const risks = [
+        { name: "Fundamentális feszesség", en: "Fundamental tightness", score: scoreSupplyDemand(deficit) },
+        { name: "OPEC+ pufferhiány", en: "OPEC+ buffer constraint", score: scoreOpecCoverage(coverage.ratio) },
+        { name: "Készletstressz", en: "Inventory stress", score: clamp(inventoryScore, 0, 100) },
+        { name: "Geopolitikai kockázat", en: "Geopolitical risk", score: clamp(geopolitical, 0, 100) },
+        { name: "Tengeri szűkületek", en: "Maritime chokepoints", score: clamp(chokepoint, 0, 100) },
+        { name: "Brent-volatilitás", en: "Brent volatility", score: clamp((volatilityBand - 5) / 13 * 100, 0, 100) },
+        { name: "Kínai importbizonytalanság", en: "China import uncertainty", score: clamp(100 - Math.abs(chinaMomentum - 50), 0, 100) }
+      ];
+
+      // The overall status is a transparent weighted dashboard summary, not a new official index.
+      const weights = [0.20, 0.15, 0.15, 0.20, 0.15, 0.10, 0.05];
+      const overall = risks.reduce((sum, risk, index) => sum + risk.score * weights[index], 0);
+      const overallLevel = riskLevelFromScore(overall);
+
+      document.getElementById("riskOutlookList").innerHTML = risks.map(risk => {
+        const level = riskLevelFromScore(risk.score);
+        return `<div class="risk-row"><div class="risk-name">${risk.name}<span>${risk.en} · ${risk.score.toFixed(1)}/100</span></div><div class="risk-badge ${level.className}">${level.label}</div></div>`;
+      }).join("");
+
+      document.getElementById("overallRiskScore").innerText = overall.toFixed(0);
+      const status = document.getElementById("overallRiskStatus");
+      status.innerText = overallLevel.label;
+      status.className = "overall-risk-status " + overallLevel.className;
+      document.getElementById("overallRiskText").innerText =
+        overall >= 65
+          ? "A 30 napos kockázati környezet magas. A fundamentális feszesség, a korlátozott puffer és a volatilitás együttesen érzékennyé teszi a piacot az új sokkokra."
+          : overall >= 40
+          ? "A kockázati környezet emelkedett. A piac rendelkezik részleges alkalmazkodási képességgel, de több kockázati csatorna egyszerre aktív."
+          : "A fő kockázati tényezők jelenleg mérsékeltek. A mutató külön kockázati dimenziók átlátható dashboard-összegzése.";
+    }
+
     async function init() {
       const [
         usa,
@@ -4577,7 +4885,12 @@
         inventory,
         balance,
         globalBalance,
-        countryFlows
+        countryFlows,
+        ompiData,
+        ompiHistory,
+        brentOutlook,
+        brentOutlookHistory,
+        chinaCrudeImportVolume
       ] = await Promise.all([
         loadJsonSafe(URLS.usa, { series: [] }),
         loadJsonSafe(URLS.china, { series: [] }),
@@ -4593,7 +4906,12 @@
         loadJsonSafe(URLS.balance, {}),
 
         loadJsonSafe(URLS.globalBalance, { series: [] }),
-        loadJsonSafe(URLS.countryFlows, { years: {} })
+        loadJsonSafe(URLS.countryFlows, { years: {} }),
+        loadJsonSafe(URLS.ompi, {}),
+        loadJsonSafe(URLS.ompiHistory, { history: [] }),
+        loadJsonSafe(URLS.brentOutlook, {}),
+        loadJsonSafe(URLS.brentOutlookHistory, { history: [] }),
+        loadJsonSafe(URLS.chinaCrudeImportVolume, {})
       ]);
 
       const usaSeries = usa.series || [];
@@ -4620,7 +4938,7 @@
       const level = interpretation.risk_level || "MEDIUM";
 
       document.getElementById("dateBox").innerHTML =
-        (interpretation.generated_at ||
+        (brentOutlook.generated_at || ompiData.generated_at || interpretation.generated_at ||
           new Date().toISOString().slice(0, 10)) +
         "<br>UTC";
 
@@ -4658,7 +4976,7 @@
         " mb/d";
 
       document.getElementById("brentPrice").innerText =
-        fmtPrice(chinaLatest.brent_usd_per_barrel);
+        fmtPrice(firstFinite(brentOutlook?.current?.price_usd, chinaLatest.brent_usd_per_barrel));
 
       document.getElementById("wtiPrice").innerText =
         fmtPrice(usaLatest.wti_usd_per_barrel);
@@ -4697,21 +5015,19 @@
       renderInventoryDrawModule(globalBalance);
       renderScenarioMatrix(globalBalance);
       renderOpecCoverage(globalBalance);
-      renderOmpi(
-        globalBalance,
-        countryFlows,
-        interpretation,
-        rows
-      );
-      renderPriceOutlook(globalBalance, rows);
-      renderMarketAssessment(globalBalance, rows);
+      renderOmpi(ompiData);
+      renderPriceOutlook(brentOutlook);
+      renderMarketAssessment(globalBalance, brentOutlook, inventory, interpretation);
       renderRiskOutlook(
         globalBalance,
-        countryFlows,
+        ompiData,
+        brentOutlook,
+        inventory,
         interpretation,
-        rows
+        chokepoints,
+        chinaCrudeImportVolume
       );
-      renderHistoricalValidation(rows);
+      renderHistoricalValidation(rows, ompiHistory, brentOutlookHistory, brentOutlook);
       renderCountryModule(countryFlows);
 
       document.getElementById("forecastBrent").innerText =
@@ -5169,5 +5485,3 @@
 
 </body>
 </html>
-
-
