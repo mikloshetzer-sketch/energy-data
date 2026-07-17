@@ -2,15 +2,9 @@
 """
 Rövid távú olajpiaci nyomásindikátor.
 
-A script megőrzi a korábbi supply_demand_balance.json fő mezőit, hogy a
-jelenlegi dashboard ne törjön el. Az új módszertan ugyanakkor már külön
-kezeli:
-  1. a valódi EIA STEO fizikai mérleget;
-  2. a rövid távú piaci nyomást.
-
-A régi supply_pressure, demand_pressure és balance_score mezők
-kompatibilitási mezők. A következő HTML-frissítés után az új mezőket kell
-elsődlegesen megjeleníteni.
+A fő fundamentális bemenet mindig a global_oil_balance.json "current"
+blokkja. A script csak visszafelé kompatibilitási tartalékként olvassa a
+régi "latest" vagy felső szintű mezőket.
 """
 
 from __future__ import annotations
@@ -35,7 +29,6 @@ OUTPUT_FILE = ROOT / "docs" / "data" / "supply_demand_balance.json"
 def load_json(path: Path, default: Any) -> Any:
     if not path.exists():
         return default
-
     try:
         with path.open("r", encoding="utf-8-sig") as file:
             return json.load(file)
@@ -46,11 +39,9 @@ def load_json(path: Path, default: Any) -> Any:
 def save_json_atomic(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
-
     with temporary.open("w", encoding="utf-8") as file:
         json.dump(payload, file, ensure_ascii=False, indent=2)
         file.write("\n")
-
     temporary.replace(path)
 
 
@@ -61,10 +52,8 @@ def clamp(value: float, low: float = 0.0, high: float = 100.0) -> float:
 def to_float(value: Any) -> float | None:
     if value is None:
         return None
-
     if isinstance(value, (int, float)):
         return float(value)
-
     if isinstance(value, str):
         cleaned = (
             value.replace("USD/hordó", "")
@@ -79,7 +68,6 @@ def to_float(value: Any) -> float | None:
             return float(cleaned)
         except ValueError:
             return None
-
     return None
 
 
@@ -108,14 +96,13 @@ def get_brent(row: dict[str, Any]) -> float | None:
 def latest_and_lookback(
     rows: list[dict[str, Any]],
     value_getter,
-    target_days: int = 30,
+    target_observations: int = 30,
 ) -> tuple[float | None, float | None, int]:
     valid: list[tuple[str, float]] = []
 
     for row in rows:
         value = value_getter(row)
         period = get_period(row)
-
         if value is not None and period:
             valid.append((period, value))
 
@@ -123,19 +110,11 @@ def latest_and_lookback(
         return None, None, 0
 
     valid.sort(key=lambda item: item[0])
-    latest_period, latest_value = valid[-1]
+    latest_value = valid[-1][1]
+    lookback = min(target_observations, len(valid) - 1)
+    old_value = valid[-1 - lookback][1]
 
-    older = valid[0]
-    for item in valid:
-        if item[0] <= latest_period:
-            older = item
-        if len(valid) > target_days and item == valid[-1 - target_days]:
-            older = item
-
-    if len(valid) > target_days:
-        older = valid[-1 - target_days]
-
-    return latest_value, older[1], min(target_days, len(valid) - 1)
+    return latest_value, old_value, lookback
 
 
 def latest_china_change(china: dict[str, Any]) -> tuple[float, int]:
@@ -160,11 +139,7 @@ def latest_china_change(china: dict[str, Any]) -> tuple[float, int]:
 
 
 def get_inventory_score(inventory: dict[str, Any]) -> float:
-    for key in (
-        "inventory_stress_score",
-        "score",
-        "stress_score",
-    ):
+    for key in ("inventory_stress_score", "score", "stress_score"):
         value = to_float(inventory.get(key))
         if value is not None:
             return clamp(value)
@@ -197,9 +172,8 @@ def latest_brent_change(
     rows = market.get("rows", [])
     if isinstance(rows, list) and rows:
         latest, old, lookback = latest_and_lookback(rows, get_brent, 30)
-        change = pct_change(old, latest)
         if latest is not None:
-            return change, lookback
+            return pct_change(old, latest), lookback
 
     current = to_float(
         live_market.get("prices", {}).get(
@@ -211,10 +185,6 @@ def latest_brent_change(
 
 
 def fundamental_pressure(balance_mbd: float) -> float:
-    """
-    A -2.0 ... +2.0 mb/d tartományt 100 ... 0 pontra fordítja.
-    Negatív fizikai mérleg = magasabb felfelé mutató piaci nyomás.
-    """
     return clamp(50.0 - balance_mbd * 25.0)
 
 
@@ -256,33 +226,48 @@ def main() -> None:
     interpretation = load_json(INTERPRETATION_FILE, {})
     global_balance = load_json(GLOBAL_BALANCE_FILE, {})
 
-    latest_fundamental = global_balance.get("latest", {})
+    current_fundamental = (
+        global_balance.get("current")
+        or global_balance.get("latest")
+        or {}
+    )
+
     balance_mbd = to_float(
-        latest_fundamental.get(
+        current_fundamental.get(
             "balance_mbd",
-            global_balance.get("balance_mbd"),
+            global_balance.get("current_balance_mbd",
+                global_balance.get("balance_mbd")
+            ),
         )
     )
 
     if balance_mbd is None:
         raise RuntimeError(
-            "Hiányzik a docs/data/global_oil_balance.json fizikai mérlege."
+            "Hiányzik a docs/data/global_oil_balance.json jelenlegi "
+            "fizikai mérlege."
         )
 
     supply_mbd = to_float(
-        latest_fundamental.get(
+        current_fundamental.get(
             "global_supply_mbd",
-            global_balance.get("global_supply_mbd"),
+            global_balance.get(
+                "current_global_supply_mbd",
+                global_balance.get("global_supply_mbd"),
+            ),
         )
     )
     demand_mbd = to_float(
-        latest_fundamental.get(
+        current_fundamental.get(
             "global_demand_mbd",
-            global_balance.get("global_demand_mbd"),
+            global_balance.get(
+                "current_global_demand_mbd",
+                global_balance.get("global_demand_mbd"),
+            ),
         )
     )
     balance_period = (
-        latest_fundamental.get("period")
+        current_fundamental.get("period")
+        or global_balance.get("current_period")
         or global_balance.get("period")
     )
 
@@ -315,8 +300,6 @@ def main() -> None:
     tightness_code, tightness_hu, tightness_en = classify_pressure(pressure_score)
     direction_code, direction_hu, direction_en = direction_from_score(pressure_score)
 
-    # Kompatibilitási mezők a jelenlegi HTML-hez.
-    # Nem önálló fizikai demand/supply becslések.
     demand_pressure = round(
         clamp(
             50.0
@@ -350,16 +333,16 @@ def main() -> None:
     ).replace("+00:00", "Z")
 
     summary_hu = (
-        f"Az EIA STEO fizikai mérlege {balance_period} időszakra "
-        f"{balance_mbd:+.2f} millió hordó/nap. A fundamentális mérleg, "
-        f"a készlethelyzet és a rövid távú piaci jelek alapján az "
-        f"összesített nyomás {pressure_score:.1f}/100, ami "
-        f"{tightness_hu.lower()} állapotot jelez."
+        f"Az EIA STEO jelenlegi, {balance_period} időszakra vonatkozó "
+        f"fizikai mérlege {balance_mbd:+.2f} millió hordó/nap. A "
+        f"fundamentális mérleg, a készlethelyzet és a rövid távú piaci "
+        f"jelek alapján az összesített nyomás {pressure_score:.1f}/100, "
+        f"ami {tightness_hu.lower()} állapotot jelez."
     )
 
     summary_en = (
-        f"The EIA STEO physical balance for {balance_period} is "
-        f"{balance_mbd:+.2f} million barrels per day. Based on the "
+        f"The EIA STEO current-period physical balance for {balance_period} "
+        f"is {balance_mbd:+.2f} million barrels per day. Based on the "
         f"fundamental balance, inventories and short-term signals, the "
         f"combined pressure score is {pressure_score:.1f}/100, indicating "
         f"a {tightness_en.lower()} condition."
@@ -370,10 +353,11 @@ def main() -> None:
         "meta": {
             "generated_at": generated_at,
             "generator": "scripts/generate_supply_demand_balance.py",
-            "generator_version": "2.0.0",
+            "generator_version": "2.1.0",
             "indicator_type": "short_term_oil_market_pressure",
-            "method_version": "pressure_v2_with_eia_physical_balance",
+            "method_version": "pressure_v3_current_eia_balance",
             "compatibility_fields_retained": True,
+            "fundamental_period_source": "global_oil_balance.current",
         },
         "indicator_type": "short_term_oil_market_pressure",
         "short_term_pressure_score": pressure_score,
@@ -385,23 +369,32 @@ def main() -> None:
         "market_direction_en": direction_en,
         "fundamental_balance": {
             "period": balance_period,
+            "period_type": current_fundamental.get("period_type"),
             "global_supply_mbd": supply_mbd,
             "global_demand_mbd": demand_mbd,
             "balance_mbd": round(balance_mbd, 3),
-            "balance_state": global_balance.get("balance_state"),
+            "balance_state": current_fundamental.get(
+                "balance_state",
+                global_balance.get("current_balance_state"),
+            ),
             "source": "EIA STEO",
+        },
+        "forecast_reference": {
+            "forecast_until": global_balance.get("forecast_until"),
+            "next_month_forecast": global_balance.get("next_month_forecast"),
+            "latest_forecast": global_balance.get("latest_forecast"),
         },
         "component_scores": components,
         "component_weights": weights,
         "drivers": {
             "physical_balance_mbd": round(balance_mbd, 3),
+            "physical_balance_period": balance_period,
             "brent_change_pct": round(brent_change, 2),
             "china_import_volume_change_pct": round(china_change, 2),
             "inventory_stress_score": round(inventory_score, 1),
             "combined_risk_score": round(risk_score, 1),
             "brent_lookback_observations": brent_lookback,
             "china_lookback_observations": china_lookback,
-            # Régi kulcs kompatibilitás miatt marad, de nincs használva.
             "usa_production_value_change_pct": None,
         },
         "data_freshness": {
@@ -411,21 +404,22 @@ def main() -> None:
         },
         "method_hu": (
             "A rövid távú olajpiaci nyomásindikátor elsődleges alapja az "
-            "EIA STEO globális fizikai kínálat–keresleti mérlege. Ezt az "
-            "amerikai készlethelyzet, a kínai importmomentum, a Brent "
-            "ármomentum és a geopolitikai ellátási kockázat egészíti ki. "
-            "A mutató nem árfolyam-előrejelzés."
+            "EIA STEO aktuális naptári hónapra vonatkozó globális fizikai "
+            "kínálat–keresleti mérlege. Ezt az amerikai készlethelyzet, a "
+            "kínai importmomentum, a Brent ármomentum és a geopolitikai "
+            "ellátási kockázat egészíti ki. A mutató nem árfolyam-előrejelzés."
         ),
         "method_en": (
             "The short-term oil-market pressure indicator is anchored in "
-            "the EIA STEO global physical supply-demand balance. It is "
-            "supplemented by U.S. inventory conditions, China import "
-            "momentum, Brent price momentum and geopolitical supply risk. "
-            "The indicator is not a price forecast."
+            "the EIA STEO global physical supply-demand balance for the "
+            "current calendar month. It is supplemented by U.S. inventory "
+            "conditions, China import momentum, Brent price momentum and "
+            "geopolitical supply risk. The indicator is not a price forecast."
         ),
         "summary_hu": summary_hu,
         "summary_en": summary_en,
-        # Régi mezők: a jelenlegi index.html kompatibilitása miatt.
+
+        # Régi mezők a jelenlegi index.html kompatibilitásához.
         "lookback_days": max(brent_lookback, china_lookback),
         "supply_pressure": supply_pressure,
         "supply_level": supply_level,
@@ -442,7 +436,8 @@ def main() -> None:
 
     print(f"{OUTPUT_FILE.relative_to(ROOT)} frissítve.")
     print(
-        f"Physical balance: {balance_mbd:+.3f} mb/d | "
+        f"Current physical balance: {balance_period} | "
+        f"{balance_mbd:+.3f} mb/d | "
         f"Pressure: {pressure_score:.1f}/100 | "
         f"State: {tightness_code}"
     )
@@ -450,4 +445,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
