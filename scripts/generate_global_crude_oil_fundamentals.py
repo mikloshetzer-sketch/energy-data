@@ -64,6 +64,7 @@ REQUIRED_COLUMNS = {
 MONTHS_TO_KEEP = 120
 ANNUAL_START_YEAR = 2023
 MIN_COVERAGE_RATIO = 0.85
+COVERAGE_LOOKBACK_MONTHS = 24
 USER_AGENT = "Energy-Intelligence-Dashboard/1.0"
 
 
@@ -505,8 +506,9 @@ def build_monthly(
     if not monthly:
         raise RuntimeError("No usable monthly JODI crude-oil rows were produced.")
 
+    reference_window = monthly[-COVERAGE_LOOKBACK_MONTHS:]
     references = {
-        field: max(row["coverage"][field] for row in monthly)
+        field: max(row["coverage"][field] for row in reference_window)
         for field in (
             "production_reporters",
             "refinery_intake_reporters",
@@ -783,10 +785,12 @@ def build_output(
             "latest_headline_period": latest["period"],
             "monthly_period_count": len(monthly),
             "selected_valid_source_rows": selected_count,
-            "full_series_reference_reporter_counts": references,
+            "recent_reference_reporter_counts": references,
             "headline_minimum_coverage_ratio": MIN_COVERAGE_RATIO,
+            "coverage_reference_lookback_months": COVERAGE_LOOKBACK_MONTHS,
             "coverage_reference_method": (
-                "maximum reporter count observed across the full monthly series"
+                "maximum reporter count observed during the latest "
+                f"{COVERAGE_LOOKBACK_MONTHS} source months"
             ),
         },
         "methodology_hu": (
@@ -797,9 +801,9 @@ def build_output(
             "származik. A havi készletváltozás napi átlagra történő "
             "átszámítása a hónap naptári napjainak számával történik. A "
             "termelés és a finomítói betáplálás különbségét azonos "
-            "országkörön számítja. A lefedettségi arányok nevezője az egész "
-            "idősorban megfigyelt legmagasabb jelentői létszám, ezért az "
-            "arányok 0 és 1 között maradnak. Az Adjusted Crude Balance a "
+            "országkörön számítja. A lefedettségi arányok nevezője a legutóbbi 24 forráshónapban "
+            "megfigyelt legmagasabb jelentői létszám. Az arányok legfeljebb "
+            "1 értéket vehetnek fel. Az Adjusted Crude Balance a "
             "common-country gap és a napi átlagra átszámított STOCKCH "
             "mechanikus különbsége."
         ),
@@ -810,9 +814,8 @@ def build_output(
             "KBBL and closing stocks use CLOSTLV + KBBL. Monthly stock change "
             "is converted to an average daily rate using calendar days in the "
             "month. Production and refinery intake are compared across the "
-            "same country set. Coverage ratios use the maximum reporter "
-            "count observed across the full time series, keeping ratios "
-            "between zero and one. Adjusted Crude Balance is the mechanical "
+            "same country set. Coverage ratios use the maximum reporter count observed during the "
+            "latest 24 source months and are capped at one. Adjusted Crude Balance is the mechanical "
             "difference between the common-country gap and STOCKCH converted "
             "to an average daily rate."
         ),
