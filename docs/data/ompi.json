@@ -1,0 +1,158 @@
+{
+  "generated_at": "2026-07-17T11:40:02Z",
+  "index": "OMPI",
+  "index_name": "Oil Market Pressure Index",
+  "method_version": "ompi_v2_fundamental_2026_07",
+  "score": 73.1,
+  "level": "HIGH",
+  "level_hu": "Magas",
+  "level_en": "High",
+  "direction": "BULLISH",
+  "direction_hu": "Felfelé mutató",
+  "direction_en": "Bullish",
+  "description_hu": "Erős felfelé irányuló árnyomás és korlátozott piaci alkalmazkodóképesség.",
+  "description_en": "Strong upward price pressure and limited market adjustment capacity.",
+  "weights": {
+    "physical_balance": 0.35,
+    "inventory_stress": 0.2,
+    "opec_buffer": 0.15,
+    "geopolitical_risk": 0.15,
+    "china_import_momentum": 0.1,
+    "chokepoint_risk": 0.05
+  },
+  "components": {
+    "physical_balance": {
+      "score": 100.0,
+      "weight": 0.35,
+      "weight_pct": 35.0,
+      "contribution": 35.0,
+      "period": "2026-07",
+      "global_supply_mbd": 99.232,
+      "global_demand_mbd": 101.574,
+      "source_generated_at": null,
+      "data_quality": "AVAILABLE",
+      "balance_mbd": -2.342,
+      "method": "clamp_50_minus_balance_times_25"
+    },
+    "inventory_stress": {
+      "score": 50.0,
+      "weight": 0.2,
+      "weight_pct": 20.0,
+      "contribution": 10.0,
+      "data_quality": "FALLBACK_PREVIOUS",
+      "level": "MEDIUM",
+      "level_hu": "Közepes",
+      "level_en": "Medium",
+      "source_generated_at": "2026-07-17",
+      "summary_hu": "Az EIA készletadatok friss lekérése nem sikerült, ezért a modell óvatos, közepes készletoldali nyomást alkalmaz.",
+      "summary_en": "Fresh EIA inventory data could not be fetched, so the model applies a cautious medium inventory-side pressure estimate."
+    },
+    "opec_buffer": {
+      "score": 94.2,
+      "weight": 0.15,
+      "weight_pct": 15.0,
+      "contribution": 14.13,
+      "effective_spare_capacity_mbd": 0.17,
+      "physical_deficit_mbd": 2.342,
+      "coverage_ratio": 0.0726,
+      "coverage_pct": 7.3,
+      "method": "effective_spare_capacity_divided_by_deficit",
+      "parameter_status": "TEMPORARY_STATIC_INPUT",
+      "data_quality": "PARTIAL_STATIC_PARAMETER"
+    },
+    "geopolitical_risk": {
+      "score": 48.5,
+      "weight": 0.15,
+      "weight_pct": 15.0,
+      "contribution": 7.27,
+      "source_field": "risk_components.middle_east_conflict_impact",
+      "data_quality": "AVAILABLE",
+      "source_generated_at": "2026-07-17",
+      "excluded_fields": [
+        "combined_risk_score",
+        "risk_components.chokepoint_risk",
+        "risk_components.brent_price_change_risk",
+        "risk_components.inventory_stress",
+        "risk_components.brent_volatility_risk"
+      ]
+    },
+    "china_import_momentum": {
+      "score": 50.0,
+      "weight": 0.1,
+      "weight_pct": 10.0,
+      "contribution": 5.0,
+      "data_quality": "INSUFFICIENT_HISTORY_FALLBACK",
+      "observation_count": 0,
+      "method": "neutral_fallback"
+    },
+    "chokepoint_risk": {
+      "score": 34.4,
+      "weight": 0.05,
+      "weight_pct": 5.0,
+      "contribution": 1.72,
+      "data_quality": "AVAILABLE",
+      "source_generated_at": "2026-07-17",
+      "method": "weighted_route_scores",
+      "route_weights": {
+        "hormuz": 0.4,
+        "bab_el_mandeb": 0.25,
+        "suez": 0.2,
+        "malacca": 0.15
+      },
+      "available_route_weight": 1.0,
+      "routes": [
+        {
+          "id": "bab_el_mandeb",
+          "score": 41.5,
+          "level": "MEDIUM"
+        },
+        {
+          "id": "hormuz",
+          "score": 39.9,
+          "level": "MEDIUM"
+        },
+        {
+          "id": "suez",
+          "score": 28.6,
+          "level": "LOW"
+        },
+        {
+          "id": "malacca",
+          "score": 15.8,
+          "level": "LOW"
+        }
+      ],
+      "model_overlap": "PARTIAL",
+      "temporary_reduced_weight": true
+    }
+  },
+  "data_quality": {
+    "status": "LIMITED",
+    "confidence_score": 84.5,
+    "coverage_pct": 90.0,
+    "missing_components": [
+      "china_import_momentum"
+    ],
+    "fallback_components": [
+      "inventory_stress"
+    ],
+    "partial_components": [
+      "opec_buffer"
+    ]
+  },
+  "market_confirmation": {
+    "included_in_ompi": false,
+    "brent_momentum": null,
+    "status": "NOT_CALCULATED",
+    "note_hu": "A Brent-momentum nem része az OMPI pontszámának. Később külön piaci megerősítési rétegként használható.",
+    "note_en": "Brent momentum is not part of the OMPI score. It may later be used as a separate market-confirmation layer."
+  },
+  "model_notes": {
+    "chokepoint_weight_temporary": true,
+    "chokepoint_overlap_warning": true,
+    "opec_input_temporary_static": true,
+    "brent_excluded_from_score": true
+  },
+  "summary_hu": "Az OMPI értéke 73.1/100, ami magas olajpiaci nyomást jelez. A fizikai mérleg -2.34 millió hordó/nap. A legnagyobb súlyozott hozzájárulást jelenleg a fizikai kínálat–keresleti mérleg adja. Az adatbizalmi státusz: LIMITED (84.5/100).",
+  "summary_en": "The OMPI stands at 73.1/100, indicating high oil-market pressure. The physical balance is -2.34 million barrels per day. The largest weighted contribution currently comes from the physical supply-demand balance. Data-confidence status: LIMITED (84.5/100)."
+}
