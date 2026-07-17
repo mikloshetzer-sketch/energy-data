@@ -1885,62 +1885,75 @@
     <section class="section-card blue-top">
       <div class="section-head">
         <h2 class="section-title">
-          Globális folyékonyüzemanyag-kínálat és -kereslet
-          <span>Global liquid fuels supply, demand and market balance</span>
+          Globális nyersolajtermelés és finomítói felhasználás
+          <span>Global crude oil production, refinery intake and crude balance proxy</span>
         </h2>
 
         <div class="section-note">
-          Az EIA petroleum and other liquid fuels kategóriája. A 2026-os értékek előrejelzések; a piaci egyenleg a kínálat és a kereslet különbsége.
+          JODI CRUDEOIL adatok. A termelés a kínálati oldalt, a finomítói nyersolaj-betáplálás a keresleti oldal közvetlen ipari proxyját mutatja. Ez nem teljes globális kínálat–keresleti mérleg.
         </div>
       </div>
 
       <div class="fundamentals-layout">
         <div class="chart-panel">
-          <h3>Globális kínálat és kereslet <span>Annual average · million barrels per day</span></h3>
+          <h3>
+            Nyersolajtermelés és finomítói betáplálás
+            <span>Annual average · million barrels per day</span>
+          </h3>
           <div class="chart-wrap large">
-            <canvas id="globalBalanceChart"></canvas>
+            <canvas id="crudeFundamentalsChart"></canvas>
           </div>
         </div>
 
         <div class="fundamentals-balance-panel">
-          <h3>Piaci egyenleg <span>Supply minus demand · positive = surplus, negative = deficit</span></h3>
+          <h3>
+            Nyersolaj-egyenleg proxy
+            <span>Production minus refinery intake · common reporting countries</span>
+          </h3>
           <div class="balance-chart-wrap">
-            <canvas id="globalNetBalanceChart"></canvas>
+            <canvas id="crudeGapChart"></canvas>
           </div>
         </div>
       </div>
 
       <div class="fundamentals-kpis">
         <div class="fundamentals-kpi">
-          <div class="fundamentals-kpi-label">2026 kínálat változása</div>
-          <div class="fundamentals-kpi-value" id="fundamentalsSupplyChange">–</div>
-          <div class="fundamentals-kpi-sub">2026 vs. 2025 · mb/d</div>
+          <div class="fundamentals-kpi-label" id="crudeProductionChangeLabel">Termelés éves változása</div>
+          <div class="fundamentals-kpi-value" id="crudeProductionChange">–</div>
+          <div class="fundamentals-kpi-sub" id="crudeProductionChangeSub">legfrissebb teljes év vs. előző év</div>
         </div>
 
         <div class="fundamentals-kpi demand">
-          <div class="fundamentals-kpi-label">2026 kereslet változása</div>
-          <div class="fundamentals-kpi-value" id="fundamentalsDemandChange">–</div>
-          <div class="fundamentals-kpi-sub">2026 vs. 2025 · mb/d</div>
+          <div class="fundamentals-kpi-label" id="crudeIntakeChangeLabel">Finomítói betáplálás változása</div>
+          <div class="fundamentals-kpi-value" id="crudeIntakeChange">–</div>
+          <div class="fundamentals-kpi-sub" id="crudeIntakeChangeSub">legfrissebb teljes év vs. előző év</div>
         </div>
 
         <div class="fundamentals-kpi deficit">
-          <div class="fundamentals-kpi-label">2026 piaci egyenleg</div>
-          <div class="fundamentals-kpi-value" id="fundamentalsBalance2026">–</div>
-          <div class="fundamentals-kpi-sub" id="fundamentalsBalanceStatus">Kínálat mínusz kereslet</div>
+          <div class="fundamentals-kpi-label" id="crudeGapLabel">Legfrissebb éves egyenleg proxy</div>
+          <div class="fundamentals-kpi-value" id="crudeGapLatest">–</div>
+          <div class="fundamentals-kpi-sub" id="crudeGapStatus">Termelés mínusz finomítói betáplálás</div>
         </div>
 
         <div class="fundamentals-kpi message">
           <div class="fundamentals-kpi-label">Fundamentális üzenet</div>
-          <div class="fundamentals-kpi-value" id="fundamentalsMessage">–</div>
-          <div class="fundamentals-kpi-sub" id="fundamentalsMessageSub">Betöltés...</div>
+          <div class="fundamentals-kpi-value" id="crudeMessage">–</div>
+          <div class="fundamentals-kpi-sub" id="crudeMessageSub">Betöltés...</div>
         </div>
       </div>
 
-      <div id="globalBalanceSummary" class="summary-box">
-        <strong>Piaci egyenleg</strong>
+      <div id="crudeFundamentalsSummary" class="summary-box">
+        <strong>Nyersolajpiaci fundamentumok / Crude oil fundamentals</strong>
         <ul>
           <li>Betöltés...</li>
         </ul>
+      </div>
+
+      <div class="methodology">
+        <strong>Értelmezési korlát / Interpretation limit</strong>
+        <p id="crudeMethodology">
+          A JODI modul nem közöl közvetlen globális nyersolaj-keresleti sort. A finomítói betáplálás a feldolgozási kereslet közelítő mutatója. A common-country gap csak az azonos hónapban mindkét adatot jelentő országok körére vonatkozik.
+        </p>
       </div>
     </section>
 
@@ -2659,6 +2672,69 @@
       </div>
     </section>
 
+    <section class="section-card blue-top">
+      <div class="section-head">
+        <h2 class="section-title">
+          Kiegészítő folyékonyüzemanyag-kínálati és -keresleti kitekintés
+          <span>Supplementary global liquid fuels supply, demand and market balance</span>
+        </h2>
+
+        <div class="section-note">
+          Az EIA petroleum and other liquid fuels kategóriája. Kiegészítő, szélesebb termékköri kitekintés; a 2026-os értékek előrejelzések.
+        </div>
+      </div>
+
+      <div class="fundamentals-layout">
+        <div class="chart-panel">
+          <h3>Globális kínálat és kereslet <span>Annual average · million barrels per day</span></h3>
+          <div class="chart-wrap large">
+            <canvas id="globalBalanceChart"></canvas>
+          </div>
+        </div>
+
+        <div class="fundamentals-balance-panel">
+          <h3>Piaci egyenleg <span>Supply minus demand · positive = surplus, negative = deficit</span></h3>
+          <div class="balance-chart-wrap">
+            <canvas id="globalNetBalanceChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="fundamentals-kpis">
+        <div class="fundamentals-kpi">
+          <div class="fundamentals-kpi-label">2026 kínálat változása</div>
+          <div class="fundamentals-kpi-value" id="fundamentalsSupplyChange">–</div>
+          <div class="fundamentals-kpi-sub">2026 vs. 2025 · mb/d</div>
+        </div>
+
+        <div class="fundamentals-kpi demand">
+          <div class="fundamentals-kpi-label">2026 kereslet változása</div>
+          <div class="fundamentals-kpi-value" id="fundamentalsDemandChange">–</div>
+          <div class="fundamentals-kpi-sub">2026 vs. 2025 · mb/d</div>
+        </div>
+
+        <div class="fundamentals-kpi deficit">
+          <div class="fundamentals-kpi-label">2026 piaci egyenleg</div>
+          <div class="fundamentals-kpi-value" id="fundamentalsBalance2026">–</div>
+          <div class="fundamentals-kpi-sub" id="fundamentalsBalanceStatus">Kínálat mínusz kereslet</div>
+        </div>
+
+        <div class="fundamentals-kpi message">
+          <div class="fundamentals-kpi-label">Fundamentális üzenet</div>
+          <div class="fundamentals-kpi-value" id="fundamentalsMessage">–</div>
+          <div class="fundamentals-kpi-sub" id="fundamentalsMessageSub">Betöltés...</div>
+        </div>
+      </div>
+
+      <div id="globalBalanceSummary" class="summary-box">
+        <strong>Piaci egyenleg</strong>
+        <ul>
+          <li>Betöltés...</li>
+        </ul>
+      </div>
+    </section>
+
+
     <section class="section-card">
       <div class="section-head">
         <h2 class="section-title">
@@ -2905,6 +2981,7 @@
       balance: BASE + "docs/data/supply_demand_balance.json",
 
       globalBalance: BASE + "docs/data/global_oil_balance.json",
+      globalCrudeFundamentals: BASE + "docs/data/global_crude_oil_fundamentals.json",
       countryFlows: BASE + "docs/data/oil_country_flows.json",
 
       ompi: BASE + "docs/data/ompi.json",
@@ -2928,6 +3005,8 @@
     let inventoryDrawChartInstance = null;
     let globalBalanceChartInstance = null;
     let globalNetBalanceChartInstance = null;
+    let crudeFundamentalsChartInstance = null;
+    let crudeGapChartInstance = null;
     let activeInventoryDays = 30;
     let validationChartInstance = null;
     let latestOmpiScore = null;
@@ -3326,6 +3405,281 @@
         payload?.summary?.latest_score
       );
     }
+
+    function renderGlobalCrudeFundamentals(payload) {
+      const annual = Array.isArray(payload?.annual_series)
+        ? payload.annual_series
+            .filter(item =>
+              Number(item?.headline_usable_months) > 0 &&
+              Number.isFinite(Number(item?.average_reported_production_mbd)) &&
+              Number.isFinite(Number(item?.average_reported_refinery_intake_mbd)) &&
+              Number.isFinite(Number(item?.average_common_country_gap_mbd))
+            )
+            .map(item => ({
+              year: Number(item.year),
+              months: Number(item.headline_usable_months),
+              production: Number(item.average_reported_production_mbd),
+              intake: Number(item.average_reported_refinery_intake_mbd),
+              gap: Number(item.average_common_country_gap_mbd),
+              adjusted: Number.isFinite(Number(item.average_adjusted_crude_balance_mbd))
+                ? Number(item.average_adjusted_crude_balance_mbd)
+                : null
+            }))
+            .sort((a, b) => a.year - b.year)
+        : [];
+
+      const summary = document.getElementById("crudeFundamentalsSummary");
+
+      if (!annual.length) {
+        summary.innerHTML =
+          "<strong>Adathiba</strong><ul><li>A global_crude_oil_fundamentals.json nem tartalmaz megjeleníthető, megfelelő lefedettségű éves adatot.</li></ul>";
+        return;
+      }
+
+      if (crudeFundamentalsChartInstance) crudeFundamentalsChartInstance.destroy();
+      if (crudeGapChartInstance) crudeGapChartInstance.destroy();
+
+      crudeFundamentalsChartInstance = new Chart(
+        document.getElementById("crudeFundamentalsChart"),
+        {
+          type: "line",
+          data: {
+            labels: annual.map(item => String(item.year)),
+            datasets: [
+              {
+                label: "Nyersolajtermelés / Crude production",
+                data: annual.map(item => item.production),
+                borderColor: "#17648f",
+                backgroundColor: "rgba(37,139,199,.14)",
+                borderWidth: 3,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                tension: .22,
+                fill: false
+              },
+              {
+                label: "Finomítói betáplálás / Refinery intake",
+                data: annual.map(item => item.intake),
+                borderColor: "#d97706",
+                backgroundColor: "rgba(217,119,6,.14)",
+                borderWidth: 3,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                tension: .22,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+              legend: {
+                labels: {
+                  usePointStyle: true,
+                  padding: 20,
+                  font: { size: 11, weight: "bold" }
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: context =>
+                    context.dataset.label + ": " + Number(context.raw).toFixed(2) + " mb/d",
+                  afterBody: items => {
+                    const row = annual[items[0].dataIndex];
+                    return [
+                      "Common-country gap: " + fmtBalance(row.gap),
+                      "Használható hónapok / Usable months: " + row.months
+                    ];
+                  }
+                }
+              },
+              datalabels: {
+                display: true,
+                align: context => context.datasetIndex === 0 ? "top" : "bottom",
+                offset: 5,
+                color: context => context.datasetIndex === 0 ? "#17648f" : "#a65305",
+                font: { size: 10, weight: "bold" },
+                formatter: value => Number(value).toFixed(2)
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: "#27485d", font: { size: 12, weight: "bold" } }
+              },
+              y: {
+                beginAtZero: false,
+                suggestedMin: Math.floor(Math.min(...annual.flatMap(item => [item.production, item.intake])) - 2),
+                suggestedMax: Math.ceil(Math.max(...annual.flatMap(item => [item.production, item.intake])) + 2),
+                title: {
+                  display: true,
+                  text: "millió hordó/nap · million barrels per day",
+                  color: "#526879",
+                  font: { size: 11, weight: "bold" }
+                },
+                ticks: { color: "#526879", font: { size: 10, weight: "bold" } },
+                grid: { color: "rgba(148,163,184,.20)" }
+              }
+            }
+          }
+        }
+      );
+
+      crudeGapChartInstance = new Chart(
+        document.getElementById("crudeGapChart"),
+        {
+          type: "bar",
+          data: {
+            labels: annual.map(item => String(item.year)),
+            datasets: [{
+              label: "Common-country gap",
+              data: annual.map(item => item.gap),
+              backgroundColor: annual.map(item =>
+                item.gap < -0.05
+                  ? "rgba(200,60,50,.84)"
+                  : item.gap > 0.05
+                    ? "rgba(7,135,95,.82)"
+                    : "rgba(217,119,6,.78)"
+              ),
+              borderColor: annual.map(item =>
+                item.gap < -0.05 ? "#a62820" : item.gap > 0.05 ? "#087452" : "#965400"
+              ),
+              borderWidth: 1,
+              borderRadius: 7,
+              maxBarThickness: 58
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: context => "Egyenleg proxy: " + fmtBalance(Number(context.raw))
+                }
+              },
+              datalabels: {
+                display: true,
+                anchor: context => Number(context.raw) >= 0 ? "end" : "start",
+                align: context => Number(context.raw) >= 0 ? "end" : "start",
+                offset: 4,
+                color: context => Number(context.raw) < 0 ? "#a62820" : "#087452",
+                font: { size: 11, weight: "bold" },
+                formatter: value => (value > 0 ? "+" : "") + Number(value).toFixed(2)
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: "#27485d", font: { size: 11, weight: "bold" } }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "mb/d",
+                  color: "#526879",
+                  font: { size: 10, weight: "bold" }
+                },
+                ticks: { color: "#526879", font: { size: 10, weight: "bold" } },
+                grid: {
+                  color: context => context.tick.value === 0
+                    ? "rgba(17,47,67,.58)"
+                    : "rgba(148,163,184,.18)",
+                  lineWidth: context => context.tick.value === 0 ? 2 : 1
+                }
+              }
+            }
+          }
+        }
+      );
+
+      const latest = annual[annual.length - 1];
+      const previous = annual.length > 1 ? annual[annual.length - 2] : null;
+
+      const setSigned = (id, value) => {
+        const element = document.getElementById(id);
+        if (!element) return;
+        element.innerText = Number.isFinite(value)
+          ? (value > 0 ? "+" : "") + value.toFixed(2) + " mb/d"
+          : "–";
+        element.classList.remove("negative", "positive");
+        if (Number.isFinite(value) && value !== 0) {
+          element.classList.add(value < 0 ? "negative" : "positive");
+        }
+      };
+
+      const productionChange = previous ? latest.production - previous.production : null;
+      const intakeChange = previous ? latest.intake - previous.intake : null;
+
+      setSigned("crudeProductionChange", productionChange);
+      setSigned("crudeIntakeChange", intakeChange);
+      setSigned("crudeGapLatest", latest.gap);
+
+      if (previous) {
+        document.getElementById("crudeProductionChangeLabel").innerText =
+          latest.year + " termelés változása";
+        document.getElementById("crudeIntakeChangeLabel").innerText =
+          latest.year + " finomítói betáplálás változása";
+        document.getElementById("crudeProductionChangeSub").innerText =
+          latest.year + " vs. " + previous.year + " · mb/d";
+        document.getElementById("crudeIntakeChangeSub").innerText =
+          latest.year + " vs. " + previous.year + " · mb/d";
+      }
+
+      document.getElementById("crudeGapLabel").innerText =
+        latest.year + " éves egyenleg proxy";
+
+      document.getElementById("crudeGapStatus").innerText =
+        latest.gap < -0.05
+          ? "A finomítói betáplálás meghaladja a jelentett termelést"
+          : latest.gap > 0.05
+            ? "A jelentett termelés meghaladja a finomítói betáplálást"
+            : "Közel azonos termelési és finomítói volumen";
+
+      const tightening =
+        previous && latest.gap < previous.gap;
+
+      document.getElementById("crudeMessage").innerText =
+        latest.gap < -0.05
+          ? (tightening ? "Szűkülő" : "Feszes")
+          : latest.gap > 0.05
+            ? "Lazább"
+            : "Semleges";
+
+      document.getElementById("crudeMessageSub").innerText =
+        latest.gap < -0.05
+          ? "A közös országkör finomítói felhasználása meghaladja a jelentett kitermelést; az import és a készletoldal szerepe meghatározó."
+          : latest.gap > 0.05
+            ? "A közös országkörben a jelentett kitermelés meghaladja a finomítói felhasználást."
+            : "A közös országkör termelési és finomítói volumene közel egyensúlyban van.";
+
+      summary.innerHTML = `
+        <strong>Nyersolajpiaci éves helyzetkép / Annual crude oil fundamentals</strong>
+        <ul>
+          ${annual.map(item => `
+            <li>
+              ${item.year}: termelés ${item.production.toFixed(2)} mb/d ·
+              finomítói betáplálás ${item.intake.toFixed(2)} mb/d ·
+              common-country gap ${fmtBalance(item.gap)} ·
+              ${item.months} használható hónap
+            </li>
+          `).join("")}
+        </ul>
+      `;
+
+      const method = document.getElementById("crudeMethodology");
+      if (method && payload?.methodology_hu) {
+        method.innerText =
+          payload.methodology_hu +
+          " A finomítói betáplálás itt keresleti oldali ipari proxy, nem teljes végfelhasználói kereslet.";
+      }
+    }
+
 
     function renderGlobalBalance(globalBalance) {
       const series = globalBalance.series || [];
@@ -5215,6 +5569,7 @@
         inventory,
         balance,
         globalBalance,
+        globalCrudeFundamentals,
         countryFlows,
         ompiData,
         ompiHistory,
@@ -5236,6 +5591,7 @@
         loadJsonSafe(URLS.balance, {}),
 
         loadJsonSafe(URLS.globalBalance, { series: [] }),
+        loadJsonSafe(URLS.globalCrudeFundamentals, { annual_series: [] }),
         loadJsonSafe(URLS.countryFlows, { years: {} }),
         loadJsonSafe(URLS.ompi, {}),
         loadJsonSafe(URLS.ompiHistory, { history: [] }),
@@ -5342,6 +5698,7 @@
       renderChokepoints(chokepoints.chokepoints || []);
       renderProxyBalance(balance);
 
+      renderGlobalCrudeFundamentals(globalCrudeFundamentals);
       renderGlobalBalance(normalizedGlobalBalance);
       renderDemandRecoveryScenario(normalizedGlobalBalance);
       renderInventoryDrawModule(normalizedGlobalBalance);
