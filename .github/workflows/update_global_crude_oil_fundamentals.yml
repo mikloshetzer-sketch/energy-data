@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
   schedule:
     # Every Monday at 06:20 UTC.
-    # JODI data are monthly, so a weekly check is sufficient.
     - cron: "20 6 * * 1"
 
 permissions:
@@ -29,7 +28,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pip"
 
       - name: Show Python version
         run: python --version
@@ -41,9 +39,15 @@ jobs:
           python scripts/generate_global_crude_oil_fundamentals.py
 
       - name: Verify generated files exist
+        shell: bash
         run: |
           test -s docs/data/global_crude_oil_fundamentals.json
           test -s docs/data/jodi_crude_code_audit.json
+
+          echo "Generated files:"
+          ls -lh \
+            docs/data/global_crude_oil_fundamentals.json \
+            docs/data/jodi_crude_code_audit.json
 
       - name: Validate generated JSON
         run: |
@@ -76,21 +80,25 @@ jobs:
           print("Latest source period:", coverage.get("latest_source_period"))
           PY
 
+      - name: Stage generated files
+        shell: bash
+        run: |
+          git add \
+            docs/data/global_crude_oil_fundamentals.json \
+            docs/data/jodi_crude_code_audit.json
+
       - name: Check for data changes
         id: changes
         shell: bash
         run: |
-          if git diff --quiet -- \
-            docs/data/global_crude_oil_fundamentals.json \
-            docs/data/jodi_crude_code_audit.json; then
+          if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No JODI crude-oil data changes detected."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "JODI crude-oil data changes detected."
-            git diff --stat -- \
-              docs/data/global_crude_oil_fundamentals.json \
-              docs/data/jodi_crude_code_audit.json
+            git diff --cached --stat
+            git status --short
           fi
 
       - name: Commit and push updated data
@@ -98,11 +106,9 @@ jobs:
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add \
-            docs/data/global_crude_oil_fundamentals.json \
-            docs/data/jodi_crude_code_audit.json
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
           git commit -m "Update global crude oil fundamentals"
           git push
+
