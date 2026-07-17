@@ -1,0 +1,180 @@
+name: Update Brent Outlook
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    # Naponta 07:15 UTC-kor fut.
+    # Magyar idő szerint ez nyáron 09:15, télen 08:15.
+    # Az időpontot úgy érdemes beállítani, hogy az OMPI és a piaci adatok
+    # frissítése után fusson le.
+    - cron: "15 7 * * *"
+
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/generate_brent_outlook.py"
+      - "docs/data/ompi.json"
+      - "docs/data/live-market.json"
+      - "docs/data/market-history.json"
+      - "live-market.json"
+      - "market-history.json"
+      - ".github/workflows/update-brent-outlook.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-brent-outlook
+  cancel-in-progress: false
+
+jobs:
+  generate-brent-outlook:
+    name: Generate Brent Outlook
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Show input files
+        shell: bash
+        run: |
+          echo "Repository root:"
+          pwd
+
+          echo ""
+          echo "Available OMPI files:"
+          find . -maxdepth 4 -type f -name "ompi.json" -print || true
+
+          echo ""
+          echo "Available live-market files:"
+          find . -maxdepth 4 -type f -name "live-market.json" -print || true
+
+          echo ""
+          echo "Available market-history files:"
+          find . -maxdepth 4 -type f -name "market-history.json" -print || true
+
+      - name: Validate generator script
+        shell: bash
+        run: |
+          test -f scripts/generate_brent_outlook.py || {
+            echo "::error::Missing scripts/generate_brent_outlook.py"
+            exit 1
+          }
+
+          python -m py_compile scripts/generate_brent_outlook.py
+
+      - name: Generate Brent Outlook
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python scripts/generate_brent_outlook.py             --project-root "${GITHUB_WORKSPACE}"             --output "docs/data/brent-outlook.json"             --history-output "docs/data/brent-outlook-history.json"
+
+      - name: Validate generated JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          outlook_path = Path("docs/data/brent-outlook.json")
+          history_path = Path("docs/data/brent-outlook-history.json")
+
+          for path in (outlook_path, history_path):
+              if not path.exists():
+                  raise SystemExit(f"Missing generated file: {path}")
+
+              with path.open("r", encoding="utf-8") as handle:
+                  payload = json.load(handle)
+
+              if not payload:
+                  raise SystemExit(f"Generated JSON is empty: {path}")
+
+          with outlook_path.open("r", encoding="utf-8") as handle:
+              outlook = json.load(handle)
+
+          required_top_level = {
+              "generated_at",
+              "dataset",
+              "horizon_days",
+              "current",
+              "outlook",
+              "signals",
+              "quality",
+              "methodology",
+          }
+
+          missing = required_top_level - set(outlook)
+          if missing:
+              raise SystemExit(
+                  "Missing required Brent Outlook fields: "
+                  + ", ".join(sorted(missing))
+              )
+
+          if outlook.get("dataset") != "brent_outlook":
+              raise SystemExit("Unexpected dataset value in brent-outlook.json")
+
+          current_price = outlook["current"].get("price_usd")
+          lower_price = outlook["outlook"].get("lower_price_usd")
+          center_price = outlook["outlook"].get("center_price_usd")
+          upper_price = outlook["outlook"].get("upper_price_usd")
+
+          values = {
+              "current_price": current_price,
+              "lower_price": lower_price,
+              "center_price": center_price,
+              "upper_price": upper_price,
+          }
+
+          for name, value in values.items():
+              if not isinstance(value, (int, float)) or value <= 0:
+                  raise SystemExit(f"Invalid {name}: {value!r}")
+
+          if not lower_price <= center_price <= upper_price:
+              raise SystemExit(
+                  "Invalid outlook range: expected lower <= center <= upper"
+              )
+
+          print("Brent Outlook JSON validation passed.")
+          print(
+              f"Current: ${current_price:.2f} | "
+              f"Range: ${lower_price:.2f}–${upper_price:.2f} | "
+              f"Direction: {outlook['outlook'].get('direction')} | "
+              f"Confidence: {outlook['outlook'].get('confidence')}"
+          )
+          PY
+
+      - name: Commit generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add             docs/data/brent-outlook.json             docs/data/brent-outlook-history.json
+
+          if git diff --cached --quiet; then
+            echo "No Brent Outlook changes to commit."
+            exit 0
+          fi
+
+          git commit -m "data: update Brent Outlook"
+
+          # Kezeli azt az esetet is, ha közben más workflow írt a main ágra.
+          git pull --rebase origin main
+          git push origin HEAD:main
