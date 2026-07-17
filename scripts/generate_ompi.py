@@ -1,35 +1,23 @@
 #!/usr/bin/env python3
+
 """
-OMPI v2 – Oil Market Pressure Index
+Oil Market Pressure Index – OMPI v2
 
-Cél:
-- önálló, 0–100 közötti olajpiaci nyomásindex előállítása;
-- a fizikai piac, készletek, OPEC+ puffer, geopolitikai kockázat,
-  kínai importmomentum és szoroskockázat egyesítése;
-- a Brent ár kizárása az OMPI pontszámából a visszacsatolás elkerülésére.
-
-Bemenetek:
+Input files:
 - docs/data/global_oil_balance.json
 - docs/data/inventory_stress.json
 - docs/data/chokepoint_status.json
 - docs/data/market_interpretation.json
 - china-oil-import.json
 
-Kimenetek:
+Output files:
 - docs/data/ompi.json
 - docs/data/ompi-history.json
 
-OMPI v2 súlyok:
-- fizikai kínálat–keresleti mérleg: 35%
-- készlethelyzet: 20%
-- OPEC+ tényleges tartalékkapacitás: 15%
-- közel-keleti konfliktushatás: 15%
-- kínai importmomentum: 10%
-- szoroskockázat: 5%
-
-Megjegyzés:
-A chokepoint komponens súlya ideiglenesen 5%, mert a jelenlegi
-chokepoint modell részben átfed a geopolitikai kockázati modellel.
+Fontos:
+- A bemeneti JSON-fájlokat a script nem módosítja.
+- A Brent ára nem része az OMPI pontszámának.
+- A kínai komponens kizárólag az importvolumenből készül.
 """
 
 from __future__ import annotations
@@ -37,29 +25,28 @@ from __future__ import annotations
 import json
 import math
 import os
-import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from statistics import mean
-from typing import Any, Iterable
+from typing import Any
+
 
 ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = ROOT / "docs" / "data"
 
-GLOBAL_BALANCE_FILE = ROOT / "docs" / "data" / "global_oil_balance.json"
-INVENTORY_FILE = ROOT / "docs" / "data" / "inventory_stress.json"
-CHOKEPOINT_FILE = ROOT / "docs" / "data" / "chokepoint_status.json"
-MARKET_INTERPRETATION_FILE = ROOT / "docs" / "data" / "market_interpretation.json"
-CHINA_FILE = ROOT / "china-oil-import.json"
+BALANCE_PATH = DATA_DIR / "global_oil_balance.json"
+INVENTORY_PATH = DATA_DIR / "inventory_stress.json"
+CHOKEPOINT_PATH = DATA_DIR / "chokepoint_status.json"
+GEOPOLITICAL_PATH = DATA_DIR / "market_interpretation.json"
 
-OUTPUT_FILE = ROOT / "docs" / "data" / "ompi.json"
-HISTORY_FILE = ROOT / "docs" / "data" / "ompi-history.json"
+OMPI_PATH = DATA_DIR / "ompi.json"
+OMPI_HISTORY_PATH = DATA_DIR / "ompi-history.json"
 
-METHOD_VERSION = "ompi_v2_fundamental_2026_07"
-
-# Ideiglenes paraméter. Később külön OPEC-adatmodul váltsa ki.
-DEFAULT_OPEC_EFFECTIVE_SPARE_CAPACITY_MBD = float(
-    os.getenv("OPEC_EFFECTIVE_SPARE_CAPACITY_MBD", "0.17")
-)
+CHINA_CANDIDATE_PATHS = [
+    ROOT / "china-oil-import.json",
+    DATA_DIR / "china-oil-import.json",
+    DATA_DIR / "china_oil_import.json",
+    ROOT / "data" / "china-oil-import.json",
+]
 
 WEIGHTS = {
     "physical_balance": 0.35,
@@ -70,326 +57,376 @@ WEIGHTS = {
     "chokepoint_risk": 0.05,
 }
 
-CHOKEPOINT_WEIGHTS = {
+ROUTE_WEIGHTS = {
     "hormuz": 0.40,
     "bab_el_mandeb": 0.25,
     "suez": 0.20,
     "malacca": 0.15,
 }
 
-FRESH_QUALITY_VALUES = {
-    "OK",
-    "FRESH",
-    "CURRENT",
-    "AVAILABLE",
-    "VALID",
-    "LIVE",
-}
+METHOD_VERSION = "ompi_v2_fundamental_2026_07_china_volume"
 
-FALLBACK_QUALITY_VALUES = {
-    "FALLBACK",
-    "FALLBACK_PREVIOUS",
-    "PREVIOUS",
-    "STALE",
-    "PARTIAL_FALLBACK",
-}
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def utc_timestamp() -> str:
+    return utc_now().strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def today_utc() -> str:
+    return utc_now().strftime("%Y-%m-%d")
 
 
 def clamp(value: float, minimum: float = 0.0, maximum: float = 100.0) -> float:
     return max(minimum, min(maximum, value))
 
 
-def to_float(value: Any) -> float | None:
-    if value is None or isinstance(value, bool):
+def round_number(value: float | int | None, digits: int = 1) -> float | None:
+    if value is None:
         return None
+    return round(float(value), digits)
 
-    if isinstance(value, (int, float)):
-        number = float(value)
-        return number if math.isfinite(number) else None
+
+def is_number(value: Any) -> bool:
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(float(value))
+    )
+
+
+def safe_float(value: Any, default: float | None = None) -> float | None:
+    if is_number(value):
+        return float(value)
 
     if isinstance(value, str):
-        cleaned = (
-            value.strip()
-            .replace("\u00a0", "")
-            .replace(",", ".")
-            .replace("%", "")
-        )
-        if not cleaned:
-            return None
+        cleaned = value.strip().replace(",", ".")
         try:
-            number = float(cleaned)
-            return number if math.isfinite(number) else None
+            result = float(cleaned)
+            if math.isfinite(result):
+                return result
         except ValueError:
-            return None
+            pass
 
-    return None
+    return default
 
 
-def load_json(path: Path, default: Any = None, required: bool = False) -> Any:
+def load_json(path: Path, required: bool = True) -> dict[str, Any]:
     if not path.exists():
         if required:
-            raise FileNotFoundError(f"Hiányzó kötelező fájl: {path}")
-        return default
+            raise FileNotFoundError(f"Hiányzó bemeneti fájl: {path}")
+        return {}
 
     try:
         with path.open("r", encoding="utf-8") as handle:
-            return json.load(handle)
-    except (json.JSONDecodeError, OSError) as exc:
-        if required:
-            raise RuntimeError(f"Nem olvasható JSON: {path}: {exc}") from exc
-        return default
+            data = json.load(handle)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"Hibás JSON-fájl: {path}: {exc}") from exc
+
+    if not isinstance(data, dict):
+        raise RuntimeError(f"A JSON gyökérelem nem objektum: {path}")
+
+    return data
 
 
-def atomic_write_json(path: Path, payload: Any) -> None:
+def write_json(path: Path, data: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    with tempfile.NamedTemporaryFile(
-        mode="w",
-        encoding="utf-8",
-        dir=path.parent,
-        prefix=f".{path.name}.",
-        suffix=".tmp",
-        delete=False,
-    ) as handle:
-        json.dump(payload, handle, ensure_ascii=False, indent=2)
+    with path.open("w", encoding="utf-8") as handle:
+        json.dump(
+            data,
+            handle,
+            ensure_ascii=False,
+            indent=2,
+        )
         handle.write("\n")
-        temporary_path = Path(handle.name)
-
-    temporary_path.replace(path)
 
 
-def utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat(
-        timespec="seconds"
-    ).replace("+00:00", "Z")
+def first_number(data: dict[str, Any], keys: list[str]) -> float | None:
+    for key in keys:
+        value = safe_float(data.get(key))
+        if value is not None:
+            return value
+    return None
 
 
-def normalize_quality(value: Any, fallback: str = "UNKNOWN") -> str:
-    if value is None:
-        return fallback
-    text = str(value).strip().upper()
-    return text or fallback
+def first_text(data: dict[str, Any], keys: list[str]) -> str | None:
+    for key in keys:
+        value = data.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return None
 
 
-def classify_score(score: float) -> dict[str, str]:
-    if score < 25:
-        return {
-            "level": "LOW",
-            "label_hu": "Alacsony",
-            "label_en": "Low",
-            "direction": "BEARISH",
-            "direction_hu": "Lefelé mutató",
-            "direction_en": "Bearish",
-            "description_hu": (
-                "Laza vagy jól ellátott piac, alacsony felfelé irányuló árnyomással."
-            ),
-            "description_en": (
-                "A loose or well-supplied market with low upward price pressure."
-            ),
-        }
+def find_china_path() -> Path | None:
+    for path in CHINA_CANDIDATE_PATHS:
+        if path.exists():
+            return path
+    return None
 
-    if score < 45:
-        return {
-            "level": "MODERATE",
-            "label_hu": "Mérsékelt",
-            "label_en": "Moderate",
-            "direction": "BEARISH",
-            "direction_hu": "Enyhén lefelé mutató",
-            "direction_en": "Mildly bearish",
-            "description_hu": (
-                "Mérsékelt piaci nyomás, a kínálati oldal még kezelhető pufferekkel rendelkezik."
-            ),
-            "description_en": (
-                "Moderate market pressure, with still-manageable supply-side buffers."
-            ),
-        }
 
-    if score < 65:
-        return {
-            "level": "ELEVATED",
-            "label_hu": "Emelkedett",
-            "label_en": "Elevated",
-            "direction": "NEUTRAL",
-            "direction_hu": "Semleges",
-            "direction_en": "Neutral",
-            "description_hu": (
-                "Emelkedett sérülékenység, de még nincs egyértelműen szélsőséges piaci feszültség."
-            ),
-            "description_en": (
-                "Elevated vulnerability without clearly extreme market stress."
-            ),
-        }
+def extract_latest_balance_record(data: dict[str, Any]) -> dict[str, Any]:
+    candidates: list[dict[str, Any]] = []
 
-    if score < 80:
-        return {
-            "level": "HIGH",
-            "label_hu": "Magas",
-            "label_en": "High",
-            "direction": "BULLISH",
-            "direction_hu": "Felfelé mutató",
-            "direction_en": "Bullish",
-            "description_hu": (
-                "Erős felfelé irányuló árnyomás és korlátozott piaci alkalmazkodóképesség."
-            ),
-            "description_en": (
-                "Strong upward price pressure and limited market adjustment capacity."
-            ),
-        }
+    for key in (
+        "latest",
+        "latest_year_data",
+        "latest_period",
+        "summary",
+    ):
+        value = data.get(key)
+        if isinstance(value, dict):
+            candidates.append(value)
+
+    for key in (
+        "data",
+        "history",
+        "series",
+        "annual_data",
+        "monthly_data",
+        "records",
+    ):
+        value = data.get(key)
+        if isinstance(value, list):
+            candidates.extend(
+                row for row in value
+                if isinstance(row, dict)
+            )
+
+    candidates.append(data)
+
+    def record_period(record: dict[str, Any]) -> str:
+        for key in ("period", "date", "month", "year"):
+            value = record.get(key)
+            if value is not None:
+                return str(value)
+        return ""
+
+    candidates.sort(key=record_period)
+
+    for record in reversed(candidates):
+        balance = first_number(
+            record,
+            [
+                "balance_mbd",
+                "market_balance_mbd",
+                "latest_balance_mbd",
+                "balance",
+            ],
+        )
+
+        supply = first_number(
+            record,
+            [
+                "global_supply_mbd",
+                "supply_mbd",
+                "supply",
+            ],
+        )
+
+        demand = first_number(
+            record,
+            [
+                "global_demand_mbd",
+                "demand_mbd",
+                "demand",
+            ],
+        )
+
+        if balance is None and supply is not None and demand is not None:
+            balance = supply - demand
+
+        if balance is not None:
+            result = dict(record)
+            result["_balance_mbd"] = balance
+            result["_supply_mbd"] = supply
+            result["_demand_mbd"] = demand
+            return result
+
+    raise RuntimeError(
+        "Nem található felhasználható piaci mérleg "
+        "a global_oil_balance.json fájlban."
+    )
+
+
+def build_physical_balance(data: dict[str, Any]) -> dict[str, Any]:
+    record = extract_latest_balance_record(data)
+
+    balance_mbd = float(record["_balance_mbd"])
+    supply_mbd = record.get("_supply_mbd")
+    demand_mbd = record.get("_demand_mbd")
+
+    score = clamp(50.0 - balance_mbd * 25.0)
+
+    period = (
+        record.get("period")
+        or record.get("month")
+        or record.get("year")
+        or record.get("date")
+        or data.get("latest_year")
+        or today_utc()
+    )
+
+    weight = WEIGHTS["physical_balance"]
 
     return {
-        "level": "EXTREME",
-        "label_hu": "Rendkívüli",
-        "label_en": "Extreme",
-        "direction": "BULLISH",
-        "direction_hu": "Erősen felfelé mutató",
-        "direction_en": "Strongly bullish",
-        "description_hu": (
-            "Rendkívül feszes vagy sérülékeny piac, jelentős ellátási és árkockázattal."
+        "score": round(score, 1),
+        "weight": weight,
+        "weight_pct": weight * 100,
+        "contribution": round(score * weight, 2),
+        "period": str(period),
+        "global_supply_mbd": round_number(supply_mbd, 3),
+        "global_demand_mbd": round_number(demand_mbd, 3),
+        "source_generated_at": (
+            data.get("generated_at")
+            or data.get("updated_at")
         ),
-        "description_en": (
-            "An extremely tight or vulnerable market with substantial supply and price risk."
-        ),
+        "data_quality": "AVAILABLE",
+        "balance_mbd": round(balance_mbd, 3),
+        "method": "clamp_50_minus_balance_times_25",
     }
 
 
-def get_current_balance(global_balance: dict[str, Any]) -> tuple[float, dict[str, Any]]:
-    current = (
-        global_balance.get("current")
-        or global_balance.get("latest")
-        or global_balance
+def build_inventory_stress(data: dict[str, Any]) -> dict[str, Any]:
+    score = first_number(
+        data,
+        [
+            "inventory_stress_score",
+            "score",
+        ],
     )
 
-    if not isinstance(current, dict):
-        raise RuntimeError("A global_oil_balance.json jelenlegi blokkja érvénytelen.")
+    data_quality = first_text(
+        data,
+        [
+            "data_quality",
+            "quality",
+            "status",
+        ],
+    ) or "UNKNOWN"
 
-    balance = to_float(
-        current.get(
-            "balance_mbd",
-            global_balance.get(
-                "current_balance_mbd",
-                global_balance.get("balance_mbd"),
-            ),
-        )
-    )
-
-    if balance is None:
-        raise RuntimeError(
-            "Hiányzik a global_oil_balance.json fizikai balance_mbd értéke."
-        )
-
-    metadata = {
-        "period": (
-            current.get("period")
-            or global_balance.get("current_period")
-            or global_balance.get("period")
-        ),
-        "global_supply_mbd": to_float(
-            current.get(
-                "global_supply_mbd",
-                global_balance.get("global_supply_mbd"),
-            )
-        ),
-        "global_demand_mbd": to_float(
-            current.get(
-                "global_demand_mbd",
-                global_balance.get("global_demand_mbd"),
-            )
-        ),
-        "source_generated_at": global_balance.get("generated_at"),
-        "data_quality": normalize_quality(
-            global_balance.get("data_quality"), "AVAILABLE"
-        ),
-    }
-
-    return balance, metadata
-
-
-def physical_balance_score(balance_mbd: float) -> float:
-    # +2 mb/d többlet ≈ 0 pont; 0 mb/d = 50; -2 mb/d hiány ≈ 100.
-    return clamp(50.0 - balance_mbd * 25.0)
-
-
-def get_inventory_component(data: dict[str, Any]) -> tuple[float, dict[str, Any]]:
-    score = to_float(data.get("inventory_stress_score"))
     if score is None:
         score = 50.0
-        quality = "MISSING_FALLBACK"
-    else:
-        quality = normalize_quality(data.get("data_quality"), "AVAILABLE")
+        data_quality = "MISSING_NEUTRAL_FALLBACK"
 
-    return clamp(score), {
-        "data_quality": quality,
-        "level": data.get("inventory_stress_level"),
-        "level_hu": data.get("inventory_stress_level_hu"),
-        "level_en": data.get("inventory_stress_level_en"),
-        "source_generated_at": data.get("generated_at"),
+    score = clamp(score)
+    weight = WEIGHTS["inventory_stress"]
+
+    return {
+        "score": round(score, 1),
+        "weight": weight,
+        "weight_pct": weight * 100,
+        "contribution": round(score * weight, 2),
+        "data_quality": data_quality,
+        "level": data.get("inventory_stress_level") or data.get("level"),
+        "level_hu": (
+            data.get("inventory_stress_level_hu")
+            or data.get("level_hu")
+        ),
+        "level_en": (
+            data.get("inventory_stress_level_en")
+            or data.get("level_en")
+        ),
+        "source_generated_at": (
+            data.get("generated_at")
+            or data.get("updated_at")
+        ),
         "summary_hu": data.get("summary_hu"),
         "summary_en": data.get("summary_en"),
     }
 
 
-def opec_buffer_score(
-    balance_mbd: float,
-    effective_spare_capacity_mbd: float,
-) -> tuple[float, dict[str, Any]]:
-    """
-    Az OPEC-puffer csak fizikai hiány esetén válik szűk keresztmetszetté.
+def get_opec_spare_capacity() -> float:
+    raw_value = os.getenv(
+        "OPEC_EFFECTIVE_SPARE_CAPACITY_MBD",
+        "0.17",
+    )
 
-    Ha nincs hiány:
-      - a komponens alacsony nyomást ad;
-      - minél nagyobb a többlet, annál alacsonyabb a pontszám.
+    value = safe_float(raw_value, 0.17)
 
-    Ha van hiány:
-      - coverage_ratio = spare capacity / deficit;
-      - 100% vagy jobb lefedés -> alacsony pont;
-      - 0% lefedés -> 100 pont.
-    """
-    spare_capacity = max(0.0, effective_spare_capacity_mbd)
+    if value is None or value < 0:
+        return 0.17
 
-    if balance_mbd >= 0:
-        score = clamp(20.0 - min(balance_mbd, 2.0) * 5.0)
-        return score, {
-            "effective_spare_capacity_mbd": round(spare_capacity, 3),
-            "physical_deficit_mbd": 0.0,
-            "coverage_ratio": None,
-            "coverage_pct": None,
-            "method": "no_physical_deficit",
-            "parameter_status": "TEMPORARY_STATIC_INPUT",
-        }
+    return value
 
-    deficit = abs(balance_mbd)
-    coverage_ratio = spare_capacity / max(deficit, 0.01)
-    score = clamp(100.0 - min(coverage_ratio, 1.0) * 80.0)
 
-    return score, {
-        "effective_spare_capacity_mbd": round(spare_capacity, 3),
-        "physical_deficit_mbd": round(deficit, 3),
+def build_opec_buffer(balance_component: dict[str, Any]) -> dict[str, Any]:
+    balance_mbd = safe_float(
+        balance_component.get("balance_mbd"),
+        0.0,
+    ) or 0.0
+
+    deficit_mbd = max(0.0, -balance_mbd)
+    spare_capacity_mbd = get_opec_spare_capacity()
+
+    if deficit_mbd <= 0:
+        coverage_ratio = 1.0
+        score = 25.0
+        method = "no_physical_deficit_low_pressure"
+    else:
+        coverage_ratio = spare_capacity_mbd / deficit_mbd
+
+        # Ha az OPEC-puffer teljesen fedezi a hiányt, a nyomás alacsony.
+        # Ha csak kis részét fedezi, a nyomás magas.
+        score = clamp(100.0 - coverage_ratio * 80.0)
+        method = "effective_spare_capacity_divided_by_deficit"
+
+    weight = WEIGHTS["opec_buffer"]
+
+    return {
+        "score": round(score, 1),
+        "weight": weight,
+        "weight_pct": weight * 100,
+        "contribution": round(score * weight, 2),
+        "effective_spare_capacity_mbd": round(
+            spare_capacity_mbd,
+            3,
+        ),
+        "physical_deficit_mbd": round(deficit_mbd, 3),
         "coverage_ratio": round(coverage_ratio, 4),
-        "coverage_pct": round(coverage_ratio * 100.0, 1),
-        "method": "effective_spare_capacity_divided_by_deficit",
+        "coverage_pct": round(coverage_ratio * 100, 1),
+        "method": method,
         "parameter_status": "TEMPORARY_STATIC_INPUT",
+        "data_quality": "PARTIAL_STATIC_PARAMETER",
     }
 
 
-def get_geopolitical_component(
-    interpretation: dict[str, Any],
-) -> tuple[float, dict[str, Any]]:
-    risk_components = interpretation.get("risk_components", {})
-    if not isinstance(risk_components, dict):
-        risk_components = {}
+def build_geopolitical_risk(data: dict[str, Any]) -> dict[str, Any]:
+    risk_components = data.get("risk_components")
 
-    score = to_float(risk_components.get("middle_east_conflict_impact"))
+    score = None
+
+    if isinstance(risk_components, dict):
+        score = safe_float(
+            risk_components.get(
+                "middle_east_conflict_impact"
+            )
+        )
+
+    data_quality = "AVAILABLE"
 
     if score is None:
         score = 50.0
-        quality = "MISSING_FALLBACK"
-    else:
-        quality = "AVAILABLE"
+        data_quality = "MISSING_NEUTRAL_FALLBACK"
 
-    return clamp(score), {
-        "source_field": "risk_components.middle_east_conflict_impact",
-        "data_quality": quality,
-        "source_generated_at": interpretation.get("generated_at"),
+    score = clamp(score)
+    weight = WEIGHTS["geopolitical_risk"]
+
+    return {
+        "score": round(score, 1),
+        "weight": weight,
+        "weight_pct": weight * 100,
+        "contribution": round(score * weight, 2),
+        "source_field": (
+            "risk_components.middle_east_conflict_impact"
+        ),
+        "data_quality": data_quality,
+        "source_generated_at": (
+            data.get("generated_at")
+            or data.get("updated_at")
+        ),
         "excluded_fields": [
             "combined_risk_score",
             "risk_components.chokepoint_risk",
@@ -400,523 +437,670 @@ def get_geopolitical_component(
     }
 
 
-def get_chokepoint_component(
-    data: dict[str, Any],
-) -> tuple[float, dict[str, Any]]:
-    rows = data.get("chokepoints", [])
-    if not isinstance(rows, list):
-        rows = []
+def normalize_route_id(value: Any) -> str:
+    if not isinstance(value, str):
+        return ""
 
-    available: dict[str, float] = {}
-    details: list[dict[str, Any]] = []
+    return (
+        value.strip()
+        .lower()
+        .replace("-", "_")
+        .replace(" ", "_")
+        .replace("strait_of_", "")
+        .replace("bab_al_mandeb", "bab_el_mandeb")
+        .replace("malaka", "malacca")
+    )
 
-    for row in rows:
-        if not isinstance(row, dict):
+
+def extract_route_records(data: dict[str, Any]) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+
+    for key in (
+        "routes",
+        "chokepoints",
+        "route_status",
+        "route_scores",
+    ):
+        value = data.get(key)
+
+        if isinstance(value, list):
+            records.extend(
+                row for row in value
+                if isinstance(row, dict)
+            )
+
+        elif isinstance(value, dict):
+            for route_id, route_data in value.items():
+                if isinstance(route_data, dict):
+                    row = dict(route_data)
+                    row.setdefault("id", route_id)
+                else:
+                    row = {
+                        "id": route_id,
+                        "score": route_data,
+                    }
+                records.append(row)
+
+    for route_id in ROUTE_WEIGHTS:
+        direct = data.get(route_id)
+
+        if isinstance(direct, dict):
+            row = dict(direct)
+            row.setdefault("id", route_id)
+            records.append(row)
+        elif is_number(direct):
+            records.append({
+                "id": route_id,
+                "score": direct,
+            })
+
+    return records
+
+
+def build_chokepoint_risk(data: dict[str, Any]) -> dict[str, Any]:
+    raw_records = extract_route_records(data)
+
+    route_map: dict[str, dict[str, Any]] = {}
+
+    for row in raw_records:
+        route_id = normalize_route_id(
+            row.get("id")
+            or row.get("route")
+            or row.get("name")
+            or row.get("key")
+        )
+
+        if route_id not in ROUTE_WEIGHTS:
             continue
 
-        chokepoint_id = str(row.get("id", "")).strip()
-        score = to_float(row.get("score"))
+        score = first_number(
+            row,
+            [
+                "score",
+                "risk_score",
+                "route_score",
+                "value",
+            ],
+        )
 
-        if chokepoint_id and score is not None:
-            available[chokepoint_id] = clamp(score)
-            details.append(
-                {
-                    "id": chokepoint_id,
-                    "score": round(clamp(score), 1),
-                    "level": row.get("level"),
-                }
-            )
+        if score is None:
+            continue
+
+        route_map[route_id] = {
+            "id": route_id,
+            "score": clamp(score),
+            "level": (
+                row.get("level")
+                or row.get("risk_level")
+            ),
+        }
 
     weighted_sum = 0.0
     available_weight = 0.0
 
-    for chokepoint_id, weight in CHOKEPOINT_WEIGHTS.items():
-        if chokepoint_id in available:
-            weighted_sum += available[chokepoint_id] * weight
-            available_weight += weight
+    for route_id, route_weight in ROUTE_WEIGHTS.items():
+        route = route_map.get(route_id)
 
-    if available_weight <= 0:
-        score = 50.0
-        quality = "MISSING_FALLBACK"
+        if route is None:
+            continue
+
+        weighted_sum += route["score"] * route_weight
+        available_weight += route_weight
+
+    if available_weight > 0:
+        score = weighted_sum / available_weight
+        data_quality = "AVAILABLE"
     else:
-        score = clamp(weighted_sum / available_weight)
-        quality = "AVAILABLE"
+        score = 50.0
+        data_quality = "MISSING_NEUTRAL_FALLBACK"
 
-    return score, {
-        "data_quality": quality,
-        "source_generated_at": data.get("generated_at"),
+    weight = WEIGHTS["chokepoint_risk"]
+
+    ordered_routes = [
+        route_map[route_id]
+        for route_id in ROUTE_WEIGHTS
+        if route_id in route_map
+    ]
+
+    return {
+        "score": round(score, 1),
+        "weight": weight,
+        "weight_pct": weight * 100,
+        "contribution": round(score * weight, 2),
+        "data_quality": data_quality,
+        "source_generated_at": (
+            data.get("generated_at")
+            or data.get("updated_at")
+        ),
         "method": "weighted_route_scores",
-        "route_weights": CHOKEPOINT_WEIGHTS,
-        "available_route_weight": round(available_weight, 3),
-        "routes": details,
+        "route_weights": ROUTE_WEIGHTS,
+        "available_route_weight": round(
+            available_weight,
+            2,
+        ),
+        "routes": ordered_routes,
         "model_overlap": "PARTIAL",
         "temporary_reduced_weight": True,
     }
 
 
-def extract_china_rows(data: Any) -> list[dict[str, Any]]:
-    if isinstance(data, list):
-        return [item for item in data if isinstance(item, dict)]
+def extract_china_monthly_observations(
+    data: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """
+    A kínai importköltség-JSON módosítása nélkül olvassa ki:
 
-    if not isinstance(data, dict):
+    monthly_inputs[].month
+    monthly_inputs[].estimated_import_volume_mbd
+
+    A Brent-árat és az importköltséget nem használja.
+    """
+
+    rows = data.get("monthly_inputs")
+
+    if not isinstance(rows, list):
         return []
 
-    candidate_keys = (
-        "rows",
-        "data",
-        "series",
-        "history",
-        "observations",
-        "monthly",
-        "values",
-    )
+    observations: list[dict[str, Any]] = []
 
-    for key in candidate_keys:
-        value = data.get(key)
-        if isinstance(value, list):
-            rows = [item for item in value if isinstance(item, dict)]
-            if rows:
-                return rows
-
-    nested = data.get("china")
-    if isinstance(nested, dict):
-        return extract_china_rows(nested)
-
-    return []
-
-
-def extract_china_value(row: dict[str, Any]) -> float | None:
-    candidate_fields = (
-        "value",
-        "import_kbd",
-        "imports_kbd",
-        "crude_import_kbd",
-        "crude_oil_import_kbd",
-        "china_crude_import_kbd",
-        "daily_import_kbd",
-        "TOTIMPSB",
-    )
-
-    for field in candidate_fields:
-        value = to_float(row.get(field))
-        if value is not None:
-            return value
-
-    return None
-
-
-def extract_china_period(row: dict[str, Any]) -> str | None:
-    for field in ("period", "date", "month", "time", "TIME_PERIOD"):
-        value = row.get(field)
-        if value is not None:
-            text = str(value).strip()
-            if text:
-                return text
-    return None
-
-
-def mean_or_none(values: Iterable[float]) -> float | None:
-    clean = [float(value) for value in values if math.isfinite(float(value))]
-    return mean(clean) if clean else None
-
-
-def pct_change(old: float | None, new: float | None) -> float | None:
-    if old is None or new is None or old == 0:
-        return None
-    return ((new - old) / abs(old)) * 100.0
-
-
-def get_china_component(data: Any) -> tuple[float, dict[str, Any]]:
-    rows = extract_china_rows(data)
-
-    observations: list[tuple[str | None, float]] = []
     for row in rows:
-        value = extract_china_value(row)
-        if value is not None:
-            observations.append((extract_china_period(row), value))
+        if not isinstance(row, dict):
+            continue
 
-    if len(observations) < 3:
-        return 50.0, {
-            "data_quality": "INSUFFICIENT_HISTORY_FALLBACK",
-            "observation_count": len(observations),
-            "method": "neutral_fallback",
-        }
+        month = row.get("month")
+        volume = safe_float(
+            row.get("estimated_import_volume_mbd")
+        )
 
-    values = [value for _, value in observations]
-    latest_period = observations[-1][0]
-    latest_value = values[-1]
+        if not isinstance(month, str) or not month.strip():
+            continue
 
-    avg_3m = mean_or_none(values[-3:])
-    avg_12m = mean_or_none(values[-12:])
+        if volume is None or volume <= 0:
+            continue
 
-    previous_3m = mean_or_none(values[-15:-12]) if len(values) >= 15 else None
-    year_ago_value = values[-13] if len(values) >= 13 else None
+        observations.append({
+            "month": month.strip(),
+            "volume_mbd": float(volume),
+        })
 
-    short_vs_long_pct = pct_change(avg_12m, avg_3m)
-    three_month_yoy_pct = pct_change(previous_3m, avg_3m)
-    latest_yoy_pct = pct_change(year_ago_value, latest_value)
+    observations.sort(key=lambda item: item["month"])
 
-    available_signals: list[tuple[float, float]] = []
+    unique: dict[str, dict[str, Any]] = {}
 
-    if short_vs_long_pct is not None:
-        available_signals.append((short_vs_long_pct, 0.40))
-    if three_month_yoy_pct is not None:
-        available_signals.append((three_month_yoy_pct, 0.35))
-    if latest_yoy_pct is not None:
-        available_signals.append((latest_yoy_pct, 0.25))
+    for observation in observations:
+        unique[observation["month"]] = observation
 
-    if not available_signals:
-        return 50.0, {
-            "data_quality": "INSUFFICIENT_HISTORY_FALLBACK",
-            "observation_count": len(observations),
-            "latest_period": latest_period,
-            "latest_value_kbd": round(latest_value, 2),
-            "method": "neutral_fallback",
-        }
-
-    total_weight = sum(weight for _, weight in available_signals)
-    composite_change = sum(
-        signal * weight for signal, weight in available_signals
-    ) / total_weight
-
-    score = clamp(50.0 + composite_change * 3.0)
-
-    return score, {
-        "data_quality": (
-            "AVAILABLE"
-            if len(observations) >= 13
-            else "PARTIAL_HISTORY"
-        ),
-        "observation_count": len(observations),
-        "latest_period": latest_period,
-        "latest_value_kbd": round(latest_value, 2),
-        "average_3m_kbd": round(avg_3m, 2) if avg_3m is not None else None,
-        "average_12m_kbd": round(avg_12m, 2) if avg_12m is not None else None,
-        "short_vs_long_pct": (
-            round(short_vs_long_pct, 2)
-            if short_vs_long_pct is not None
-            else None
-        ),
-        "three_month_yoy_pct": (
-            round(three_month_yoy_pct, 2)
-            if three_month_yoy_pct is not None
-            else None
-        ),
-        "latest_yoy_pct": (
-            round(latest_yoy_pct, 2)
-            if latest_yoy_pct is not None
-            else None
-        ),
-        "composite_change_pct": round(composite_change, 2),
-        "method": (
-            "40%_3m_vs_12m_35%_3m_yoy_25%_latest_yoy_renormalized"
-        ),
-    }
+    return list(unique.values())
 
 
-def quality_weight(component_name: str, metadata: dict[str, Any]) -> float:
-    quality = normalize_quality(metadata.get("data_quality"), "UNKNOWN")
-
-    if quality in FRESH_QUALITY_VALUES:
-        return 1.0
-
-    if quality in FALLBACK_QUALITY_VALUES:
-        return 0.75
-
-    if "MISSING" in quality or "INSUFFICIENT" in quality:
-        return 0.40
-
-    if "PARTIAL" in quality:
-        return 0.70
-
-    if component_name == "opec_buffer":
-        # Az OPEC-adat jelenleg statikus paraméter, ezért nem teljes értékű friss adat.
-        return 0.65
-
-    return 0.60
-
-
-def build_component(
-    name: str,
-    score: float,
-    metadata: dict[str, Any],
+def build_china_import_momentum(
+    data: dict[str, Any],
+    source_path: Path | None,
 ) -> dict[str, Any]:
-    weight = WEIGHTS[name]
-    contribution = score * weight
+    observations = extract_china_monthly_observations(data)
+    observation_count = len(observations)
+    weight = WEIGHTS["china_import_momentum"]
+
+    if observation_count < 4:
+        score = 50.0
+
+        return {
+            "score": score,
+            "weight": weight,
+            "weight_pct": weight * 100,
+            "contribution": round(score * weight, 2),
+            "data_quality": "INSUFFICIENT_HISTORY_FALLBACK",
+            "observation_count": observation_count,
+            "method": "neutral_fallback",
+            "source_file": (
+                str(source_path.relative_to(ROOT))
+                if source_path is not None
+                else None
+            ),
+            "excluded_source_fields": [
+                "series[].brent_usd_per_barrel",
+                "series[].estimated_import_value_billion_usd",
+                "summary.latest.brent_usd_per_barrel",
+                "summary.latest.estimated_import_value_billion_usd",
+            ],
+        }
+
+    # Rövid idősor esetén az utolsó két hónapot hasonlítjuk
+    # az azt megelőző hónapok átlagához.
+    recent_rows = observations[-2:]
+    reference_rows = observations[:-2]
+
+    recent_average = sum(
+        row["volume_mbd"]
+        for row in recent_rows
+    ) / len(recent_rows)
+
+    reference_average = sum(
+        row["volume_mbd"]
+        for row in reference_rows
+    ) / len(reference_rows)
+
+    if reference_average <= 0:
+        change_pct = 0.0
+    else:
+        change_pct = (
+            (recent_average - reference_average)
+            / reference_average
+            * 100.0
+        )
+
+    # 50 pont a semleges helyzet.
+    # Például -20%-os importmomentum körülbelül 30 pontot ad.
+    score = clamp(50.0 + change_pct)
+
+    latest = observations[-1]
 
     return {
         "score": round(score, 1),
         "weight": weight,
-        "weight_pct": round(weight * 100.0, 1),
-        "contribution": round(contribution, 2),
-        **metadata,
+        "weight_pct": weight * 100,
+        "contribution": round(score * weight, 2),
+        "latest_month": latest["month"],
+        "latest_import_volume_mbd": round(
+            latest["volume_mbd"],
+            3,
+        ),
+        "recent_average_mbd": round(
+            recent_average,
+            3,
+        ),
+        "reference_average_mbd": round(
+            reference_average,
+            3,
+        ),
+        "short_term_change_pct": round(
+            change_pct,
+            1,
+        ),
+        "observation_count": observation_count,
+        "data_quality": "PARTIAL_SHORT_HISTORY",
+        "method": "latest_2m_average_vs_previous_months_average",
+        "source_file": (
+            str(source_path.relative_to(ROOT))
+            if source_path is not None
+            else None
+        ),
+        "source_fields": [
+            "monthly_inputs[].month",
+            "monthly_inputs[].estimated_import_volume_mbd",
+        ],
+        "excluded_source_fields": [
+            "series[].brent_usd_per_barrel",
+            "series[].estimated_import_value_billion_usd",
+            "summary.latest.brent_usd_per_barrel",
+            "summary.latest.estimated_import_value_billion_usd",
+        ],
     }
 
 
-def build_quality_summary(
+def classify_score(score: float) -> dict[str, str]:
+    if score >= 80:
+        return {
+            "level": "VERY_HIGH",
+            "level_hu": "Nagyon magas",
+            "level_en": "Very high",
+            "direction": "STRONGLY_BULLISH",
+            "direction_hu": "Erősen felfelé mutató",
+            "direction_en": "Strongly bullish",
+            "description_hu": (
+                "Rendkívül erős felfelé irányuló árnyomás "
+                "és nagyon korlátozott piaci alkalmazkodóképesség."
+            ),
+            "description_en": (
+                "Exceptionally strong upward price pressure "
+                "and very limited market adjustment capacity."
+            ),
+        }
+
+    if score >= 65:
+        return {
+            "level": "HIGH",
+            "level_hu": "Magas",
+            "level_en": "High",
+            "direction": "BULLISH",
+            "direction_hu": "Felfelé mutató",
+            "direction_en": "Bullish",
+            "description_hu": (
+                "Erős felfelé irányuló árnyomás és "
+                "korlátozott piaci alkalmazkodóképesség."
+            ),
+            "description_en": (
+                "Strong upward price pressure and "
+                "limited market adjustment capacity."
+            ),
+        }
+
+    if score >= 45:
+        return {
+            "level": "MEDIUM",
+            "level_hu": "Közepes",
+            "level_en": "Medium",
+            "direction": "NEUTRAL",
+            "direction_hu": "Semleges",
+            "direction_en": "Neutral",
+            "description_hu": (
+                "Kiegyensúlyozott, de érzékeny olajpiaci helyzet."
+            ),
+            "description_en": (
+                "Balanced but sensitive oil-market conditions."
+            ),
+        }
+
+    if score >= 30:
+        return {
+            "level": "LOW",
+            "level_hu": "Alacsony",
+            "level_en": "Low",
+            "direction": "BEARISH",
+            "direction_hu": "Lefelé mutató",
+            "direction_en": "Bearish",
+            "description_hu": (
+                "Mérsékelt lefelé irányuló árnyomás és "
+                "kedvezőbb piaci alkalmazkodóképesség."
+            ),
+            "description_en": (
+                "Moderate downward price pressure and "
+                "improved market adjustment capacity."
+            ),
+        }
+
+    return {
+        "level": "VERY_LOW",
+        "level_hu": "Nagyon alacsony",
+        "level_en": "Very low",
+        "direction": "STRONGLY_BEARISH",
+        "direction_hu": "Erősen lefelé mutató",
+        "direction_en": "Strongly bearish",
+        "description_hu": (
+            "Erős lefelé irányuló árnyomás és "
+            "jelentős piaci tartalék."
+        ),
+        "description_en": (
+            "Strong downward price pressure and "
+            "substantial market buffer capacity."
+        ),
+    }
+
+
+def calculate_data_quality(
     components: dict[str, dict[str, Any]],
 ) -> dict[str, Any]:
-    weighted_quality = 0.0
-    missing: list[str] = []
-    fallback: list[str] = []
-    partial: list[str] = []
+    missing_components: list[str] = []
+    fallback_components: list[str] = []
+    partial_components: list[str] = []
+
+    confidence_penalty = 0.0
+    covered_weight = 0.0
 
     for name, component in components.items():
-        q_weight = quality_weight(name, component)
-        weighted_quality += WEIGHTS[name] * q_weight
+        quality = str(
+            component.get("data_quality", "UNKNOWN")
+        ).upper()
 
-        quality = normalize_quality(component.get("data_quality"), "UNKNOWN")
+        weight = safe_float(
+            component.get("weight"),
+            0.0,
+        ) or 0.0
 
-        if "MISSING" in quality or "INSUFFICIENT" in quality:
-            missing.append(name)
-        elif quality in FALLBACK_QUALITY_VALUES:
-            fallback.append(name)
-        elif "PARTIAL" in quality or quality == "UNKNOWN":
-            partial.append(name)
+        if "MISSING" in quality:
+            missing_components.append(name)
+            confidence_penalty += weight * 100.0
+            continue
 
-        if component.get("parameter_status") == "TEMPORARY_STATIC_INPUT":
-            partial.append(name)
+        if "FALLBACK" in quality:
+            fallback_components.append(name)
+            confidence_penalty += weight * 50.0
+            covered_weight += weight
+            continue
 
-    confidence_score = round(clamp(weighted_quality * 100.0), 1)
+        if (
+            "PARTIAL" in quality
+            or "SHORT_HISTORY" in quality
+            or "STATIC" in quality
+        ):
+            partial_components.append(name)
+            confidence_penalty += weight * 25.0
+            covered_weight += weight
+            continue
 
-    if missing:
+        covered_weight += weight
+
+    coverage_pct = clamp(covered_weight * 100.0)
+    confidence_score = clamp(100.0 - confidence_penalty)
+
+    if missing_components:
         status = "LIMITED"
-    elif fallback or partial:
+    elif fallback_components or partial_components:
         status = "PARTIAL"
     else:
-        status = "HIGH"
+        status = "GOOD"
 
     return {
         "status": status,
-        "confidence_score": confidence_score,
-        "coverage_pct": round(
-            100.0
-            * sum(
-                WEIGHTS[name]
-                for name in components
-                if name not in missing
-            ),
-            1,
-        ),
-        "missing_components": sorted(set(missing)),
-        "fallback_components": sorted(set(fallback)),
-        "partial_components": sorted(set(partial)),
+        "confidence_score": round(confidence_score, 1),
+        "coverage_pct": round(coverage_pct, 1),
+        "missing_components": missing_components,
+        "fallback_components": fallback_components,
+        "partial_components": partial_components,
     }
 
 
-def build_summary(
+def build_summaries(
     score: float,
     classification: dict[str, str],
-    balance_mbd: float,
     components: dict[str, dict[str, Any]],
-    quality: dict[str, Any],
+    data_quality: dict[str, Any],
 ) -> tuple[str, str]:
-    strongest = max(
-        components.items(),
-        key=lambda item: item[1]["contribution"],
-    )[0]
+    balance = safe_float(
+        components["physical_balance"].get("balance_mbd"),
+        0.0,
+    ) or 0.0
 
-    labels_hu = {
+    largest_name, largest_component = max(
+        components.items(),
+        key=lambda item: safe_float(
+            item[1].get("contribution"),
+            0.0,
+        ) or 0.0,
+    )
+
+    component_names_hu = {
         "physical_balance": "fizikai kínálat–keresleti mérleg",
         "inventory_stress": "készlethelyzet",
-        "opec_buffer": "OPEC+ puffer",
+        "opec_buffer": "OPEC-puffer",
         "geopolitical_risk": "geopolitikai kockázat",
         "china_import_momentum": "kínai importmomentum",
-        "chokepoint_risk": "szoroskockázat",
+        "chokepoint_risk": "tengeri szoroskockázat",
     }
 
-    labels_en = {
+    component_names_en = {
         "physical_balance": "physical supply-demand balance",
-        "inventory_stress": "inventory position",
-        "opec_buffer": "OPEC+ buffer",
+        "inventory_stress": "inventory conditions",
+        "opec_buffer": "OPEC buffer",
         "geopolitical_risk": "geopolitical risk",
         "china_import_momentum": "Chinese import momentum",
-        "chokepoint_risk": "chokepoint risk",
+        "chokepoint_risk": "maritime chokepoint risk",
     }
 
     summary_hu = (
         f"Az OMPI értéke {score:.1f}/100, ami "
-        f"{classification['label_hu'].lower()} olajpiaci nyomást jelez. "
-        f"A fizikai mérleg {balance_mbd:+.2f} millió hordó/nap. "
+        f"{classification['level_hu'].lower()} olajpiaci nyomást jelez. "
+        f"A fizikai mérleg {balance:.2f} millió hordó/nap. "
         f"A legnagyobb súlyozott hozzájárulást jelenleg a "
-        f"{labels_hu[strongest]} adja. "
-        f"Az adatbizalmi státusz: {quality['status']} "
-        f"({quality['confidence_score']:.1f}/100)."
+        f"{component_names_hu[largest_name]} adja. "
+        f"Az adatbizalmi státusz: {data_quality['status']} "
+        f"({data_quality['confidence_score']:.1f}/100)."
     )
 
     summary_en = (
         f"The OMPI stands at {score:.1f}/100, indicating "
-        f"{classification['label_en'].lower()} oil-market pressure. "
-        f"The physical balance is {balance_mbd:+.2f} million barrels per day. "
+        f"{classification['level_en'].lower()} oil-market pressure. "
+        f"The physical balance is {balance:.2f} million barrels per day. "
         f"The largest weighted contribution currently comes from the "
-        f"{labels_en[strongest]}. "
-        f"Data-confidence status: {quality['status']} "
-        f"({quality['confidence_score']:.1f}/100)."
+        f"{component_names_en[largest_name]}. "
+        f"Data-confidence status: {data_quality['status']} "
+        f"({data_quality['confidence_score']:.1f}/100)."
     )
 
     return summary_hu, summary_en
 
 
-def update_history(current_payload: dict[str, Any]) -> None:
-    existing = load_json(HISTORY_FILE, default={})
+def load_history() -> list[dict[str, Any]]:
+    if not OMPI_HISTORY_PATH.exists():
+        return []
 
-    if isinstance(existing, list):
-        history = existing
-    elif isinstance(existing, dict):
-        history = existing.get("history", [])
-    else:
-        history = []
+    try:
+        with OMPI_HISTORY_PATH.open(
+            "r",
+            encoding="utf-8",
+        ) as handle:
+            data = json.load(handle)
+    except (json.JSONDecodeError, OSError):
+        return []
 
-    if not isinstance(history, list):
-        history = []
+    if isinstance(data, dict):
+        history = data.get("history")
+        if isinstance(history, list):
+            return [
+                row for row in history
+                if isinstance(row, dict)
+            ]
 
-    history_date = current_payload["generated_at"][:10]
+    if isinstance(data, list):
+        return [
+            row for row in data
+            if isinstance(row, dict)
+        ]
+
+    return []
+
+
+def update_history(ompi: dict[str, Any]) -> dict[str, Any]:
+    history = load_history()
 
     history_row = {
-        "date": history_date,
-        "generated_at": current_payload["generated_at"],
-        "score": current_payload["score"],
-        "level": current_payload["level"],
-        "direction": current_payload["direction"],
-        "confidence_score": current_payload["data_quality"]["confidence_score"],
+        "date": today_utc(),
+        "generated_at": ompi["generated_at"],
+        "score": ompi["score"],
+        "level": ompi["level"],
+        "direction": ompi["direction"],
+        "data_quality": ompi["data_quality"]["status"],
+        "confidence_score": (
+            ompi["data_quality"]["confidence_score"]
+        ),
         "components": {
-            key: value["score"]
-            for key, value in current_payload["components"].items()
+            name: {
+                "score": component.get("score"),
+                "contribution": component.get("contribution"),
+                "data_quality": component.get("data_quality"),
+            }
+            for name, component in ompi["components"].items()
         },
     }
 
-    replaced = False
-    for index, row in enumerate(history):
-        if isinstance(row, dict) and row.get("date") == history_date:
-            history[index] = history_row
-            replaced = True
-            break
+    history = [
+        row for row in history
+        if row.get("date") != history_row["date"]
+    ]
 
-    if not replaced:
-        history.append(history_row)
+    history.append(history_row)
+    history.sort(key=lambda row: str(row.get("date", "")))
 
-    history = sorted(
-        [row for row in history if isinstance(row, dict)],
-        key=lambda row: str(row.get("date", "")),
-    )[-1095:]
+    # Legfeljebb három évnyi napi rekord.
+    history = history[-1095:]
 
-    history_payload = {
+    return {
+        "generated_at": ompi["generated_at"],
         "index": "OMPI",
         "method_version": METHOD_VERSION,
-        "updated_at": current_payload["generated_at"],
         "history": history,
     }
-
-    atomic_write_json(HISTORY_FILE, history_payload)
 
 
 def validate_weights() -> None:
     total = sum(WEIGHTS.values())
-    if not math.isclose(total, 1.0, abs_tol=1e-9):
-        raise RuntimeError(f"Az OMPI-súlyok összege nem 1, hanem {total}.")
+
+    if abs(total - 1.0) > 0.000001:
+        raise RuntimeError(
+            f"Az OMPI-súlyok összege nem 1.0: {total}"
+        )
 
 
 def main() -> None:
     validate_weights()
 
-    global_balance = load_json(
-        GLOBAL_BALANCE_FILE,
-        default={},
-        required=True,
-    )
-    inventory = load_json(INVENTORY_FILE, default={})
-    chokepoints = load_json(CHOKEPOINT_FILE, default={})
-    interpretation = load_json(MARKET_INTERPRETATION_FILE, default={})
-    china = load_json(CHINA_FILE, default={})
+    balance_data = load_json(BALANCE_PATH)
+    inventory_data = load_json(INVENTORY_PATH)
+    chokepoint_data = load_json(CHOKEPOINT_PATH)
+    geopolitical_data = load_json(GEOPOLITICAL_PATH)
 
-    balance_mbd, balance_meta = get_current_balance(global_balance)
-    physical_score = physical_balance_score(balance_mbd)
+    china_path = find_china_path()
 
-    inventory_score, inventory_meta = get_inventory_component(inventory)
-    opec_score, opec_meta = opec_buffer_score(
-        balance_mbd,
-        DEFAULT_OPEC_EFFECTIVE_SPARE_CAPACITY_MBD,
+    if china_path is not None:
+        china_data = load_json(china_path)
+    else:
+        china_data = {}
+
+    physical_balance = build_physical_balance(
+        balance_data
     )
-    geopolitical_score, geopolitical_meta = get_geopolitical_component(
-        interpretation
-    )
-    china_score, china_meta = get_china_component(china)
-    chokepoint_score, chokepoint_meta = get_chokepoint_component(chokepoints)
 
     components = {
-        "physical_balance": build_component(
-            "physical_balance",
-            physical_score,
-            {
-                **balance_meta,
-                "balance_mbd": round(balance_mbd, 3),
-                "method": "clamp_50_minus_balance_times_25",
-            },
+        "physical_balance": physical_balance,
+        "inventory_stress": build_inventory_stress(
+            inventory_data
         ),
-        "inventory_stress": build_component(
-            "inventory_stress",
-            inventory_score,
-            inventory_meta,
+        "opec_buffer": build_opec_buffer(
+            physical_balance
         ),
-        "opec_buffer": build_component(
-            "opec_buffer",
-            opec_score,
-            {
-                **opec_meta,
-                "data_quality": "PARTIAL_STATIC_PARAMETER",
-            },
+        "geopolitical_risk": build_geopolitical_risk(
+            geopolitical_data
         ),
-        "geopolitical_risk": build_component(
-            "geopolitical_risk",
-            geopolitical_score,
-            geopolitical_meta,
+        "china_import_momentum": build_china_import_momentum(
+            china_data,
+            china_path,
         ),
-        "china_import_momentum": build_component(
-            "china_import_momentum",
-            china_score,
-            china_meta,
-        ),
-        "chokepoint_risk": build_component(
-            "chokepoint_risk",
-            chokepoint_score,
-            chokepoint_meta,
+        "chokepoint_risk": build_chokepoint_risk(
+            chokepoint_data
         ),
     }
 
     score = round(
-        sum(component["contribution"] for component in components.values()),
+        sum(
+            safe_float(
+                component.get("contribution"),
+                0.0,
+            ) or 0.0
+            for component in components.values()
+        ),
         1,
     )
 
     classification = classify_score(score)
-    quality = build_quality_summary(components)
-    summary_hu, summary_en = build_summary(
+    data_quality = calculate_data_quality(components)
+
+    summary_hu, summary_en = build_summaries(
         score,
         classification,
-        balance_mbd,
         components,
-        quality,
+        data_quality,
     )
 
-    generated_at = utc_now_iso()
-
-    payload = {
-        "generated_at": generated_at,
+    ompi = {
+        "generated_at": utc_timestamp(),
         "index": "OMPI",
         "index_name": "Oil Market Pressure Index",
         "method_version": METHOD_VERSION,
         "score": score,
-        "level": classification["level"],
-        "level_hu": classification["label_hu"],
-        "level_en": classification["label_en"],
-        "direction": classification["direction"],
-        "direction_hu": classification["direction_hu"],
-        "direction_en": classification["direction_en"],
-        "description_hu": classification["description_hu"],
-        "description_en": classification["description_en"],
+        **classification,
         "weights": WEIGHTS,
         "components": components,
-        "data_quality": quality,
+        "data_quality": data_quality,
         "market_confirmation": {
             "included_in_ompi": False,
             "brent_momentum": None,
@@ -927,7 +1111,8 @@ def main() -> None:
             ),
             "note_en": (
                 "Brent momentum is not part of the OMPI score. "
-                "It may later be used as a separate market-confirmation layer."
+                "It may later be used as a separate "
+                "market-confirmation layer."
             ),
         },
         "model_notes": {
@@ -935,21 +1120,50 @@ def main() -> None:
             "chokepoint_overlap_warning": True,
             "opec_input_temporary_static": True,
             "brent_excluded_from_score": True,
+            "china_source_files_modified": False,
+            "china_exposure_score_excluded": True,
+            "china_import_cost_excluded": True,
+            "china_brent_price_excluded": True,
         },
         "summary_hu": summary_hu,
         "summary_en": summary_en,
     }
 
-    atomic_write_json(OUTPUT_FILE, payload)
-    update_history(payload)
+    history_output = update_history(ompi)
 
+    write_json(OMPI_PATH, ompi)
+    write_json(OMPI_HISTORY_PATH, history_output)
+
+    china_component = components["china_import_momentum"]
+
+    print("=" * 68)
+    print("OMPI generálás sikeres")
+    print("=" * 68)
+    print(f"OMPI: {ompi['score']}/100")
+    print(f"Szint: {ompi['level']}")
+    print(f"Irány: {ompi['direction']}")
     print(
-        f"OMPI elkészült: {score:.1f}/100 "
-        f"({classification['level']}); "
-        f"adatbizalom: {quality['confidence_score']:.1f}/100"
+        "Adatbizalom: "
+        f"{data_quality['status']} "
+        f"({data_quality['confidence_score']}/100)"
     )
-    print(f"Kimenet: {OUTPUT_FILE}")
-    print(f"Történet: {HISTORY_FILE}")
+    print("-" * 68)
+    print(
+        "Kína importmomentum: "
+        f"{china_component['score']}/100"
+    )
+    print(
+        "Kínai megfigyelések: "
+        f"{china_component['observation_count']}"
+    )
+    print(
+        "Kínai adatminőség: "
+        f"{china_component['data_quality']}"
+    )
+    print("-" * 68)
+    print(f"Létrehozva: {OMPI_PATH}")
+    print(f"Létrehozva: {OMPI_HISTORY_PATH}")
+    print("=" * 68)
 
 
 if __name__ == "__main__":
