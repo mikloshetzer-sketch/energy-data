@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Brent Outlook v2 generator.
+Brent Outlook v2.1 generator.
 
 Purpose
 -------
@@ -9,6 +9,7 @@ Creates a 30-day Brent scenario range from:
 - Brent price momentum
 - Brent trend structure
 - realised Brent volatility
+- optional inventory, supply-demand, chokepoint and market-confirmation overlays
 
 The script does NOT recalculate OMPI.
 
@@ -17,6 +18,10 @@ Default inputs
 - docs/data/ompi.json
 - live-market.json OR docs/data/live-market.json
 - market-history.json OR docs/data/market-history.json
+- docs/data/inventory_stress.json (optional)
+- docs/data/global_oil_supply_demand.json (optional)
+- chokepoint-impact.json OR docs/data/chokepoint-impact.json (optional)
+- docs/data/market-confirmation.json (optional)
 
 Outputs
 -------
@@ -39,12 +44,16 @@ from pathlib import Path
 from typing import Any, Iterable, Optional, Sequence
 
 
-MODEL_VERSION = "2.0"
+MODEL_VERSION = "2.1"
 HORIZON_DAYS = 30
 
-FUNDAMENTAL_MAX_SHIFT = 0.06
-MOMENTUM_MAX_SHIFT = 0.04
-TREND_MAX_SHIFT = 0.02
+FUNDAMENTAL_MAX_SHIFT = 0.05
+MOMENTUM_MAX_SHIFT = 0.035
+TREND_MAX_SHIFT = 0.015
+INVENTORY_MAX_SHIFT = 0.0075
+SUPPLY_DEMAND_MAX_SHIFT = 0.01
+CHOKEPOINT_MAX_SHIFT = 0.0125
+MARKET_CONFIRMATION_MAX_SHIFT = 0.01
 TOTAL_MAX_SHIFT = 0.12
 
 MIN_VOLATILITY_BAND = 0.05
@@ -118,6 +127,33 @@ def resolve_existing_path(
 
     checked = ", ".join(str(path) for path in candidates)
     raise RuntimeError(f"{label} file not found. Checked: {checked}")
+
+
+def resolve_optional_path(
+    explicit_path: Optional[str],
+    candidates: Sequence[Path],
+) -> Optional[Path]:
+    """Resolve an optional JSON input without failing the model run."""
+    if explicit_path:
+        path = Path(explicit_path)
+        return path if path.exists() else None
+
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+
+    return None
+
+
+def load_optional_json(path: Optional[Path]) -> tuple[Any, Optional[str]]:
+    """Load optional JSON. Missing or invalid files become a neutral overlay."""
+    if path is None:
+        return None, None
+
+    try:
+        return load_json(path), None
+    except RuntimeError as exc:
+        return None, str(exc)
 
 
 def normalise_key(value: Any) -> str:
@@ -570,6 +606,80 @@ def calculate_trend_shift(
     return 0.0, "SIDEWAYS_OR_MIXED"
 
 
+def score_to_shift(score: Optional[float], maximum_shift: float) -> float:
+    if score is None:
+        return 0.0
+    return clamp(((score - 50.0) / 50.0) * maximum_shift, -maximum_shift, maximum_shift)
+
+
+def extract_optional_score(payload: Any, keys: Sequence[str]) -> Optional[float]:
+    if payload is None:
+        return None
+    return first_numeric_by_keys(payload, keys, minimum=0, maximum=100)
+
+
+def calculate_inventory_overlay(payload: Any) -> tuple[float, Optional[float]]:
+    score = extract_optional_score(payload, (
+        "inventory_stress_score", "stress_score", "inventory_score",
+        "score", "index", "value", "latest_score",
+    ))
+    return score_to_shift(score, INVENTORY_MAX_SHIFT), score
+
+
+def calculate_supply_demand_overlay(payload: Any) -> tuple[float, Optional[float]]:
+    if payload is None:
+        return 0.0, None
+    balance = first_numeric_by_keys(payload, (
+        "latest_balance_mbd", "balance_mbd", "market_balance_mbd",
+        "supply_demand_balance_mbd", "balance",
+    ), minimum=-20, maximum=20)
+    if balance is None:
+        score = extract_optional_score(payload, (
+            "balance_score", "supply_demand_score", "tightness_score", "score", "index",
+        ))
+        return score_to_shift(score, SUPPLY_DEMAND_MAX_SHIFT), None
+    # A deficit is normally stored as a negative supply-minus-demand balance and is bullish.
+    shift = clamp((-balance / 2.0) * SUPPLY_DEMAND_MAX_SHIFT, -SUPPLY_DEMAND_MAX_SHIFT, SUPPLY_DEMAND_MAX_SHIFT)
+    return shift, balance
+
+
+def calculate_chokepoint_overlay(payload: Any) -> tuple[float, Optional[float]]:
+    score = extract_optional_score(payload, (
+        "chokepoint_impact_score", "impact_score", "risk_score",
+        "disruption_score", "score", "index", "value",
+    ))
+    return score_to_shift(score, CHOKEPOINT_MAX_SHIFT), score
+
+
+def calculate_market_confirmation_overlay(payload: Any) -> tuple[float, Optional[float]]:
+    score = extract_optional_score(payload, (
+        "confirmation_score", "market_confirmation_score", "score", "index", "value",
+    ))
+    return score_to_shift(score, MARKET_CONFIRMATION_MAX_SHIFT), score
+
+
+def build_driver_ranking(contributions: dict[str, float]) -> list[dict[str, Any]]:
+    labels = {
+        "ompi": "OMPI",
+        "momentum": "Momentum",
+        "trend": "Trend",
+        "inventory": "Inventory",
+        "supply_demand_balance": "Supply–Demand Balance",
+        "chokepoint": "Chokepoint",
+        "market_confirmation": "Market Confirmation",
+    }
+    ranked = sorted(contributions.items(), key=lambda item: abs(item[1]), reverse=True)
+    return [
+        {
+            "component": labels.get(key, key),
+            "key": key,
+            "contribution_pct": round(value * 100.0, 2),
+            "direction": "BULLISH" if value > 0 else "BEARISH" if value < 0 else "NEUTRAL",
+        }
+        for key, value in ranked
+    ]
+
+
 def classify_direction(total_shift: float) -> str:
     if total_shift >= 0.08:
         return "STRONGLY_BULLISH"
@@ -710,6 +820,11 @@ def build_outlook(
     ompi_payload: Any,
     live_market_payload: Any,
     market_history_payload: Any,
+    inventory_payload: Any = None,
+    supply_demand_payload: Any = None,
+    chokepoint_payload: Any = None,
+    market_confirmation_payload: Any = None,
+    optional_input_status: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     generated_at = utc_now()
     ompi_score = extract_ompi_score(ompi_payload)
@@ -739,8 +854,23 @@ def build_outlook(
         change_60d,
     )
     trend_shift, trend_state = calculate_trend_shift(current_price, ma20, ma60)
+    inventory_overlay, inventory_score = calculate_inventory_overlay(inventory_payload)
+    balance_overlay, latest_balance_mbd = calculate_supply_demand_overlay(supply_demand_payload)
+    chokepoint_overlay, chokepoint_score = calculate_chokepoint_overlay(chokepoint_payload)
+    market_confirmation_overlay, market_confirmation_score = calculate_market_confirmation_overlay(
+        market_confirmation_payload
+    )
 
-    raw_total_shift = fundamental_shift + momentum_shift + trend_shift
+    contributions = {
+        "ompi": fundamental_shift,
+        "momentum": momentum_shift,
+        "trend": trend_shift,
+        "inventory": inventory_overlay,
+        "supply_demand_balance": balance_overlay,
+        "chokepoint": chokepoint_overlay,
+        "market_confirmation": market_confirmation_overlay,
+    }
+    raw_total_shift = sum(contributions.values())
     total_shift = clamp(raw_total_shift, -TOTAL_MAX_SHIFT, TOTAL_MAX_SHIFT)
 
     center_price = current_price * (1.0 + total_shift)
@@ -792,6 +922,18 @@ def build_outlook(
             "total_center_shift_pct": round(total_shift * 100.0, 2),
             "volatility_band_pct": round(volatility_band * 100.0, 2),
         },
+        "contributions_pct": {
+            key: round(value * 100.0, 2)
+            for key, value in contributions.items()
+        },
+        "driver_ranking": build_driver_ranking(contributions),
+        "overlay_metrics": {
+            "inventory_score": round_or_none(inventory_score),
+            "latest_balance_mbd": round_or_none(latest_balance_mbd),
+            "chokepoint_score": round_or_none(chokepoint_score),
+            "market_confirmation_score": round_or_none(market_confirmation_score),
+        },
+        "optional_inputs": optional_input_status or {},
         "market_metrics": {
             "change_5d_pct": round_or_none(
                 None if change_5d is None else change_5d * 100.0
@@ -829,6 +971,10 @@ def build_outlook(
                 "ompi_fundamental_max_shift_pct": FUNDAMENTAL_MAX_SHIFT * 100.0,
                 "brent_momentum_max_shift_pct": MOMENTUM_MAX_SHIFT * 100.0,
                 "trend_max_shift_pct": TREND_MAX_SHIFT * 100.0,
+                "inventory_max_shift_pct": INVENTORY_MAX_SHIFT * 100.0,
+                "supply_demand_max_shift_pct": SUPPLY_DEMAND_MAX_SHIFT * 100.0,
+                "chokepoint_max_shift_pct": CHOKEPOINT_MAX_SHIFT * 100.0,
+                "market_confirmation_max_shift_pct": MARKET_CONFIRMATION_MAX_SHIFT * 100.0,
                 "total_center_shift_cap_pct": TOTAL_MAX_SHIFT * 100.0,
                 "minimum_range_width_pct": MIN_VOLATILITY_BAND * 100.0,
                 "maximum_range_width_pct": MAX_VOLATILITY_BAND * 100.0,
@@ -836,8 +982,9 @@ def build_outlook(
             "notes": [
                 "OMPI is read as an external fundamental input and is not recalculated.",
                 "Brent momentum uses available 5-, 20- and 60-observation changes.",
+                "Optional overlays are neutral when their source file is missing or invalid.",
                 "The range width is based on realised daily Brent volatility scaled to 30 days.",
-                "Confidence cannot exceed MEDIUM before Market Confirmation is implemented.",
+                "Confidence logic remains capped at MEDIUM until the dedicated Market Confirmation module is implemented.",
             ],
         },
     }
@@ -845,11 +992,15 @@ def build_outlook(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Generate Brent Outlook v2 JSON files."
+        description="Generate Brent Outlook v2.1 JSON files."
     )
     parser.add_argument("--ompi", help="Path to ompi.json")
     parser.add_argument("--live-market", help="Path to live-market.json")
     parser.add_argument("--market-history", help="Path to market-history.json")
+    parser.add_argument("--inventory", help="Optional path to inventory_stress.json")
+    parser.add_argument("--supply-demand", help="Optional path to global_oil_supply_demand.json")
+    parser.add_argument("--chokepoint-impact", help="Optional path to chokepoint-impact.json")
+    parser.add_argument("--market-confirmation", help="Optional path to market-confirmation.json")
     parser.add_argument(
         "--output",
         default="docs/data/brent-outlook.json",
@@ -901,6 +1052,38 @@ def main() -> int:
             "Market history",
         )
 
+        optional_specs = {
+            "inventory": (
+                args.inventory,
+                (root / "docs/data/inventory_stress.json", root / "data/inventory_stress.json", root / "inventory_stress.json"),
+            ),
+            "supply_demand_balance": (
+                args.supply_demand,
+                (root / "docs/data/global_oil_supply_demand.json", root / "data/global_oil_supply_demand.json", root / "global_oil_supply_demand.json"),
+            ),
+            "chokepoint": (
+                args.chokepoint_impact,
+                (root / "chokepoint-impact.json", root / "docs/data/chokepoint-impact.json", root / "data/chokepoint-impact.json"),
+            ),
+            "market_confirmation": (
+                args.market_confirmation,
+                (root / "docs/data/market-confirmation.json", root / "data/market-confirmation.json", root / "market-confirmation.json"),
+            ),
+        }
+
+        optional_payloads: dict[str, Any] = {}
+        optional_status: dict[str, Any] = {}
+        for key, (explicit, candidates) in optional_specs.items():
+            resolved = resolve_optional_path(explicit, candidates)
+            payload, error = load_optional_json(resolved)
+            optional_payloads[key] = payload
+            optional_status[key] = {
+                "available": payload is not None,
+                "path": str(resolved) if resolved is not None else None,
+                "error": error,
+                "fallback_overlay_pct": 0.0 if payload is None else None,
+            }
+
         output_path = Path(args.output)
         if not output_path.is_absolute():
             output_path = root / output_path
@@ -913,6 +1096,11 @@ def main() -> int:
             load_json(ompi_path),
             load_json(live_market_path),
             load_json(market_history_path),
+            inventory_payload=optional_payloads["inventory"],
+            supply_demand_payload=optional_payloads["supply_demand_balance"],
+            chokepoint_payload=optional_payloads["chokepoint"],
+            market_confirmation_payload=optional_payloads["market_confirmation"],
+            optional_input_status=optional_status,
         )
 
         history_payload = update_history(history_output_path, outlook)
@@ -934,6 +1122,8 @@ def main() -> int:
                     ],
                     "direction": outlook["outlook"]["direction"],
                     "confidence": outlook["outlook"]["confidence"],
+                    "model_version": outlook["methodology"]["model_version"],
+                    "contributions_pct": outlook["contributions_pct"],
                 },
                 ensure_ascii=False,
                 indent=2,
@@ -951,3 +1141,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
