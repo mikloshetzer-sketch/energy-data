@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-07-18 22:56 UTC",
+    "updated": "2026-07-18 23:58 UTC",
     "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -27,25 +27,25 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 37.4,
+  "global_trade_risk_index": 37.3,
   "middle_east_conflict_impact": {
     "label": "high",
-    "score": 63.8,
+    "score": 63.5,
     "components": {
       "structural_score": 48.8,
-      "osint_signal_score": 88.7,
-      "osint_raw_total_risk": 221.79,
+      "osint_signal_score": 88.1,
+      "osint_raw_total_risk": 220.24,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 168,
+      "osint_total_events": 169,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 153.18
+          "risk": 152.43
         },
         {
           "name": "Gaza Strip",
-          "risk": 14.5
+          "risk": 15.0
         },
         {
           "name": "Tehran",
@@ -60,10 +60,10 @@
           "risk": 6.4
         }
       ],
-      "osint_updated": "2026-07-18 21:07 UTC",
+      "osint_updated": "2026-07-18 23:12 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 1.82,
+      "osint_age_hours": 0.78,
       "osint_used_in_blend": true,
       "conflict_signal_score": 41.2,
       "conflict_signal_raw_index": -2.06,
@@ -80,16 +80,16 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": 4.2,
-    "middle_east_conflict_impact_change": 13.8,
+    "global_trade_risk_index_change": 4.1,
+    "middle_east_conflict_impact_change": 13.5,
     "direction_global": "up",
     "direction_middle_east": "up"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
-    "suez": 13,
+    "suez": 8,
     "bab_el_mandeb": 0,
-    "bosporus": 1
+    "bosporus": 0
   },
   "top_risks": [
     {
@@ -114,7 +114,7 @@
     },
     {
       "name": "Boszporusz",
-      "estimated_impact": 0.0071,
+      "estimated_impact": 0.0067,
       "status": "low"
     }
   ],
@@ -161,7 +161,7 @@
       "substitution_penalty": 0.68,
       "disruption_level": 0.55,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 13,
+      "ais_count_signal": 8,
       "ais_signal_multiplier": 1.1,
       "estimated_impact": 0.0434,
       "status": "low",
@@ -193,9 +193,9 @@
       "substitution_penalty": 0.7,
       "disruption_level": 0.22,
       "regional_adjustment": 1.0,
-      "ais_count_signal": 1,
-      "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.0071,
+      "ais_count_signal": 0,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.0067,
       "status": "low",
       "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
     },
