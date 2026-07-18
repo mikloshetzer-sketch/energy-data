@@ -27,12 +27,12 @@ CHINA_CANDIDATE_PATHS = [
 ]
 
 WEIGHTS = {
-    "physical_balance": 0.25,
+    "physical_balance": 0.30,
     "inventory_stress": 0.15,
-    "opec_buffer": 0.02,
-    "geopolitical_risk": 0.25,
-    "china_import_momentum": 0.13,
-    "chokepoint_risk": 0.20,
+    "opec_buffer": 0.20,
+    "geopolitical_risk": 0.20,
+    "china_import_momentum": 0.05,
+    "chokepoint_risk": 0.10,
 }
 
 ROUTE_WEIGHTS = {
