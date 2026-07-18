@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-18T07:37:06Z",
+  "generated_at": "2026-07-18T07:50:10Z",
   "index": "OMPI",
   "index_name": "Oil Market Pressure Index",
   "method_version": "ompi_v3_jodi_physical_tightness_2026_07",
-  "score": 58.8,
+  "score": 55.4,
   "level": "MEDIUM",
   "level_hu": "Közepes",
   "level_en": "Medium",
@@ -13,19 +13,19 @@
   "description_hu": "Kiegyensúlyozott, de érzékeny olajpiaci helyzet.",
   "description_en": "Balanced but sensitive oil-market conditions.",
   "weights": {
-    "physical_balance": 0.35,
-    "inventory_stress": 0.2,
-    "opec_buffer": 0.15,
-    "geopolitical_risk": 0.15,
-    "china_import_momentum": 0.1,
-    "chokepoint_risk": 0.05
+    "physical_balance": 0.25,
+    "inventory_stress": 0.15,
+    "opec_buffer": 0.1,
+    "geopolitical_risk": 0.25,
+    "china_import_momentum": 0.05,
+    "chokepoint_risk": 0.2
   },
   "components": {
     "physical_balance": {
       "score": 60.7,
-      "weight": 0.35,
-      "weight_pct": 35.0,
-      "contribution": 21.24,
+      "weight": 0.25,
+      "weight_pct": 25.0,
+      "contribution": 15.17,
       "period": "2026 YTD Jan–Apr",
       "year": 2026,
       "period_type": "ytd",
@@ -70,9 +70,9 @@
     },
     "inventory_stress": {
       "score": 50.0,
-      "weight": 0.2,
-      "weight_pct": 20.0,
-      "contribution": 10.0,
+      "weight": 0.15,
+      "weight_pct": 15.0,
+      "contribution": 7.5,
       "data_quality": "FALLBACK_PREVIOUS",
       "level": "MEDIUM",
       "level_hu": "Közepes",
@@ -83,9 +83,9 @@
     },
     "opec_buffer": {
       "score": 93.3,
-      "weight": 0.15,
-      "weight_pct": 15.0,
-      "contribution": 14.0,
+      "weight": 0.1,
+      "weight_pct": 10.0,
+      "contribution": 9.33,
       "effective_spare_capacity_mbd": 0.17,
       "physical_deficit_mbd": 2.045,
       "coverage_ratio": 0.0831,
@@ -96,9 +96,9 @@
     },
     "geopolitical_risk": {
       "score": 60.7,
-      "weight": 0.15,
-      "weight_pct": 15.0,
-      "contribution": 9.11,
+      "weight": 0.25,
+      "weight_pct": 25.0,
+      "contribution": 15.18,
       "source_field": "risk_components.middle_east_conflict_impact",
       "data_quality": "AVAILABLE",
       "source_generated_at": "2026-07-18",
@@ -112,9 +112,9 @@
     },
     "china_import_momentum": {
       "score": 27.2,
-      "weight": 0.1,
-      "weight_pct": 10.0,
-      "contribution": 2.72,
+      "weight": 0.05,
+      "weight_pct": 5.0,
+      "contribution": 1.36,
       "latest_month": "2026-05",
       "latest_import_volume_mbd": 9.103,
       "recent_average_mbd": 9.255,
@@ -138,9 +138,9 @@
     },
     "chokepoint_risk": {
       "score": 34.4,
-      "weight": 0.05,
-      "weight_pct": 5.0,
-      "contribution": 1.72,
+      "weight": 0.2,
+      "weight_pct": 20.0,
+      "contribution": 6.88,
       "data_quality": "AVAILABLE",
       "source_generated_at": "2026-07-17",
       "method": "weighted_route_scores",
@@ -179,7 +179,7 @@
   },
   "data_quality": {
     "status": "PARTIAL",
-    "confidence_score": 75.0,
+    "confidence_score": 82.5,
     "coverage_pct": 100.0,
     "missing_components": [],
     "fallback_components": [
@@ -212,6 +212,6 @@
     "china_import_cost_excluded": true,
     "china_brent_price_excluded": true
   },
-  "summary_hu": "Az OMPI értéke 58.8/100, ami közepes olajpiaci nyomást jelez. A 2026 YTD Jan–Apr időszak JODI-alapú stresszegyenértéke -2.04 millió hordó/nap. A legnagyobb súlyozott hozzájárulást jelenleg a fizikai kínálat–keresleti mérleg adja. Az adatbizalmi státusz: PARTIAL (75.0/100).",
-  "summary_en": "The OMPI stands at 58.8/100, indicating medium oil-market pressure. The JODI-based stress equivalent for 2026 YTD Jan–Apr is -2.04 million barrels per day. The largest weighted contribution currently comes from the physical supply-demand balance. Data-confidence status: PARTIAL (75.0/100)."
+  "summary_hu": "Az OMPI értéke 55.4/100, ami közepes olajpiaci nyomást jelez. A 2026 YTD Jan–Apr időszak JODI-alapú stresszegyenértéke -2.04 millió hordó/nap. A legnagyobb súlyozott hozzájárulást jelenleg a geopolitikai kockázat adja. Az adatbizalmi státusz: PARTIAL (82.5/100).",
+  "summary_en": "The OMPI stands at 55.4/100, indicating medium oil-market pressure. The JODI-based stress equivalent for 2026 YTD Jan–Apr is -2.04 million barrels per day. The largest weighted contribution currently comes from the geopolitical risk. Data-confidence status: PARTIAL (82.5/100)."
 }
