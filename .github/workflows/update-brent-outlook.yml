@@ -1,25 +1,29 @@
 name: Update Brent Outlook
 
 on:
+  # Kézi indítás a GitHub Actions felületéről.
   workflow_dispatch:
 
+  # Automatikus indítás minden sikeres OMPI-frissítés után.
+  workflow_run:
+    workflows:
+      - Update OMPI
+    types:
+      - completed
+
+  # Napi biztonsági futtatás.
+  # 07:15 UTC = nyári időszámításkor 09:15,
+  # téli időszámításkor 08:15 magyar idő szerint.
   schedule:
-    # Naponta 07:15 UTC-kor fut.
-    # Magyar idő szerint ez nyáron 09:15, télen 08:15.
-    # Az időpontot úgy érdemes beállítani, hogy az OMPI és a piaci adatok
-    # frissítése után fusson le.
     - cron: "15 7 * * *"
 
+  # Közvetlen indítás csak akkor, ha maga a generátor
+  # vagy ez a workflow változik.
   push:
     branches:
       - main
     paths:
       - "scripts/generate_brent_outlook.py"
-      - "docs/data/ompi.json"
-      - "docs/data/live-market.json"
-      - "docs/data/market-history.json"
-      - "live-market.json"
-      - "market-history.json"
       - ".github/workflows/update-brent-outlook.yml"
 
 permissions:
@@ -32,6 +36,12 @@ concurrency:
 jobs:
   generate-brent-outlook:
     name: Generate Brent Outlook
+
+    # Workflow-run esetén csak sikeres OMPI-futás után induljon.
+    if: >
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -39,17 +49,38 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pip"
 
-      - name: Show input files
+      - name: Synchronize repository
         shell: bash
         run: |
+          set -euo pipefail
+
+          git fetch origin main
+          git checkout main
+          git reset --hard origin/main
+
+      - name: Show trigger information
+        shell: bash
+        run: |
+          echo "Event: ${{ github.event_name }}"
+
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            echo "Upstream workflow: ${{ github.event.workflow_run.name }}"
+            echo "Upstream conclusion: ${{ github.event.workflow_run.conclusion }}"
+          fi
+
+      - name: Show available input files
+        shell: bash
+        run: |
+          set -euo pipefail
+
           echo "Repository root:"
           pwd
 
@@ -65,22 +96,35 @@ jobs:
           echo "Available market-history files:"
           find . -maxdepth 4 -type f -name "market-history.json" -print || true
 
-      - name: Validate generator script
+      - name: Validate required files
         shell: bash
         run: |
-          test -f scripts/generate_brent_outlook.py || {
+          set -euo pipefail
+
+          if [ ! -f "scripts/generate_brent_outlook.py" ]; then
             echo "::error::Missing scripts/generate_brent_outlook.py"
             exit 1
-          }
+          fi
+
+          if [ ! -f "docs/data/ompi.json" ]; then
+            echo "::error::Missing docs/data/ompi.json"
+            exit 1
+          fi
 
           python -m py_compile scripts/generate_brent_outlook.py
+          python -m json.tool docs/data/ompi.json > /dev/null
+
+          echo "Required Brent Outlook inputs are valid."
 
       - name: Generate Brent Outlook
         shell: bash
         run: |
           set -euo pipefail
 
-          python scripts/generate_brent_outlook.py             --project-root "${GITHUB_WORKSPACE}"             --output "docs/data/brent-outlook.json"             --history-output "docs/data/brent-outlook-history.json"
+          python scripts/generate_brent_outlook.py \
+            --project-root "${GITHUB_WORKSPACE}" \
+            --output "docs/data/brent-outlook.json" \
+            --history-output "docs/data/brent-outlook-history.json"
 
       - name: Validate generated JSON
         shell: bash
@@ -89,7 +133,9 @@ jobs:
 
           python - <<'PY'
           import json
+          import math
           from pathlib import Path
+
 
           outlook_path = Path("docs/data/brent-outlook.json")
           history_path = Path("docs/data/brent-outlook-history.json")
@@ -126,37 +172,74 @@ jobs:
               )
 
           if outlook.get("dataset") != "brent_outlook":
-              raise SystemExit("Unexpected dataset value in brent-outlook.json")
+              raise SystemExit(
+                  "Unexpected dataset value in brent-outlook.json: "
+                  f"{outlook.get('dataset')!r}"
+              )
 
           current_price = outlook["current"].get("price_usd")
           lower_price = outlook["outlook"].get("lower_price_usd")
           center_price = outlook["outlook"].get("center_price_usd")
           upper_price = outlook["outlook"].get("upper_price_usd")
+          ompi_score = outlook["signals"].get("ompi_score")
 
-          values = {
+          numeric_values = {
               "current_price": current_price,
               "lower_price": lower_price,
               "center_price": center_price,
               "upper_price": upper_price,
+              "ompi_score": ompi_score,
           }
 
-          for name, value in values.items():
-              if not isinstance(value, (int, float)) or value <= 0:
+          for name, value in numeric_values.items():
+              if not isinstance(value, (int, float)):
                   raise SystemExit(f"Invalid {name}: {value!r}")
+
+              if not math.isfinite(value):
+                  raise SystemExit(f"Non-finite {name}: {value!r}")
+
+          for name, value in {
+              "current_price": current_price,
+              "lower_price": lower_price,
+              "center_price": center_price,
+              "upper_price": upper_price,
+          }.items():
+              if value <= 0:
+                  raise SystemExit(f"Invalid {name}: {value!r}")
+
+          if not 0 <= ompi_score <= 100:
+              raise SystemExit(
+                  f"OMPI score must be between 0 and 100: {ompi_score!r}"
+              )
 
           if not lower_price <= center_price <= upper_price:
               raise SystemExit(
-                  "Invalid outlook range: expected lower <= center <= upper"
+                  "Invalid Brent Outlook range: "
+                  "expected lower_price <= center_price <= upper_price"
               )
 
           print("Brent Outlook JSON validation passed.")
+          print(f"OMPI: {ompi_score:.1f}")
+          print(f"Current Brent: ${current_price:.2f}")
           print(
-              f"Current: ${current_price:.2f} | "
-              f"Range: ${lower_price:.2f}–${upper_price:.2f} | "
+              f"Outlook range: "
+              f"${lower_price:.2f}–${upper_price:.2f}"
+          )
+          print(
               f"Direction: {outlook['outlook'].get('direction')} | "
               f"Confidence: {outlook['outlook'].get('confidence')}"
           )
           PY
+
+      - name: Show generated changes
+        shell: bash
+        run: |
+          git status --short
+
+          git diff -- \
+            docs/data/brent-outlook.json \
+            docs/data/brent-outlook-history.json \
+            || true
 
       - name: Commit generated files
         shell: bash
@@ -164,9 +247,12 @@ jobs:
           set -euo pipefail
 
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add             docs/data/brent-outlook.json             docs/data/brent-outlook-history.json
+          git add \
+            docs/data/brent-outlook.json \
+            docs/data/brent-outlook-history.json
 
           if git diff --cached --quiet; then
             echo "No Brent Outlook changes to commit."
@@ -175,6 +261,5 @@ jobs:
 
           git commit -m "data: update Brent Outlook"
 
-          # Kezeli azt az esetet is, ha közben más workflow írt a main ágra.
           git pull --rebase origin main
           git push origin HEAD:main
