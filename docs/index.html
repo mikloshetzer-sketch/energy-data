@@ -4240,31 +4240,28 @@
       return Math.min(maximum, Math.max(minimum, value));
     }
 
-    function calculateCoverage(globalBalance) {
-      const series = globalBalance.series || [];
-      const row2025 = series.find(item => Number(item.year) === 2025);
-      const row2026 = series.find(item => Number(item.year) === 2026);
+    function calculateCoverage(marketState) {
+      if (!marketState) return null;
 
-      if (!row2025 || !row2026) {
+      const deficit = firstFinite(marketState.stressDeficit);
+      const spare = OPEC_EFFECTIVE_SPARE_CAPACITY_MBD;
+
+      if (!Number.isFinite(deficit) || !Number.isFinite(spare)) {
         return null;
       }
 
-      const supply = Number(row2026.supply_mbd);
-      const stressDemand = Number(row2025.demand_mbd);
-      const deficit = Math.max(0, stressDemand - supply);
-      const spare = OPEC_EFFECTIVE_SPARE_CAPACITY_MBD;
-
-      const ratio = deficit > 0
-        ? (spare / deficit) * 100
+      const normalizedDeficit = Math.max(0, deficit);
+      const ratio = normalizedDeficit > 0
+        ? (spare / normalizedDeficit) * 100
         : 100;
-
-      const uncovered = Math.max(0, deficit - spare);
+      const uncovered = Math.max(0, normalizedDeficit - spare);
 
       return {
-        deficit,
+        deficit: normalizedDeficit,
         spare,
         ratio,
-        uncovered
+        uncovered,
+        periodLabel: marketState.periodLabel || "2026 YTD"
       };
     }
 
@@ -4296,8 +4293,8 @@
       };
     }
 
-    function renderOpecCoverage(globalBalance) {
-      const coverage = calculateCoverage(globalBalance);
+    function renderOpecCoverage(marketState) {
+      const coverage = calculateCoverage(marketState);
 
       if (!coverage) {
         return;
@@ -4328,7 +4325,7 @@
         status.text +
         "<br><br>Forrásidőszak: " +
         OPEC_SPARE_CAPACITY_SOURCE_DATE +
-        " · IEA effektív tartalékkapacitás.";
+        " · JODI " + coverage.periodLabel + " stresszproxy és IEA effektív tartalékkapacitás.";
     }
 
     function scoreSupplyDemand(deficitMbd) {
@@ -5632,7 +5629,7 @@
       renderDemandRecoveryScenario(unifiedMarketState);
       renderInventoryDrawModule(unifiedMarketState);
       renderScenarioMatrix(unifiedMarketState);
-      renderOpecCoverage(normalizedGlobalBalance);
+      renderOpecCoverage(unifiedMarketState);
       renderOmpi(ompiData);
       renderPriceOutlook(brentOutlook);
       renderMarketAssessment(normalizedGlobalBalance, brentOutlook, inventory, interpretation);
@@ -6103,5 +6100,4 @@
 
 </body>
 </html>
-
 
