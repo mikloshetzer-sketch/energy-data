@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-17T12:35:04Z",
+  "generated_at": "2026-07-18T05:07:45Z",
   "index": "OMPI",
   "index_name": "Oil Market Pressure Index",
-  "method_version": "ompi_v2_fundamental_2026_07_china_volume_current_balance",
-  "score": 70.8,
-  "level": "HIGH",
-  "level_hu": "Magas",
-  "level_en": "High",
-  "direction": "BULLISH",
-  "direction_hu": "Felfelé mutató",
-  "direction_en": "Bullish",
-  "description_hu": "Erős felfelé irányuló árnyomás és korlátozott piaci alkalmazkodóképesség.",
-  "description_en": "Strong upward price pressure and limited market adjustment capacity.",
+  "method_version": "ompi_v3_jodi_physical_tightness_2026_07",
+  "score": 56.9,
+  "level": "MEDIUM",
+  "level_hu": "Közepes",
+  "level_en": "Medium",
+  "direction": "NEUTRAL",
+  "direction_hu": "Semleges",
+  "direction_en": "Neutral",
+  "description_hu": "Kiegyensúlyozott, de érzékeny olajpiaci helyzet.",
+  "description_en": "Balanced but sensitive oil-market conditions.",
   "weights": {
     "physical_balance": 0.35,
     "inventory_stress": 0.2,
@@ -22,24 +22,51 @@
   },
   "components": {
     "physical_balance": {
-      "score": 100.0,
+      "score": 60.7,
       "weight": 0.35,
       "weight_pct": 35.0,
-      "contribution": 35.0,
-      "period": "2026-07",
-      "current_period": "2026-07",
-      "global_supply_mbd": 99.232,
-      "global_demand_mbd": 101.574,
-      "balance_mbd": -2.342,
-      "source_generated_at": null,
-      "source_section": "root",
-      "data_quality": "AVAILABLE",
-      "selection_method": "latest_non_future_actual",
-      "future_records_excluded": 17,
-      "candidate_count": 60,
-      "non_future_candidate_count": 43,
+      "contribution": 21.24,
+      "period": "2026 YTD Jan–Apr",
+      "year": 2026,
+      "period_type": "ytd",
+      "provisional": true,
+      "months_available": 4,
+      "comparison_year": 2025,
+      "comparison_months": 4,
+      "reported_production_mbd": 43.718,
+      "reported_refinery_intake_mbd": 62.73,
+      "common_country_gap_mbd": -20.453,
+      "production_change_same_period_mbd": -2.452,
+      "refinery_intake_change_same_period_mbd": -3.103,
+      "common_country_gap_change_same_period_mbd": 1.678,
+      "subscores": {
+        "gap_level": 73.9,
+        "production_trend": 69.6,
+        "refinery_intake_trend": 31.4,
+        "gap_change": 39.9
+      },
+      "subscore_weights": {
+        "gap_level": 0.4,
+        "production_trend": 0.3,
+        "refinery_intake_trend": 0.2,
+        "gap_change": 0.1
+      },
+      "stress_equivalent_deficit_mbd": 2.045,
+      "balance_mbd": -2.045,
+      "global_supply_mbd": null,
+      "global_demand_mbd": null,
+      "source_generated_at": "2026-07-17T18:49:33+00:00",
+      "source_file": "docs/data/global_crude_oil_fundamentals.json",
+      "data_quality": "PARTIAL_YTD_ESTIMATE",
+      "confidence_score": 33.3,
+      "selection_method": "latest_jodi_annual_or_ytd_record",
+      "future_records_excluded": 0,
+      "candidate_count": 4,
+      "non_future_candidate_count": 4,
       "is_forecast": false,
-      "method": "clamp_50_minus_balance_times_25"
+      "method": "jodi_physical_tightness_v1",
+      "interpretation_limit_hu": "A balance_mbd stresszegyenértékű proxy, nem mért globális kínálat–keresleti hiány. A common-country gap a közös jelentő országok termelése és finomítói betáplálása közötti különbség.",
+      "interpretation_limit_en": "balance_mbd is a stress-equivalent proxy, not a measured global supply-demand deficit. The common-country gap compares production and refinery intake across the same reporting countries."
     },
     "inventory_stress": {
       "score": 50.0,
@@ -55,14 +82,14 @@
       "summary_en": "Fresh EIA inventory data could not be fetched, so the model applies a cautious medium inventory-side pressure estimate."
     },
     "opec_buffer": {
-      "score": 94.2,
+      "score": 93.3,
       "weight": 0.15,
       "weight_pct": 15.0,
-      "contribution": 14.13,
+      "contribution": 14.0,
       "effective_spare_capacity_mbd": 0.17,
-      "physical_deficit_mbd": 2.342,
-      "coverage_ratio": 0.0726,
-      "coverage_pct": 7.3,
+      "physical_deficit_mbd": 2.045,
+      "coverage_ratio": 0.0831,
+      "coverage_pct": 8.3,
       "method": "effective_spare_capacity_divided_by_deficit",
       "parameter_status": "TEMPORARY_STATIC_INPUT",
       "data_quality": "PARTIAL_STATIC_PARAMETER"
@@ -152,13 +179,14 @@
   },
   "data_quality": {
     "status": "PARTIAL",
-    "confidence_score": 83.8,
+    "confidence_score": 75.0,
     "coverage_pct": 100.0,
     "missing_components": [],
     "fallback_components": [
       "inventory_stress"
     ],
     "partial_components": [
+      "physical_balance",
       "opec_buffer",
       "china_import_momentum"
     ]
@@ -171,8 +199,10 @@
     "note_en": "Brent momentum is not part of the OMPI score. It may be used as a separate market-confirmation layer."
   },
   "model_notes": {
-    "future_balance_records_excluded": true,
-    "physical_balance_uses_latest_non_future_period": true,
+    "future_balance_records_excluded": false,
+    "physical_balance_uses_latest_non_future_period": false,
+    "physical_balance_source": "JODI global_crude_oil_fundamentals.json",
+    "physical_balance_is_stress_proxy": true,
     "chokepoint_weight_temporary": true,
     "chokepoint_overlap_warning": true,
     "opec_input_temporary_static": true,
@@ -182,6 +212,6 @@
     "china_import_cost_excluded": true,
     "china_brent_price_excluded": true
   },
-  "summary_hu": "Az OMPI értéke 70.8/100, ami magas olajpiaci nyomást jelez. A 2026-07 időszakhoz tartozó fizikai mérleg -2.34 millió hordó/nap. A legnagyobb súlyozott hozzájárulást jelenleg a fizikai kínálat–keresleti mérleg adja. Az adatbizalmi státusz: PARTIAL (83.8/100).",
-  "summary_en": "The OMPI stands at 70.8/100, indicating high oil-market pressure. The physical balance for 2026-07 is -2.34 million barrels per day. The largest weighted contribution currently comes from the physical supply-demand balance. Data-confidence status: PARTIAL (83.8/100)."
+  "summary_hu": "Az OMPI értéke 56.9/100, ami közepes olajpiaci nyomást jelez. A 2026 YTD Jan–Apr időszak JODI-alapú stresszegyenértéke -2.04 millió hordó/nap. A legnagyobb súlyozott hozzájárulást jelenleg a fizikai kínálat–keresleti mérleg adja. Az adatbizalmi státusz: PARTIAL (75.0/100).",
+  "summary_en": "The OMPI stands at 56.9/100, indicating medium oil-market pressure. The JODI-based stress equivalent for 2026 YTD Jan–Apr is -2.04 million barrels per day. The largest weighted contribution currently comes from the physical supply-demand balance. Data-confidence status: PARTIAL (75.0/100)."
 }
