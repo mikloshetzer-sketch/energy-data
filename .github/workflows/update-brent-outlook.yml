@@ -11,11 +11,11 @@ on:
     types:
       - completed
 
-  # Napi biztonsági futtatás.
+  # Óránkénti biztonsági futtatás.
   # 07:15 UTC = nyári időszámításkor 09:15,
   # téli időszámításkor 08:15 magyar idő szerint.
   schedule:
-    - cron: "15 7 * * *"
+    - cron: "30 * * * *"
 
   # Közvetlen indítás csak akkor, ha maga a generátor
   # vagy ez a workflow változik.
