@@ -1,0 +1,90 @@
+name: Update market interpretation
+
+on:
+  workflow_run:
+    workflows:
+      - Update market history
+    types:
+      - completed
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-market-interpretation
+  cancel-in-progress: false
+
+jobs:
+  update-market-interpretation:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout latest main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate market interpretation
+        run: python scripts/generate_market_interpretation.py
+
+      - name: Validate generated JSON
+        run: |
+          python -m json.tool \
+            docs/data/market_interpretation.json \
+            > /dev/null
+
+      - name: Display generated values
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("docs/data/market_interpretation.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+
+          components = data.get("risk_components", {})
+
+          print("Generated at:", data.get("generated_at"))
+          print("Combined risk score:", data.get("combined_risk_score"))
+          print(
+              "Chokepoint risk:",
+              components.get("chokepoint_risk")
+          )
+          print(
+              "Middle East conflict impact:",
+              components.get("middle_east_conflict_impact")
+          )
+          PY
+
+      - name: Commit market interpretation
+        shell: bash
+        run: |
+          if git diff --quiet -- \
+            docs/data/market_interpretation.json; then
+            echo "Nincs változás a market_interpretation.json fájlban."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/data/market_interpretation.json
+          git commit -m "Update market interpretation"
+
+          git pull --rebase origin main
+          git push origin HEAD:main
