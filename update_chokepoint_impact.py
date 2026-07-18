@@ -469,30 +469,97 @@ def effective_signal_score(signal_dict, key_name):
     return parse_number(signal_dict.get(key_name)) or 0.0
 
 
-def blend_middle_east_score(structural_score, me_signal_score, conflict_score):
-    return round(
-        clamp(
-            (0.50 * structural_score) +
-            (0.30 * me_signal_score) +
-            (0.20 * conflict_score),
-            0,
-            100,
-        ),
-        1,
+def dynamic_weighted_score(components):
+    """
+    Dinamikus súlyozás az elérhető és nem elavult komponensek között.
+
+    A components lista elemei:
+    {
+        "score": float,
+        "weight": float,
+        "active": bool
+    }
+
+    A függvény csak az aktív komponenseket használja, majd azok eredeti
+    súlyait 1.0 összegre normalizálja. Ha egy külső jel kiesik vagy stale,
+    annak súlya nem nullaként húzza lefelé az eredményt.
+    """
+    active_components = [
+        component
+        for component in components
+        if component.get("active") and component.get("weight", 0) > 0
+    ]
+
+    if not active_components:
+        return 0.0
+
+    active_weight_sum = sum(
+        float(component["weight"])
+        for component in active_components
     )
 
+    if active_weight_sum <= 0:
+        return 0.0
 
-def blend_global_trade_score(structural_global_score, me_signal_score, conflict_score):
-    return round(
-        clamp(
-            (0.75 * structural_global_score) +
-            (0.15 * me_signal_score) +
-            (0.10 * conflict_score),
-            0,
-            100,
-        ),
-        1,
+    weighted_score = sum(
+        float(component["score"])
+        * (float(component["weight"]) / active_weight_sum)
+        for component in active_components
     )
+
+    return round(clamp(weighted_score, 0, 100), 1)
+
+
+def blend_middle_east_score(
+    structural_score,
+    me_signal_score,
+    conflict_score,
+    me_signal_active=True,
+    conflict_signal_active=True,
+):
+    return dynamic_weighted_score([
+        {
+            "score": structural_score,
+            "weight": 0.50,
+            "active": True,
+        },
+        {
+            "score": me_signal_score,
+            "weight": 0.30,
+            "active": me_signal_active,
+        },
+        {
+            "score": conflict_score,
+            "weight": 0.20,
+            "active": conflict_signal_active,
+        },
+    ])
+
+
+def blend_global_trade_score(
+    structural_global_score,
+    me_signal_score,
+    conflict_score,
+    me_signal_active=True,
+    conflict_signal_active=True,
+):
+    return dynamic_weighted_score([
+        {
+            "score": structural_global_score,
+            "weight": 0.75,
+            "active": True,
+        },
+        {
+            "score": me_signal_score,
+            "weight": 0.15,
+            "active": me_signal_active,
+        },
+        {
+            "score": conflict_score,
+            "weight": 0.10,
+            "active": conflict_signal_active,
+        },
+    ])
 
 
 def impact_label_from_score(score):
@@ -594,12 +661,16 @@ def main():
         structural_global_index,
         me_signal_score,
         conflict_signal_score,
+        me_signal_active=me_signal["used_in_blend"],
+        conflict_signal_active=conflict_signal["used_in_blend"],
     )
 
     blended_me_score = blend_middle_east_score(
         structural_me_impact["score"],
         me_signal_score,
         conflict_signal_score,
+        me_signal_active=me_signal["used_in_blend"],
+        conflict_signal_active=conflict_signal["used_in_blend"],
     )
 
     me_impact = {
