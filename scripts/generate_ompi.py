@@ -12,7 +12,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "docs" / "data"
 
-BALANCE_PATH = DATA_DIR / "global_oil_balance.json"
+BALANCE_PATH = DATA_DIR / "global_crude_oil_fundamentals.json"
 INVENTORY_PATH = DATA_DIR / "inventory_stress.json"
 CHOKEPOINT_PATH = DATA_DIR / "chokepoint_status.json"
 GEOPOLITICAL_PATH = DATA_DIR / "market_interpretation.json"
@@ -42,7 +42,7 @@ ROUTE_WEIGHTS = {
     "malacca": 0.15,
 }
 
-METHOD_VERSION = "ompi_v2_fundamental_2026_07_china_volume_current_balance"
+METHOD_VERSION = "ompi_v3_jodi_physical_tightness_2026_07"
 
 
 def utc_now() -> datetime:
@@ -281,31 +281,126 @@ def extract_latest_balance_record(data: dict[str, Any]) -> dict[str, Any]:
     return selected
 
 
-def build_physical_balance(data: dict[str, Any]) -> dict[str, Any]:
-    record = extract_latest_balance_record(data)
-    balance = float(record["_balance_mbd"])
-    score = clamp(50.0 - balance * 25.0)
-    weight = WEIGHTS["physical_balance"]
+def select_latest_jodi_annual_record(data: dict[str, Any]) -> dict[str, Any]:
+    rows = data.get("annual_series")
+    if not isinstance(rows, list):
+        raise RuntimeError("A JODI fundamentals fájl nem tartalmaz annual_series listát.")
 
+    usable = [row for row in rows if isinstance(row, dict) and safe_float(row.get("year")) is not None]
+    if not usable:
+        raise RuntimeError("A JODI fundamentals annual_series listája üres vagy hibás.")
+
+    return max(usable, key=lambda row: int(safe_float(row.get("year"), 0) or 0))
+
+
+def build_physical_balance(data: dict[str, Any]) -> dict[str, Any]:
+    """Build a JODI-based physical-market tightness proxy.
+
+    Compatibility note: the component remains under the ``physical_balance`` key
+    because the dashboard and downstream generators already expect that name.
+    ``balance_mbd`` is no longer presented as a measured global supply-demand
+    balance. It is a capped stress-equivalent deficit derived from the JODI
+    common-country production-minus-refinery-intake gap.
+    """
+    record = select_latest_jodi_annual_record(data)
+
+    year = int(safe_float(record.get("year"), 0) or 0)
+    period_label = str(record.get("period_label") or year)
+    provisional = bool(record.get("provisional")) or str(record.get("period_type", "")).lower() == "ytd"
+    months_available = int(safe_float(record.get("months_available"), 0) or 0)
+
+    production = first_number(record, [
+        "preliminary_average_reported_production_mbd",
+        "average_reported_production_mbd",
+    ])
+    refinery_intake = first_number(record, [
+        "preliminary_average_reported_refinery_intake_mbd",
+        "average_reported_refinery_intake_mbd",
+    ])
+    common_gap = first_number(record, [
+        "preliminary_average_common_country_gap_mbd",
+        "average_common_country_gap_mbd",
+    ])
+
+    production_change = safe_float(record.get("production_change_same_period_mbd"), 0.0) or 0.0
+    intake_change = safe_float(record.get("refinery_intake_change_same_period_mbd"), 0.0) or 0.0
+    gap_change = safe_float(record.get("common_country_gap_change_same_period_mbd"), 0.0) or 0.0
+
+    if production is None or refinery_intake is None or common_gap is None:
+        raise RuntimeError("A legfrissebb JODI éves/YTD rekordból hiányzik termelési, finomítói vagy gap adat.")
+
+    # Sub-scores: 50 is neutral, 100 indicates stronger upward price pressure.
+    # A deeper negative common-country gap raises structural tightness, but it is
+    # deliberately capped and is not treated as a literal global shortage.
+    gap_level_score = clamp(50.0 + (-common_gap / 30.0) * 35.0)
+    production_trend_score = clamp(50.0 - production_change * 8.0)
+    intake_trend_score = clamp(50.0 + intake_change * 6.0)
+    gap_change_score = clamp(50.0 - gap_change * 6.0)
+
+    score = clamp(
+        gap_level_score * 0.40
+        + production_trend_score * 0.30
+        + intake_trend_score * 0.20
+        + gap_change_score * 0.10
+    )
+
+    # Compatibility proxy for OPEC coverage and dashboard stress modules.
+    # One tenth of the common-country gap is used as a stress equivalent and
+    # capped at 3 mb/d. This is explicitly not a measured global deficit.
+    stress_deficit = clamp(max(0.0, -common_gap) / 10.0, 0.0, 3.0)
+    balance_proxy = -stress_deficit
+
+    comparison_months = int(safe_float(record.get("comparison_months"), 0) or 0)
+    confidence = clamp(min(months_available, 12) / 12.0 * 100.0)
+    quality = "PARTIAL_YTD_ESTIMATE" if provisional else "AVAILABLE"
+
+    weight = WEIGHTS["physical_balance"]
     return {
         "score": round(score, 1),
         "weight": weight,
         "weight_pct": weight * 100,
         "contribution": round(score * weight, 2),
-        "period": record["_period"],
-        "current_period": record["_current_period"],
-        "global_supply_mbd": round(record["_supply_mbd"], 3) if record["_supply_mbd"] is not None else None,
-        "global_demand_mbd": round(record["_demand_mbd"], 3) if record["_demand_mbd"] is not None else None,
-        "balance_mbd": round(balance, 3),
+        "period": period_label,
+        "year": year,
+        "period_type": record.get("period_type") or ("ytd" if provisional else "full_year"),
+        "provisional": provisional,
+        "months_available": months_available,
+        "comparison_year": record.get("comparison_year"),
+        "comparison_months": comparison_months,
+        "reported_production_mbd": round(production, 3),
+        "reported_refinery_intake_mbd": round(refinery_intake, 3),
+        "common_country_gap_mbd": round(common_gap, 3),
+        "production_change_same_period_mbd": round(production_change, 3),
+        "refinery_intake_change_same_period_mbd": round(intake_change, 3),
+        "common_country_gap_change_same_period_mbd": round(gap_change, 3),
+        "subscores": {
+            "gap_level": round(gap_level_score, 1),
+            "production_trend": round(production_trend_score, 1),
+            "refinery_intake_trend": round(intake_trend_score, 1),
+            "gap_change": round(gap_change_score, 1),
+        },
+        "subscore_weights": {
+            "gap_level": 0.40,
+            "production_trend": 0.30,
+            "refinery_intake_trend": 0.20,
+            "gap_change": 0.10,
+        },
+        "stress_equivalent_deficit_mbd": round(stress_deficit, 3),
+        "balance_mbd": round(balance_proxy, 3),
+        "global_supply_mbd": None,
+        "global_demand_mbd": None,
         "source_generated_at": data.get("generated_at") or data.get("updated_at"),
-        "source_section": record.get("_source_section"),
-        "data_quality": "AVAILABLE_ESTIMATE" if record.get("_is_forecast") else "AVAILABLE",
-        "selection_method": record["_selection_method"],
-        "future_records_excluded": record["_future_records_excluded"],
-        "candidate_count": record["_candidate_count"],
-        "non_future_candidate_count": record["_non_future_candidate_count"],
-        "is_forecast": bool(record.get("_is_forecast")),
-        "method": "clamp_50_minus_balance_times_25",
+        "source_file": "docs/data/global_crude_oil_fundamentals.json",
+        "data_quality": quality,
+        "confidence_score": round(confidence, 1),
+        "selection_method": "latest_jodi_annual_or_ytd_record",
+        "future_records_excluded": 0,
+        "candidate_count": len(data.get("annual_series", [])) if isinstance(data.get("annual_series"), list) else 0,
+        "non_future_candidate_count": len(data.get("annual_series", [])) if isinstance(data.get("annual_series"), list) else 0,
+        "is_forecast": False,
+        "method": "jodi_physical_tightness_v1",
+        "interpretation_limit_hu": "A balance_mbd stresszegyenértékű proxy, nem mért globális kínálat–keresleti hiány. A common-country gap a közös jelentő országok termelése és finomítói betáplálása közötti különbség.",
+        "interpretation_limit_en": "balance_mbd is a stress-equivalent proxy, not a measured global supply-demand deficit. The common-country gap compares production and refinery intake across the same reporting countries.",
     }
 
 
@@ -632,13 +727,13 @@ def build_summaries(score: float, classification: dict[str, str], components: di
 
     hu = (
         f"Az OMPI értéke {score:.1f}/100, ami {classification['level_hu'].lower()} olajpiaci nyomást jelez. "
-        f"A {period} időszakhoz tartozó fizikai mérleg {balance:.2f} millió hordó/nap. "
+        f"A {period} időszak JODI-alapú stresszegyenértéke {balance:.2f} millió hordó/nap. "
         f"A legnagyobb súlyozott hozzájárulást jelenleg a {names_hu[largest]} adja. "
         f"Az adatbizalmi státusz: {quality['status']} ({quality['confidence_score']:.1f}/100)."
     )
     en = (
         f"The OMPI stands at {score:.1f}/100, indicating {classification['level_en'].lower()} oil-market pressure. "
-        f"The physical balance for {period} is {balance:.2f} million barrels per day. "
+        f"The JODI-based stress equivalent for {period} is {balance:.2f} million barrels per day. "
         f"The largest weighted contribution currently comes from the {names_en[largest]}. "
         f"Data-confidence status: {quality['status']} ({quality['confidence_score']:.1f}/100)."
     )
@@ -734,8 +829,10 @@ def main() -> None:
             "note_en": "Brent momentum is not part of the OMPI score. It may be used as a separate market-confirmation layer.",
         },
         "model_notes": {
-            "future_balance_records_excluded": True,
-            "physical_balance_uses_latest_non_future_period": True,
+            "future_balance_records_excluded": False,
+            "physical_balance_uses_latest_non_future_period": False,
+            "physical_balance_source": "JODI global_crude_oil_fundamentals.json",
+            "physical_balance_is_stress_proxy": True,
             "chokepoint_weight_temporary": True,
             "chokepoint_overlap_warning": True,
             "opec_input_temporary_static": True,
@@ -756,7 +853,7 @@ def main() -> None:
     print("OMPI generálás sikeres")
     print(f"OMPI: {score}/100 | Szint: {ompi['level']} | Irány: {ompi['direction']}")
     print(f"Fizikai mérleg időszaka: {physical['period']}")
-    print(f"Kizárt jövőbeli rekordok: {physical['future_records_excluded']}")
+    print(f"Kizárt jövőbeli rekordok: {physical.get('future_records_excluded', 0)}")
     print(f"Létrehozva: {OMPI_PATH}")
     print(f"Létrehozva: {OMPI_HISTORY_PATH}")
     print("=" * 68)
@@ -764,4 +861,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
 
