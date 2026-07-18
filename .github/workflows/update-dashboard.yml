@@ -1,0 +1,147 @@
+name: Update dashboard current data
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    # Biztonsági újragenerálás háromóránként, UTC szerint.
+    - cron: "17 */3 * * *"
+
+  push:
+    branches:
+      - main
+    paths:
+      - "data/**"
+      - "scripts/generate_dashboard_current.py"
+      - ".github/workflows/update-dashboard.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-dashboard-current
+  cancel-in-progress: false
+
+jobs:
+  generate-dashboard:
+    name: Generate live dashboard data
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Validate generator file
+        run: |
+          test -f scripts/generate_dashboard_current.py
+          python -m py_compile scripts/generate_dashboard_current.py
+
+      - name: Generate dashboard data
+        run: |
+          python scripts/generate_dashboard_current.py
+
+      - name: Validate generated JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("docs/data/dashboard_current.json")
+          if not path.exists():
+              raise SystemExit("Missing output: docs/data/dashboard_current.json")
+
+          with path.open("r", encoding="utf-8") as handle:
+              data = json.load(handle)
+
+          required_periods = {"1", "7", "30", "90"}
+          required_events = {"24", "48", "72"}
+
+          if set(data.get("periods", {})) != required_periods:
+              raise SystemExit(
+                  f"Invalid periods: {sorted(data.get('periods', {}))}"
+              )
+
+          if set(data.get("events", {})) != required_events:
+              raise SystemExit(
+                  f"Invalid event windows: {sorted(data.get('events', {}))}"
+              )
+
+          if not data.get("generated_at"):
+              raise SystemExit("Missing generated_at")
+
+          if "freshness" not in data:
+              raise SystemExit("Missing freshness metadata")
+
+          print("dashboard_current.json validation passed")
+          print("generated_at:", data["generated_at"])
+          print("freshness:", data["freshness"].get("overall"))
+          PY
+
+      - name: Show generated summary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(
+              Path("docs/data/dashboard_current.json").read_text(encoding="utf-8")
+          )
+
+          print("=== SOURCE FRESHNESS ===")
+          for source, details in data["freshness"]["sources"].items():
+              print(
+                  f"{source}: status={details['status']}, "
+                  f"latest={details.get('latest_record_at')}, "
+                  f"records={details.get('record_count')}"
+              )
+
+          print("\n=== PERIODS ===")
+          for period, row in data["periods"].items():
+              print(
+                  f"{period}d: RU={row['ru_gain_km2']} km2, "
+                  f"UA={row['ua_recapture_km2']} km2, "
+                  f"FIRMS={row['firms_count']}, "
+                  f"OSINT={row['osint_events']}, "
+                  f"index={row['conflict_index']}"
+              )
+
+          print("\n=== RAPID EVENTS ===")
+          for window, events in data["events"].items():
+              print(f"{window}h: {len(events)} event(s)")
+          PY
+
+      - name: Commit generated dashboard data
+        id: commit
+        shell: bash
+        run: |
+          if git diff --quiet -- docs/data/dashboard_current.json; then
+            echo "No dashboard data changes to commit."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/data/dashboard_current.json
+          git commit -m "Update live dashboard data"
+          git push
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Job result
+        run: |
+          if [ "${{ steps.commit.outputs.changed }}" = "true" ]; then
+            echo "Dashboard data regenerated and committed."
+          else
+            echo "Dashboard data regenerated; repository content was unchanged."
+          fi
