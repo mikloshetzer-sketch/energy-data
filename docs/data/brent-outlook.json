@@ -1,32 +1,32 @@
 {
-  "generated_at": "2026-07-18T23:14:51Z",
+  "generated_at": "2026-07-19T00:14:09Z",
   "dataset": "brent_outlook",
   "horizon_days": 30,
   "current": {
     "price_usd": 88.1,
-    "date": "2026-07-18",
-    "timestamp": "2026-07-18T23:14:51Z"
+    "date": "2026-07-19",
+    "timestamp": "2026-07-19T00:14:09Z"
   },
   "outlook": {
-    "center_price_usd": 91.68,
-    "lower_price_usd": 77.94,
-    "upper_price_usd": 105.43,
+    "center_price_usd": 91.71,
+    "lower_price_usd": 77.93,
+    "upper_price_usd": 105.48,
     "direction": "BULLISH",
-    "confidence": "MEDIUM",
+    "confidence": "LOW",
     "current_range_position": "NEAR_CENTER"
   },
   "signals": {
     "ompi_score": 61.3,
     "fundamental_shift_pct": 1.13,
-    "momentum_shift_pct": 1.84,
+    "momentum_shift_pct": 1.88,
     "trend_shift_pct": 0.75,
-    "raw_total_center_shift_pct": 4.07,
-    "total_center_shift_pct": 4.07,
-    "volatility_band_pct": 14.99
+    "raw_total_center_shift_pct": 4.09,
+    "total_center_shift_pct": 4.09,
+    "volatility_band_pct": 15.02
   },
   "contributions_pct": {
     "ompi": 1.13,
-    "momentum": 1.84,
+    "momentum": 1.88,
     "trend": 0.75,
     "inventory": 0.0,
     "supply_demand_balance": 0.0,
@@ -37,7 +37,7 @@
     {
       "component": "Momentum",
       "key": "momentum",
-      "contribution_pct": 1.84,
+      "contribution_pct": 1.88,
       "direction": "BULLISH"
     },
     {
@@ -80,7 +80,7 @@
   "overlay_metrics": {
     "inventory_score": 50.0,
     "latest_balance_mbd": null,
-    "chokepoint_score": 63.8,
+    "chokepoint_score": 63.5,
     "market_confirmation_score": null
   },
   "optional_inputs": {
@@ -110,27 +110,26 @@
     }
   },
   "market_metrics": {
-    "change_5d_pct": 5.76,
-    "change_20d_pct": 22.38,
-    "change_60d_pct": -20.83,
-    "weighted_momentum_pct": 5.26,
+    "change_5d_pct": 3.98,
+    "change_20d_pct": 20.44,
+    "change_60d_pct": -16.11,
+    "weighted_momentum_pct": 5.36,
     "momentum_data_coverage": 1.0,
-    "moving_average_20d": 77.34,
-    "moving_average_60d": 85.13,
-    "daily_realised_volatility_20d": 0.027367,
+    "moving_average_20d": 78.09,
+    "moving_average_60d": 84.84,
+    "daily_realised_volatility_20d": 0.027429,
     "trend_state": "MIXED_BULLISH"
   },
   "confidence_details": {
     "reasons": [
-      "OMPI, momentum and trend broadly confirm the same direction.",
-      "Confidence is capped at MEDIUM until Market Confirmation is available."
+      "Realised volatility is high, widening the scenario range."
     ],
     "market_confirmation_available": false,
     "confidence_cap": "MEDIUM"
   },
   "quality": {
     "status": "VALID",
-    "history_observations": 167,
+    "history_observations": 168,
     "minimum_required_observations": 21,
     "full_model_observations": 61,
     "market_confirmation_available": false
