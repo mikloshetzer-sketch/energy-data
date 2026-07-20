@@ -1,32 +1,32 @@
 {
-  "generated_at": "2026-07-20T14:45:11Z",
+  "generated_at": "2026-07-20T15:24:32Z",
   "dataset": "brent_outlook",
   "horizon_days": 30,
   "current": {
-    "price_usd": 88.06,
+    "price_usd": 87.79,
     "date": "2026-07-20",
-    "timestamp": "2026-07-20T14:45:11Z"
+    "timestamp": "2026-07-20T15:24:32Z"
   },
   "outlook": {
-    "center_price_usd": 91.72,
-    "lower_price_usd": 77.97,
-    "upper_price_usd": 105.48,
+    "center_price_usd": 91.34,
+    "lower_price_usd": 77.62,
+    "upper_price_usd": 105.07,
     "direction": "BULLISH",
-    "confidence": "MEDIUM",
+    "confidence": "LOW",
     "current_range_position": "NEAR_CENTER"
   },
   "signals": {
     "ompi_score": 60.8,
     "fundamental_shift_pct": 1.08,
-    "momentum_shift_pct": 2.1,
+    "momentum_shift_pct": 1.99,
     "trend_shift_pct": 0.75,
-    "raw_total_center_shift_pct": 4.16,
-    "total_center_shift_pct": 4.16,
-    "volatility_band_pct": 14.99
+    "raw_total_center_shift_pct": 4.05,
+    "total_center_shift_pct": 4.05,
+    "volatility_band_pct": 15.03
   },
   "contributions_pct": {
     "ompi": 1.08,
-    "momentum": 2.1,
+    "momentum": 1.99,
     "trend": 0.75,
     "inventory": 0.0,
     "supply_demand_balance": 0.0,
@@ -37,7 +37,7 @@
     {
       "component": "Momentum",
       "key": "momentum",
-      "contribution_pct": 2.1,
+      "contribution_pct": 1.99,
       "direction": "BULLISH"
     },
     {
@@ -110,20 +110,19 @@
     }
   },
   "market_metrics": {
-    "change_5d_pct": 3.66,
-    "change_20d_pct": 20.76,
-    "change_60d_pct": -14.15,
-    "weighted_momentum_pct": 6.01,
+    "change_5d_pct": 3.34,
+    "change_20d_pct": 20.39,
+    "change_60d_pct": -14.42,
+    "weighted_momentum_pct": 5.69,
     "momentum_data_coverage": 1.0,
-    "moving_average_20d": 78.84,
+    "moving_average_20d": 78.83,
     "moving_average_60d": 84.6,
-    "daily_realised_volatility_20d": 0.02737,
+    "daily_realised_volatility_20d": 0.027439,
     "trend_state": "MIXED_BULLISH"
   },
   "confidence_details": {
     "reasons": [
-      "OMPI, momentum and trend broadly confirm the same direction.",
-      "Confidence is capped at MEDIUM until Market Confirmation is available."
+      "Realised volatility is high, widening the scenario range."
     ],
     "market_confirmation_available": false,
     "confidence_cap": "MEDIUM"
