@@ -14,7 +14,10 @@ DATA_DIR = ROOT / "docs" / "data"
 
 BALANCE_PATH = DATA_DIR / "global_crude_oil_fundamentals.json"
 INVENTORY_PATH = DATA_DIR / "inventory_stress.json"
-CHOKEPOINT_PATH = DATA_DIR / "chokepoint-impact.json"
+CHOKEPOINT_CANDIDATE_PATHS = [
+    ROOT / "chokepoint-impact.json",
+    DATA_DIR / "chokepoint-impact.json",
+]
 GEOPOLITICAL_PATH = DATA_DIR / "market_interpretation.json"
 OMPI_PATH = DATA_DIR / "ompi.json"
 OMPI_HISTORY_PATH = DATA_DIR / "ompi-history.json"
@@ -592,6 +595,20 @@ def build_chokepoint_risk(data: dict[str, Any]) -> dict[str, Any]:
         "model_overlap": "PARTIAL",
         "temporary_reduced_weight": True,
     }
+def find_chokepoint_path() -> Path:
+    """Return the current chokepoint-impact input without changing OMPI output.
+
+    The chokepoint generator currently writes ``chokepoint-impact.json`` to the
+    repository root. A docs/data candidate is retained only for deployment
+    compatibility if the producer is moved later.
+    """
+    for path in CHOKEPOINT_CANDIDATE_PATHS:
+        if path.exists():
+            return path
+    searched = ", ".join(str(path) for path in CHOKEPOINT_CANDIDATE_PATHS)
+    raise FileNotFoundError(f"Hiányzó szoroskockázati bemenet. Keresett útvonalak: {searched}")
+
+
 def find_china_path() -> Path | None:
     for path in CHINA_CANDIDATE_PATHS:
         if path.exists():
@@ -811,7 +828,8 @@ def main() -> None:
 
     balance_data = load_json(BALANCE_PATH)
     inventory_data = load_json(INVENTORY_PATH)
-    chokepoint_data = load_json(CHOKEPOINT_PATH)
+    chokepoint_path = find_chokepoint_path()
+    chokepoint_data = load_json(chokepoint_path)
     geopolitical_data = load_json(GEOPOLITICAL_PATH)
 
     china_path = find_china_path()
@@ -882,6 +900,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
 
 
 
