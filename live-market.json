@@ -1,27 +1,27 @@
 {
   "meta": {
-    "updated": "2026-07-20 23:35 UTC",
+    "updated": "2026-07-21 01:05 UTC",
     "source_mode": "live",
-    "generated_at": "2026-07-20T23:35:36.918665Z",
+    "generated_at": "2026-07-21T01:05:57.736148Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
     "fallback_used": false
   },
   "prices": {
-    "market_brent": 89.0,
-    "market_wti": 82.54,
+    "market_brent": 88.85,
+    "market_wti": 82.42,
     "spot_brent": 81.62,
     "spot_wti": 79.2,
-    "live_brent": 89.0,
-    "live_wti": 82.54,
+    "live_brent": 88.85,
+    "live_wti": 82.42,
     "live_source": "yahoo_futures",
     "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-07-20T23:25:17Z",
-    "market_timestamp_wti": "2026-07-20T23:25:23Z",
+    "market_timestamp_brent": "2026-07-21T00:55:52Z",
+    "market_timestamp_wti": "2026-07-21T00:55:52Z",
     "brent_fallback_used": false,
     "wti_fallback_used": false,
     "currency": "USD",
@@ -39,12 +39,12 @@
   },
   "risk": {
     "global_trade_risk_index": 35.3,
-    "middle_east_conflict_impact": 59.3,
+    "middle_east_conflict_impact": 59.2,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -1.2,
-      "middle_east_conflict_impact_change": -2.6,
-      "direction_global": "down",
+      "global_trade_risk_index_change": 0.0,
+      "middle_east_conflict_impact_change": -0.1,
+      "direction_global": "flat",
       "direction_middle_east": "down"
     },
     "top_risks": [
@@ -76,19 +76,19 @@
     ],
     "me_components": {
       "structural_score": 47.9,
-      "osint_signal_score": 78.4,
-      "osint_raw_total_risk": 195.96,
+      "osint_signal_score": 78.1,
+      "osint_raw_total_risk": 195.36,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 153,
+      "osint_total_events": 154,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 129.01
+          "risk": 128.51
         },
         {
           "name": "Israel",
-          "risk": 15.7
+          "risk": 17.7
         },
         {
           "name": "Gaza Strip",
@@ -96,17 +96,17 @@
         },
         {
           "name": "Tehran",
-          "risk": 7.95
+          "risk": 5.85
         },
         {
           "name": "Iraq",
           "risk": 5.7
         }
       ],
-      "osint_updated": "2026-07-20 21:34 UTC",
+      "osint_updated": "2026-07-20 23:16 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.54,
+      "osint_age_hours": 0.77,
       "osint_used_in_blend": true,
       "conflict_signal_score": 52.4,
       "conflict_signal_raw_index": -2.62,
@@ -122,7 +122,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-07-20 22:06 UTC",
+      "updated": "2026-07-21 00:02 UTC",
       "method": "chokepoint structural impact model v4 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
