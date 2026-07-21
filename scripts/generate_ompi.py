@@ -14,7 +14,7 @@ DATA_DIR = ROOT / "docs" / "data"
 
 BALANCE_PATH = DATA_DIR / "global_crude_oil_fundamentals.json"
 INVENTORY_PATH = DATA_DIR / "inventory_stress.json"
-CHOKEPOINT_PATH = DATA_DIR / "chokepoint_status.json"
+CHOKEPOINT_PATH = DATA_DIR / "chokepoint-impact.json"
 GEOPOLITICAL_PATH = DATA_DIR / "market_interpretation.json"
 OMPI_PATH = DATA_DIR / "ompi.json"
 OMPI_HISTORY_PATH = DATA_DIR / "ompi-history.json"
@@ -533,13 +533,29 @@ def build_chokepoint_risk(data: dict[str, Any]) -> dict[str, Any]:
         route_id = normalize_route_id(row.get("id") or row.get("route") or row.get("name") or row.get("key"))
         if route_id not in ROUTE_WEIGHTS:
             continue
-        score = first_number(row, ["score", "risk_score", "route_score", "value"])
-        if score is None:
-            continue
+
+        # New direct source: docs/data/chokepoint-impact.json
+        # estimated_impact is a 0.0-0.30 structural-impact value in the current
+        # chokepoint model. It is converted to the OMPI component's existing
+        # 0-100 scale without changing the ompi.json output structure.
+        estimated_impact = safe_float(row.get("estimated_impact"))
+        if estimated_impact is not None:
+            score = clamp(estimated_impact / 0.30 * 100.0)
+        else:
+            # Backward-compatible fallback for any legacy route-score records.
+            score = first_number(row, ["score", "risk_score", "route_score", "value"])
+            if score is None:
+                continue
+            score = clamp(score)
+
+        level = row.get("status") or row.get("level") or row.get("risk_level")
+        if isinstance(level, str):
+            level = level.upper()
+
         route_map[route_id] = {
             "id": route_id,
-            "score": clamp(score),
-            "level": row.get("level") or row.get("risk_level"),
+            "score": round(score, 1),
+            "level": level,
         }
 
     weighted_sum = 0.0
@@ -555,13 +571,20 @@ def build_chokepoint_risk(data: dict[str, Any]) -> dict[str, Any]:
     quality = "AVAILABLE" if available_weight > 0 else "MISSING_NEUTRAL_FALLBACK"
     weight = WEIGHTS["chokepoint_risk"]
 
+    meta = data.get("meta")
+    source_generated_at = (
+        meta.get("updated")
+        if isinstance(meta, dict)
+        else None
+    ) or data.get("generated_at") or data.get("updated_at")
+
     return {
         "score": round(score, 1),
         "weight": weight,
         "weight_pct": weight * 100,
         "contribution": round(score * weight, 2),
         "data_quality": quality,
-        "source_generated_at": data.get("generated_at") or data.get("updated_at"),
+        "source_generated_at": source_generated_at,
         "method": "weighted_route_scores",
         "route_weights": ROUTE_WEIGHTS,
         "available_route_weight": round(available_weight, 2),
@@ -569,8 +592,6 @@ def build_chokepoint_risk(data: dict[str, Any]) -> dict[str, Any]:
         "model_overlap": "PARTIAL",
         "temporary_reduced_weight": True,
     }
-
-
 def find_china_path() -> Path | None:
     for path in CHINA_CANDIDATE_PATHS:
         if path.exists():
@@ -861,5 +882,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
 
 
