@@ -351,6 +351,7 @@ def status_from_score(score):
 
 def build_items(tanker_data, me_signal_score=0.0, conflict_score=0.0):
     zone_counts = get_ais_zone_counts(tanker_data)
+    tanker_signal_unavailable = all_zone_counts_zero(zone_counts)
     items = []
 
     for key, cfg in CHOKEPOINTS.items():
@@ -364,6 +365,13 @@ def build_items(tanker_data, me_signal_score=0.0, conflict_score=0.0):
             me_signal_score=me_signal_score,
             conflict_score=conflict_score,
         )
+
+        # Ha minden követett zónában nulla a hajószám, azt hiányzó vagy
+        # sikertelen AIS-mérésként kezeljük, nem valós forgalomhiányként.
+        # A nem AIS-követett fojtópontok is mindig semleges szorzót kapnak.
+        if tanker_signal_unavailable or ais_zone is None:
+            ais_mult = 1.0
+            score = round4(score / max(ais_signal_multiplier(ais_count), 0.0001))
 
         items.append({
             "key": key,
@@ -751,6 +759,7 @@ def main():
 
     tanker_data = safe_load_json(TANKER_INPUT_FILE, default=None)
     history = safe_load_json(HISTORY_FILE, default={"snapshots": []})
+    previous_output = safe_load_json(OUTPUT_FILE, default=None)
 
     me_signal = fetch_me_security_signal(now)
     conflict_signal = fetch_conflict_end_matrix_signal(now)
@@ -817,21 +826,54 @@ def main():
     }
 
     previous_snapshot = find_previous_day_snapshot(history, today)
-    daily_change = compute_daily_change(
-        global_index_value,
-        me_impact["score"],
-        previous_snapshot
+
+    current_method_name = (
+        "chokepoint structural impact model v7 + "
+        "me osint signal v1 + conflict end matrix signal v2"
     )
+    previous_method_name = None
+    if isinstance(previous_output, dict):
+        previous_method_name = (
+            previous_output.get("meta", {}) or {}
+        ).get("method")
+
+    # Módszertanváltáskor az előző napi érték nem összehasonlítható az új
+    # modellel. Ilyenkor egyszer semleges daily_change készül. A következő
+    # futástól az új modell saját történeti értékeihez viszonyítunk.
+    previous_output_updated = None
+    previous_daily_change = {}
+    if isinstance(previous_output, dict):
+        previous_meta = previous_output.get("meta", {}) or {}
+        previous_output_updated = previous_meta.get("updated")
+        previous_daily_change = previous_output.get("daily_change", {}) or {}
+
+    migration_day_guard = (
+        previous_method_name == current_method_name
+        and isinstance(previous_output_updated, str)
+        and previous_output_updated[:10] == today
+        and previous_daily_change.get("direction_global") == "n/a"
+        and previous_daily_change.get("direction_middle_east") == "n/a"
+    )
+
+    if previous_method_name != current_method_name or migration_day_guard:
+        daily_change = compute_daily_change(
+            global_index_value,
+            me_impact["score"],
+            None,
+        )
+    else:
+        daily_change = compute_daily_change(
+            global_index_value,
+            me_impact["score"],
+            previous_snapshot,
+        )
 
     tanker_zero_flag = all_zone_counts_zero(zone_counts)
 
     payload = {
         "meta": {
             "updated": timestamp,
-            "method": (
-                "chokepoint structural impact model v4 + "
-                "me osint signal v1 + conflict end matrix signal v2"
-            ),
+            "method": current_method_name,
             "uses_tanker_signal": True,
             "uses_me_security_signal": True,
             "uses_conflict_end_matrix_signal": True,
