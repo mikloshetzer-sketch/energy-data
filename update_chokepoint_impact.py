@@ -26,54 +26,54 @@ CHOKEPOINTS = {
         "name": "Hormuzi-szoros",
         "region": "middle_east",
         "trade_share": 0.16,
-        "energy_share": 0.30,
+        "energy_share": 0.272,
         "substitution_penalty": 0.95,
-        "disruption_level": 0.78,
+        "disruption_level": 0.90,
         "notes": "Kiemelten fontos olaj- és energiatranzit pont.",
     },
     "bab_el_mandeb": {
         "name": "Bab el-Mandeb",
         "region": "middle_east",
         "trade_share": 0.10,
-        "energy_share": 0.12,
-        "substitution_penalty": 0.72,
-        "disruption_level": 0.72,
+        "energy_share": 0.116,
+        "substitution_penalty": 0.82,
+        "disruption_level": 0.82,
         "notes": "Vörös-tengeri és Szuez felé irányuló forgalom kulcspontja.",
     },
     "suez": {
         "name": "Szuezi térség",
         "region": "middle_east",
         "trade_share": 0.12,
-        "energy_share": 0.08,
-        "substitution_penalty": 0.68,
-        "disruption_level": 0.55,
+        "energy_share": 0.110,
+        "substitution_penalty": 0.78,
+        "disruption_level": 0.70,
         "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel.",
     },
     "bosporus": {
         "name": "Boszporusz",
         "region": "black_sea",
         "trade_share": 0.04,
-        "energy_share": 0.05,
-        "substitution_penalty": 0.70,
-        "disruption_level": 0.22,
+        "energy_share": 0.044,
+        "substitution_penalty": 0.72,
+        "disruption_level": 0.42,
         "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában.",
     },
     "malacca": {
         "name": "Malaka-szoros",
         "region": "asia",
         "trade_share": 0.24,
-        "energy_share": 0.22,
+        "energy_share": 0.299,
         "substitution_penalty": 0.88,
-        "disruption_level": 0.10,
+        "disruption_level": 0.38,
         "notes": "Ázsiai tengeri kereskedelem és energiaáramlás egyik fő útvonala.",
     },
     "panama": {
         "name": "Panama-csatorna",
         "region": "americas",
         "trade_share": 0.06,
-        "energy_share": 0.03,
+        "energy_share": 0.027,
         "substitution_penalty": 0.62,
-        "disruption_level": 0.18,
+        "disruption_level": 0.30,
         "notes": "Főként globális logisztikai és konténerforgalmi jelentőség.",
     },
     "gibraltar": {
@@ -82,7 +82,7 @@ CHOKEPOINTS = {
         "trade_share": 0.08,
         "energy_share": 0.06,
         "substitution_penalty": 0.55,
-        "disruption_level": 0.08,
+        "disruption_level": 0.20,
         "notes": "Atlanti–mediterrán átjáró, magas általános tengeri jelentőséggel.",
     },
 }
@@ -101,6 +101,40 @@ DYNAMIC_ZONE_MAP = {
     "suez": "suez",
     "bosporus": "bosporus",
 }
+
+# Belső rendszerszerep-szorzó. Nem kerül a JSON-kimenetbe.
+# Azt fejezi ki, hogy a fojtópont zavara mennyire terjed tovább az
+# energiaútvonal-hálózatban. Bab el-Mandeb és Szuez soros kapcsolatban
+# állnak, Hormuz pedig kiemelkedően koncentrált exportkapu.
+STRUCTURAL_SYSTEM_MULTIPLIER = {
+    "hormuz": 1.10,
+    "bab_el_mandeb": 1.25,
+    "suez": 1.15,
+    "bosporus": 1.00,
+    "malacca": 1.05,
+    "panama": 1.00,
+    "gibraltar": 1.00,
+}
+
+# Belső módszertani paraméterek. Ezek NEM kerülnek a JSON-kimenetbe,
+# ezért a kimeneti szerződés és minden mező változatlan marad.
+# A két érzékenység azt fejezi ki, hogy az általános közel-keleti OSINT-,
+# illetve konfliktusjel milyen erősen hasson az adott fojtópontra.
+CHOKEPOINT_DYNAMIC_SENSITIVITY = {
+    "hormuz": {"me_security": 1.00, "conflict": 0.95},
+    "bab_el_mandeb": {"me_security": 0.95, "conflict": 1.00},
+    "suez": {"me_security": 0.72, "conflict": 0.70},
+    "bosporus": {"me_security": 0.08, "conflict": 0.12},
+    "malacca": {"me_security": 0.04, "conflict": 0.05},
+    "panama": {"me_security": 0.00, "conflict": 0.00},
+    "gibraltar": {"me_security": 0.12, "conflict": 0.10},
+}
+
+# A strukturális alapérték domináns marad. A dinamikus jelek csak emelik
+# az aktuális stresszt, de nem írják felül a fojtópont tartós szerepét.
+DISRUPTION_BASE_WEIGHT = 0.55
+DISRUPTION_ME_WEIGHT = 0.25
+DISRUPTION_CONFLICT_WEIGHT = 0.20
 
 AIS_SIGNAL_MULTIPLIER = {
     0: 0.95,
@@ -200,7 +234,57 @@ def is_stale(timestamp_str, now, max_age_hours):
 
 
 def combined_weight(trade_share, energy_share):
-    return round4((0.4 * trade_share) + (0.6 * energy_share))
+    """
+    Energiaközpontú strukturális súly.
+
+    A kimeneti mező neve és típusa változatlan marad. A korábbi 40/60-as
+    arány helyett az energiaforgalom 70%-os súlyt kap, mert ezt a modult
+    az energiaellátási rendszer használja.
+    """
+    return round4((0.30 * trade_share) + (0.70 * energy_share))
+
+
+def normalized_01(score):
+    """0-100 közötti pontszám biztonságos normalizálása 0-1 tartományra."""
+    value = parse_number(score)
+    if value is None:
+        return 0.0
+    return clamp(value / 100.0, 0.0, 1.0)
+
+
+def dynamic_disruption_level(key, cfg, me_signal_score, conflict_score):
+    """
+    Az adott fojtópont aktuális zavarási szintje.
+
+    A CHOKEPOINTS-ben tárolt disruption_level továbbra is a strukturális
+    alapfenyegetés. Ehhez fojtópont-specifikus érzékenységgel kapcsolódik
+    a közel-keleti OSINT- és konfliktusjel. Így Hormuz és Bab el-Mandeb
+    gyorsabban reagálhat, miközben Malacca vagy Panama nem kap indokolatlan
+    közel-keleti kockázati prémiumot.
+    """
+    baseline = clamp(parse_number(cfg.get("disruption_level")) or 0.0, 0.0, 1.0)
+    sensitivity = CHOKEPOINT_DYNAMIC_SENSITIVITY.get(
+        key, {"me_security": 0.0, "conflict": 0.0}
+    )
+
+    me_pressure = normalized_01(me_signal_score) * clamp(
+        sensitivity.get("me_security", 0.0), 0.0, 1.0
+    )
+    conflict_pressure = normalized_01(conflict_score) * clamp(
+        sensitivity.get("conflict", 0.0), 0.0, 1.0
+    )
+
+    # A dinamikus jel a baseline és az 1.0 közötti fennmaradó teret tölti.
+    # Ez megakadályozza, hogy egy magas alapérték kontrollálatlanul 1 fölé nőjön.
+    me_adjusted = baseline + ((1.0 - baseline) * me_pressure)
+    conflict_adjusted = baseline + ((1.0 - baseline) * conflict_pressure)
+
+    dynamic_value = (
+        DISRUPTION_BASE_WEIGHT * baseline
+        + DISRUPTION_ME_WEIGHT * me_adjusted
+        + DISRUPTION_CONFLICT_WEIGHT * conflict_adjusted
+    )
+    return round4(clamp(dynamic_value, 0.0, 1.0))
 
 
 def get_ais_zone_counts(tanker_data):
@@ -228,15 +312,31 @@ def ais_signal_multiplier(count):
     return AIS_SIGNAL_MULTIPLIER.get(count, 1.0)
 
 
-def estimated_impact_score(cfg, ais_count):
+def estimated_impact_score(
+    key,
+    cfg,
+    ais_count,
+    me_signal_score=0.0,
+    conflict_score=0.0,
+):
     cw = combined_weight(cfg["trade_share"], cfg["energy_share"])
-    disruption = cfg["disruption_level"]
+    disruption = dynamic_disruption_level(
+        key, cfg, me_signal_score, conflict_score
+    )
     substitution = cfg["substitution_penalty"]
     regional = REGIONAL_ADJUSTMENT.get(cfg["region"], 1.0)
     ais_mult = ais_signal_multiplier(ais_count)
+    system_mult = STRUCTURAL_SYSTEM_MULTIPLIER.get(key, 1.0)
 
-    score = cw * disruption * substitution * regional * ais_mult
-    return round4(score), cw, ais_mult
+    score = (
+        cw
+        * disruption
+        * substitution
+        * regional
+        * ais_mult
+        * system_mult
+    )
+    return round4(score), cw, ais_mult, disruption
 
 
 def status_from_score(score):
@@ -249,7 +349,7 @@ def status_from_score(score):
     return "low"
 
 
-def build_items(tanker_data):
+def build_items(tanker_data, me_signal_score=0.0, conflict_score=0.0):
     zone_counts = get_ais_zone_counts(tanker_data)
     items = []
 
@@ -257,7 +357,13 @@ def build_items(tanker_data):
         ais_zone = DYNAMIC_ZONE_MAP.get(key)
         ais_count = zone_counts.get(ais_zone, 0) if ais_zone else 0
 
-        score, cw, ais_mult = estimated_impact_score(cfg, ais_count)
+        score, cw, ais_mult, disruption = estimated_impact_score(
+            key,
+            cfg,
+            ais_count,
+            me_signal_score=me_signal_score,
+            conflict_score=conflict_score,
+        )
 
         items.append({
             "key": key,
@@ -267,7 +373,7 @@ def build_items(tanker_data):
             "energy_share": cfg["energy_share"],
             "combined_weight": cw,
             "substitution_penalty": cfg["substitution_penalty"],
-            "disruption_level": cfg["disruption_level"],
+            "disruption_level": disruption,
             "regional_adjustment": REGIONAL_ADJUSTMENT.get(cfg["region"], 1.0),
             "ais_count_signal": ais_count,
             "ais_signal_multiplier": ais_mult,
@@ -646,16 +752,20 @@ def main():
     tanker_data = safe_load_json(TANKER_INPUT_FILE, default=None)
     history = safe_load_json(HISTORY_FILE, default={"snapshots": []})
 
-    items, zone_counts = build_items(tanker_data)
-
-    structural_global_index = global_trade_risk_index(items)
-    structural_me_impact = middle_east_conflict_structural_impact(items)
-
     me_signal = fetch_me_security_signal(now)
     conflict_signal = fetch_conflict_end_matrix_signal(now)
 
     me_signal_score = effective_signal_score(me_signal, "normalized_risk_score")
     conflict_signal_score = effective_signal_score(conflict_signal, "conflict_index_normalized")
+
+    items, zone_counts = build_items(
+        tanker_data,
+        me_signal_score=me_signal_score,
+        conflict_score=conflict_signal_score,
+    )
+
+    structural_global_index = global_trade_risk_index(items)
+    structural_me_impact = middle_east_conflict_structural_impact(items)
 
     global_index_value = blend_global_trade_score(
         structural_global_index,
