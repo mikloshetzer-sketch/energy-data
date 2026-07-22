@@ -1,27 +1,27 @@
 {
   "meta": {
-    "updated": "2026-07-22 19:39 UTC",
+    "updated": "2026-07-22 21:19 UTC",
     "source_mode": "live",
-    "generated_at": "2026-07-22T19:39:51.044715Z",
+    "generated_at": "2026-07-22T21:19:09.416941Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
     "fallback_used": false
   },
   "prices": {
-    "market_brent": 94.27,
-    "market_wti": 86.88,
+    "market_brent": 93.88,
+    "market_wti": 86.48,
     "spot_brent": 81.62,
     "spot_wti": 79.2,
-    "live_brent": 94.27,
-    "live_wti": 86.88,
+    "live_brent": 93.88,
+    "live_wti": 86.48,
     "live_source": "yahoo_futures",
     "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-07-22T19:29:11Z",
-    "market_timestamp_wti": "2026-07-22T19:29:18Z",
+    "market_timestamp_brent": "2026-07-22T20:59:48Z",
+    "market_timestamp_wti": "2026-07-22T20:59:59Z",
     "brent_fallback_used": false,
     "wti_fallback_used": false,
     "currency": "USD",
@@ -39,11 +39,11 @@
   },
   "risk": {
     "global_trade_risk_index": 50.6,
-    "middle_east_conflict_impact": 70.9,
+    "middle_east_conflict_impact": 71.0,
     "middle_east_conflict_label": "high",
     "daily_change": {
       "global_trade_risk_index_change": -0.8,
-      "middle_east_conflict_impact_change": -1.8,
+      "middle_east_conflict_impact_change": -1.7,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
@@ -60,7 +60,7 @@
       },
       {
         "name": "Malaka-szoros",
-        "estimated_impact": 0.0998,
+        "estimated_impact": 0.0999,
         "status": "medium"
       },
       {
@@ -76,34 +76,34 @@
     ],
     "me_components": {
       "structural_score": 73.3,
-      "osint_signal_score": 66.9,
-      "osint_raw_total_risk": 167.19,
+      "osint_signal_score": 67.2,
+      "osint_raw_total_risk": 167.99,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 156,
+      "osint_total_events": 151,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 115.38
+          "risk": 114.89
+        },
+        {
+          "name": "Israel",
+          "risk": 15.55
         },
         {
           "name": "Gaza Strip",
           "risk": 13.95
         },
         {
-          "name": "Israel",
-          "risk": 12.95
-        },
-        {
           "name": "Middle East",
           "risk": 4.55
         },
         {
-          "name": "Saudi Arabia",
-          "risk": 4.55
+          "name": "Iraq",
+          "risk": 4.5
         }
       ],
-      "osint_updated": "2026-07-22 17:42 UTC",
+      "osint_updated": "2026-07-22 19:44 UTC",
       "osint_available": true,
       "osint_stale": false,
       "osint_age_hours": 0.52,
@@ -122,7 +122,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-07-22 18:13 UTC",
+      "updated": "2026-07-22 20:15 UTC",
       "method": "chokepoint structural impact model v7 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
