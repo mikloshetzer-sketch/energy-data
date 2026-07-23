@@ -19,6 +19,7 @@ YAHOO_WTI_URL = (
     "https://query1.finance.yahoo.com/v8/finance/chart/"
     "CL=F?interval=5m&range=1d"
 )
+UKOILWATCH_BRENT_URL = "https://ukoilwatch.com/api/v1/brent"
 
 REQUEST_HEADERS = {
     "User-Agent": (
@@ -27,6 +28,13 @@ REQUEST_HEADERS = {
     ),
     "Accept": "application/json,text/plain,*/*",
 }
+
+# Brent-validáció. A cél nem a valódi piaci sokkok blokkolása, hanem az
+# egyetlen forrásból érkező, nem megerősített kilengések kiszűrése.
+NORMAL_MOVE_PCT = 5.0
+SOURCE_AGREEMENT_PCT = 5.0
+SECONDARY_CONFIRM_PCT = 7.0
+MAX_YAHOO_AGE_MINUTES = 120
 
 
 def safe_load_json(path: str, default: Any) -> Any:
@@ -91,10 +99,35 @@ def iso_utc_from_unix(timestamp: int | float | None) -> str | None:
         return None
 
 
+def parse_iso_datetime(value: Any) -> datetime | None:
+    if not value:
+        return None
+
+    try:
+        text = str(value).strip().replace("Z", "+00:00")
+        dt = datetime.fromisoformat(text)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+    except (TypeError, ValueError):
+        return None
+
+
+def percent_difference(a: float | None, b: float | None) -> float | None:
+    if a is None or b is None or b == 0:
+        return None
+    return abs((a - b) / b) * 100.0
+
+
+def signed_change_pct(new: float | None, old: float | None) -> float | None:
+    if new is None or old is None or old == 0:
+        return None
+    return ((new - old) / old) * 100.0
+
+
 def extract_spot_prices(oil_data: dict[str, Any]) -> dict[str, Any]:
     candidates: list[tuple[Any, Any]] = []
 
-    # Az oil-data.json valódi EIA spot blokkja az elsődleges.
     spot = oil_data.get("spot")
     if isinstance(spot, dict):
         candidates.append((spot.get("brent"), spot.get("wti")))
@@ -119,26 +152,13 @@ def extract_spot_prices(oil_data: dict[str, Any]) -> dict[str, Any]:
         wti = parse_number(wti_raw)
 
         if brent is not None or wti is not None:
-            return {
-                "spot_brent": brent,
-                "spot_wti": wti,
-            }
+            return {"spot_brent": brent, "spot_wti": wti}
 
-    return {
-        "spot_brent": None,
-        "spot_wti": None,
-    }
+    return {"spot_brent": None, "spot_wti": None}
 
 
-def fetch_yahoo_quote(
-    url: str,
-    symbol: str,
-) -> dict[str, Any]:
-    response = requests.get(
-        url,
-        headers=REQUEST_HEADERS,
-        timeout=30,
-    )
+def fetch_yahoo_quote(url: str, symbol: str) -> dict[str, Any]:
+    response = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
     response.raise_for_status()
 
     payload = response.json()
@@ -155,41 +175,26 @@ def fetch_yahoo_quote(
     result = results[0]
     meta = result.get("meta") or {}
     timestamps = result.get("timestamp") or []
-
-    quote_blocks = (
-        result.get("indicators", {})
-        .get("quote", [])
-    )
+    quote_blocks = result.get("indicators", {}).get("quote", [])
     quote = quote_blocks[0] if quote_blocks else {}
-
     closes = quote.get("close") or []
     valid_points: list[tuple[int | float | None, float]] = []
 
     for index, close_raw in enumerate(closes):
         close = parse_number(close_raw)
-
         if close is None:
             continue
-
-        timestamp = (
-            timestamps[index]
-            if index < len(timestamps)
-            else None
-        )
+        timestamp = timestamps[index] if index < len(timestamps) else None
         valid_points.append((timestamp, close))
 
     if valid_points:
         timestamp, price = valid_points[-1]
     else:
-        price = parse_number(
-            meta.get("regularMarketPrice")
-        )
+        price = parse_number(meta.get("regularMarketPrice"))
         timestamp = meta.get("regularMarketTime")
 
     if price is None:
-        raise RuntimeError(
-            f"Nincs használható Yahoo Finance ár: {symbol}"
-        )
+        raise RuntimeError(f"Nincs használható Yahoo Finance ár: {symbol}")
 
     return {
         "price": round(price, 4),
@@ -199,6 +204,71 @@ def fetch_yahoo_quote(
         "instrument_type": meta.get("instrumentType"),
         "symbol": symbol,
         "source": "Yahoo Finance chart",
+    }
+
+
+def _get_path(payload: Any, path: str) -> Any:
+    current = payload
+    for key in path.split("."):
+        if not isinstance(current, dict):
+            return None
+        current = current.get(key)
+    return current
+
+
+def fetch_ukoilwatch_brent() -> dict[str, Any]:
+    response = requests.get(
+        UKOILWATCH_BRENT_URL,
+        headers=REQUEST_HEADERS,
+        timeout=30,
+    )
+    response.raise_for_status()
+    payload = response.json()
+
+    price_paths = [
+        "price",
+        "brent.price",
+        "data.price",
+        "current.price",
+        "latest.price",
+        "current_price",
+        "price_usd",
+        "brent_usd",
+        "usd_per_barrel",
+        "data.brent",
+        "current.brent",
+    ]
+    price = None
+    for path in price_paths:
+        price = parse_number(_get_path(payload, path))
+        if price is not None:
+            break
+
+    if price is None:
+        raise RuntimeError("UKOilWatch válaszban nem található Brent ár.")
+
+    timestamp = None
+    for path in [
+        "timestamp",
+        "as_of",
+        "asOf",
+        "updated",
+        "updated_at",
+        "data.timestamp",
+        "data.updated",
+        "current.timestamp",
+    ]:
+        value = _get_path(payload, path)
+        if value:
+            timestamp = str(value)
+            break
+
+    return {
+        "price": round(price, 4),
+        "timestamp": timestamp,
+        "currency": "USD",
+        "symbol": "Stooq cb.f via UKOilWatch",
+        "source": "UKOilWatch / Stooq",
     }
 
 
@@ -223,15 +293,166 @@ def fetch_market_prices() -> dict[str, Any]:
             errors[name] = str(exc)
             print(f"Figyelmeztetés: {name} lekérdezési hiba: {exc}")
 
+    try:
+        results["brent_secondary"] = fetch_ukoilwatch_brent()
+    except (
+        requests.RequestException,
+        ValueError,
+        KeyError,
+        RuntimeError,
+    ) as exc:
+        errors["brent_secondary"] = str(exc)
+        print(f"Figyelmeztetés: UKOilWatch Brent hiba: {exc}")
+
+    return {"quotes": results, "errors": errors}
+
+
+def yahoo_quote_is_fresh(quote: dict[str, Any] | None, now: datetime) -> bool:
+    if not quote:
+        return False
+    dt = parse_iso_datetime(quote.get("timestamp"))
+    if dt is None:
+        return True
+    age_minutes = (now - dt).total_seconds() / 60.0
+    return -5 <= age_minutes <= MAX_YAHOO_AGE_MINUTES
+
+
+def previous_brent_value(previous_output: dict[str, Any]) -> float | None:
+    prices = previous_output.get("prices")
+    if not isinstance(prices, dict):
+        return None
+    return parse_number(
+        prices.get("market_brent", prices.get("live_brent"))
+    )
+
+
+def choose_brent_price(
+    yahoo_quote: dict[str, Any] | None,
+    secondary_quote: dict[str, Any] | None,
+    previous_value: float | None,
+    spot_value: float | None,
+    now: datetime,
+) -> dict[str, Any]:
+    yahoo = (
+        parse_number(yahoo_quote.get("price"))
+        if yahoo_quote and yahoo_quote_is_fresh(yahoo_quote, now)
+        else None
+    )
+    secondary = (
+        parse_number(secondary_quote.get("price"))
+        if secondary_quote
+        else None
+    )
+
+    # Két aktuális forrás rendelkezésre áll.
+    if yahoo is not None and secondary is not None:
+        source_gap = percent_difference(yahoo, secondary) or 0.0
+        yahoo_move = signed_change_pct(yahoo, previous_value)
+        secondary_move = signed_change_pct(secondary, previous_value)
+
+        if source_gap <= SOURCE_AGREEMENT_PCT:
+            return {
+                "price": yahoo,
+                "source": "yahoo_confirmed",
+                "fallback": False,
+                "note": f"Yahoo és UKOilWatch eltérés: {source_gap:.2f}%",
+            }
+
+        # Nagy forráseltérésnél azt nézzük, megerősítik-e ugyanazt az irányt.
+        if yahoo_move is not None and secondary_move is not None:
+            same_direction = (
+                (yahoo_move >= 0 and secondary_move >= 0)
+                or (yahoo_move <= 0 and secondary_move <= 0)
+            )
+            if same_direction and source_gap <= SECONDARY_CONFIRM_PCT:
+                return {
+                    "price": yahoo,
+                    "source": "yahoo_direction_confirmed",
+                    "fallback": False,
+                    "note": (
+                        "Nagyobb mozgás, de a másodlagos forrás "
+                        "azonos irányt erősít meg."
+                    ),
+                }
+
+        # Ha a két aktuális forrás nagyon eltér, az önálló Yahoo-kilengést
+        # nem engedjük át. A független Stooq-alapú kontrollt használjuk.
+        return {
+            "price": secondary,
+            "source": "secondary_market_control",
+            "fallback": True,
+            "note": (
+                f"Yahoo/UKOilWatch eltérés {source_gap:.2f}%; "
+                "független kontrollár használva."
+            ),
+        }
+
+    # Csak Yahoo érhető el.
+    if yahoo is not None:
+        move = signed_change_pct(yahoo, previous_value)
+        if move is None or abs(move) <= NORMAL_MOVE_PCT:
+            return {
+                "price": yahoo,
+                "source": "yahoo_unconfirmed_normal_move",
+                "fallback": False,
+                "note": "Normál elmozdulás; Yahoo elfogadva.",
+            }
+
+        # Nagy, nem megerősített elmozdulásnál egy ciklusra megtartjuk az
+        # előző jó értéket. Így egy forráshiba nem írja felül azonnal az árat.
+        if previous_value is not None:
+            return {
+                "price": previous_value,
+                "source": "previous_value_guard",
+                "fallback": True,
+                "note": (
+                    f"Nem megerősített Yahoo elmozdulás: {move:+.2f}%; "
+                    "előző érték megtartva."
+                ),
+            }
+
+        return {
+            "price": yahoo,
+            "source": "yahoo_bootstrap",
+            "fallback": False,
+            "note": "Nincs előző érték; Yahoo induló értékként elfogadva.",
+        }
+
+    # Yahoo nincs, de a másodlagos aktuális forrás igen.
+    if secondary is not None:
+        return {
+            "price": secondary,
+            "source": "secondary_market_fallback",
+            "fallback": True,
+            "note": "Yahoo nem érhető el; UKOilWatch/Stooq használva.",
+        }
+
+    # Mindkét piaci forrás hibás: előző jó érték, majd EIA spot.
+    if previous_value is not None:
+        return {
+            "price": previous_value,
+            "source": "previous_value_fallback",
+            "fallback": True,
+            "note": "Piaci források nem érhetők el; előző érték megtartva.",
+        }
+
+    if spot_value is not None:
+        return {
+            "price": spot_value,
+            "source": "eia_spot_fallback",
+            "fallback": True,
+            "note": "Piaci források nem érhetők el; EIA spot használva.",
+        }
+
     return {
-        "quotes": results,
-        "errors": errors,
+        "price": None,
+        "source": "unavailable",
+        "fallback": True,
+        "note": "Nincs használható Brent-adat.",
     }
 
 
-def extract_chokepoint_values(
-    cp_data: dict[str, Any],
-) -> dict[str, Any]:
+def extract_chokepoint_values(cp_data: dict[str, Any]) -> dict[str, Any]:
     me = cp_data.get("middle_east_conflict_impact", {}) or {}
     meta = cp_data.get("meta", {}) or {}
 
@@ -239,9 +460,7 @@ def extract_chokepoint_values(
         "global_trade_risk_index": parse_number(
             cp_data.get("global_trade_risk_index")
         ),
-        "middle_east_conflict_impact": parse_number(
-            me.get("score")
-        ),
+        "middle_east_conflict_impact": parse_number(me.get("score")),
         "middle_east_conflict_label": me.get("label"),
         "daily_change": cp_data.get("daily_change", {}) or {},
         "top_risks": cp_data.get("top_risks", []) or [],
@@ -250,15 +469,9 @@ def extract_chokepoint_values(
             "updated": meta.get("updated"),
             "method": meta.get("method"),
             "uses_tanker_signal": meta.get("uses_tanker_signal"),
-            "uses_me_security_signal": meta.get(
-                "uses_me_security_signal"
-            ),
-            "tanker_input_source": meta.get(
-                "tanker_input_source"
-            ),
-            "me_security_input_source": meta.get(
-                "me_security_input_source"
-            ),
+            "uses_me_security_signal": meta.get("uses_me_security_signal"),
+            "tanker_input_source": meta.get("tanker_input_source"),
+            "me_security_input_source": meta.get("me_security_input_source"),
         },
     }
 
@@ -266,6 +479,7 @@ def extract_chokepoint_values(
 def main() -> None:
     oil_data = safe_load_json(OIL_FILE, {})
     cp_data = safe_load_json(CHOKEPOINT_FILE, {})
+    previous_output = safe_load_json(OUTPUT_FILE, {})
 
     now = datetime.now(timezone.utc)
     generated_at = now.isoformat().replace("+00:00", "Z")
@@ -277,36 +491,39 @@ def main() -> None:
     errors = market_result["errors"]
 
     brent_quote = quotes.get("brent")
+    brent_secondary = quotes.get("brent_secondary")
     wti_quote = quotes.get("wti")
 
-    market_brent = (
-        brent_quote["price"]
-        if brent_quote
-        else spot_prices["spot_brent"]
-    )
-    market_wti = (
-        wti_quote["price"]
-        if wti_quote
-        else spot_prices["spot_wti"]
+    previous_brent = previous_brent_value(previous_output)
+    brent_selection = choose_brent_price(
+        yahoo_quote=brent_quote,
+        secondary_quote=brent_secondary,
+        previous_value=previous_brent,
+        spot_value=spot_prices["spot_brent"],
+        now=now,
     )
 
-    brent_fallback = brent_quote is None
+    market_brent = brent_selection["price"]
+    market_wti = (
+        wti_quote["price"] if wti_quote else spot_prices["spot_wti"]
+    )
+
+    brent_fallback = bool(brent_selection["fallback"])
     wti_fallback = wti_quote is None
     fallback_used = brent_fallback or wti_fallback
 
     if market_brent is None and market_wti is None:
         raise RuntimeError(
-            "Sem Yahoo futures, sem EIA spot ár nem érhető el."
+            "Sem piaci, sem tartalék Brent/WTI ár nem érhető el."
         )
 
     cp_values = extract_chokepoint_values(cp_data)
 
+    # A JSON séma és a meglévő mezőnevek változatlanok maradnak.
     payload = {
         "meta": {
-            # Régi mezők változatlanul megmaradnak.
             "updated": legacy_updated,
             "source_mode": "live",
-            # Új, pontosabb metaadatok.
             "generated_at": generated_at,
             "update_interval_minutes": 30,
             "data_mode": "periodic_market_snapshot",
@@ -314,12 +531,10 @@ def main() -> None:
             "fallback_used": fallback_used,
         },
         "prices": {
-            # Új, pontos mezőnevek
             "market_brent": market_brent,
             "market_wti": market_wti,
             "spot_brent": spot_prices["spot_brent"],
             "spot_wti": spot_prices["spot_wti"],
-            # Visszafelé kompatibilis mezők a jelenlegi dashboardhoz
             "live_brent": market_brent,
             "live_wti": market_wti,
             "live_source": (
@@ -332,14 +547,10 @@ def main() -> None:
             "market_symbol_brent": "BZ=F",
             "market_symbol_wti": "CL=F",
             "market_timestamp_brent": (
-                brent_quote.get("timestamp")
-                if brent_quote
-                else None
+                brent_quote.get("timestamp") if brent_quote else None
             ),
             "market_timestamp_wti": (
-                wti_quote.get("timestamp")
-                if wti_quote
-                else None
+                wti_quote.get("timestamp") if wti_quote else None
             ),
             "brent_fallback_used": brent_fallback,
             "wti_fallback_used": wti_fallback,
@@ -385,9 +596,12 @@ def main() -> None:
 
     print(f"{OUTPUT_FILE} frissítve.")
     print(
-        f"Brent: {market_brent} "
-        f"({'fallback' if brent_fallback else 'Yahoo futures'})"
+        f"Brent: {market_brent} | "
+        f"választás={brent_selection['source']} | "
+        f"{brent_selection['note']}"
     )
+    if brent_secondary:
+        print(f"UKOilWatch kontroll: {brent_secondary.get('price')}")
     print(
         f"WTI: {market_wti} "
         f"({'fallback' if wti_fallback else 'Yahoo futures'})"
@@ -400,4 +614,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
