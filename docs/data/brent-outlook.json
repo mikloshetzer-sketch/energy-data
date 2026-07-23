@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-07-23T01:00:46Z",
+  "generated_at": "2026-07-23T04:42:57Z",
   "dataset": "brent_outlook",
   "horizon_days": 30,
   "current": {
-    "price_usd": 94.88,
+    "price_usd": 96.21,
     "date": "2026-07-23",
-    "timestamp": "2026-07-23T01:00:46Z"
+    "timestamp": "2026-07-23T04:42:57Z"
   },
   "outlook": {
-    "center_price_usd": 100.67,
-    "lower_price_usd": 85.68,
-    "upper_price_usd": 115.67,
+    "center_price_usd": 102.01,
+    "lower_price_usd": 86.27,
+    "upper_price_usd": 117.74,
     "direction": "BULLISH",
-    "confidence": "MEDIUM",
+    "confidence": "LOW",
     "current_range_position": "NEAR_CENTER"
   },
   "signals": {
@@ -20,9 +20,9 @@
     "fundamental_shift_pct": 1.32,
     "momentum_shift_pct": 3.5,
     "trend_shift_pct": 0.75,
-    "raw_total_center_shift_pct": 6.11,
-    "total_center_shift_pct": 6.11,
-    "volatility_band_pct": 14.89
+    "raw_total_center_shift_pct": 6.03,
+    "total_center_shift_pct": 6.03,
+    "volatility_band_pct": 15.43
   },
   "contributions_pct": {
     "ompi": 1.32,
@@ -30,7 +30,7 @@
     "trend": 0.75,
     "inventory": 0.0,
     "supply_demand_balance": 0.0,
-    "chokepoint": 0.54,
+    "chokepoint": 0.46,
     "market_confirmation": 0.0
   },
   "driver_ranking": [
@@ -55,7 +55,7 @@
     {
       "component": "Chokepoint",
       "key": "chokepoint",
-      "contribution_pct": 0.54,
+      "contribution_pct": 0.46,
       "direction": "BULLISH"
     },
     {
@@ -80,7 +80,7 @@
   "overlay_metrics": {
     "inventory_score": 50.0,
     "latest_balance_mbd": null,
-    "chokepoint_score": 71.4,
+    "chokepoint_score": 68.2,
     "market_confirmation_score": null
   },
   "optional_inputs": {
@@ -110,20 +110,19 @@
     }
   },
   "market_metrics": {
-    "change_5d_pct": 7.7,
-    "change_20d_pct": 32.14,
-    "change_60d_pct": -8.36,
-    "weighted_momentum_pct": 13.88,
+    "change_5d_pct": 9.21,
+    "change_20d_pct": 34.0,
+    "change_60d_pct": -7.08,
+    "weighted_momentum_pct": 15.48,
     "momentum_data_coverage": 1.0,
-    "moving_average_20d": 81.99,
-    "moving_average_60d": 84.06,
-    "daily_realised_volatility_20d": 0.027193,
+    "moving_average_20d": 82.05,
+    "moving_average_60d": 84.08,
+    "daily_realised_volatility_20d": 0.028168,
     "trend_state": "MIXED_BULLISH"
   },
   "confidence_details": {
     "reasons": [
-      "OMPI, momentum and trend broadly confirm the same direction.",
-      "Confidence is capped at MEDIUM until Market Confirmation is available."
+      "Realised volatility is high, widening the scenario range."
     ],
     "market_confirmation_available": false,
     "confidence_cap": "MEDIUM"
