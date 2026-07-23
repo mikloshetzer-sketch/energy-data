@@ -1,32 +1,32 @@
 {
-  "generated_at": "2026-07-23T12:46:56Z",
+  "generated_at": "2026-07-23T12:54:19Z",
   "dataset": "brent_outlook",
   "horizon_days": 30,
   "current": {
-    "price_usd": 93.01,
+    "price_usd": 86.74,
     "date": "2026-07-23",
-    "timestamp": "2026-07-23T12:46:56Z"
+    "timestamp": "2026-07-23T12:54:19Z"
   },
   "outlook": {
-    "center_price_usd": 98.67,
-    "lower_price_usd": 83.97,
-    "upper_price_usd": 113.36,
+    "center_price_usd": 90.23,
+    "lower_price_usd": 73.99,
+    "upper_price_usd": 106.47,
     "direction": "BULLISH",
-    "confidence": "MEDIUM",
+    "confidence": "LOW",
     "current_range_position": "NEAR_CENTER"
   },
   "signals": {
     "ompi_score": 63.1,
     "fundamental_shift_pct": 1.31,
-    "momentum_shift_pct": 3.5,
+    "momentum_shift_pct": 1.44,
     "trend_shift_pct": 0.75,
-    "raw_total_center_shift_pct": 6.08,
-    "total_center_shift_pct": 6.08,
-    "volatility_band_pct": 14.9
+    "raw_total_center_shift_pct": 4.02,
+    "total_center_shift_pct": 4.02,
+    "volatility_band_pct": 18.0
   },
   "contributions_pct": {
     "ompi": 1.31,
-    "momentum": 3.5,
+    "momentum": 1.44,
     "trend": 0.75,
     "inventory": 0.0,
     "supply_demand_balance": 0.0,
@@ -37,7 +37,7 @@
     {
       "component": "Momentum",
       "key": "momentum",
-      "contribution_pct": 3.5,
+      "contribution_pct": 1.44,
       "direction": "BULLISH"
     },
     {
@@ -110,20 +110,19 @@
     }
   },
   "market_metrics": {
-    "change_5d_pct": 5.57,
-    "change_20d_pct": 29.54,
-    "change_60d_pct": -10.17,
-    "weighted_momentum_pct": 11.64,
+    "change_5d_pct": -1.54,
+    "change_20d_pct": 20.81,
+    "change_60d_pct": -16.23,
+    "weighted_momentum_pct": 4.11,
     "momentum_data_coverage": 1.0,
-    "moving_average_20d": 82.05,
-    "moving_average_60d": 84.08,
-    "daily_realised_volatility_20d": 0.027201,
+    "moving_average_20d": 81.73,
+    "moving_average_60d": 83.97,
+    "daily_realised_volatility_20d": 0.033687,
     "trend_state": "MIXED_BULLISH"
   },
   "confidence_details": {
     "reasons": [
-      "OMPI, momentum and trend broadly confirm the same direction.",
-      "Confidence is capped at MEDIUM until Market Confirmation is available."
+      "Realised volatility is high, widening the scenario range."
     ],
     "market_confirmation_available": false,
     "confidence_cap": "MEDIUM"
