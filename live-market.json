@@ -1,35 +1,35 @@
 {
   "meta": {
-    "updated": "2026-07-23 13:40 UTC",
+    "updated": "2026-07-23 13:59 UTC",
     "source_mode": "live",
-    "generated_at": "2026-07-23T13:40:21.775735Z",
+    "generated_at": "2026-07-23T13:59:09.179517Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
-    "fallback_used": false
+    "fallback_used": true
   },
   "prices": {
-    "market_brent": 86.66,
-    "market_wti": 90.88,
+    "market_brent": 97.53,
+    "market_wti": 91.54,
     "spot_brent": 86.99,
     "spot_wti": 84.38,
-    "live_brent": 86.66,
-    "live_wti": 90.88,
-    "live_source": "yahoo_futures",
+    "live_brent": 97.53,
+    "live_wti": 91.54,
+    "live_source": "mixed_or_spot_fallback",
     "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-07-23T13:26:21Z",
-    "market_timestamp_wti": "2026-07-23T13:30:21Z",
-    "brent_fallback_used": false,
+    "market_timestamp_brent": "2026-07-23T13:35:00Z",
+    "market_timestamp_wti": "2026-07-23T13:49:09Z",
+    "brent_fallback_used": true,
     "wti_fallback_used": false,
     "currency": "USD",
     "unit": "USD/barrel"
   },
   "source_status": {
     "brent": {
-      "status": "market_futures",
+      "status": "eia_spot_fallback",
       "error": null
     },
     "wti": {
