@@ -20,6 +20,8 @@ YAHOO_WTI_URL = (
     "CL=F?interval=5m&range=1d"
 )
 UKOILWATCH_BRENT_URL = "https://ukoilwatch.com/api/v1/brent"
+OILPRICEAPI_URL = "https://api.oilpriceapi.com/v1/prices/latest"
+OILPRICEAPI_KEY = os.environ.get("OILPRICEAPI_KEY")
 
 REQUEST_HEADERS = {
     "User-Agent": (
@@ -332,6 +334,46 @@ def fetch_ukoilwatch_brent() -> dict[str, Any]:
     }
 
 
+def fetch_oilpriceapi_brent() -> dict[str, Any]:
+    if not OILPRICEAPI_KEY:
+        raise RuntimeError("OILPRICEAPI_KEY secret nem érhető el.")
+
+    response = requests.get(
+        OILPRICEAPI_URL,
+        params={"by_code": "BRENT_CRUDE_USD"},
+        headers={
+            "Authorization": f"Token {OILPRICEAPI_KEY}",
+            "Accept": "application/json",
+            "User-Agent": REQUEST_HEADERS["User-Agent"],
+        },
+        timeout=30,
+    )
+    response.raise_for_status()
+    payload = response.json()
+
+    data = payload.get("data") if isinstance(payload, dict) else None
+    if not isinstance(data, dict):
+        raise RuntimeError("OilPriceAPI válaszban nincs data objektum.")
+
+    price = parse_number(data.get("price"))
+    if price is None:
+        raise RuntimeError("OilPriceAPI válaszban nincs használható Brent ár.")
+
+    timestamp = (
+        data.get("created_at")
+        or data.get("updated_at")
+        or data.get("timestamp")
+    )
+
+    return {
+        "price": round(price, 4),
+        "timestamp": str(timestamp) if timestamp else None,
+        "currency": data.get("currency") or "USD",
+        "symbol": data.get("code") or "BRENT_CRUDE_USD",
+        "source": "OilPriceAPI",
+    }
+
+
 def fetch_market_prices() -> dict[str, Any]:
     results: dict[str, Any] = {}
     errors: dict[str, str] = {}
@@ -386,9 +428,54 @@ def previous_brent_value(previous_output: dict[str, Any]) -> float | None:
     )
 
 
+def should_check_oilpriceapi(
+    yahoo_quote: dict[str, Any] | None,
+    wti_quote: dict[str, Any] | None,
+    previous_value: float | None,
+    now: datetime,
+) -> tuple[bool, str]:
+    """
+    OilPriceAPI-t csak indokolt esetben hívjuk:
+    - Yahoo kiesik vagy túl régi;
+    - a Yahoo >5%-ot mozdul az előző validált Brenthez képest;
+    - a Brent több mint 2 USD-vel a WTI alá kerül (anomáliajelző);
+    - 4 óránként egyszer független kontrollt végzünk.
+
+    A 4 órás kontroll a félórás cron mellett napi ~6 kérés,
+    vagyis kb. 180 kérés/hó.
+    """
+    if not OILPRICEAPI_KEY:
+        return False, "nincs OILPRICEAPI_KEY"
+
+    if not yahoo_quote or not yahoo_quote_is_fresh(yahoo_quote, now):
+        return True, "Yahoo nem elérhető vagy nem friss"
+
+    yahoo = parse_number(yahoo_quote.get("price"))
+    if yahoo is None:
+        return True, "Yahoo Brent ár nem használható"
+
+    move = signed_change_pct(yahoo, previous_value)
+    if move is not None and abs(move) > NORMAL_MOVE_PCT:
+        return True, f"Yahoo Brent elmozdulás {move:+.2f}%"
+
+    wti = parse_number(wti_quote.get("price")) if wti_quote else None
+    if wti is not None and yahoo < wti - 2.0:
+        return True, (
+            f"Brent/WTI anomália: Brent {yahoo:.2f}, WTI {wti:.2f}"
+        )
+
+    # A schedule :07 és :37 perckor fut. Így a 0/4/8/12/16/20 UTC órák
+    # első futása végez független kontrollt: napi kb. 6 API-kérés.
+    if now.hour % 4 == 0 and now.minute < 30:
+        return True, "4 órás független kontroll"
+
+    return False, "Yahoo normál; OilPriceAPI nem szükséges"
+
+
 def choose_brent_price(
     yahoo_quote: dict[str, Any] | None,
     secondary_quote: dict[str, Any] | None,
+    rescue_quote: dict[str, Any] | None,
     previous_value: float | None,
     spot_value: float | None,
     now: datetime,
@@ -403,54 +490,35 @@ def choose_brent_price(
         if secondary_quote
         else None
     )
+    rescue = (
+        parse_number(rescue_quote.get("price"))
+        if rescue_quote
+        else None
+    )
 
-    # Két aktuális forrás rendelkezésre áll.
-    if yahoo is not None and secondary is not None:
-        source_gap = percent_difference(yahoo, secondary) or 0.0
-        yahoo_move = signed_change_pct(yahoo, previous_value)
-        secondary_move = signed_change_pct(secondary, previous_value)
-
-        if source_gap <= SOURCE_AGREEMENT_PCT:
-            return {
-                "price": yahoo,
-                "source": "yahoo_confirmed",
-                "fallback": False,
-                "note": f"Yahoo és UKOilWatch eltérés: {source_gap:.2f}%",
-            }
-
-        # Nagy forráseltérésnél azt nézzük, megerősítik-e ugyanazt az irányt.
-        if yahoo_move is not None and secondary_move is not None:
-            same_direction = (
-                (yahoo_move >= 0 and secondary_move >= 0)
-                or (yahoo_move <= 0 and secondary_move <= 0)
-            )
-            if same_direction and source_gap <= SECONDARY_CONFIRM_PCT:
-                return {
-                    "price": yahoo,
-                    "source": "yahoo_direction_confirmed",
-                    "fallback": False,
-                    "note": (
-                        "Nagyobb mozgás, de a másodlagos forrás "
-                        "azonos irányt erősít meg."
-                    ),
-                }
-
-        # Ha a két aktuális forrás nagyon eltér, az önálló Yahoo-kilengést
-        # nem engedjük át. A független Stooq-alapú kontrollt használjuk.
-        return {
-            "price": secondary,
-            "source": "secondary_market_control",
-            "fallback": True,
-            "note": (
-                f"Yahoo/UKOilWatch eltérés {source_gap:.2f}%; "
-                "független kontrollár használva."
-            ),
-        }
-
-    # Csak Yahoo érhető el.
+    # 1. Yahoo marad az elsődleges. Normál, előző értékhez közeli mozgásnál
+    # azonnal elfogadjuk, így az OilPriceAPI kvótát nem tesszük elsődlegessé.
     if yahoo is not None:
-        move = signed_change_pct(yahoo, previous_value)
-        if move is None or abs(move) <= NORMAL_MOVE_PCT:
+        yahoo_move = signed_change_pct(yahoo, previous_value)
+
+        # Ha van előző validált érték és a Yahoo ahhoz képest normálisat mozdult,
+        # további forrástól függetlenül Yahoo marad.
+        if yahoo_move is not None and abs(yahoo_move) <= NORMAL_MOVE_PCT:
+            # Kivétel: ha a fizetős/próba független forrás nagy eltérést mutat,
+            # és a secondary is a Yahoo körül van, akkor a Yahoo-család gyanús.
+            if rescue is not None:
+                rescue_gap = percent_difference(yahoo, rescue) or 0.0
+                if rescue_gap > SOURCE_AGREEMENT_PCT:
+                    return {
+                        "price": rescue,
+                        "source": "oilpriceapi_rescue",
+                        "fallback": True,
+                        "note": (
+                            f"Yahoo/OilPriceAPI eltérés {rescue_gap:.2f}%; "
+                            "független tartalékforrás használva."
+                        ),
+                    }
+
             return {
                 "price": yahoo,
                 "source": "yahoo_unconfirmed_normal_move",
@@ -458,56 +526,110 @@ def choose_brent_price(
                 "note": "Normál elmozdulás; Yahoo elfogadva.",
             }
 
-        # Nagy, nem megerősített elmozdulásnál egy ciklusra megtartjuk az
-        # előző jó értéket. Így egy forráshiba nem írja felül azonnal az árat.
-        if previous_value is not None:
+        # Induláskor nincs előző jó érték: ha a független API elérhető,
+        # ellenőrizzük a Yahoo-t. Ha egyeznek, Yahoo marad; ha nem, rescue.
+        if previous_value is None:
+            if rescue is not None:
+                rescue_gap = percent_difference(yahoo, rescue) or 0.0
+                if rescue_gap <= SOURCE_AGREEMENT_PCT:
+                    return {
+                        "price": yahoo,
+                        "source": "yahoo_confirmed_by_oilpriceapi",
+                        "fallback": False,
+                        "note": f"Yahoo/OilPriceAPI eltérés: {rescue_gap:.2f}%",
+                    }
+                return {
+                    "price": rescue,
+                    "source": "oilpriceapi_rescue",
+                    "fallback": True,
+                    "note": (
+                        f"Bootstrap Yahoo/OilPriceAPI eltérés {rescue_gap:.2f}%; "
+                        "független tartalékforrás használva."
+                    ),
+                }
             return {
-                "price": previous_value,
-                "source": "previous_value_guard",
+                "price": yahoo,
+                "source": "yahoo_bootstrap",
+                "fallback": False,
+                "note": "Nincs előző érték és nincs rescue; Yahoo induló érték.",
+            }
+
+        # 2. Nagy Yahoo-mozgás. Először a független OilPriceAPI-val ellenőrzünk.
+        if rescue is not None:
+            rescue_gap = percent_difference(yahoo, rescue) or 0.0
+            if rescue_gap <= SOURCE_AGREEMENT_PCT:
+                return {
+                    "price": yahoo,
+                    "source": "yahoo_confirmed_by_oilpriceapi",
+                    "fallback": False,
+                    "note": (
+                        f"Nagyobb Yahoo-mozgás, OilPriceAPI megerősíti; "
+                        f"eltérés {rescue_gap:.2f}%."
+                    ),
+                }
+
+            return {
+                "price": rescue,
+                "source": "oilpriceapi_rescue",
                 "fallback": True,
                 "note": (
-                    f"Nem megerősített Yahoo elmozdulás: {move:+.2f}%; "
-                    "előző érték megtartva."
+                    f"Yahoo/OilPriceAPI eltérés {rescue_gap:.2f}%; "
+                    "független tartalékforrás használva."
                 ),
             }
 
-        return {
-            "price": yahoo,
-            "source": "yahoo_bootstrap",
-            "fallback": False,
-            "note": "Nincs előző érték; Yahoo induló értékként elfogadva.",
-        }
+        # 3. Ha a próba/fizetős API nem érhető el, a másodlagos forrást csak
+        # megerősítésként használjuk, de nem tekintjük teljesen függetlennek.
+        if secondary is not None:
+            source_gap = percent_difference(yahoo, secondary) or 0.0
+            secondary_move = signed_change_pct(secondary, previous_value)
+            if (
+                source_gap <= SOURCE_AGREEMENT_PCT
+                and secondary_move is not None
+                and (
+                    (yahoo_move >= 0 and secondary_move >= 0)
+                    or (yahoo_move <= 0 and secondary_move <= 0)
+                )
+            ):
+                return {
+                    "price": yahoo,
+                    "source": "yahoo_secondary_confirmed",
+                    "fallback": False,
+                    "note": (
+                        "Nagy mozgás; UKOilWatch azonos irányban megerősíti "
+                        f"(eltérés {source_gap:.2f}%)."
+                    ),
+                }
 
-    # Yahoo nincs, de a másodlagos aktuális forrás igen.
-    if secondary is not None:
-        secondary_move = signed_change_pct(secondary, previous_value)
-
-        # A másodlagos forrás önmagában is használható normál mozgásnál.
-        if (
-            secondary_move is None
-            or abs(secondary_move) <= NORMAL_MOVE_PCT
-            or previous_value is None
-        ):
-            return {
-                "price": secondary,
-                "source": "secondary_market_fallback",
-                "fallback": True,
-                "note": "Yahoo nem érhető el; UKOilWatch/Stooq használva.",
-            }
-
-        # Nagy, egyetlen forrásból jövő ugrásnál nem írjuk felül vakon
-        # az előző értéket. A következő futás újraértékeli a helyzetet.
+        # Nincs független megerősítés: egy ciklusra előző validált ár.
         return {
             "price": previous_value,
             "source": "previous_value_guard",
             "fallback": True,
             "note": (
-                f"Nem megerősített másodlagos elmozdulás: "
-                f"{secondary_move:+.2f}%; előző érték megtartva."
+                f"Nem megerősített Yahoo elmozdulás: {yahoo_move:+.2f}%; "
+                "előző validált érték megtartva."
             ),
         }
 
-    # Mindkét piaci forrás hibás: előző jó érték, majd EIA spot.
+    # 4. Yahoo kiesik: OilPriceAPI a legjobb tartalék.
+    if rescue is not None:
+        return {
+            "price": rescue,
+            "source": "oilpriceapi_fallback",
+            "fallback": True,
+            "note": "Yahoo nem érhető el; OilPriceAPI használva.",
+        }
+
+    # 5. Ezután UKOilWatch, majd előző snapshot, végül EIA spot.
+    if secondary is not None:
+        return {
+            "price": secondary,
+            "source": "secondary_market_fallback",
+            "fallback": True,
+            "note": "Yahoo és OilPriceAPI nem érhető el; UKOilWatch használva.",
+        }
+
     if previous_value is not None:
         return {
             "price": previous_value,
@@ -575,9 +697,37 @@ def main() -> None:
     wti_quote = quotes.get("wti")
 
     previous_brent = previous_brent_value(previous_output)
+
+    brent_rescue = None
+    rescue_needed, rescue_reason = should_check_oilpriceapi(
+        yahoo_quote=brent_quote,
+        wti_quote=wti_quote,
+        previous_value=previous_brent,
+        now=now,
+    )
+
+    if rescue_needed:
+        try:
+            brent_rescue = fetch_oilpriceapi_brent()
+            print(
+                "OilPriceAPI ellenőrzés aktiválva: "
+                f"{rescue_reason}"
+            )
+        except (
+            requests.RequestException,
+            ValueError,
+            KeyError,
+            RuntimeError,
+        ) as exc:
+            errors["brent_rescue"] = str(exc)
+            print(f"Figyelmeztetés: OilPriceAPI Brent hiba: {exc}")
+    else:
+        print(f"OilPriceAPI kihagyva: {rescue_reason}")
+
     brent_selection = choose_brent_price(
         yahoo_quote=brent_quote,
         secondary_quote=brent_secondary,
+        rescue_quote=brent_rescue,
         previous_value=previous_brent,
         spot_value=spot_prices["spot_brent"],
         now=now,
@@ -601,9 +751,18 @@ def main() -> None:
         "yahoo_direction_confirmed",
         "yahoo_unconfirmed_normal_move",
         "yahoo_bootstrap",
+        "yahoo_confirmed_by_oilpriceapi",
+        "yahoo_secondary_confirmed",
     }:
         brent_market_source = "Yahoo Finance chart"
         brent_status = "market_futures"
+
+    elif brent_selection_source in {
+        "oilpriceapi_rescue",
+        "oilpriceapi_fallback",
+    }:
+        brent_market_source = "OilPriceAPI"
+        brent_status = "independent_market_fallback"
 
     elif brent_selection_source in {
         "secondary_market_control",
@@ -678,12 +837,19 @@ def main() -> None:
             "brent": {
                 "status": brent_status,
                 "error": (
-                    errors.get("brent")
-                    if brent_selection_source not in {
-                        "secondary_market_control",
-                        "secondary_market_fallback",
+                    errors.get("brent_rescue")
+                    if brent_selection_source in {
+                        "oilpriceapi_rescue",
+                        "oilpriceapi_fallback",
                     }
-                    else errors.get("brent_secondary")
+                    else (
+                        errors.get("brent_secondary")
+                        if brent_selection_source in {
+                            "secondary_market_control",
+                            "secondary_market_fallback",
+                        }
+                        else errors.get("brent")
+                    )
                 ),
             },
             "wti": {
@@ -728,6 +894,11 @@ def main() -> None:
         print(
             f"UKOilWatch kontroll: {brent_secondary.get('price')}"
             f"{path_info}"
+        )
+    if brent_rescue:
+        print(
+            f"OilPriceAPI kontroll: {brent_rescue.get('price')} "
+            f"| idő={brent_rescue.get('timestamp')}"
         )
     print(
         f"WTI: {market_wti} "
