@@ -592,6 +592,41 @@ def main() -> None:
     wti_fallback = wti_quote is None
     fallback_used = brent_fallback or wti_fallback
 
+    # A meglévő JSON-mezők maradnak, de a Brent forrásleírása
+    # most már a ténylegesen kiválasztott adatforrást tükrözi.
+    brent_selection_source = brent_selection["source"]
+
+    if brent_selection_source in {
+        "yahoo_confirmed",
+        "yahoo_direction_confirmed",
+        "yahoo_unconfirmed_normal_move",
+        "yahoo_bootstrap",
+    }:
+        brent_market_source = "Yahoo Finance chart"
+        brent_status = "market_futures"
+
+    elif brent_selection_source in {
+        "secondary_market_control",
+        "secondary_market_fallback",
+    }:
+        brent_market_source = "UKOilWatch / Stooq"
+        brent_status = "secondary_market_control"
+
+    elif brent_selection_source in {
+        "previous_value_guard",
+        "previous_value_fallback",
+    }:
+        brent_market_source = "Previous validated market snapshot"
+        brent_status = "previous_market_snapshot"
+
+    elif brent_selection_source == "eia_spot_fallback":
+        brent_market_source = "EIA via oil-data.json"
+        brent_status = "eia_spot_fallback"
+
+    else:
+        brent_market_source = "Unavailable"
+        brent_status = "unavailable"
+
     if market_brent is None and market_wti is None:
         raise RuntimeError(
             "Sem piaci, sem tartalék Brent/WTI ár nem érhető el."
@@ -617,12 +652,14 @@ def main() -> None:
             "spot_wti": spot_prices["spot_wti"],
             "live_brent": market_brent,
             "live_wti": market_wti,
+            # A live_source régi értékkészletét kompatibilitási okból
+            # változatlanul hagyjuk.
             "live_source": (
                 "yahoo_futures"
                 if not fallback_used
                 else "mixed_or_spot_fallback"
             ),
-            "market_source": "Yahoo Finance chart",
+            "market_source": brent_market_source,
             "spot_source": "EIA via oil-data.json",
             "market_symbol_brent": "BZ=F",
             "market_symbol_wti": "CL=F",
@@ -639,12 +676,15 @@ def main() -> None:
         },
         "source_status": {
             "brent": {
-                "status": (
-                    "market_futures"
-                    if not brent_fallback
-                    else "eia_spot_fallback"
+                "status": brent_status,
+                "error": (
+                    errors.get("brent")
+                    if brent_selection_source not in {
+                        "secondary_market_control",
+                        "secondary_market_fallback",
+                    }
+                    else errors.get("brent_secondary")
                 ),
-                "error": errors.get("brent"),
             },
             "wti": {
                 "status": (
@@ -678,6 +718,8 @@ def main() -> None:
     print(
         f"Brent: {market_brent} | "
         f"választás={brent_selection['source']} | "
+        f"forrás={brent_market_source} | "
+        f"státusz={brent_status} | "
         f"{brent_selection['note']}"
     )
     if brent_secondary:
