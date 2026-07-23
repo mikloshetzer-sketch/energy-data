@@ -38,6 +38,8 @@ jobs:
           python -m pip install requests
 
       - name: Piaci pillanatkép frissítése
+        env:
+          OILPRICEAPI_KEY: ${{ secrets.OILPRICEAPI_KEY }}
         run: python update_live_market.py
 
       - name: JSON ellenőrzése
