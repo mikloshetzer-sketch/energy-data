@@ -216,6 +216,32 @@ def _get_path(payload: Any, path: str) -> Any:
     return current
 
 
+def _walk_price_candidates(value: Any, path: str = "") -> list[tuple[str, float]]:
+    """Recursively collect plausible Brent price values from unknown JSON shapes."""
+    found: list[tuple[str, float]] = []
+
+    if isinstance(value, dict):
+        for key, child in value.items():
+            child_path = f"{path}.{key}" if path else str(key)
+            key_lower = str(key).lower()
+
+            # Prefer fields whose names actually look like price/Brent values.
+            if any(token in key_lower for token in (
+                "price", "brent", "close", "last", "value", "usd"
+            )):
+                number = parse_number(child)
+                if number is not None and 20.0 <= number <= 300.0:
+                    found.append((child_path, number))
+
+            found.extend(_walk_price_candidates(child, child_path))
+
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            found.extend(_walk_price_candidates(child, f"{path}[{index}]"))
+
+    return found
+
+
 def fetch_ukoilwatch_brent() -> dict[str, Any]:
     response = requests.get(
         UKOILWATCH_BRENT_URL,
@@ -225,6 +251,7 @@ def fetch_ukoilwatch_brent() -> dict[str, Any]:
     response.raise_for_status()
     payload = response.json()
 
+    # First try known/expected paths.
     price_paths = [
         "price",
         "brent.price",
@@ -237,18 +264,48 @@ def fetch_ukoilwatch_brent() -> dict[str, Any]:
         "usd_per_barrel",
         "data.brent",
         "current.brent",
+        "data.current.price",
+        "data.latest.price",
+        "quote.price",
+        "quote.last",
+        "data.quote.price",
+        "data.close",
+        "close",
+        "last",
     ]
+
     price = None
-    for path in price_paths:
-        price = parse_number(_get_path(payload, path))
-        if price is not None:
+    selected_path = None
+
+    for candidate_path in price_paths:
+        candidate = parse_number(_get_path(payload, candidate_path))
+        if candidate is not None and 20.0 <= candidate <= 300.0:
+            price = candidate
+            selected_path = candidate_path
             break
 
+    # If the provider changes its JSON wrapper, search nested structures
+    # rather than dropping the secondary source completely.
     if price is None:
-        raise RuntimeError("UKOilWatch válaszban nem található Brent ár.")
+        candidates = _walk_price_candidates(payload)
+
+        # Prefer paths explicitly mentioning Brent/price/last/close.
+        priority_tokens = ("brent", "price", "last", "close")
+        candidates.sort(
+            key=lambda item: (
+                -sum(token in item[0].lower() for token in priority_tokens),
+                len(item[0]),
+            )
+        )
+
+        if candidates:
+            selected_path, price = candidates[0]
+
+    if price is None:
+        raise RuntimeError("UKOilWatch válaszban nem található megbízható Brent ár.")
 
     timestamp = None
-    for path in [
+    for candidate_path in [
         "timestamp",
         "as_of",
         "asOf",
@@ -257,8 +314,10 @@ def fetch_ukoilwatch_brent() -> dict[str, Any]:
         "data.timestamp",
         "data.updated",
         "current.timestamp",
+        "data.current.timestamp",
+        "quote.timestamp",
     ]:
-        value = _get_path(payload, path)
+        value = _get_path(payload, candidate_path)
         if value:
             timestamp = str(value)
             break
@@ -269,6 +328,7 @@ def fetch_ukoilwatch_brent() -> dict[str, Any]:
         "currency": "USD",
         "symbol": "Stooq cb.f via UKOilWatch",
         "source": "UKOilWatch / Stooq",
+        "_parsed_path": selected_path,
     }
 
 
@@ -420,11 +480,31 @@ def choose_brent_price(
 
     # Yahoo nincs, de a másodlagos aktuális forrás igen.
     if secondary is not None:
+        secondary_move = signed_change_pct(secondary, previous_value)
+
+        # A másodlagos forrás önmagában is használható normál mozgásnál.
+        if (
+            secondary_move is None
+            or abs(secondary_move) <= NORMAL_MOVE_PCT
+            or previous_value is None
+        ):
+            return {
+                "price": secondary,
+                "source": "secondary_market_fallback",
+                "fallback": True,
+                "note": "Yahoo nem érhető el; UKOilWatch/Stooq használva.",
+            }
+
+        # Nagy, egyetlen forrásból jövő ugrásnál nem írjuk felül vakon
+        # az előző értéket. A következő futás újraértékeli a helyzetet.
         return {
-            "price": secondary,
-            "source": "secondary_market_fallback",
+            "price": previous_value,
+            "source": "previous_value_guard",
             "fallback": True,
-            "note": "Yahoo nem érhető el; UKOilWatch/Stooq használva.",
+            "note": (
+                f"Nem megerősített másodlagos elmozdulás: "
+                f"{secondary_move:+.2f}%; előző érték megtartva."
+            ),
         }
 
     # Mindkét piaci forrás hibás: előző jó érték, majd EIA spot.
@@ -601,7 +681,12 @@ def main() -> None:
         f"{brent_selection['note']}"
     )
     if brent_secondary:
-        print(f"UKOilWatch kontroll: {brent_secondary.get('price')}")
+        parsed_path = brent_secondary.get("_parsed_path")
+        path_info = f" | mező={parsed_path}" if parsed_path else ""
+        print(
+            f"UKOilWatch kontroll: {brent_secondary.get('price')}"
+            f"{path_info}"
+        )
     print(
         f"WTI: {market_wti} "
         f"({'fallback' if wti_fallback else 'Yahoo futures'})"
