@@ -1,35 +1,35 @@
 {
   "meta": {
-    "updated": "2026-07-24 07:14 UTC",
+    "updated": "2026-07-24 09:33 UTC",
     "source_mode": "live",
-    "generated_at": "2026-07-24T07:14:23.588794Z",
+    "generated_at": "2026-07-24T09:33:53.940923Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
-    "fallback_used": false
+    "fallback_used": true
   },
   "prices": {
     "market_brent": 98.97,
-    "market_wti": 90.58,
+    "market_wti": 88.83,
     "spot_brent": 86.99,
     "spot_wti": 84.38,
     "live_brent": 98.97,
-    "live_wti": 90.58,
-    "live_source": "yahoo_futures",
-    "market_source": "Yahoo Finance chart",
+    "live_wti": 88.83,
+    "live_source": "mixed_or_spot_fallback",
+    "market_source": "Previous validated market snapshot",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-07-24T07:04:15Z",
-    "market_timestamp_wti": "2026-07-24T07:04:21Z",
-    "brent_fallback_used": false,
+    "market_timestamp_brent": "2026-07-24T09:23:41Z",
+    "market_timestamp_wti": "2026-07-24T09:23:53Z",
+    "brent_fallback_used": true,
     "wti_fallback_used": false,
     "currency": "USD",
     "unit": "USD/barrel"
   },
   "source_status": {
     "brent": {
-      "status": "market_futures",
+      "status": "previous_market_snapshot",
       "error": null
     },
     "wti": {
@@ -76,19 +76,19 @@
     ],
     "me_components": {
       "structural_score": 73.2,
-      "osint_signal_score": 63.3,
-      "osint_raw_total_risk": 158.14,
+      "osint_signal_score": 63.4,
+      "osint_raw_total_risk": 158.49,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 157,
+      "osint_total_events": 155,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 99.78
+          "risk": 99.88
         },
         {
           "name": "Israel",
-          "risk": 13.5
+          "risk": 13.75
         },
         {
           "name": "Saudi Arabia",
@@ -96,17 +96,17 @@
         },
         {
           "name": "Gaza Strip",
-          "risk": 9.75
+          "risk": 8.85
         },
         {
           "name": "Middle East",
-          "risk": 7.55
+          "risk": 8.4
         }
       ],
-      "osint_updated": "2026-07-24 03:45 UTC",
+      "osint_updated": "2026-07-24 06:40 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.59,
+      "osint_age_hours": 0.94,
       "osint_used_in_blend": true,
       "conflict_signal_score": 30.4,
       "conflict_signal_raw_index": -1.52,
@@ -122,7 +122,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-07-24 04:20 UTC",
+      "updated": "2026-07-24 07:36 UTC",
       "method": "chokepoint structural impact model v7 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
