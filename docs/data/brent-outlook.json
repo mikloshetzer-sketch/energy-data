@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-07-29T03:47:15Z",
+  "generated_at": "2026-07-29T04:47:06Z",
   "dataset": "brent_outlook",
   "horizon_days": 30,
   "current": {
-    "price_usd": 87.38,
+    "price_usd": 87.81,
     "date": "2026-07-29",
-    "timestamp": "2026-07-29T03:47:15Z"
+    "timestamp": "2026-07-29T04:47:06Z"
   },
   "outlook": {
-    "center_price_usd": 89.69,
-    "lower_price_usd": 73.55,
-    "upper_price_usd": 105.84,
+    "center_price_usd": 91.61,
+    "lower_price_usd": 75.12,
+    "upper_price_usd": 108.1,
     "direction": "BULLISH",
     "confidence": "LOW",
     "current_range_position": "NEAR_CENTER"
@@ -18,22 +18,28 @@
   "signals": {
     "ompi_score": 62.6,
     "fundamental_shift_pct": 1.26,
-    "momentum_shift_pct": 0.9,
-    "trend_shift_pct": 0.0,
-    "raw_total_center_shift_pct": 2.65,
-    "total_center_shift_pct": 2.65,
+    "momentum_shift_pct": 1.08,
+    "trend_shift_pct": 1.5,
+    "raw_total_center_shift_pct": 4.32,
+    "total_center_shift_pct": 4.32,
     "volatility_band_pct": 18.0
   },
   "contributions_pct": {
     "ompi": 1.26,
-    "momentum": 0.9,
-    "trend": 0.0,
+    "momentum": 1.08,
+    "trend": 1.5,
     "inventory": 0.0,
     "supply_demand_balance": 0.0,
     "chokepoint": 0.48,
     "market_confirmation": 0.0
   },
   "driver_ranking": [
+    {
+      "component": "Trend",
+      "key": "trend",
+      "contribution_pct": 1.5,
+      "direction": "BULLISH"
+    },
     {
       "component": "OMPI",
       "key": "ompi",
@@ -43,7 +49,7 @@
     {
       "component": "Momentum",
       "key": "momentum",
-      "contribution_pct": 0.9,
+      "contribution_pct": 1.08,
       "direction": "BULLISH"
     },
     {
@@ -51,12 +57,6 @@
       "key": "chokepoint",
       "contribution_pct": 0.48,
       "direction": "BULLISH"
-    },
-    {
-      "component": "Trend",
-      "key": "trend",
-      "contribution_pct": 0.0,
-      "direction": "NEUTRAL"
     },
     {
       "component": "Inventory",
@@ -110,15 +110,15 @@
     }
   },
   "market_metrics": {
-    "change_5d_pct": -9.71,
-    "change_20d_pct": 14.52,
-    "change_60d_pct": -5.07,
-    "weighted_momentum_pct": 2.58,
+    "change_5d_pct": -9.27,
+    "change_20d_pct": 15.09,
+    "change_60d_pct": -4.61,
+    "weighted_momentum_pct": 3.09,
     "momentum_data_coverage": 1.0,
-    "moving_average_20d": 87.95,
-    "moving_average_60d": 83.86,
-    "daily_realised_volatility_20d": 0.037298,
-    "trend_state": "SIDEWAYS_OR_MIXED"
+    "moving_average_20d": 87.76,
+    "moving_average_60d": 83.8,
+    "daily_realised_volatility_20d": 0.040062,
+    "trend_state": "STRONG_UPTREND"
   },
   "confidence_details": {
     "reasons": [
