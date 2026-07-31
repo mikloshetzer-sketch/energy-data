@@ -1,7 +1,7 @@
 {
   "market": {
-    "brent": "91.40 USD/hordó",
-    "wti": "85.04 USD/hordó",
+    "brent": "88.19 USD/hordó",
+    "wti": "82.85 USD/hordó",
     "inventory": "7.1 millió hordó",
     "supply": "111.2 millió hordó/nap",
     "brent_30d_trend": "-2.47%",
@@ -247,7 +247,7 @@
     "europe": {
       "level": "moderate",
       "label": "Mérsékelt hatás",
-      "score": 7.9,
+      "score": 7.7,
       "factor": 1.0,
       "icon": "🇪🇺",
       "dependency_label": "Közepes kitettség",
@@ -257,7 +257,7 @@
     "america": {
       "level": "low",
       "label": "Korlátozott hatás",
-      "score": 4.7,
+      "score": 4.6,
       "factor": 0.6,
       "icon": "🇺🇸",
       "dependency_label": "Alacsonyabb közvetlen kitettség",
@@ -265,18 +265,18 @@
       "text": "Az amerikai piac termelői háttere miatt közvetlenül kevésbé sérülékeny, bár a globális ártrendek itt is megjelennek."
     },
     "asia": {
-      "level": "extreme",
-      "label": "Nagyon magas hatás",
-      "score": 12.3,
+      "level": "high",
+      "label": "Magas hatás",
+      "score": 11.9,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
       "dependency_note": "Ázsia erősen függ a közel-keleti importtól, ezért a Hormuzi-szoroshoz és a tankerforgalomhoz kapcsolódó zavarok itt csapódnak le legerősebben.",
-      "text": "Ázsia a közel-keleti importfüggőség miatt jelenleg a legsérülékenyebb régió, ezért a szállítási zavarok, biztosítási költségek és importárak gyorsan felerősödhetnek."
+      "text": "Az ázsiai piacokon a közel-keleti kitettség miatt az ár- és ellátási sokk erősen érvényesülhet, különösen a finomított termékek és a tengeri szállítás terén."
     }
   },
   "meta": {
-    "updated": "2026-07-30 09:04 UTC",
+    "updated": "2026-07-31 09:17 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
@@ -286,12 +286,12 @@
     "type": "geopolitical"
   },
   "energy_risk": {
-    "score": 55.6,
+    "score": 52.6,
     "level": "high",
     "label": "Magas",
     "components": {
       "geopolitical": 16.6,
-      "price_level": 14.0,
+      "price_level": 11.0,
       "price_momentum": 17.0,
       "market_stress": 8.0,
       "supply_pressure": 0.0
@@ -303,16 +303,16 @@
     "method": "Összetett index: geopolitika 40%, árszint 20%, ármozgás 20%, piaci stressz 10%, készlet és kínálat 10%."
   },
   "market_stress": {
-    "score": 52.0,
+    "score": 46.0,
     "level": "severe",
     "label": "Erősen feszült",
     "note": "Az árszint, a rövid távú ármozgás és a kockázati háttér erősen feszült piaci környezetet jelez.",
     "components": {
       "volatility": 25.0,
-      "price_level": 14.0,
+      "price_level": 12.0,
       "geopolitical": 5.0,
       "supply_buffer": 0.0,
-      "brent_wti_spread": 8.0
+      "brent_wti_spread": 4.0
     },
     "triggers": [
       "legalább 8%-os napi ármozgás"
@@ -335,13 +335,13 @@
       ]
     },
     "observed_values": {
-      "brent": 91.4,
-      "wti": 85.04,
+      "brent": 88.19,
+      "wti": 82.85,
       "brent_1d_change": -8.463762336756066,
       "brent_7d_change": 13.037055275144638,
       "wti_1d_change": -8.164377588838015,
       "wti_7d_change": 5.273022616518804,
-      "brent_wti_spread": 6.36,
+      "brent_wti_spread": 5.34,
       "inventory_million_barrels": 7.1,
       "global_supply_mbd": 111.2493672,
       "geopolitical_level": "moderate"
