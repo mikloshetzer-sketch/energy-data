@@ -1,8 +1,8 @@
 {
   "meta": {
-    "updated": "2026-08-02 12:40 UTC",
+    "updated": "2026-08-02 14:42 UTC",
     "source_mode": "live",
-    "generated_at": "2026-08-02T12:40:56.326941Z",
+    "generated_at": "2026-08-02T14:42:09.059040Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
@@ -38,14 +38,14 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 47.1,
-    "middle_east_conflict_impact": 64.0,
+    "global_trade_risk_index": 47.5,
+    "middle_east_conflict_impact": 64.9,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -0.4,
-      "middle_east_conflict_impact_change": -0.8,
-      "direction_global": "down",
-      "direction_middle_east": "down"
+      "global_trade_risk_index_change": 0.0,
+      "middle_east_conflict_impact_change": 0.1,
+      "direction_global": "flat",
+      "direction_middle_east": "up"
     },
     "top_risks": [
       {
@@ -60,39 +60,39 @@
       },
       {
         "name": "Malaka-szoros",
-        "estimated_impact": 0.0996,
+        "estimated_impact": 0.0997,
         "status": "medium"
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0837,
+        "estimated_impact": 0.0894,
         "status": "medium"
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0131,
+        "estimated_impact": 0.0125,
         "status": "low"
       }
     ],
     "me_components": {
-      "structural_score": 70.3,
-      "osint_signal_score": 53.5,
-      "osint_raw_total_risk": 133.75,
+      "structural_score": 71.3,
+      "osint_signal_score": 54.3,
+      "osint_raw_total_risk": 135.75,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "MEDIUM",
       "osint_total_events": 128,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 50.55
+          "risk": 52.65
         },
         {
           "name": "Gaza Strip",
-          "risk": 22.0
+          "risk": 22.35
         },
         {
           "name": "Israel",
-          "risk": 14.25
+          "risk": 13.8
         },
         {
           "name": "Iraq",
@@ -103,10 +103,10 @@
           "risk": 11.2
         }
       ],
-      "osint_updated": "2026-08-02 10:09 UTC",
+      "osint_updated": "2026-08-02 11:35 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 1.2,
+      "osint_age_hours": 2.13,
       "osint_used_in_blend": true,
       "conflict_signal_score": 31.2,
       "conflict_signal_raw_index": -1.56,
@@ -122,7 +122,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-08-02 11:21 UTC",
+      "updated": "2026-08-02 13:42 UTC",
       "method": "chokepoint structural impact model v7 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
