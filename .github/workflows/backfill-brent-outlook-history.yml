@@ -1,0 +1,164 @@
+name: One-time Brent Outlook History Backfill
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Rebuild records that already use schema 2.0"
+        required: true
+        default: false
+        type: boolean
+      start_date:
+        description: "Optional first date (YYYY-MM-DD)"
+        required: false
+        type: string
+      end_date:
+        description: "Optional last date (YYYY-MM-DD)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: brent-outlook-history-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate Python files
+        run: |
+          python -m py_compile scripts/generate_brent_outlook.py
+          python -m py_compile scripts/backfill_brent_outlook_history.py
+
+      - name: Create pre-backfill backup
+        run: |
+          cp docs/data/brent-outlook-history.json \
+             docs/data/brent-outlook-history.pre-backfill.json
+
+      - name: Dry-run backfill
+        shell: bash
+        run: |
+          ARGS=()
+          if [[ "${{ inputs.force }}" == "true" ]]; then
+            ARGS+=(--force)
+          fi
+          if [[ -n "${{ inputs.start_date }}" ]]; then
+            ARGS+=(--start-date "${{ inputs.start_date }}")
+          fi
+          if [[ -n "${{ inputs.end_date }}" ]]; then
+            ARGS+=(--end-date "${{ inputs.end_date }}")
+          fi
+
+          python scripts/backfill_brent_outlook_history.py \
+            --project-root . \
+            "${ARGS[@]}" | tee backfill-dry-run.log
+
+      - name: Write backfilled history
+        shell: bash
+        run: |
+          ARGS=(--write)
+          if [[ "${{ inputs.force }}" == "true" ]]; then
+            ARGS+=(--force)
+          fi
+          if [[ -n "${{ inputs.start_date }}" ]]; then
+            ARGS+=(--start-date "${{ inputs.start_date }}")
+          fi
+          if [[ -n "${{ inputs.end_date }}" ]]; then
+            ARGS+=(--end-date "${{ inputs.end_date }}")
+          fi
+
+          python scripts/backfill_brent_outlook_history.py \
+            --project-root . \
+            "${ARGS[@]}" | tee backfill-write.log
+
+      - name: Validate output JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("docs/data/brent-outlook-history.json")
+          payload = json.loads(path.read_text(encoding="utf-8"))
+          records = payload.get("history")
+
+          if not isinstance(records, list) or not records:
+              raise SystemExit("History output is empty or invalid.")
+
+          legacy_required = {
+              "as_of_date",
+              "generated_at",
+              "current_price_usd",
+              "center_price_usd",
+              "lower_price_usd",
+              "upper_price_usd",
+              "direction",
+              "confidence",
+              "ompi_score",
+              "total_center_shift_pct",
+              "volatility_band_pct",
+              "model_version",
+          }
+
+          for record in records:
+              missing = legacy_required.difference(record)
+              if missing:
+                  raise SystemExit(
+                      f"Legacy compatibility failure for "
+                      f"{record.get('as_of_date')}: {sorted(missing)}"
+                  )
+
+          print(f"Validated {len(records)} history records.")
+          print(json.dumps(
+              payload.get("backfill_summary", {}),
+              ensure_ascii=False,
+              indent=2,
+          ))
+          PY
+
+      - name: Upload backup and logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: brent-outlook-history-backfill-backup
+          path: |
+            docs/data/brent-outlook-history.pre-backfill.json
+            docs/data/brent-outlook-history.json.pre-backfill.bak
+            backfill-dry-run.log
+            backfill-write.log
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Remove temporary repository backup
+        run: |
+          rm -f docs/data/brent-outlook-history.pre-backfill.json
+          rm -f docs/data/brent-outlook-history.json.pre-backfill.bak
+
+      - name: Commit backfilled history
+        shell: bash
+        run: |
+          if git diff --quiet -- docs/data/brent-outlook-history.json; then
+            echo "No history changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/data/brent-outlook-history.json
+          git commit -m "Backfill Brent Outlook history details"
+          git push
