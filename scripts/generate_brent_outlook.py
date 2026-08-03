@@ -39,7 +39,7 @@ import math
 import statistics
 import sys
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterable, Optional, Sequence
 
@@ -759,55 +759,213 @@ def calculate_confidence(
 
 
 def history_record_from_outlook(outlook: dict[str, Any]) -> dict[str, Any]:
+    """
+    Build a backward-compatible, audit-friendly daily history record.
+
+    Existing flat fields are preserved exactly so current dashboards,
+    scripts and API consumers continue to work unchanged.
+    New fields are additive only.
+    """
+    current = outlook.get("current", {})
+    outlook_data = outlook.get("outlook", {})
+    signals = outlook.get("signals", {})
+    contributions = outlook.get("contributions_pct", {})
+    market_metrics = outlook.get("market_metrics", {})
+    overlay_metrics = outlook.get("overlay_metrics", {})
+    confidence_details = outlook.get("confidence_details", {})
+    quality = outlook.get("quality", {})
+    methodology = outlook.get("methodology", {})
+    optional_inputs = outlook.get("optional_inputs", {})
+
+    as_of_date = str(current.get("date", ""))
+    horizon_days = int(outlook.get("horizon_days", HORIZON_DAYS))
+
+    target_date: Optional[str] = None
+    try:
+        target_date = (
+            date.fromisoformat(as_of_date) + timedelta(days=horizon_days)
+        ).isoformat()
+    except (TypeError, ValueError):
+        target_date = None
+
     return {
-        "as_of_date": outlook["current"]["date"],
-        "generated_at": outlook["generated_at"],
-        "current_price_usd": outlook["current"]["price_usd"],
-        "center_price_usd": outlook["outlook"]["center_price_usd"],
-        "lower_price_usd": outlook["outlook"]["lower_price_usd"],
-        "upper_price_usd": outlook["outlook"]["upper_price_usd"],
-        "direction": outlook["outlook"]["direction"],
-        "confidence": outlook["outlook"]["confidence"],
-        "ompi_score": outlook["signals"]["ompi_score"],
-        "total_center_shift_pct": outlook["signals"]["total_center_shift_pct"],
-        "volatility_band_pct": outlook["signals"]["volatility_band_pct"],
-        "model_version": outlook["methodology"]["model_version"],
+        # Original fields retained unchanged.
+        "as_of_date": as_of_date,
+        "generated_at": outlook.get("generated_at"),
+        "current_price_usd": current.get("price_usd"),
+        "center_price_usd": outlook_data.get("center_price_usd"),
+        "lower_price_usd": outlook_data.get("lower_price_usd"),
+        "upper_price_usd": outlook_data.get("upper_price_usd"),
+        "direction": outlook_data.get("direction"),
+        "confidence": outlook_data.get("confidence"),
+        "ompi_score": signals.get("ompi_score"),
+        "total_center_shift_pct": signals.get("total_center_shift_pct"),
+        "volatility_band_pct": signals.get("volatility_band_pct"),
+        "model_version": methodology.get("model_version", MODEL_VERSION),
+
+        # Additive metadata.
+        "schema_version": "2.0",
+        "target_date": target_date,
+        "horizon_days": horizon_days,
+        "current_timestamp": current.get("timestamp"),
+        "current_range_position": outlook_data.get("current_range_position"),
+
+        # Detailed model audit trail.
+        "signals": {
+            "ompi_score": signals.get("ompi_score"),
+            "fundamental_shift_pct": signals.get("fundamental_shift_pct"),
+            "momentum_shift_pct": signals.get("momentum_shift_pct"),
+            "trend_shift_pct": signals.get("trend_shift_pct"),
+            "raw_total_center_shift_pct": signals.get(
+                "raw_total_center_shift_pct"
+            ),
+            "total_center_shift_pct": signals.get("total_center_shift_pct"),
+            "volatility_band_pct": signals.get("volatility_band_pct"),
+        },
+        "contributions_pct": {
+            "ompi": contributions.get("ompi"),
+            "momentum": contributions.get("momentum"),
+            "trend": contributions.get("trend"),
+            "inventory": contributions.get("inventory"),
+            "supply_demand_balance": contributions.get(
+                "supply_demand_balance"
+            ),
+            "chokepoint": contributions.get("chokepoint"),
+            "market_confirmation": contributions.get(
+                "market_confirmation"
+            ),
+        },
+        "market_metrics": {
+            "change_5d_pct": market_metrics.get("change_5d_pct"),
+            "change_20d_pct": market_metrics.get("change_20d_pct"),
+            "change_60d_pct": market_metrics.get("change_60d_pct"),
+            "weighted_momentum_pct": market_metrics.get(
+                "weighted_momentum_pct"
+            ),
+            "momentum_data_coverage": market_metrics.get(
+                "momentum_data_coverage"
+            ),
+            "moving_average_20d": market_metrics.get("moving_average_20d"),
+            "moving_average_60d": market_metrics.get("moving_average_60d"),
+            "daily_realised_volatility_20d": market_metrics.get(
+                "daily_realised_volatility_20d"
+            ),
+            "trend_state": market_metrics.get("trend_state"),
+        },
+        "overlay_metrics": {
+            "inventory_score": overlay_metrics.get("inventory_score"),
+            "latest_balance_mbd": overlay_metrics.get("latest_balance_mbd"),
+            "chokepoint_score": overlay_metrics.get("chokepoint_score"),
+            "market_confirmation_score": overlay_metrics.get(
+                "market_confirmation_score"
+            ),
+        },
+        "driver_ranking": outlook.get("driver_ranking", []),
+        "confidence_details": {
+            "reasons": confidence_details.get("reasons", []),
+            "market_confirmation_available": confidence_details.get(
+                "market_confirmation_available"
+            ),
+            "confidence_cap": confidence_details.get("confidence_cap"),
+        },
+        "quality": {
+            "status": quality.get("status"),
+            "history_observations": quality.get("history_observations"),
+            "minimum_required_observations": quality.get(
+                "minimum_required_observations"
+            ),
+            "full_model_observations": quality.get(
+                "full_model_observations"
+            ),
+            "market_confirmation_available": quality.get(
+                "market_confirmation_available"
+            ),
+        },
+        "optional_inputs": optional_inputs,
+        "methodology": {
+            "model_version": methodology.get("model_version", MODEL_VERSION),
+            "type": methodology.get("type"),
+            "not_price_target": methodology.get("not_price_target"),
+        },
+
+        # Reserved for later automatic forecast evaluation.
+        "evaluation": {
+            "status": "PENDING",
+            "evaluated_at": None,
+            "actual_date": None,
+            "actual_price_usd": None,
+            "center_error_usd": None,
+            "absolute_error_usd": None,
+            "percentage_error_pct": None,
+            "inside_forecast_range": None,
+            "direction_correct": None,
+        },
     }
 
 
 def update_history(path: Path, outlook: dict[str, Any]) -> dict[str, Any]:
+    """
+    Insert or replace one daily record while preserving compatibility.
+
+    The history file's existing top-level structure remains unchanged.
+    Older records are left untouched. If a completed evaluation already
+    exists for the current day, it is retained during a refresh.
+    """
     if path.exists():
         existing = load_json(path)
     else:
         existing = []
 
     if isinstance(existing, dict):
-        records = existing.get("history") or existing.get("records") or existing.get("data") or []
+        records = (
+            existing.get("history")
+            or existing.get("records")
+            or existing.get("data")
+            or []
+        )
     elif isinstance(existing, list):
         records = existing
     else:
         records = []
 
-    clean_records = [record for record in records if isinstance(record, dict)]
+    clean_records = [
+        record
+        for record in records
+        if isinstance(record, dict)
+    ]
+
     new_record = history_record_from_outlook(outlook)
-    as_of_date = new_record["as_of_date"]
+    as_of_date = str(new_record.get("as_of_date", ""))
 
     replaced = False
     updated: list[dict[str, Any]] = []
 
     for record in clean_records:
-        if str(record.get("as_of_date", "")) == as_of_date:
-            if not replaced:
-                updated.append(new_record)
-                replaced = True
+        record_date = str(record.get("as_of_date", ""))
+
+        if record_date != as_of_date:
+            updated.append(record)
             continue
-        updated.append(record)
+
+        if replaced:
+            continue
+
+        existing_evaluation = record.get("evaluation")
+        if (
+            isinstance(existing_evaluation, dict)
+            and existing_evaluation.get("status") == "COMPLETED"
+        ):
+            new_record["evaluation"] = existing_evaluation
+
+        updated.append(new_record)
+        replaced = True
 
     if not replaced:
         updated.append(new_record)
 
     updated.sort(key=lambda record: str(record.get("as_of_date", "")))
 
+    # Original top-level output contract retained unchanged.
     return {
         "dataset": "brent_outlook_history",
         "model_version": MODEL_VERSION,
