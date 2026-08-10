@@ -1,7 +1,7 @@
 {
   "dataset": "brent_outlook_history",
   "model_version": "2.1",
-  "updated_at": "2026-08-10T15:27:34Z",
+  "updated_at": "2026-08-10T16:14:45Z",
   "history": [
     {
       "as_of_date": "2026-07-17",
@@ -3880,29 +3880,29 @@
     },
     {
       "as_of_date": "2026-08-10",
-      "generated_at": "2026-08-10T15:27:34Z",
+      "generated_at": "2026-08-10T16:14:45Z",
       "current_price_usd": 86.16,
-      "center_price_usd": 86.78,
-      "lower_price_usd": 71.16,
-      "upper_price_usd": 102.4,
+      "center_price_usd": 86.5,
+      "lower_price_usd": 70.93,
+      "upper_price_usd": 102.07,
       "direction": "NEUTRAL",
       "confidence": "LOW",
       "ompi_score": 60.6,
-      "total_center_shift_pct": 0.72,
+      "total_center_shift_pct": 0.4,
       "volatility_band_pct": 18.0,
       "model_version": "2.1",
       "schema_version": "2.0",
       "target_date": "2026-09-09",
       "horizon_days": 30,
-      "current_timestamp": "2026-08-10T15:27:34Z",
+      "current_timestamp": "2026-08-10T16:14:45Z",
       "current_range_position": "NEAR_CENTER",
       "signals": {
         "ompi_score": 60.6,
         "fundamental_shift_pct": 1.06,
         "momentum_shift_pct": -0.59,
         "trend_shift_pct": 0.0,
-        "raw_total_center_shift_pct": 0.72,
-        "total_center_shift_pct": 0.72,
+        "raw_total_center_shift_pct": 0.4,
+        "total_center_shift_pct": 0.4,
         "volatility_band_pct": 18.0
       },
       "contributions_pct": {
@@ -3911,7 +3911,7 @@
         "trend": 0.0,
         "inventory": 0.0,
         "supply_demand_balance": 0.0,
-        "chokepoint": 0.25,
+        "chokepoint": -0.07,
         "market_confirmation": 0.0
       },
       "market_metrics": {
@@ -3928,7 +3928,7 @@
       "overlay_metrics": {
         "inventory_score": 50.0,
         "latest_balance_mbd": null,
-        "chokepoint_score": 59.9,
+        "chokepoint_score": 47.2,
         "market_confirmation_score": null
       },
       "driver_ranking": [
@@ -3947,8 +3947,8 @@
         {
           "component": "Chokepoint",
           "key": "chokepoint",
-          "contribution_pct": 0.25,
-          "direction": "BULLISH"
+          "contribution_pct": -0.07,
+          "direction": "BEARISH"
         },
         {
           "component": "Trend",
