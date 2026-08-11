@@ -1,7 +1,7 @@
 {
   "market": {
-    "brent": "83.84 USD/hordó",
-    "wti": "78.28 USD/hordó",
+    "brent": "89.29 USD/hordó",
+    "wti": "83.64 USD/hordó",
     "inventory": "7.6 millió hordó",
     "supply": "111.2 millió hordó/nap",
     "brent_30d_trend": "+10.43%",
@@ -276,7 +276,7 @@
     }
   },
   "meta": {
-    "updated": "2026-08-10 08:05 UTC",
+    "updated": "2026-08-11 07:38 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
@@ -286,29 +286,30 @@
     "type": "geopolitical"
   },
   "energy_risk": {
-    "score": 46.8,
+    "score": 49.8,
     "level": "high",
     "label": "Magas",
     "components": {
       "geopolitical": 12.8,
-      "price_level": 8.0,
+      "price_level": 11.0,
       "price_momentum": 18.0,
       "market_stress": 8.0,
       "supply_pressure": 0.0
     },
     "triggers": [
+      "85 USD feletti olajár geopolitikai feszültség mellett",
       "legalább 10%-os heti Brent-emelkedés"
     ],
     "method": "Összetett index: geopolitika 40%, árszint 20%, ármozgás 20%, piaci stressz 10%, készlet és kínálat 10%."
   },
   "market_stress": {
-    "score": 42.0,
+    "score": 46.0,
     "level": "severe",
     "label": "Erősen feszült",
     "note": "Az árszint, a rövid távú ármozgás és a kockázati háttér erősen feszült piaci környezetet jelez.",
     "components": {
       "volatility": 25.0,
-      "price_level": 8.0,
+      "price_level": 12.0,
       "geopolitical": 5.0,
       "supply_buffer": 0.0,
       "brent_wti_spread": 4.0
@@ -334,13 +335,13 @@
       ]
     },
     "observed_values": {
-      "brent": 83.84,
-      "wti": 78.28,
+      "brent": 89.29,
+      "wti": 83.64,
       "brent_1d_change": -8.303249097472921,
       "brent_7d_change": -15.590581086213435,
       "wti_1d_change": -4.874651810584962,
       "wti_7d_change": -11.946712505371728,
-      "brent_wti_spread": 5.56,
+      "brent_wti_spread": 5.65,
       "inventory_million_barrels": 7.6,
       "global_supply_mbd": 111.2493672,
       "geopolitical_level": "moderate"
