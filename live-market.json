@@ -1,27 +1,27 @@
 {
   "meta": {
-    "updated": "2026-08-11 04:05 UTC",
+    "updated": "2026-08-11 05:19 UTC",
     "source_mode": "live",
-    "generated_at": "2026-08-11T04:05:01.897598Z",
+    "generated_at": "2026-08-11T05:19:53.127348Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
     "fallback_used": false
   },
   "prices": {
-    "market_brent": 87.73,
-    "market_wti": 82.17,
+    "market_brent": 87.83,
+    "market_wti": 82.31,
     "spot_brent": 88.9,
     "spot_wti": 81.96,
-    "live_brent": 87.73,
-    "live_wti": 82.17,
+    "live_brent": 87.83,
+    "live_wti": 82.31,
     "live_source": "yahoo_futures",
     "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-08-11T03:54:11Z",
-    "market_timestamp_wti": "2026-08-11T03:54:25Z",
+    "market_timestamp_brent": "2026-08-11T05:08:20Z",
+    "market_timestamp_wti": "2026-08-11T05:09:46Z",
     "brent_fallback_used": false,
     "wti_fallback_used": false,
     "currency": "USD",
@@ -38,34 +38,34 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 46.2,
-    "middle_east_conflict_impact": 61.4,
+    "global_trade_risk_index": 45.1,
+    "middle_east_conflict_impact": 59.0,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": 0.0,
-      "middle_east_conflict_impact_change": 0.0,
-      "direction_global": "flat",
-      "direction_middle_east": "flat"
+      "global_trade_risk_index_change": -1.1,
+      "middle_east_conflict_impact_change": -2.4,
+      "direction_global": "down",
+      "direction_middle_east": "down"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2496,
+        "estimated_impact": 0.2492,
         "status": "severe"
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.1051,
+        "estimated_impact": 0.1047,
         "status": "medium"
       },
       {
         "name": "Malaka-szoros",
-        "estimated_impact": 0.0995,
+        "estimated_impact": 0.0994,
         "status": "medium"
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0806,
+        "estimated_impact": 0.0803,
         "status": "medium"
       },
       {
@@ -75,38 +75,38 @@
       }
     ],
     "me_components": {
-      "structural_score": 72.5,
-      "osint_signal_score": 42.9,
-      "osint_raw_total_risk": 107.18,
+      "structural_score": 72.4,
+      "osint_signal_score": 36.8,
+      "osint_raw_total_risk": 91.93,
       "osint_risk_level": "LOW",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 126,
+      "osint_total_events": 124,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 40.03
+          "risk": 35.94
         },
         {
           "name": "Yemen",
-          "risk": 21.5
+          "risk": 18.6
         },
         {
           "name": "Israel",
-          "risk": 10.0
+          "risk": 8.7
         },
         {
           "name": "Gaza Strip",
-          "risk": 9.45
+          "risk": 7.7
         },
         {
           "name": "Iraq",
-          "risk": 7.05
+          "risk": 5.0
         }
       ],
-      "osint_updated": "2026-08-10 22:57 UTC",
+      "osint_updated": "2026-08-11 02:29 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 3.22,
+      "osint_age_hours": 1.93,
       "osint_used_in_blend": true,
       "conflict_signal_score": 3.2,
       "conflict_signal_raw_index": -0.16,
@@ -122,7 +122,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-08-11 02:10 UTC",
+      "updated": "2026-08-11 04:24 UTC",
       "method": "chokepoint structural impact model v7 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
