@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-08-13T12:04:40Z",
+  "generated_at": "2026-08-13T13:54:15Z",
   "dataset": "brent_outlook",
   "horizon_days": 30,
   "current": {
-    "price_usd": 87.19,
+    "price_usd": 87.43,
     "date": "2026-08-13",
-    "timestamp": "2026-08-13T12:04:40Z"
+    "timestamp": "2026-08-13T13:54:15Z"
   },
   "outlook": {
-    "center_price_usd": 87.33,
-    "lower_price_usd": 71.61,
-    "upper_price_usd": 103.05,
+    "center_price_usd": 88.96,
+    "lower_price_usd": 72.95,
+    "upper_price_usd": 104.98,
     "direction": "NEUTRAL",
     "confidence": "LOW",
     "current_range_position": "NEAR_CENTER"
@@ -18,16 +18,16 @@
   "signals": {
     "ompi_score": 60.9,
     "fundamental_shift_pct": 1.09,
-    "momentum_shift_pct": -1.2,
-    "trend_shift_pct": 0.0,
-    "raw_total_center_shift_pct": 0.16,
-    "total_center_shift_pct": 0.16,
+    "momentum_shift_pct": -1.1,
+    "trend_shift_pct": 1.5,
+    "raw_total_center_shift_pct": 1.75,
+    "total_center_shift_pct": 1.75,
     "volatility_band_pct": 18.0
   },
   "contributions_pct": {
     "ompi": 1.09,
-    "momentum": -1.2,
-    "trend": 0.0,
+    "momentum": -1.1,
+    "trend": 1.5,
     "inventory": 0.0,
     "supply_demand_balance": 0.0,
     "chokepoint": 0.27,
@@ -35,9 +35,15 @@
   },
   "driver_ranking": [
     {
+      "component": "Trend",
+      "key": "trend",
+      "contribution_pct": 1.5,
+      "direction": "BULLISH"
+    },
+    {
       "component": "Momentum",
       "key": "momentum",
-      "contribution_pct": -1.2,
+      "contribution_pct": -1.1,
       "direction": "BEARISH"
     },
     {
@@ -51,12 +57,6 @@
       "key": "chokepoint",
       "contribution_pct": 0.27,
       "direction": "BULLISH"
-    },
-    {
-      "component": "Trend",
-      "key": "trend",
-      "contribution_pct": 0.0,
-      "direction": "NEUTRAL"
     },
     {
       "component": "Inventory",
@@ -110,19 +110,19 @@
     }
   },
   "market_metrics": {
-    "change_5d_pct": 4.36,
-    "change_20d_pct": -9.91,
-    "change_60d_pct": -0.16,
-    "weighted_momentum_pct": -3.42,
+    "change_5d_pct": 4.64,
+    "change_20d_pct": -9.66,
+    "change_60d_pct": 0.11,
+    "weighted_momentum_pct": -3.15,
     "momentum_data_coverage": 1.0,
-    "moving_average_20d": 87.23,
+    "moving_average_20d": 87.25,
     "moving_average_60d": 82.21,
-    "daily_realised_volatility_20d": 0.038872,
-    "trend_state": "SIDEWAYS_OR_MIXED"
+    "daily_realised_volatility_20d": 0.03882,
+    "trend_state": "STRONG_UPTREND"
   },
   "confidence_details": {
     "reasons": [
-      "OMPI and Brent market behaviour point in opposite directions."
+      "Realised volatility is high, widening the scenario range."
     ],
     "market_confirmation_available": false,
     "confidence_cap": "MEDIUM"
