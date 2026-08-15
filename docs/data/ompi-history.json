@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14T08:36:34Z",
+  "generated_at": "2026-08-15T07:41:20Z",
   "index": "OMPI",
   "method_version": "ompi_v3_jodi_physical_tightness_2026_07",
   "history": [
@@ -1217,6 +1217,48 @@
         "chokepoint_risk": {
           "score": 35.1,
           "contribution": 3.51,
+          "data_quality": "AVAILABLE"
+        }
+      }
+    },
+    {
+      "date": "2026-08-15",
+      "generated_at": "2026-08-15T07:41:20Z",
+      "score": 60.9,
+      "level": "MEDIUM",
+      "direction": "NEUTRAL",
+      "data_quality": "PARTIAL",
+      "confidence_score": 78.8,
+      "physical_balance_period": "2026 YTD Jan–May",
+      "components": {
+        "physical_balance": {
+          "score": 59.6,
+          "contribution": 17.88,
+          "data_quality": "PARTIAL_YTD_ESTIMATE"
+        },
+        "inventory_stress": {
+          "score": 50.0,
+          "contribution": 7.5,
+          "data_quality": "FALLBACK_PREVIOUS"
+        },
+        "opec_buffer": {
+          "score": 92.9,
+          "contribution": 18.59,
+          "data_quality": "PARTIAL_STATIC_PARAMETER"
+        },
+        "geopolitical_risk": {
+          "score": 60.6,
+          "contribution": 12.12,
+          "data_quality": "AVAILABLE"
+        },
+        "china_import_momentum": {
+          "score": 27.2,
+          "contribution": 1.36,
+          "data_quality": "PARTIAL_SHORT_HISTORY"
+        },
+        "chokepoint_risk": {
+          "score": 35.0,
+          "contribution": 3.5,
           "data_quality": "AVAILABLE"
         }
       }
