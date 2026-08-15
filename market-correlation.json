@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-15 19:38 UTC",
+    "updated": "2026-08-15 19:40 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -16,30 +16,30 @@
       {
         "key": "bab_el_mandeb_impact",
         "label": "Bab el-Mandeb",
-        "correlation": -0.186,
+        "correlation": -0.16,
         "strategic_weight": 1.3,
-        "weighted_strength": 0.242
-      },
-      {
-        "key": "hormuz_impact",
-        "label": "Hormuz",
-        "correlation": -0.145,
-        "strategic_weight": 1.5,
-        "weighted_strength": 0.217
-      },
-      {
-        "key": "suez_impact",
-        "label": "Suez",
-        "correlation": -0.165,
-        "strategic_weight": 1.1,
-        "weighted_strength": 0.182
+        "weighted_strength": 0.208
       },
       {
         "key": "bosporus_impact",
         "label": "Bosporus",
-        "correlation": 0.136,
+        "correlation": 0.272,
         "strategic_weight": 0.7,
-        "weighted_strength": 0.095
+        "weighted_strength": 0.19
+      },
+      {
+        "key": "hormuz_impact",
+        "label": "Hormuz",
+        "correlation": -0.125,
+        "strategic_weight": 1.5,
+        "weighted_strength": 0.188
+      },
+      {
+        "key": "suez_impact",
+        "label": "Suez",
+        "correlation": -0.14,
+        "strategic_weight": 1.1,
+        "weighted_strength": 0.154
       }
     ]
   },
@@ -1405,10 +1405,10 @@
     },
     {
       "date": "2026-08-15",
-      "brent_vs_hormuz_impact": -0.145,
-      "brent_vs_suez_impact": -0.165,
-      "brent_vs_bab_el_mandeb_impact": -0.186,
-      "brent_vs_bosporus_impact": 0.136
+      "brent_vs_hormuz_impact": -0.125,
+      "brent_vs_suez_impact": -0.14,
+      "brent_vs_bab_el_mandeb_impact": -0.16,
+      "brent_vs_bosporus_impact": 0.272
     }
   ]
 }
