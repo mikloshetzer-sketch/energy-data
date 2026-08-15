@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-15 23:38 UTC",
+    "updated": "2026-08-15 23:40 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -14,18 +14,18 @@
     "leader_weighted_strength": null,
     "ranked": [
       {
+        "key": "bab_el_mandeb_impact",
+        "label": "Bab el-Mandeb",
+        "correlation": -0.186,
+        "strategic_weight": 1.3,
+        "weighted_strength": 0.242
+      },
+      {
         "key": "hormuz_impact",
         "label": "Hormuz",
         "correlation": -0.145,
         "strategic_weight": 1.5,
         "weighted_strength": 0.217
-      },
-      {
-        "key": "bab_el_mandeb_impact",
-        "label": "Bab el-Mandeb",
-        "correlation": -0.16,
-        "strategic_weight": 1.3,
-        "weighted_strength": 0.208
       },
       {
         "key": "suez_impact",
@@ -1407,7 +1407,7 @@
       "date": "2026-08-15",
       "brent_vs_hormuz_impact": -0.145,
       "brent_vs_suez_impact": -0.165,
-      "brent_vs_bab_el_mandeb_impact": -0.16,
+      "brent_vs_bab_el_mandeb_impact": -0.186,
       "brent_vs_bosporus_impact": 0.136
     }
   ]
