@@ -1,673 +1,1619 @@
 {
   "metadata": {
     "title": "China estimated crude oil import cost",
-    "description": "Estimated daily gross cost of China's crude oil imports from 2026-01-01.",
-    "method": "Monthly crude oil import volume estimate converted to daily barrels and multiplied by daily Brent price.",
+    "description": "Estimated daily gross cost of China's crude oil imports using JODI monthly crude-import volume and daily Brent crude price.",
+    "method": "Monthly China crude-oil import volume from JODI is combined with daily Brent price. For dates after the latest available JODI month, the latest JODI observation is carried forward as an explicitly labelled proxy.",
     "start_date": "2026-01-01",
-    "unit_note": "Volume is estimated in million barrels per day. Value is estimated in billion USD per day.",
-    "conversion_note": "1 metric tonne of crude oil is approximated as 7.33 barrels. Actual conversion varies by crude grade.",
+    "unit_note": "Volume is million barrels per day. Estimated value is billion USD per day.",
     "price_source": "FRED DCOILBRENTEU daily Brent crude oil price.",
-    "volume_source_note": "China monthly crude import estimates based on reported customs/Reuters figures. January-March are distributed from Jan-Apr cumulative data; April is reported; May is provisional.",
-    "updated_at_utc": "2026-08-17T06:04:59.022758+00:00"
+    "volume_source": "JODI Oil World Database – China crude oil total imports, CRUDEOIL / TOTIMPSB / KBD.",
+    "jodi_latest_period": "2026-05",
+    "jodi_generated_at": "2026-08-17T06:21:01+00:00",
+    "proxy_note": "When Brent observations extend beyond the latest JODI month, the latest available JODI import volume is used as a proxy and labelled latest_jodi_proxy.",
+    "updated_at_utc": "2026-08-17T17:57:54.160371+00:00"
   },
   "monthly_inputs": [
     {
       "month": "2026-01",
-      "import_million_tonnes": 48.933,
-      "estimated_import_million_barrels": 358.68,
-      "estimated_import_volume_mbd": 11.57
+      "import_volume_kbd": 12010.9,
+      "import_volume_mbd": 12.011,
+      "assessment_code": "3",
+      "assessment_label": "not assessed",
+      "source": "JODI Oil World Database"
     },
     {
       "month": "2026-02",
-      "import_million_tonnes": 48.933,
-      "estimated_import_million_barrels": 358.68,
-      "estimated_import_volume_mbd": 12.81
+      "import_volume_kbd": 12043.5,
+      "import_volume_mbd": 12.043,
+      "assessment_code": "3",
+      "assessment_label": "not assessed",
+      "source": "JODI Oil World Database"
     },
     {
       "month": "2026-03",
-      "import_million_tonnes": 48.933,
-      "estimated_import_million_barrels": 358.68,
-      "estimated_import_volume_mbd": 11.57
+      "import_volume_kbd": 11802.2,
+      "import_volume_mbd": 11.802,
+      "assessment_code": "3",
+      "assessment_label": "not assessed",
+      "source": "JODI Oil World Database"
     },
     {
       "month": "2026-04",
-      "import_million_tonnes": 38.5,
-      "estimated_import_million_barrels": 282.2,
-      "estimated_import_volume_mbd": 9.407
+      "import_volume_kbd": 9386.9,
+      "import_volume_mbd": 9.387,
+      "assessment_code": "3",
+      "assessment_label": "not assessed",
+      "source": "JODI Oil World Database"
     },
     {
       "month": "2026-05",
-      "import_million_tonnes": 38.5,
-      "estimated_import_million_barrels": 282.2,
-      "estimated_import_volume_mbd": 9.103
+      "import_volume_kbd": 7811.4,
+      "import_volume_mbd": 7.811,
+      "assessment_code": "3",
+      "assessment_label": "not assessed",
+      "source": "JODI Oil World Database"
     }
   ],
   "summary": {
     "latest": {
-      "date": "2026-05-29",
-      "brent_usd_per_barrel": 92.88,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 0.845
+      "date": "2026-08-11",
+      "brent_usd_per_barrel": 93.26,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.728
     },
-    "average_daily_import_volume_mbd": 10.929,
-    "average_daily_import_value_billion_usd": 0.992,
-    "max_daily_import_value_billion_usd": 1.466,
+    "average_daily_import_volume_mbd": 9.708,
+    "average_daily_import_value_billion_usd": 0.865,
+    "max_daily_import_value_billion_usd": 1.495,
     "max_import_value_date": "2026-03-31",
-    "total_estimated_import_value_billion_usd": 101.19,
-    "days_count": 102
+    "total_estimated_import_value_billion_usd": 133.17,
+    "days_count": 154,
+    "jodi_observed_days": 102,
+    "proxy_days": 52
   },
   "series": [
     {
       "date": "2026-01-02",
       "brent_usd_per_barrel": 61.98,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.717
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.744
     },
     {
       "date": "2026-01-05",
       "brent_usd_per_barrel": 63.0,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.729
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.757
     },
     {
       "date": "2026-01-06",
       "brent_usd_per_barrel": 62.1,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.718
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.746
     },
     {
       "date": "2026-01-07",
       "brent_usd_per_barrel": 61.08,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.707
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.734
     },
     {
       "date": "2026-01-08",
       "brent_usd_per_barrel": 63.34,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.733
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.761
     },
     {
       "date": "2026-01-09",
       "brent_usd_per_barrel": 65.11,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.753
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.782
     },
     {
       "date": "2026-01-12",
       "brent_usd_per_barrel": 65.4,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.757
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.786
     },
     {
       "date": "2026-01-13",
       "brent_usd_per_barrel": 67.58,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.782
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.812
     },
     {
       "date": "2026-01-14",
       "brent_usd_per_barrel": 68.87,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.797
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.827
     },
     {
       "date": "2026-01-15",
       "brent_usd_per_barrel": 66.16,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.765
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.795
     },
     {
       "date": "2026-01-16",
       "brent_usd_per_barrel": 66.97,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.775
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.804
     },
     {
       "date": "2026-01-19",
       "brent_usd_per_barrel": 66.91,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.774
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.804
     },
     {
       "date": "2026-01-20",
       "brent_usd_per_barrel": 67.68,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.783
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.813
     },
     {
       "date": "2026-01-21",
       "brent_usd_per_barrel": 66.72,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.772
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.801
     },
     {
       "date": "2026-01-22",
       "brent_usd_per_barrel": 65.46,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.757
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.786
     },
     {
       "date": "2026-01-23",
       "brent_usd_per_barrel": 68.16,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.789
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.819
     },
     {
       "date": "2026-01-26",
       "brent_usd_per_barrel": 67.7,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.783
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.813
     },
     {
       "date": "2026-01-27",
       "brent_usd_per_barrel": 70.28,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.813
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.844
     },
     {
       "date": "2026-01-28",
       "brent_usd_per_barrel": 70.9,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.82
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.852
     },
     {
       "date": "2026-01-29",
       "brent_usd_per_barrel": 71.0,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.821
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.853
     },
     {
       "date": "2026-01-30",
       "brent_usd_per_barrel": 72.25,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.836
+      "estimated_import_volume_mbd": 12.011,
+      "volume_period": "2026-01",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.868
     },
     {
       "date": "2026-02-02",
       "brent_usd_per_barrel": 67.72,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.867
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.816
     },
     {
       "date": "2026-02-03",
       "brent_usd_per_barrel": 70.01,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.897
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.843
     },
     {
       "date": "2026-02-04",
       "brent_usd_per_barrel": 71.15,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.911
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.857
     },
     {
       "date": "2026-02-05",
       "brent_usd_per_barrel": 69.87,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.895
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.841
     },
     {
       "date": "2026-02-06",
       "brent_usd_per_barrel": 70.45,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.902
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.848
     },
     {
       "date": "2026-02-09",
       "brent_usd_per_barrel": 71.19,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.912
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.857
     },
     {
       "date": "2026-02-10",
       "brent_usd_per_barrel": 71.01,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.91
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.855
     },
     {
       "date": "2026-02-11",
       "brent_usd_per_barrel": 71.52,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.916
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.861
     },
     {
       "date": "2026-02-12",
       "brent_usd_per_barrel": 69.8,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.894
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.841
     },
     {
       "date": "2026-02-13",
       "brent_usd_per_barrel": 69.96,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.896
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.843
     },
     {
       "date": "2026-02-16",
       "brent_usd_per_barrel": 70.81,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.907
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.853
     },
     {
       "date": "2026-02-17",
       "brent_usd_per_barrel": 69.77,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.894
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.84
     },
     {
       "date": "2026-02-18",
       "brent_usd_per_barrel": 71.78,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.92
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.864
     },
     {
       "date": "2026-02-19",
       "brent_usd_per_barrel": 73.17,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.937
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.881
     },
     {
       "date": "2026-02-20",
       "brent_usd_per_barrel": 72.75,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.932
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.876
     },
     {
       "date": "2026-02-23",
       "brent_usd_per_barrel": 71.9,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.921
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.866
     },
     {
       "date": "2026-02-24",
       "brent_usd_per_barrel": 71.21,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.912
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.858
     },
     {
       "date": "2026-02-25",
       "brent_usd_per_barrel": 70.69,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.906
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.851
     },
     {
       "date": "2026-02-26",
       "brent_usd_per_barrel": 71.66,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.918
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.863
     },
     {
       "date": "2026-02-27",
       "brent_usd_per_barrel": 71.32,
-      "estimated_import_volume_mbd": 12.81,
-      "estimated_import_value_billion_usd": 0.914
+      "estimated_import_volume_mbd": 12.043,
+      "volume_period": "2026-02",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.859
     },
     {
       "date": "2026-03-02",
       "brent_usd_per_barrel": 77.24,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.894
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.912
     },
     {
       "date": "2026-03-03",
       "brent_usd_per_barrel": 83.28,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.964
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.983
     },
     {
       "date": "2026-03-04",
       "brent_usd_per_barrel": 81.56,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 0.944
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.963
     },
     {
       "date": "2026-03-05",
       "brent_usd_per_barrel": 88.59,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.025
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.046
     },
     {
       "date": "2026-03-06",
       "brent_usd_per_barrel": 95.74,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.108
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.13
     },
     {
       "date": "2026-03-09",
       "brent_usd_per_barrel": 94.35,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.092
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.114
     },
     {
       "date": "2026-03-10",
       "brent_usd_per_barrel": 89.84,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.039
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.06
     },
     {
       "date": "2026-03-11",
       "brent_usd_per_barrel": 90.98,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.053
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.074
     },
     {
       "date": "2026-03-12",
       "brent_usd_per_barrel": 102.38,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.185
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.208
     },
     {
       "date": "2026-03-13",
       "brent_usd_per_barrel": 103.23,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.194
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.218
     },
     {
       "date": "2026-03-16",
       "brent_usd_per_barrel": 101.04,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.169
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.192
     },
     {
       "date": "2026-03-17",
       "brent_usd_per_barrel": 108.39,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.254
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.279
     },
     {
       "date": "2026-03-18",
       "brent_usd_per_barrel": 118.09,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.366
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.394
     },
     {
       "date": "2026-03-19",
       "brent_usd_per_barrel": 111.05,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.285
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.311
     },
     {
       "date": "2026-03-20",
       "brent_usd_per_barrel": 118.42,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.37
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.398
     },
     {
       "date": "2026-03-23",
       "brent_usd_per_barrel": 103.79,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.201
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.225
     },
     {
       "date": "2026-03-24",
       "brent_usd_per_barrel": 108.42,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.254
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.28
     },
     {
       "date": "2026-03-25",
       "brent_usd_per_barrel": 109.14,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.263
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.288
     },
     {
       "date": "2026-03-26",
       "brent_usd_per_barrel": 113.39,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.312
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.338
     },
     {
       "date": "2026-03-27",
       "brent_usd_per_barrel": 121.47,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.405
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.434
     },
     {
       "date": "2026-03-30",
       "brent_usd_per_barrel": 121.88,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.41
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.438
     },
     {
       "date": "2026-03-31",
       "brent_usd_per_barrel": 126.69,
-      "estimated_import_volume_mbd": 11.57,
-      "estimated_import_value_billion_usd": 1.466
+      "estimated_import_volume_mbd": 11.802,
+      "volume_period": "2026-03",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.495
     },
     {
       "date": "2026-04-01",
       "brent_usd_per_barrel": 119.56,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.125
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.122
     },
     {
       "date": "2026-04-02",
       "brent_usd_per_barrel": 127.61,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.2
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.198
     },
     {
       "date": "2026-04-07",
       "brent_usd_per_barrel": 138.21,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.3
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.297
     },
     {
       "date": "2026-04-08",
       "brent_usd_per_barrel": 122.11,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.149
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.146
     },
     {
       "date": "2026-04-09",
       "brent_usd_per_barrel": 119.03,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.12
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.117
     },
     {
       "date": "2026-04-10",
       "brent_usd_per_barrel": 119.07,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.12
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.118
     },
     {
       "date": "2026-04-13",
       "brent_usd_per_barrel": 123.28,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.16
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.157
     },
     {
       "date": "2026-04-14",
       "brent_usd_per_barrel": 118.69,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.117
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.114
     },
     {
       "date": "2026-04-15",
       "brent_usd_per_barrel": 114.93,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.081
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.079
     },
     {
       "date": "2026-04-16",
       "brent_usd_per_barrel": 116.63,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.097
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.095
     },
     {
       "date": "2026-04-17",
       "brent_usd_per_barrel": 98.63,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 0.928
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.926
     },
     {
       "date": "2026-04-20",
       "brent_usd_per_barrel": 103.4,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 0.973
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.971
     },
     {
       "date": "2026-04-21",
       "brent_usd_per_barrel": 106.14,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 0.998
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.996
     },
     {
       "date": "2026-04-22",
       "brent_usd_per_barrel": 113.44,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.067
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.065
     },
     {
       "date": "2026-04-23",
       "brent_usd_per_barrel": 113.25,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.065
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.063
     },
     {
       "date": "2026-04-24",
       "brent_usd_per_barrel": 111.86,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.052
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.05
     },
     {
       "date": "2026-04-27",
       "brent_usd_per_barrel": 113.89,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.071
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.069
     },
     {
       "date": "2026-04-28",
       "brent_usd_per_barrel": 117.62,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.106
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.104
     },
     {
       "date": "2026-04-29",
       "brent_usd_per_barrel": 124.16,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.168
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.165
     },
     {
       "date": "2026-04-30",
       "brent_usd_per_barrel": 124.24,
-      "estimated_import_volume_mbd": 9.407,
-      "estimated_import_value_billion_usd": 1.169
+      "estimated_import_volume_mbd": 9.387,
+      "volume_period": "2026-04",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 1.166
     },
     {
       "date": "2026-05-01",
       "brent_usd_per_barrel": 118.26,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 1.077
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.924
     },
     {
       "date": "2026-05-05",
       "brent_usd_per_barrel": 114.51,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 1.042
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.894
     },
     {
       "date": "2026-05-06",
       "brent_usd_per_barrel": 103.7,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 0.944
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.81
     },
     {
       "date": "2026-05-07",
       "brent_usd_per_barrel": 101.82,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 0.927
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.795
     },
     {
       "date": "2026-05-08",
       "brent_usd_per_barrel": 103.48,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 0.942
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.808
     },
     {
       "date": "2026-05-11",
       "brent_usd_per_barrel": 106.11,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 0.966
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.829
     },
     {
       "date": "2026-05-12",
       "brent_usd_per_barrel": 111.37,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 1.014
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.87
     },
     {
       "date": "2026-05-13",
       "brent_usd_per_barrel": 110.28,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 1.004
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.861
     },
     {
       "date": "2026-05-14",
       "brent_usd_per_barrel": 110.91,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 1.01
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.866
     },
     {
       "date": "2026-05-15",
       "brent_usd_per_barrel": 113.96,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 1.037
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.89
     },
     {
       "date": "2026-05-18",
       "brent_usd_per_barrel": 116.73,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 1.063
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.912
     },
     {
       "date": "2026-05-19",
       "brent_usd_per_barrel": 114.64,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 1.044
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.895
     },
     {
       "date": "2026-05-20",
       "brent_usd_per_barrel": 108.93,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 0.992
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.851
     },
     {
       "date": "2026-05-21",
       "brent_usd_per_barrel": 105.84,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 0.963
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.827
     },
     {
       "date": "2026-05-22",
       "brent_usd_per_barrel": 106.9,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 0.973
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.835
     },
     {
       "date": "2026-05-26",
       "brent_usd_per_barrel": 102.75,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 0.935
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.803
     },
     {
       "date": "2026-05-27",
       "brent_usd_per_barrel": 97.11,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 0.884
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.759
     },
     {
       "date": "2026-05-28",
       "brent_usd_per_barrel": 95.47,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 0.869
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.746
     },
     {
       "date": "2026-05-29",
       "brent_usd_per_barrel": 92.88,
-      "estimated_import_volume_mbd": 9.103,
-      "estimated_import_value_billion_usd": 0.845
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "jodi_observed",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.725
+    },
+    {
+      "date": "2026-06-01",
+      "brent_usd_per_barrel": 98.29,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.768
+    },
+    {
+      "date": "2026-06-02",
+      "brent_usd_per_barrel": 98.49,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.769
+    },
+    {
+      "date": "2026-06-03",
+      "brent_usd_per_barrel": 101.69,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.794
+    },
+    {
+      "date": "2026-06-04",
+      "brent_usd_per_barrel": 98.98,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.773
+    },
+    {
+      "date": "2026-06-05",
+      "brent_usd_per_barrel": 97.29,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.76
+    },
+    {
+      "date": "2026-06-08",
+      "brent_usd_per_barrel": 97.46,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.761
+    },
+    {
+      "date": "2026-06-09",
+      "brent_usd_per_barrel": 94.15,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.735
+    },
+    {
+      "date": "2026-06-10",
+      "brent_usd_per_barrel": 95.73,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.748
+    },
+    {
+      "date": "2026-06-11",
+      "brent_usd_per_barrel": 92.84,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.725
+    },
+    {
+      "date": "2026-06-12",
+      "brent_usd_per_barrel": 88.64,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.692
+    },
+    {
+      "date": "2026-06-15",
+      "brent_usd_per_barrel": 84.36,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.659
+    },
+    {
+      "date": "2026-06-16",
+      "brent_usd_per_barrel": 80.5,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.629
+    },
+    {
+      "date": "2026-06-17",
+      "brent_usd_per_barrel": 80.33,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.627
+    },
+    {
+      "date": "2026-06-18",
+      "brent_usd_per_barrel": 79.35,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.62
+    },
+    {
+      "date": "2026-06-19",
+      "brent_usd_per_barrel": 80.46,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.628
+    },
+    {
+      "date": "2026-06-22",
+      "brent_usd_per_barrel": 76.49,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.597
+    },
+    {
+      "date": "2026-06-23",
+      "brent_usd_per_barrel": 75.69,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.591
+    },
+    {
+      "date": "2026-06-24",
+      "brent_usd_per_barrel": 72.09,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.563
+    },
+    {
+      "date": "2026-06-25",
+      "brent_usd_per_barrel": 73.74,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.576
+    },
+    {
+      "date": "2026-06-26",
+      "brent_usd_per_barrel": 70.16,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.548
+    },
+    {
+      "date": "2026-06-29",
+      "brent_usd_per_barrel": 71.59,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.559
+    },
+    {
+      "date": "2026-06-30",
+      "brent_usd_per_barrel": 70.46,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.55
+    },
+    {
+      "date": "2026-07-01",
+      "brent_usd_per_barrel": 69.24,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.541
+    },
+    {
+      "date": "2026-07-02",
+      "brent_usd_per_barrel": 68.53,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.535
+    },
+    {
+      "date": "2026-07-03",
+      "brent_usd_per_barrel": 68.68,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.536
+    },
+    {
+      "date": "2026-07-06",
+      "brent_usd_per_barrel": 69.56,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.543
+    },
+    {
+      "date": "2026-07-07",
+      "brent_usd_per_barrel": 71.78,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.561
+    },
+    {
+      "date": "2026-07-08",
+      "brent_usd_per_barrel": 76.5,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.598
+    },
+    {
+      "date": "2026-07-09",
+      "brent_usd_per_barrel": 74.46,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.582
+    },
+    {
+      "date": "2026-07-10",
+      "brent_usd_per_barrel": 74.34,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.581
+    },
+    {
+      "date": "2026-07-13",
+      "brent_usd_per_barrel": 81.62,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.638
+    },
+    {
+      "date": "2026-07-14",
+      "brent_usd_per_barrel": 83.69,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.654
+    },
+    {
+      "date": "2026-07-15",
+      "brent_usd_per_barrel": 83.08,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.649
+    },
+    {
+      "date": "2026-07-16",
+      "brent_usd_per_barrel": 81.23,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.634
+    },
+    {
+      "date": "2026-07-17",
+      "brent_usd_per_barrel": 85.01,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.664
+    },
+    {
+      "date": "2026-07-20",
+      "brent_usd_per_barrel": 86.99,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.679
+    },
+    {
+      "date": "2026-07-21",
+      "brent_usd_per_barrel": 93.85,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.733
+    },
+    {
+      "date": "2026-07-22",
+      "brent_usd_per_barrel": 94.12,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.735
+    },
+    {
+      "date": "2026-07-23",
+      "brent_usd_per_barrel": 105.32,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.823
+    },
+    {
+      "date": "2026-07-24",
+      "brent_usd_per_barrel": 100.31,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.784
+    },
+    {
+      "date": "2026-07-27",
+      "brent_usd_per_barrel": 91.82,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.717
+    },
+    {
+      "date": "2026-07-28",
+      "brent_usd_per_barrel": 85.51,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.668
+    },
+    {
+      "date": "2026-07-29",
+      "brent_usd_per_barrel": 91.95,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.718
+    },
+    {
+      "date": "2026-07-30",
+      "brent_usd_per_barrel": 91.91,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.718
+    },
+    {
+      "date": "2026-07-31",
+      "brent_usd_per_barrel": 96.95,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.757
+    },
+    {
+      "date": "2026-08-03",
+      "brent_usd_per_barrel": 88.9,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.694
+    },
+    {
+      "date": "2026-08-04",
+      "brent_usd_per_barrel": 86.47,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.675
+    },
+    {
+      "date": "2026-08-05",
+      "brent_usd_per_barrel": 86.65,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.677
+    },
+    {
+      "date": "2026-08-06",
+      "brent_usd_per_barrel": 89.65,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.7
+    },
+    {
+      "date": "2026-08-07",
+      "brent_usd_per_barrel": 87.62,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.684
+    },
+    {
+      "date": "2026-08-10",
+      "brent_usd_per_barrel": 92.74,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.724
+    },
+    {
+      "date": "2026-08-11",
+      "brent_usd_per_barrel": 93.26,
+      "estimated_import_volume_mbd": 7.811,
+      "volume_period": "2026-05",
+      "volume_status": "latest_jodi_proxy",
+      "jodi_assessment_code": "3",
+      "jodi_assessment_label": "not assessed",
+      "estimated_import_value_billion_usd": 0.728
     }
   ]
 }
