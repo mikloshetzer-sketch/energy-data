@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-17T19:20:08Z",
+  "generated_at": "2026-08-17T19:30:26Z",
   "index": "OMPI",
   "index_name": "Oil Market Pressure Index",
-  "method_version": "ompi_v3_1_jodi_china_momentum_2026_08",
-  "score": 63.9,
+  "method_version": "ompi_v3_2_jodi_china_2m_vs_3m_2026_08",
+  "score": 60.9,
   "level": "MEDIUM",
   "level_hu": "Közepes",
   "level_en": "Medium",
@@ -111,18 +111,27 @@
       ]
     },
     "china_import_momentum": {
-      "score": 80.6,
+      "score": 21.9,
       "weight": 0.05,
       "weight_pct": 5.0,
-      "contribution": 4.03,
+      "contribution": 1.1,
       "latest_month": "2026-05",
       "latest_import_volume_mbd": 7.811,
       "recent_average_mbd": 8.599,
-      "reference_average_mbd": 6.586,
-      "short_term_change_pct": 30.6,
+      "reference_average_mbd": 11.952,
+      "short_term_change_pct": -28.1,
       "observation_count": 293,
+      "recent_period_months": [
+        "2026-04",
+        "2026-05"
+      ],
+      "reference_period_months": [
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ],
       "data_quality": "AVAILABLE",
-      "method": "latest_2m_average_vs_previous_months_average",
+      "method": "latest_2m_average_vs_previous_3m_average",
       "source_file": "docs/data/china_crude_import_volume.json",
       "source_fields": [
         "series[].period",
@@ -202,6 +211,6 @@
     "china_import_cost_excluded": true,
     "china_brent_price_excluded": true
   },
-  "summary_hu": "Az OMPI értéke 63.9/100, ami közepes olajpiaci nyomást jelez. A 2026 YTD Jan–May időszak JODI-alapú stresszegyenértéke -1.93 millió hordó/nap. A legnagyobb súlyozott hozzájárulást jelenleg a OPEC-puffer adja. Az adatbizalmi státusz: PARTIAL (80.0/100).",
-  "summary_en": "The OMPI stands at 63.9/100, indicating medium oil-market pressure. The JODI-based stress equivalent for 2026 YTD Jan–May is -1.93 million barrels per day. The largest weighted contribution currently comes from the OPEC buffer. Data-confidence status: PARTIAL (80.0/100)."
+  "summary_hu": "Az OMPI értéke 60.9/100, ami közepes olajpiaci nyomást jelez. A 2026 YTD Jan–May időszak JODI-alapú stresszegyenértéke -1.93 millió hordó/nap. A legnagyobb súlyozott hozzájárulást jelenleg a OPEC-puffer adja. Az adatbizalmi státusz: PARTIAL (80.0/100).",
+  "summary_en": "The OMPI stands at 60.9/100, indicating medium oil-market pressure. The JODI-based stress equivalent for 2026 YTD Jan–May is -1.93 million barrels per day. The largest weighted contribution currently comes from the OPEC buffer. Data-confidence status: PARTIAL (80.0/100)."
 }
