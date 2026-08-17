@@ -1,27 +1,27 @@
 {
   "meta": {
-    "updated": "2026-08-17 21:57 UTC",
+    "updated": "2026-08-17 22:36 UTC",
     "source_mode": "live",
-    "generated_at": "2026-08-17T21:57:49.159417Z",
+    "generated_at": "2026-08-17T22:36:16.498757Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
     "fallback_used": false
   },
   "prices": {
-    "market_brent": 91.1,
-    "market_wti": 84.95,
+    "market_brent": 91.28,
+    "market_wti": 85.13,
     "spot_brent": 93.26,
     "spot_wti": 84.77,
-    "live_brent": 91.1,
-    "live_wti": 84.95,
+    "live_brent": 91.28,
+    "live_wti": 85.13,
     "live_source": "yahoo_futures",
     "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-08-17T20:59:40Z",
-    "market_timestamp_wti": "2026-08-17T20:59:54Z",
+    "market_timestamp_brent": "2026-08-17T22:25:48Z",
+    "market_timestamp_wti": "2026-08-17T22:25:57Z",
     "brent_fallback_used": false,
     "wti_fallback_used": false,
     "currency": "USD",
@@ -38,24 +38,24 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 46.6,
-    "middle_east_conflict_impact": 62.4,
+    "global_trade_risk_index": 45.1,
+    "middle_east_conflict_impact": 60.1,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -0.3,
-      "middle_east_conflict_impact_change": -0.6,
+      "global_trade_risk_index_change": -1.8,
+      "middle_east_conflict_impact_change": -2.9,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2498,
+        "estimated_impact": 0.2373,
         "status": "severe"
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.1053,
+        "estimated_impact": 0.1,
         "status": "medium"
       },
       {
@@ -65,17 +65,17 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0807,
+        "estimated_impact": 0.0767,
         "status": "medium"
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0132,
+        "estimated_impact": 0.0131,
         "status": "low"
       }
     ],
     "me_components": {
-      "structural_score": 72.6,
+      "structural_score": 69.0,
       "osint_signal_score": 45.4,
       "osint_raw_total_risk": 113.38,
       "osint_risk_level": "LOW",
@@ -106,7 +106,7 @@
       "osint_updated": "2026-08-17 20:45 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.77,
+      "osint_age_hours": 1.76,
       "osint_used_in_blend": true,
       "conflict_signal_score": 11.2,
       "conflict_signal_raw_index": -0.56,
@@ -122,7 +122,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-08-17 21:31 UTC",
+      "updated": "2026-08-17 22:30 UTC",
       "method": "chokepoint structural impact model v7 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
