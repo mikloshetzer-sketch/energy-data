@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
 
   schedule:
-    # Naponta egyszer, magyar idő szerint reggel körül
-    # UTC szerint 05:45
-    - cron: "45 5 * * *"
+    # JODI frissítés után fusson
+    # UTC szerint 06:15
+    - cron: "15 6 * * *"
 
 permissions:
   contents: write
@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Repository letöltése
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Python telepítése
         uses: actions/setup-python@v5
@@ -27,13 +29,23 @@ jobs:
       - name: Kína olajimport adat frissítése
         run: python scripts/update_china_oil_import.py
 
+      - name: China Exposure frissítése
+        run: python scripts/generate_china_exposure.py
+
       - name: Változások commitolása
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add china-oil-import.json
+          git add docs/data/china_exposure.json
 
-          git commit -m "Update China oil import data" || echo "Nincs változás"
+          if git diff --cached --quiet; then
+            echo "Nincs változás"
+            exit 0
+          fi
 
-          git push
+          git commit -m "Update China oil import and exposure data"
+
+          git pull --rebase origin main
+          git push origin main
