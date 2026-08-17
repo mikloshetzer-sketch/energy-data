@@ -46,7 +46,7 @@ ROUTE_WEIGHTS = {
     "malacca": 0.15,
 }
 
-METHOD_VERSION = "ompi_v3_1_jodi_china_momentum_2026_08"
+METHOD_VERSION = "ompi_v3_2_jodi_china_2m_vs_3m_2026_08"
 
 
 def utc_now() -> datetime:
@@ -673,7 +673,10 @@ def extract_china_monthly_observations(data: dict[str, Any]) -> list[dict[str, A
 
     return sorted(observations.values(), key=lambda item: item["month"])
 
-def build_china_import_momentum(data: dict[str, Any], source_path: Path | None) -> dict[str, Any]:
+def build_china_import_momentum(
+    data: dict[str, Any],
+    source_path: Path | None
+) -> dict[str, Any]:
     observations = extract_china_monthly_observations(data)
     count = len(observations)
     weight = WEIGHTS["china_import_momentum"]
@@ -685,7 +688,9 @@ def build_china_import_momentum(data: dict[str, Any], source_path: Path | None) 
         except ValueError:
             source_file = str(source_path)
 
-    if count < 4:
+    # At least five monthly observations are required:
+    # 3 reference months + 2 recent months.
+    if count < 5:
         score = 50.0
         return {
             "score": score,
@@ -698,21 +703,33 @@ def build_china_import_momentum(data: dict[str, Any], source_path: Path | None) 
             "source_file": source_file,
         }
 
+    # Latest two months = current short-term momentum window.
     recent = observations[-2:]
-    reference = observations[:-2]
 
-    recent_avg = sum(row["volume_mbd"] for row in recent) / len(recent)
-    reference_avg = sum(row["volume_mbd"] for row in reference) / len(reference)
+    # Immediately preceding three months = reference window.
+    reference = observations[-5:-2]
+
+    recent_avg = sum(
+        row["volume_mbd"] for row in recent
+    ) / len(recent)
+
+    reference_avg = sum(
+        row["volume_mbd"] for row in reference
+    ) / len(reference)
 
     change_pct = (
-        (recent_avg - reference_avg) / reference_avg * 100.0
+        (recent_avg - reference_avg)
+        / reference_avg
+        * 100.0
         if reference_avg > 0
         else 0.0
     )
 
-    # 50 = neutral. A falling Chinese import trend lowers oil-market pressure,
-    # while a rising trend increases it. Clamp keeps the component on 0-100.
+    # 50 = neutral.
+    # Falling import momentum lowers oil-market pressure;
+    # rising momentum increases it.
     score = clamp(50.0 + change_pct)
+
     latest = observations[-1]
 
     return {
@@ -720,24 +737,53 @@ def build_china_import_momentum(data: dict[str, Any], source_path: Path | None) 
         "weight": weight,
         "weight_pct": weight * 100,
         "contribution": round(score * weight, 2),
+
         "latest_month": latest["month"],
-        "latest_import_volume_mbd": round(latest["volume_mbd"], 3),
-        "recent_average_mbd": round(recent_avg, 3),
-        "reference_average_mbd": round(reference_avg, 3),
-        "short_term_change_pct": round(change_pct, 1),
+        "latest_import_volume_mbd": round(
+            latest["volume_mbd"], 3
+        ),
+
+        "recent_average_mbd": round(
+            recent_avg, 3
+        ),
+
+        "reference_average_mbd": round(
+            reference_avg, 3
+        ),
+
+        "short_term_change_pct": round(
+            change_pct, 1
+        ),
+
         "observation_count": count,
-        "data_quality": "AVAILABLE" if count >= 12 else "PARTIAL_SHORT_HISTORY",
-        "method": "latest_2m_average_vs_previous_months_average",
+
+        "recent_period_months": [
+            row["month"] for row in recent
+        ],
+
+        "reference_period_months": [
+            row["month"] for row in reference
+        ],
+
+        "data_quality": "AVAILABLE",
+
+        "method": (
+            "latest_2m_average_vs_previous_3m_average"
+        ),
+
         "source_file": source_file,
+
         "source_fields": [
             "series[].period",
             "series[].import_volume_mbd",
             "monthly_inputs[].month",
             "monthly_inputs[].import_volume_mbd",
         ],
+
         "legacy_source_fields_supported": [
             "monthly_inputs[].estimated_import_volume_mbd",
         ],
+
         "excluded_source_fields": [
             "series[].brent_usd_per_barrel",
             "series[].estimated_import_value_billion_usd",
@@ -955,4 +1001,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
