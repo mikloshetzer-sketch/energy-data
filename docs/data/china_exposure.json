@@ -1,34 +1,60 @@
 {
-  "generated_at": "2026-07-17",
-  "exposure_score": 50.0,
+  "generated_at": "2026-08-17T19:14:25.335766+00:00",
+  "methodology": {
+    "description": "China Exposure combines official JODI crude-oil import volume with Hormuz exposure, Malacca exposure and global energy-market risk.",
+    "weights": {
+      "import_volume": 0.4,
+      "hormuz": 0.25,
+      "malacca": 0.2,
+      "global_energy_risk": 0.15
+    },
+    "volume_score_formula": "min(import_volume_mbd * 8, 100)"
+  },
+  "exposure_score": 45.0,
   "exposure_level": "MEDIUM",
   "exposure_level_hu": "Közepes",
   "exposure_level_en": "Medium",
-  "import_volume_mbd": 9.1,
-  "import_cost_billion_usd": 0.84,
-  "brent_price_usd": 92.88,
-  "summary_hu": "Kína becsült napi olajimportja 9.10 millió hordó. Az importköltség megközelíti a 0.84 milliárd USD-t naponta. A kitettségi pontszám 50.0/100, ami közepes szintnek felel meg.",
-  "summary_en": "China's estimated daily oil imports amount to 9.10 million barrels. Estimated import cost is approximately 0.84 billion USD per day. The exposure score is 50.0/100, corresponding to a medium exposure level.",
+  "import_volume_mbd": 7.811,
+  "import_volume_period": "2026-05",
+  "import_volume_source": "JODI Oil World Database",
+  "jodi_assessment_code": "3",
+  "jodi_assessment_label": "not assessed",
+  "import_cost_billion_usd": 0.728,
+  "brent_price_usd": 93.26,
+  "market_date": "2026-08-11",
+  "cost_volume_period": "2026-05",
+  "cost_volume_status": "latest_jodi_proxy",
+  "summary_hu": "Kína legfrissebb JODI szerinti nyersolajimportja 7.81 millió hordó/nap (2026-05). A legfrissebb piaci becslés szerint az importköltség 0.73 milliárd USD/nap. A China Exposure pontszám 45.0/100, ami közepes kitettségi szintnek felel meg.",
+  "summary_en": "China's latest JODI crude-oil import volume is 7.81 million barrels per day (2026-05). The latest estimated daily import cost is approximately 0.73 billion USD. The China Exposure score is 45.0/100, corresponding to a medium exposure level.",
   "drivers": [
     {
       "name_hu": "Importmennyiség",
       "name_en": "Import volume",
-      "score": 29.1
+      "raw_score": 62.5,
+      "weighted_score": 25.0,
+      "weight": 0.4,
+      "source": "JODI Oil World Database"
     },
     {
       "name_hu": "Hormuzi kitettség",
       "name_en": "Hormuz exposure",
-      "score": 10.0
+      "raw_score": 39.9,
+      "weighted_score": 10.0,
+      "weight": 0.25
     },
     {
       "name_hu": "Globális energiapiaci kockázat",
       "name_en": "Global energy risk",
-      "score": 7.7
+      "raw_score": 45.9,
+      "weighted_score": 6.9,
+      "weight": 0.15
     },
     {
       "name_hu": "Malaka kitettség",
       "name_en": "Malacca exposure",
-      "score": 3.2
+      "raw_score": 15.8,
+      "weighted_score": 3.2,
+      "weight": 0.2
     }
   ]
 }
