@@ -23,6 +23,7 @@ OMPI_PATH = DATA_DIR / "ompi.json"
 OMPI_HISTORY_PATH = DATA_DIR / "ompi-history.json"
 
 CHINA_CANDIDATE_PATHS = [
+    DATA_DIR / "china_crude_import_volume.json",
     ROOT / "china-oil-import.json",
     DATA_DIR / "china-oil-import.json",
     DATA_DIR / "china_oil_import.json",
@@ -45,7 +46,7 @@ ROUTE_WEIGHTS = {
     "malacca": 0.15,
 }
 
-METHOD_VERSION = "ompi_v3_jodi_physical_tightness_2026_07"
+METHOD_VERSION = "ompi_v3_1_jodi_china_momentum_2026_08"
 
 
 def utc_now() -> datetime:
@@ -617,20 +618,60 @@ def find_china_path() -> Path | None:
 
 
 def extract_china_monthly_observations(data: dict[str, Any]) -> list[dict[str, Any]]:
-    rows = data.get("monthly_inputs")
-    if not isinstance(rows, list):
-        return []
+    """Extract monthly China crude-import observations.
 
+    Preferred source:
+      docs/data/china_crude_import_volume.json
+      -> series[].period + series[].import_volume_mbd
+
+    Backward-compatible fallback:
+      china-oil-import.json
+      -> monthly_inputs[].month + monthly_inputs[].import_volume_mbd
+      -> legacy monthly_inputs[].estimated_import_volume_mbd
+    """
     observations: dict[str, dict[str, Any]] = {}
-    for row in rows:
-        if not isinstance(row, dict):
-            continue
-        month = normalize_period_value(row.get("month"))
-        volume = safe_float(row.get("estimated_import_volume_mbd"))
-        if month and volume is not None and volume > 0:
-            observations[month] = {"month": month, "volume_mbd": float(volume)}
-    return sorted(observations.values(), key=lambda item: item["month"])
 
+    # Preferred direct JODI dataset.
+    series = data.get("series")
+    if isinstance(series, list):
+        for row in series:
+            if not isinstance(row, dict):
+                continue
+            month = normalize_period_value(row.get("period") or row.get("month"))
+            volume = first_number(
+                row,
+                [
+                    "import_volume_mbd",
+                    "estimated_import_volume_mbd",
+                ],
+            )
+            if month and volume is not None and volume > 0:
+                observations[month] = {
+                    "month": month,
+                    "volume_mbd": float(volume),
+                }
+
+    # Backward-compatible derived/legacy dataset.
+    rows = data.get("monthly_inputs")
+    if isinstance(rows, list):
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            month = normalize_period_value(row.get("month") or row.get("period"))
+            volume = first_number(
+                row,
+                [
+                    "import_volume_mbd",
+                    "estimated_import_volume_mbd",
+                ],
+            )
+            if month and volume is not None and volume > 0:
+                observations[month] = {
+                    "month": month,
+                    "volume_mbd": float(volume),
+                }
+
+    return sorted(observations.values(), key=lambda item: item["month"])
 
 def build_china_import_momentum(data: dict[str, Any], source_path: Path | None) -> dict[str, Any]:
     observations = extract_china_monthly_observations(data)
@@ -659,9 +700,18 @@ def build_china_import_momentum(data: dict[str, Any], source_path: Path | None) 
 
     recent = observations[-2:]
     reference = observations[:-2]
+
     recent_avg = sum(row["volume_mbd"] for row in recent) / len(recent)
     reference_avg = sum(row["volume_mbd"] for row in reference) / len(reference)
-    change_pct = ((recent_avg - reference_avg) / reference_avg * 100.0) if reference_avg > 0 else 0.0
+
+    change_pct = (
+        (recent_avg - reference_avg) / reference_avg * 100.0
+        if reference_avg > 0
+        else 0.0
+    )
+
+    # 50 = neutral. A falling Chinese import trend lowers oil-market pressure,
+    # while a rising trend increases it. Clamp keeps the component on 0-100.
     score = clamp(50.0 + change_pct)
     latest = observations[-1]
 
@@ -676,11 +726,16 @@ def build_china_import_momentum(data: dict[str, Any], source_path: Path | None) 
         "reference_average_mbd": round(reference_avg, 3),
         "short_term_change_pct": round(change_pct, 1),
         "observation_count": count,
-        "data_quality": "PARTIAL_SHORT_HISTORY",
+        "data_quality": "AVAILABLE" if count >= 12 else "PARTIAL_SHORT_HISTORY",
         "method": "latest_2m_average_vs_previous_months_average",
         "source_file": source_file,
         "source_fields": [
+            "series[].period",
+            "series[].import_volume_mbd",
             "monthly_inputs[].month",
+            "monthly_inputs[].import_volume_mbd",
+        ],
+        "legacy_source_fields_supported": [
             "monthly_inputs[].estimated_import_volume_mbd",
         ],
         "excluded_source_fields": [
@@ -691,7 +746,6 @@ def build_china_import_momentum(data: dict[str, Any], source_path: Path | None) 
             "exposure_score",
         ],
     }
-
 
 def classify_score(score: float) -> dict[str, str]:
     if score >= 80:
@@ -876,7 +930,8 @@ def main() -> None:
             "chokepoint_overlap_warning": True,
             "opec_input_temporary_static": True,
             "brent_excluded_from_score": True,
-            "china_source_files_modified": False,
+            "china_source_files_modified": True,
+            "china_import_source_preferred": "docs/data/china_crude_import_volume.json",
             "china_exposure_score_excluded": True,
             "china_import_cost_excluded": True,
             "china_brent_price_excluded": True,
@@ -900,8 +955,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-
-
 
