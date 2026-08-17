@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-17 16:48 UTC",
+    "updated": "2026-08-17 16:50 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -10,36 +10,36 @@
   "latest": {
     "leader": "bosporus_impact",
     "leader_label": "Bosporus",
-    "leader_correlation": -0.208,
-    "leader_weighted_strength": 0.146,
+    "leader_correlation": -0.383,
+    "leader_weighted_strength": 0.268,
     "ranked": [
       {
         "key": "bosporus_impact",
         "label": "Bosporus",
-        "correlation": -0.208,
+        "correlation": -0.383,
         "strategic_weight": 0.7,
-        "weighted_strength": 0.146
-      },
-      {
-        "key": "hormuz_impact",
-        "label": "Hormuz",
-        "correlation": -0.074,
-        "strategic_weight": 1.5,
-        "weighted_strength": 0.111
+        "weighted_strength": 0.268
       },
       {
         "key": "suez_impact",
         "label": "Suez",
-        "correlation": -0.093,
+        "correlation": -0.19,
         "strategic_weight": 1.1,
-        "weighted_strength": 0.102
+        "weighted_strength": 0.209
+      },
+      {
+        "key": "hormuz_impact",
+        "label": "Hormuz",
+        "correlation": -0.132,
+        "strategic_weight": 1.5,
+        "weighted_strength": 0.198
       },
       {
         "key": "bab_el_mandeb_impact",
         "label": "Bab el-Mandeb",
-        "correlation": -0.065,
+        "correlation": -0.111,
         "strategic_weight": 1.3,
-        "weighted_strength": 0.085
+        "weighted_strength": 0.144
       }
     ]
   },
@@ -1419,10 +1419,10 @@
     },
     {
       "date": "2026-08-17",
-      "brent_vs_hormuz_impact": -0.074,
-      "brent_vs_suez_impact": -0.093,
-      "brent_vs_bab_el_mandeb_impact": -0.065,
-      "brent_vs_bosporus_impact": -0.208
+      "brent_vs_hormuz_impact": -0.132,
+      "brent_vs_suez_impact": -0.19,
+      "brent_vs_bab_el_mandeb_impact": -0.111,
+      "brent_vs_bosporus_impact": -0.383
     }
   ]
 }
