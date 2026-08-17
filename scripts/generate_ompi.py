@@ -46,7 +46,7 @@ ROUTE_WEIGHTS = {
     "malacca": 0.15,
 }
 
-METHOD_VERSION = "ompi_v3_2_jodi_china_2m_vs_3m_2026_08"
+METHOD_VERSION = "ompi_v3_3_chokepoint_key_fix_2026_08"
 
 
 def utc_now() -> datetime:
@@ -534,7 +534,12 @@ def extract_route_records(data: dict[str, Any]) -> list[dict[str, Any]]:
 def build_chokepoint_risk(data: dict[str, Any]) -> dict[str, Any]:
     route_map: dict[str, dict[str, Any]] = {}
     for row in extract_route_records(data):
-        route_id = normalize_route_id(row.get("id") or row.get("route") or row.get("name") or row.get("key"))
+        route_id = normalize_route_id(
+            row.get("key")
+            or row.get("id")
+            or row.get("route")
+            or row.get("name")
+        )
         if route_id not in ROUTE_WEIGHTS:
             continue
 
