@@ -1,7 +1,7 @@
 {
   "market": {
-    "brent": "88.46 USD/hordó",
-    "wti": "81.87 USD/hordó",
+    "brent": "91.55 USD/hordó",
+    "wti": "85.42 USD/hordó",
     "inventory": "7.9 millió hordó",
     "supply": "111.3 millió hordó/nap",
     "brent_30d_trend": "+29.37%",
@@ -265,18 +265,18 @@
       "text": "Az amerikai piac termelői háttere miatt közvetlenül kevésbé sérülékeny, bár a globális ártrendek itt is megjelennek."
     },
     "asia": {
-      "level": "moderate",
-      "label": "Mérsékelt hatás",
-      "score": 5.0,
+      "level": "low",
+      "label": "Korlátozott hatás",
+      "score": 4.9,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
       "dependency_note": "Ázsia erősen függ a közel-keleti importtól, ezért a Hormuzi-szoroshoz és a tankerforgalomhoz kapcsolódó zavarok itt csapódnak le legerősebben.",
-      "text": "Ázsia továbbra is érzékeny a közel-keleti fejleményekre, de a jelenlegi mozgás még nem utal maximális régiós nyomásra."
+      "text": "Ázsiában is megjelenik a kockázat, de a jelenlegi indikátorok még nem utalnak szélsőséges piaci átgyűrűzésre."
     }
   },
   "meta": {
-    "updated": "2026-08-17 07:18 UTC",
+    "updated": "2026-08-18 07:06 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
@@ -286,12 +286,12 @@
     "type": "geopolitical"
   },
   "energy_risk": {
-    "score": 28.8,
+    "score": 31.8,
     "level": "high",
     "label": "Magas",
     "components": {
       "geopolitical": 11.8,
-      "price_level": 11.0,
+      "price_level": 14.0,
       "price_momentum": 3.0,
       "market_stress": 3.0,
       "supply_pressure": 0.0
@@ -302,13 +302,13 @@
     "method": "Összetett index: geopolitika 40%, árszint 20%, ármozgás 20%, piaci stressz 10%, készlet és kínálat 10%."
   },
   "market_stress": {
-    "score": 25.0,
+    "score": 27.0,
     "level": "watch",
     "label": "Mérsékelten feszült",
     "note": "A piac érzékenyebb a szokásosnál, de a mért adatok még nem mutatnak szélsőséges reakciót.",
     "components": {
       "volatility": 0.0,
-      "price_level": 12.0,
+      "price_level": 14.0,
       "geopolitical": 5.0,
       "supply_buffer": 0.0,
       "brent_wti_spread": 8.0
@@ -332,13 +332,13 @@
       ]
     },
     "observed_values": {
-      "brent": 88.46,
-      "wti": 81.87,
+      "brent": 91.55,
+      "wti": 85.42,
       "brent_1d_change": 0.5607073538926141,
       "brent_7d_change": -3.8060856111397605,
       "wti_1d_change": 1.2058261700095403,
       "wti_7d_change": -1.6132776230269275,
-      "brent_wti_spread": 6.59,
+      "brent_wti_spread": 6.13,
       "inventory_million_barrels": 7.9,
       "global_supply_mbd": 111.3136879,
       "geopolitical_level": "moderate"
