@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-23 03:24 UTC",
+    "updated": "2026-08-23 03:26 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -10,36 +10,36 @@
   "latest": {
     "leader": "suez_impact",
     "leader_label": "Suez",
-    "leader_correlation": 0.706,
-    "leader_weighted_strength": 0.777,
+    "leader_correlation": 0.695,
+    "leader_weighted_strength": 0.764,
     "ranked": [
       {
         "key": "suez_impact",
         "label": "Suez",
-        "correlation": 0.706,
+        "correlation": 0.695,
         "strategic_weight": 1.1,
-        "weighted_strength": 0.777
-      },
-      {
-        "key": "hormuz_impact",
-        "label": "Hormuz",
-        "correlation": -0.07,
-        "strategic_weight": 1.5,
-        "weighted_strength": 0.105
+        "weighted_strength": 0.764
       },
       {
         "key": "bosporus_impact",
         "label": "Bosporus",
-        "correlation": -0.003,
+        "correlation": -0.25,
         "strategic_weight": 0.7,
-        "weighted_strength": 0.002
+        "weighted_strength": 0.175
+      },
+      {
+        "key": "hormuz_impact",
+        "label": "Hormuz",
+        "correlation": -0.079,
+        "strategic_weight": 1.5,
+        "weighted_strength": 0.118
       },
       {
         "key": "bab_el_mandeb_impact",
         "label": "Bab el-Mandeb",
-        "correlation": 0.001,
+        "correlation": -0.015,
         "strategic_weight": 1.3,
-        "weighted_strength": 0.001
+        "weighted_strength": 0.019
       }
     ]
   },
@@ -1461,10 +1461,10 @@
     },
     {
       "date": "2026-08-23",
-      "brent_vs_hormuz_impact": -0.07,
-      "brent_vs_suez_impact": 0.706,
-      "brent_vs_bab_el_mandeb_impact": 0.001,
-      "brent_vs_bosporus_impact": -0.003
+      "brent_vs_hormuz_impact": -0.079,
+      "brent_vs_suez_impact": 0.695,
+      "brent_vs_bab_el_mandeb_impact": -0.015,
+      "brent_vs_bosporus_impact": -0.25
     }
   ]
 }
