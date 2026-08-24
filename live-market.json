@@ -1,8 +1,8 @@
 {
   "meta": {
-    "updated": "2026-08-24 18:56 UTC",
+    "updated": "2026-08-24 19:38 UTC",
     "source_mode": "live",
-    "generated_at": "2026-08-24T18:56:11.053750Z",
+    "generated_at": "2026-08-24T19:38:42.167030Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
@@ -10,18 +10,18 @@
   },
   "prices": {
     "market_brent": 92.26,
-    "market_wti": 85.18,
+    "market_wti": 85.22,
     "spot_brent": 95.29,
     "spot_wti": 86.48,
     "live_brent": 92.26,
-    "live_wti": 85.18,
+    "live_wti": 85.22,
     "live_source": "yahoo_futures",
     "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-08-24T18:46:01Z",
-    "market_timestamp_wti": "2026-08-24T18:46:10Z",
+    "market_timestamp_brent": "2026-08-24T19:27:27Z",
+    "market_timestamp_wti": "2026-08-24T19:28:39Z",
     "brent_fallback_used": false,
     "wti_fallback_used": false,
     "currency": "USD",
@@ -38,24 +38,24 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 44.9,
-    "middle_east_conflict_impact": 59.2,
+    "global_trade_risk_index": 44.7,
+    "middle_east_conflict_impact": 58.8,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -0.4,
-      "middle_east_conflict_impact_change": -0.5,
+      "global_trade_risk_index_change": -0.6,
+      "middle_east_conflict_impact_change": -0.9,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2369,
+        "estimated_impact": 0.2368,
         "status": "severe"
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.0997,
+        "estimated_impact": 0.0996,
         "status": "medium"
       },
       {
@@ -65,7 +65,7 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0885,
+        "estimated_impact": 0.0884,
         "status": "medium"
       },
       {
@@ -75,38 +75,38 @@
       }
     ],
     "me_components": {
-      "structural_score": 70.9,
-      "osint_signal_score": 39.8,
-      "osint_raw_total_risk": 99.53,
+      "structural_score": 70.8,
+      "osint_signal_score": 38.7,
+      "osint_raw_total_risk": 96.63,
       "osint_risk_level": "LOW",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 131,
+      "osint_total_events": 129,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 29.38
+          "risk": 27.93
         },
         {
           "name": "Israel",
-          "risk": 27.4
+          "risk": 27.15
         },
         {
           "name": "Gaza Strip",
-          "risk": 20.4
+          "risk": 17.45
+        },
+        {
+          "name": "Syria",
+          "risk": 6.05
         },
         {
           "name": "West Bank",
           "risk": 5.85
-        },
-        {
-          "name": "Yemen",
-          "risk": 4.2
         }
       ],
-      "osint_updated": "2026-08-24 16:57 UTC",
+      "osint_updated": "2026-08-24 19:02 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 1.88,
+      "osint_age_hours": 0.54,
       "osint_used_in_blend": true,
       "conflict_signal_score": 14.8,
       "conflict_signal_raw_index": -0.74,
@@ -122,7 +122,7 @@
       "conflict_signal_interpretation": "more_negative_is_worse"
     },
     "risk_meta": {
-      "updated": "2026-08-24 18:49 UTC",
+      "updated": "2026-08-24 19:34 UTC",
       "method": "chokepoint structural impact model v7 + me osint signal v1 + conflict end matrix signal v2",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
