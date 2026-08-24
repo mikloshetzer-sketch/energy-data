@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-24 19:04 UTC",
+    "updated": "2026-08-24 19:06 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -28,18 +28,18 @@
         "weighted_strength": 0.547
       },
       {
-        "key": "bosporus_impact",
-        "label": "Bosporus",
-        "correlation": 0.439,
-        "strategic_weight": 0.7,
-        "weighted_strength": 0.307
-      },
-      {
         "key": "suez_impact",
         "label": "Suez",
         "correlation": 0.261,
         "strategic_weight": 1.1,
         "weighted_strength": 0.287
+      },
+      {
+        "key": "bosporus_impact",
+        "label": "Bosporus",
+        "correlation": 0.353,
+        "strategic_weight": 0.7,
+        "weighted_strength": 0.247
       }
     ]
   },
@@ -1471,7 +1471,7 @@
       "brent_vs_hormuz_impact": -0.416,
       "brent_vs_suez_impact": 0.261,
       "brent_vs_bab_el_mandeb_impact": -0.421,
-      "brent_vs_bosporus_impact": 0.439
+      "brent_vs_bosporus_impact": 0.353
     }
   ]
 }
