@@ -1,33 +1,33 @@
 {
-  "generated_at": "2026-08-25T08:04:05Z",
+  "generated_at": "2026-08-25T09:04:34Z",
   "dataset": "brent_outlook",
   "horizon_days": 30,
   "current": {
-    "price_usd": 89.9,
+    "price_usd": 89.0,
     "date": "2026-08-25",
-    "timestamp": "2026-08-25T08:04:05Z"
+    "timestamp": "2026-08-25T09:04:34Z"
   },
   "outlook": {
-    "center_price_usd": 95.64,
-    "lower_price_usd": 85.77,
-    "upper_price_usd": 105.5,
+    "center_price_usd": 93.34,
+    "lower_price_usd": 83.23,
+    "upper_price_usd": 103.46,
     "direction": "BULLISH",
     "confidence": "MEDIUM",
-    "current_range_position": "LOWER_HALF"
+    "current_range_position": "NEAR_CENTER"
   },
   "signals": {
     "ompi_score": 61.6,
     "fundamental_shift_pct": 1.16,
     "momentum_shift_pct": 3.5,
-    "trend_shift_pct": 1.5,
-    "raw_total_center_shift_pct": 6.38,
-    "total_center_shift_pct": 6.38,
-    "volatility_band_pct": 10.32
+    "trend_shift_pct": 0.0,
+    "raw_total_center_shift_pct": 4.88,
+    "total_center_shift_pct": 4.88,
+    "volatility_band_pct": 10.84
   },
   "contributions_pct": {
     "ompi": 1.16,
     "momentum": 3.5,
-    "trend": 1.5,
+    "trend": 0.0,
     "inventory": 0.0,
     "supply_demand_balance": 0.0,
     "chokepoint": 0.22,
@@ -41,12 +41,6 @@
       "direction": "BULLISH"
     },
     {
-      "component": "Trend",
-      "key": "trend",
-      "contribution_pct": 1.5,
-      "direction": "BULLISH"
-    },
-    {
       "component": "OMPI",
       "key": "ompi",
       "contribution_pct": 1.16,
@@ -57,6 +51,12 @@
       "key": "chokepoint",
       "contribution_pct": 0.22,
       "direction": "BULLISH"
+    },
+    {
+      "component": "Trend",
+      "key": "trend",
+      "contribution_pct": 0.0,
+      "direction": "NEUTRAL"
     },
     {
       "component": "Inventory",
@@ -110,15 +110,15 @@
     }
   },
   "market_metrics": {
-    "change_5d_pct": -4.14,
-    "change_20d_pct": 13.15,
-    "change_60d_pct": 24.88,
-    "weighted_momentum_pct": 12.35,
+    "change_5d_pct": -5.1,
+    "change_20d_pct": 12.02,
+    "change_60d_pct": 23.63,
+    "weighted_momentum_pct": 11.22,
     "momentum_data_coverage": 1.0,
-    "moving_average_20d": 89.2,
-    "moving_average_60d": 84.89,
-    "daily_realised_volatility_20d": 0.018837,
-    "trend_state": "STRONG_UPTREND"
+    "moving_average_20d": 89.15,
+    "moving_average_60d": 84.87,
+    "daily_realised_volatility_20d": 0.019785,
+    "trend_state": "SIDEWAYS_OR_MIXED"
   },
   "confidence_details": {
     "reasons": [
