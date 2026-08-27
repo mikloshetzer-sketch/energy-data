@@ -1,18 +1,18 @@
 {
   "market": {
-    "brent": "91.35 USD/hordó",
-    "wti": "84.24 USD/hordó",
-    "inventory": "7.8 millió hordó",
+    "brent": "87.64 USD/hordó",
+    "wti": "82.79 USD/hordó",
+    "inventory": "8.4 millió hordó",
     "supply": "111.3 millió hordó/nap",
-    "brent_30d_trend": "+37.62%",
-    "brent_1d_change": "+3.09%",
-    "brent_7d_change": "+8.75%",
-    "wti_1d_change": "+0.51%",
-    "wti_7d_change": "+8.41%"
+    "brent_30d_trend": "+15.35%",
+    "brent_1d_change": "-4.82%",
+    "brent_7d_change": "-4.11%",
+    "wti_1d_change": "-2.83%",
+    "wti_7d_change": "-0.11%"
   },
   "spot": {
-    "brent": "95.29 USD/hordó",
-    "wti": "86.48 USD/hordó"
+    "brent": "88.24 USD/hordó",
+    "wti": "83.90 USD/hordó"
   },
   "production": {
     "current": "111.3 millió hordó/nap",
@@ -245,54 +245,54 @@
   },
   "regional_impact": {
     "europe": {
-      "level": "high",
-      "label": "Magas hatás",
-      "score": 8.4,
+      "level": "low",
+      "label": "Korlátozott hatás",
+      "score": 2.2,
       "factor": 1.0,
       "icon": "🇪🇺",
       "dependency_label": "Közepes kitettség",
       "dependency_note": "Európa importfüggő, ezért az ár- és ellátási sokkok gyorsan átgyűrűzhetnek az inflációba és az üzemanyagköltségekbe.",
-      "text": "Európában a jelenlegi helyzet magas árnyomást és költségoldali sérülékenységet jelent, különösen az energiaintenzív ágazatok számára."
+      "text": "Európában a hatás jelenleg inkább költségoldali figyelmeztetésként jelenik meg, nem szélsőséges sokkként."
     },
     "america": {
-      "level": "moderate",
-      "label": "Mérsékelt hatás",
-      "score": 5.0,
+      "level": "low",
+      "label": "Korlátozott hatás",
+      "score": 1.3,
       "factor": 0.6,
       "icon": "🇺🇸",
       "dependency_label": "Alacsonyabb közvetlen kitettség",
       "dependency_note": "Az USA termelői háttere erősebb, ezért közvetlenül kevésbé sérülékeny, bár a globális árak a hazai üzemanyagpiacon is megjelennek.",
-      "text": "Az amerikai piacra a globális olajár-sokk mérsékelt, de jól érzékelhető üzemanyag- és piaci hangulati hatással járhat."
+      "text": "Az amerikai piac termelői háttere miatt közvetlenül kevésbé sérülékeny, bár a globális ártrendek itt is megjelennek."
     },
     "asia": {
-      "level": "extreme",
-      "label": "Nagyon magas hatás",
-      "score": 13.0,
+      "level": "low",
+      "label": "Korlátozott hatás",
+      "score": 3.4,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
       "dependency_note": "Ázsia erősen függ a közel-keleti importtól, ezért a Hormuzi-szoroshoz és a tankerforgalomhoz kapcsolódó zavarok itt csapódnak le legerősebben.",
-      "text": "Ázsia a közel-keleti importfüggőség miatt jelenleg a legsérülékenyebb régió, ezért a szállítási zavarok, biztosítási költségek és importárak gyorsan felerősödhetnek."
+      "text": "Ázsiában is megjelenik a kockázat, de a jelenlegi indikátorok még nem utalnak szélsőséges piaci átgyűrűzésre."
     }
   },
   "meta": {
-    "updated": "2026-08-25 07:09 UTC",
+    "updated": "2026-08-27 17:39 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
-    "score": 97.7,
+    "score": 87.1,
     "level": "low",
     "label": "Alacsony",
     "type": "geopolitical"
   },
   "energy_risk": {
-    "score": 39.2,
+    "score": 33.0,
     "level": "moderate",
     "label": "Mérsékelt",
     "components": {
-      "geopolitical": 11.2,
-      "price_level": 14.0,
-      "price_momentum": 11.0,
+      "geopolitical": 10.0,
+      "price_level": 11.0,
+      "price_momentum": 9.0,
       "market_stress": 3.0,
       "supply_pressure": 0.0
     },
@@ -300,16 +300,16 @@
     "method": "Összetett index: geopolitika 40%, árszint 20%, ármozgás 20%, piaci stressz 10%, készlet és kínálat 10%."
   },
   "market_stress": {
-    "score": 36.0,
+    "score": 27.0,
     "level": "watch",
     "label": "Mérsékelten feszült",
     "note": "A piac érzékenyebb a szokásosnál, de a mért adatok még nem mutatnak szélsőséges reakciót.",
     "components": {
-      "volatility": 14.0,
-      "price_level": 14.0,
+      "volatility": 11.0,
+      "price_level": 12.0,
       "geopolitical": 0.0,
       "supply_buffer": 0.0,
-      "brent_wti_spread": 8.0
+      "brent_wti_spread": 4.0
     },
     "triggers": [],
     "methodology": "A 0–100-as mutató a Brent és WTI napi és heti abszolút ármozgását (30%), az aktuális olajárszintet (20%), a ME Security Monitor geopolitikai kategóriáját (20%), az EIA amerikai készlet- és globális kínálati adatait (15%), valamint a Brent–WTI árkülönbséget (15%) értékeli.",
@@ -330,14 +330,14 @@
       ]
     },
     "observed_values": {
-      "brent": 91.35,
-      "wti": 84.24,
-      "brent_1d_change": 3.0942334739803083,
-      "brent_7d_change": 8.753709198813057,
-      "wti_1d_change": 0.5113900511390024,
-      "wti_7d_change": 8.411683590322188,
-      "brent_wti_spread": 7.11,
-      "inventory_million_barrels": 7.8,
+      "brent": 87.64,
+      "wti": 82.79,
+      "brent_1d_change": -4.821486355301477,
+      "brent_7d_change": -4.10780265159748,
+      "wti_1d_change": -2.826036599490384,
+      "wti_7d_change": -0.10715561376353042,
+      "brent_wti_spread": 4.85,
+      "inventory_million_barrels": 8.4,
       "global_supply_mbd": 111.3136879,
       "geopolitical_level": "low"
     }
