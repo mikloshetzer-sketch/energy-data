@@ -1,7 +1,7 @@
 {
   "dataset": "brent_outlook_history",
   "model_version": "2.1",
-  "updated_at": "2026-09-01T06:18:34Z",
+  "updated_at": "2026-09-01T11:49:36Z",
   "history": [
     {
       "as_of_date": "2026-07-17",
@@ -7282,62 +7282,68 @@
     },
     {
       "as_of_date": "2026-09-01",
-      "generated_at": "2026-09-01T06:18:34Z",
-      "current_price_usd": 89.16,
-      "center_price_usd": 92.7,
-      "lower_price_usd": 84.72,
-      "upper_price_usd": 100.69,
+      "generated_at": "2026-09-01T11:49:36Z",
+      "current_price_usd": 92.34,
+      "center_price_usd": 98.28,
+      "lower_price_usd": 89.36,
+      "upper_price_usd": 107.19,
       "direction": "BULLISH",
       "confidence": "MEDIUM",
       "ompi_score": 60.9,
-      "total_center_shift_pct": 3.98,
-      "volatility_band_pct": 8.61,
+      "total_center_shift_pct": 6.43,
+      "volatility_band_pct": 9.07,
       "model_version": "2.1",
       "schema_version": "2.0",
       "target_date": "2026-10-01",
       "horizon_days": 30,
-      "current_timestamp": "2026-09-01T06:18:34Z",
-      "current_range_position": "NEAR_CENTER",
+      "current_timestamp": "2026-09-01T11:49:36Z",
+      "current_range_position": "LOWER_HALF",
       "signals": {
         "ompi_score": 60.9,
         "fundamental_shift_pct": 1.09,
-        "momentum_shift_pct": 2.52,
-        "trend_shift_pct": 0.0,
-        "raw_total_center_shift_pct": 3.98,
-        "total_center_shift_pct": 3.98,
-        "volatility_band_pct": 8.61
+        "momentum_shift_pct": 3.5,
+        "trend_shift_pct": 1.5,
+        "raw_total_center_shift_pct": 6.43,
+        "total_center_shift_pct": 6.43,
+        "volatility_band_pct": 9.07
       },
       "contributions_pct": {
         "ompi": 1.09,
-        "momentum": 2.52,
-        "trend": 0.0,
+        "momentum": 3.5,
+        "trend": 1.5,
         "inventory": 0.0,
         "supply_demand_balance": 0.0,
-        "chokepoint": 0.37,
+        "chokepoint": 0.34,
         "market_confirmation": 0.0
       },
       "market_metrics": {
-        "change_5d_pct": -0.6,
-        "change_20d_pct": 0.2,
-        "change_60d_pct": 24.18,
-        "weighted_momentum_pct": 7.19,
+        "change_5d_pct": 2.94,
+        "change_20d_pct": 3.78,
+        "change_60d_pct": 28.61,
+        "weighted_momentum_pct": 11.02,
         "momentum_data_coverage": 1.0,
-        "moving_average_20d": 90.39,
-        "moving_average_60d": 86.84,
-        "daily_realised_volatility_20d": 0.015722,
-        "trend_state": "SIDEWAYS_OR_MIXED"
+        "moving_average_20d": 90.61,
+        "moving_average_60d": 86.92,
+        "daily_realised_volatility_20d": 0.016556,
+        "trend_state": "STRONG_UPTREND"
       },
       "overlay_metrics": {
         "inventory_score": 50.0,
         "latest_balance_mbd": null,
-        "chokepoint_score": 64.7,
+        "chokepoint_score": 63.5,
         "market_confirmation_score": null
       },
       "driver_ranking": [
         {
           "component": "Momentum",
           "key": "momentum",
-          "contribution_pct": 2.52,
+          "contribution_pct": 3.5,
+          "direction": "BULLISH"
+        },
+        {
+          "component": "Trend",
+          "key": "trend",
+          "contribution_pct": 1.5,
           "direction": "BULLISH"
         },
         {
@@ -7349,14 +7355,8 @@
         {
           "component": "Chokepoint",
           "key": "chokepoint",
-          "contribution_pct": 0.37,
+          "contribution_pct": 0.34,
           "direction": "BULLISH"
-        },
-        {
-          "component": "Trend",
-          "key": "trend",
-          "contribution_pct": 0.0,
-          "direction": "NEUTRAL"
         },
         {
           "component": "Inventory",
