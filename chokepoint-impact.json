@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-03 20:52 UTC",
+    "updated": "2026-09-03 23:10 UTC",
     "method": "chokepoint structural impact model v7 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -27,29 +27,29 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 50.9,
+  "global_trade_risk_index": 51.4,
   "middle_east_conflict_impact": {
     "label": "high",
-    "score": 72.2,
+    "score": 73.2,
     "components": {
       "structural_score": 71.9,
-      "osint_signal_score": 72.8,
-      "osint_raw_total_risk": 182.02,
+      "osint_signal_score": 75.3,
+      "osint_raw_total_risk": 188.27,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 151,
+      "osint_total_events": 155,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 103.52
+          "risk": 106.37
         },
         {
           "name": "Israel",
-          "risk": 16.9
+          "risk": 17.6
         },
         {
           "name": "Gaza Strip",
-          "risk": 14.9
+          "risk": 15.8
         },
         {
           "name": "West Bank",
@@ -57,13 +57,13 @@
         },
         {
           "name": "Tehran",
-          "risk": 6.1
+          "risk": 6.4
         }
       ],
-      "osint_updated": "2026-09-03 17:53 UTC",
+      "osint_updated": "2026-09-03 21:04 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 2.98,
+      "osint_age_hours": 2.11,
       "osint_used_in_blend": true,
       "conflict_signal_score": 33.0,
       "conflict_signal_raw_index": -1.65,
@@ -80,41 +80,41 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": 1.2,
-    "middle_east_conflict_impact_change": 2.7,
+    "global_trade_risk_index_change": 1.7,
+    "middle_east_conflict_impact_change": 3.7,
     "direction_global": "up",
     "direction_middle_east": "up"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
-    "suez": 11,
+    "suez": 18,
     "bab_el_mandeb": 0,
-    "bosporus": 0
+    "bosporus": 1
   },
   "top_risks": [
     {
       "name": "Hormuzi-szoros",
-      "estimated_impact": 0.239,
+      "estimated_impact": 0.2392,
       "status": "severe"
     },
     {
       "name": "Bab el-Mandeb",
-      "estimated_impact": 0.1014,
+      "estimated_impact": 0.1015,
       "status": "medium"
     },
     {
       "name": "Malaka-szoros",
-      "estimated_impact": 0.0999,
+      "estimated_impact": 0.1,
       "status": "medium"
     },
     {
       "name": "Szuezi térség",
-      "estimated_impact": 0.0907,
+      "estimated_impact": 0.0908,
       "status": "medium"
     },
     {
       "name": "Boszporusz",
-      "estimated_impact": 0.0125,
+      "estimated_impact": 0.0132,
       "status": "low"
     }
   ],
@@ -127,11 +127,11 @@
       "energy_share": 0.272,
       "combined_weight": 0.2384,
       "substitution_penalty": 0.95,
-      "disruption_level": 0.9182,
+      "disruption_level": 0.9188,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.239,
+      "estimated_impact": 0.2392,
       "status": "severe",
       "notes": "Kiemelten fontos olaj- és energiatranzit pont."
     },
@@ -143,11 +143,11 @@
       "energy_share": 0.116,
       "combined_weight": 0.1112,
       "substitution_penalty": 0.82,
-      "disruption_level": 0.8511,
+      "disruption_level": 0.8522,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.1014,
+      "estimated_impact": 0.1015,
       "status": "medium",
       "notes": "Vörös-tengeri és Szuez felé irányuló forgalom kulcspontja."
     },
@@ -159,11 +159,11 @@
       "energy_share": 0.299,
       "combined_weight": 0.2813,
       "substitution_penalty": 0.88,
-      "disruption_level": 0.3845,
+      "disruption_level": 0.3847,
       "regional_adjustment": 1.0,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.0999,
+      "estimated_impact": 0.1,
       "status": "medium",
       "notes": "Ázsiai tengeri kereskedelem és energiaáramlás egyik fő útvonala."
     },
@@ -175,11 +175,11 @@
       "energy_share": 0.11,
       "combined_weight": 0.113,
       "substitution_penalty": 0.78,
-      "disruption_level": 0.7393,
+      "disruption_level": 0.7407,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 11,
+      "ais_count_signal": 18,
       "ais_signal_multiplier": 1.1,
-      "estimated_impact": 0.0907,
+      "estimated_impact": 0.0908,
       "status": "medium",
       "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
     },
@@ -191,11 +191,11 @@
       "energy_share": 0.044,
       "combined_weight": 0.0428,
       "substitution_penalty": 0.72,
-      "disruption_level": 0.4284,
+      "disruption_level": 0.4287,
       "regional_adjustment": 1.0,
-      "ais_count_signal": 0,
-      "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.0125,
+      "ais_count_signal": 1,
+      "ais_signal_multiplier": 1.0,
+      "estimated_impact": 0.0132,
       "status": "low",
       "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
     },
@@ -207,7 +207,7 @@
       "energy_share": 0.06,
       "combined_weight": 0.066,
       "substitution_penalty": 0.55,
-      "disruption_level": 0.2175,
+      "disruption_level": 0.2181,
       "regional_adjustment": 1.0,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 1.0,
