@@ -1691,6 +1691,75 @@
       height: 100% !important;
     }
 
+
+    /* Chokepoint Risk Monitor */
+    .chokepoint-monitor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      align-items: stretch;
+    }
+
+    .chokepoint-chart-wrap {
+      height: 360px;
+      position: relative;
+    }
+
+    .chokepoint-kpi-grid {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .chokepoint-kpi {
+      padding: 14px 15px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .chokepoint-kpi.red { border-top: 4px solid var(--red); }
+    .chokepoint-kpi.orange { border-top: 4px solid var(--orange); }
+    .chokepoint-kpi.blue { border-top: 4px solid var(--blue); }
+
+    .chokepoint-kpi-label {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .chokepoint-kpi-value {
+      margin-top: 7px;
+      color: var(--navy);
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .chokepoint-kpi-sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .chokepoint-note {
+      margin-top: 12px;
+      padding: 12px 14px;
+      background: #f8fbfd;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--teal);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.58;
+    }
+
     @media (max-width: 1180px) {
       .kpi-grid {
         grid-template-columns: repeat(4, 1fr);
@@ -1735,6 +1804,7 @@
       .explain-grid,
       .outlook-grid,
       .risk-outlook-grid,
+      .chokepoint-monitor-grid,
       .assessment-drivers {
         grid-template-columns: 1fr;
       }
@@ -1767,7 +1837,8 @@
 
       .context-grid,
       .forecast-grid,
-      .fundamentals-kpis {
+      .fundamentals-kpis,
+      .chokepoint-kpi-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -2832,6 +2903,86 @@
 
     </section>
 
+
+    <section class="section-card teal-top" id="chokepointRiskMonitor">
+      <div class="section-head">
+        <h2 class="section-title">
+          Szoroskockázat monitor
+          <span>Chokepoint Risk Monitor</span>
+        </h2>
+
+        <div class="section-note" id="chokepointUpdated">
+          Az aktuális zavarási kockázatot és a becsült globális hatást mutatja.
+        </div>
+      </div>
+
+      <div class="chokepoint-monitor-grid">
+        <article class="chart-panel">
+          <h3>
+            Aktuális zavarási kockázat
+            <span>Disruption Risk · 0–100 skála, mellette Estimated Global Impact</span>
+          </h3>
+          <div class="chokepoint-chart-wrap">
+            <canvas id="chokepointRiskChart"></canvas>
+          </div>
+        </article>
+
+        <article class="chart-panel">
+          <h3>
+            Kockázat alakulása
+            <span>Estimated Global Impact trend · az öt legfontosabb szoros/átjáró</span>
+          </h3>
+          <div class="chokepoint-chart-wrap">
+            <canvas id="chokepointTrendChart"></canvas>
+          </div>
+        </article>
+      </div>
+
+      <div class="chokepoint-kpi-grid">
+        <div class="chokepoint-kpi red">
+          <div class="chokepoint-kpi-label">Legnagyobb aktuális kockázat</div>
+          <div class="chokepoint-kpi-value" id="chokepointHighestRisk">–</div>
+          <div class="chokepoint-kpi-sub" id="chokepointHighestRiskSub">Betöltés...</div>
+        </div>
+
+        <div class="chokepoint-kpi orange">
+          <div class="chokepoint-kpi-label">Legnagyobb globális hatás</div>
+          <div class="chokepoint-kpi-value" id="chokepointHighestImpact">–</div>
+          <div class="chokepoint-kpi-sub">A világkereskedelem és energiaellátás szempontjából</div>
+        </div>
+
+        <div class="chokepoint-kpi blue">
+          <div class="chokepoint-kpi-label">Legnagyobb 24 órás változás</div>
+          <div class="chokepoint-kpi-value" id="chokepointLargestChange">–</div>
+          <div class="chokepoint-kpi-sub" id="chokepointLargestChangeSub">Történeti snapshot alapján</div>
+        </div>
+      </div>
+
+      <div class="chokepoint-note">
+        <strong>Megjegyzés:</strong> A Disruption Risk a jelenlegi zavarási kockázatot mutatja 0–100 skálán, míg az Estimated Global Impact az adott szoros vagy átjáró becsült rendszerszintű hatását jelzi. A két érték ezért nem azonos rangsort mér.
+      </div>
+
+      <div class="explain-block">
+        <div class="explain-grid">
+          <div class="explain-item">
+            <div class="explain-title">Mit mutat?</div>
+            <div class="explain-text">A stratégiai tengeri szűkületek pillanatnyi zavarási kockázatát és a kiesésükből eredő becsült globális hatást.</div>
+          </div>
+          <div class="explain-item">
+            <div class="explain-title">Hogyan értelmezzük?</div>
+            <div class="explain-text">A magas Disruption Risk erős aktuális zavart jelez. A magas Estimated Global Impact azt mutatja, hogy az adott útvonal kiesése szélesebb piaci következményekkel járhat.</div>
+          </div>
+          <div class="explain-item">
+            <div class="explain-title">Mire jó?</div>
+            <div class="explain-text">Gyorsan elkülöníti a lokálisan feszült útvonalakat a globálisan rendszerszintű jelentőségű chokepointoktól, és megmutatja a trendet is.</div>
+          </div>
+        </div>
+        <div class="key-insight" id="chokepointInsight">
+          <strong>Key Insight:</strong> A chokepoint-adatok betöltése folyamatban.
+        </div>
+      </div>
+    </section>
+
     <section class="section-card teal-top">
       <div class="section-head">
         <h2 class="section-title">
@@ -3236,7 +3387,9 @@
       ompiHistory: BASE + "docs/data/ompi-history.json",
       brentOutlook: BASE + "docs/data/brent-outlook.json",
       brentOutlookHistory: BASE + "docs/data/brent-outlook-history.json",
-      chinaCrudeImportVolume: BASE + "docs/data/china_crude_import_volume.json"
+      chinaCrudeImportVolume: BASE + "docs/data/china_crude_import_volume.json",
+      chokepointImpact: BASE + "chokepoint-impact.json",
+      chokepointImpactHistory: BASE + "chokepoint-impact-history.json"
     };
 
     Chart.register(ChartDataLabels);
@@ -3258,6 +3411,8 @@
     let activeInventoryDays = 30;
     let validationChartInstance = null;
     let latestOmpiScore = null;
+    let chokepointRiskChartInstance = null;
+    let chokepointTrendChartInstance = null;
 
     async function loadJsonSafe(url, fallback) {
       try {
@@ -5889,6 +6044,219 @@
           : "A fő kockázati tényezők jelenleg mérsékeltek. A mutató külön kockázati dimenziók átlátható dashboard-összegzése.";
     }
 
+
+
+    function chokepointColor(score) {
+      if (score >= 80) return "#c83c32";
+      if (score >= 60) return "#d97706";
+      if (score >= 40) return "#e4ad20";
+      if (score >= 20) return "#62b95b";
+      return "#07875f";
+    }
+
+    function normalizeImpactPercent(value) {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return null;
+      return Math.abs(n) <= 1 ? n * 100 : n;
+    }
+
+    function renderChokepointRiskMonitor(data, history) {
+      const points = Array.isArray(data?.chokepoints) ? data.chokepoints.slice() : [];
+      const riskCanvas = document.getElementById("chokepointRiskChart");
+      const trendCanvas = document.getElementById("chokepointTrendChart");
+      if (!riskCanvas || !trendCanvas) return;
+
+      const updated = data?.meta?.updated;
+      document.getElementById("chokepointUpdated").innerText = updated
+        ? "Adatok frissítve: " + updated
+        : "Az aktuális zavarási kockázatot és a becsült globális hatást mutatja.";
+
+      if (!points.length) {
+        document.getElementById("chokepointHighestRisk").innerText = "Nincs adat";
+        document.getElementById("chokepointHighestRiskSub").innerText = "A chokepoint-impact.json nem adott vissza használható rekordot.";
+        document.getElementById("chokepointHighestImpact").innerText = "Nincs adat";
+        document.getElementById("chokepointLargestChange").innerText = "Nincs adat";
+        document.getElementById("chokepointInsight").innerHTML = "<strong>Key Insight:</strong> A részletes chokepoint-adatforrás jelenleg nem elérhető.";
+        return;
+      }
+
+      const sortedRisk = points
+        .map(p => ({
+          ...p,
+          disruptionScore: Math.max(0, Math.min(100, Number(p.disruption_level || 0) * 100)),
+          impactPct: normalizeImpactPercent(p.estimated_impact)
+        }))
+        .sort((a, b) => b.disruptionScore - a.disruptionScore);
+
+      const highestRisk = sortedRisk[0];
+      const highestImpact = sortedRisk.slice().sort((a,b) => (b.impactPct || 0) - (a.impactPct || 0))[0];
+
+      document.getElementById("chokepointHighestRisk").innerText =
+        `${highestRisk.name} – ${highestRisk.disruptionScore.toFixed(1)}/100`;
+      document.getElementById("chokepointHighestRiskSub").innerText =
+        `${String(highestRisk.status || "").toUpperCase()} szintű zavarási kockázat`;
+      document.getElementById("chokepointHighestImpact").innerText =
+        `${highestImpact.name} – ${(highestImpact.impactPct || 0).toFixed(1)}%`;
+
+      if (chokepointRiskChartInstance) chokepointRiskChartInstance.destroy();
+      chokepointRiskChartInstance = new Chart(riskCanvas, {
+        type: "bar",
+        data: {
+          labels: sortedRisk.map(p => p.name),
+          datasets: [{
+            label: "Disruption Risk",
+            data: sortedRisk.map(p => p.disruptionScore),
+            backgroundColor: sortedRisk.map(p => chokepointColor(p.disruptionScore)),
+            borderRadius: 7,
+            borderSkipped: false,
+            barThickness: 18
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          layout: { padding: { right: 58 } },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                afterLabel: ctx => {
+                  const p = sortedRisk[ctx.dataIndex];
+                  return `Estimated Global Impact: ${(p.impactPct || 0).toFixed(1)}%`;
+                }
+              }
+            },
+            datalabels: {
+              display: true,
+              anchor: "end",
+              align: "right",
+              clamp: true,
+              color: "#526879",
+              font: { size: 9, weight: "bold" },
+              formatter: (value, ctx) => {
+                const p = sortedRisk[ctx.dataIndex];
+                return `${Number(value).toFixed(1)}  |  ${(p.impactPct || 0).toFixed(1)}%`;
+              }
+            }
+          },
+          scales: {
+            x: {
+              min: 0,
+              max: 100,
+              title: { display: true, text: "Disruption Risk (0–100)", color: "#526879", font: { size: 10, weight: "bold" } },
+              ticks: { color: "#526879", font: { size: 9, weight: "bold" } },
+              grid: { color: "rgba(148,163,184,.18)" }
+            },
+            y: {
+              ticks: { color: "#112f43", font: { size: 9, weight: "bold" } },
+              grid: { display: false }
+            }
+          }
+        }
+      });
+
+      const snapshotsRaw = Array.isArray(history?.snapshots) ? history.snapshots : [];
+      const byDate = new Map();
+      snapshotsRaw.forEach(s => {
+        const key = s.date || String(s.timestamp || "").slice(0,10);
+        if (key) byDate.set(key, s);
+      });
+      const snapshots = Array.from(byDate.values()).slice(-30);
+      const topKeys = sortedRisk
+        .slice()
+        .sort((a,b) => (b.impactPct || 0) - (a.impactPct || 0))
+        .slice(0,5)
+        .map(p => p.name);
+      const palette = ["#c83c32", "#d97706", "#e4ad20", "#258bc7", "#07875f"];
+
+      function snapshotImpact(snapshot, name) {
+        const arr = Array.isArray(snapshot?.top_risks) ? snapshot.top_risks : [];
+        const found = arr.find(r => r.name === name);
+        return found ? normalizeImpactPercent(found.estimated_impact) : null;
+      }
+
+      const labels = snapshots.map(s => s.date || String(s.timestamp || "").slice(0,10));
+      const trendSets = topKeys.map((name, idx) => ({
+        label: name,
+        data: snapshots.map(s => snapshotImpact(s, name)),
+        borderColor: palette[idx],
+        backgroundColor: palette[idx],
+        borderWidth: 2,
+        pointRadius: 1.8,
+        pointHoverRadius: 4,
+        tension: .25,
+        spanGaps: true,
+        fill: false
+      }));
+
+      if (chokepointTrendChartInstance) chokepointTrendChartInstance.destroy();
+      chokepointTrendChartInstance = new Chart(trendCanvas, {
+        type: "line",
+        data: { labels, datasets: trendSets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: { boxWidth: 11, usePointStyle: true, color: "#526879", font: { size: 9, weight: "bold" } }
+            },
+            datalabels: { display: false }
+          },
+          scales: {
+            x: {
+              ticks: { maxTicksLimit: 6, color: "#64798a", font: { size: 9, weight: "bold" } },
+              grid: { display: false }
+            },
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "Estimated Global Impact (%)", color: "#526879", font: { size: 10, weight: "bold" } },
+              ticks: { color: "#526879", font: { size: 9, weight: "bold" }, callback: value => value + "%" },
+              grid: { color: "rgba(148,163,184,.18)" }
+            }
+          }
+        }
+      });
+
+      let largestChange = null;
+      if (snapshots.length >= 2) {
+        const prev = snapshots[snapshots.length - 2];
+        const last = snapshots[snapshots.length - 1];
+        topKeys.forEach(name => {
+          const a = snapshotImpact(prev, name);
+          const b = snapshotImpact(last, name);
+          if (Number.isFinite(a) && Number.isFinite(b)) {
+            const delta = b - a;
+            if (!largestChange || Math.abs(delta) > Math.abs(largestChange.delta)) {
+              largestChange = { name, delta };
+            }
+          }
+        });
+      }
+
+      if (largestChange) {
+        document.getElementById("chokepointLargestChange").innerText =
+          `${largestChange.name} ${(largestChange.delta >= 0 ? "+" : "")}${largestChange.delta.toFixed(1)} pont`;
+        document.getElementById("chokepointLargestChangeSub").innerText =
+          "Estimated Global Impact változása az előző napi snapshothoz képest";
+      } else {
+        document.getElementById("chokepointLargestChange").innerText = "Nincs elég adat";
+        document.getElementById("chokepointLargestChangeSub").innerText =
+          "Legalább két külön napi snapshot szükséges a változás számításához";
+      }
+
+      const globalIndex = Number(data?.global_trade_risk_index);
+      document.getElementById("chokepointInsight").innerHTML =
+        `<strong>Key Insight:</strong> ${highestRisk.name} jelenleg a legmagasabb zavarási kockázatú útvonal (${highestRisk.disruptionScore.toFixed(1)}/100), ` +
+        `miközben ${highestImpact.name} becsült globális hatása a legnagyobb (${(highestImpact.impactPct || 0).toFixed(1)}%).` +
+        (Number.isFinite(globalIndex) ? ` Az összesített Global Trade Risk Index ${globalIndex.toFixed(1)}/100.` : "");
+    }
+
+
     async function init() {
       const [
         usa,
@@ -5909,7 +6277,9 @@
         ompiHistory,
         brentOutlook,
         brentOutlookHistory,
-        chinaCrudeImportVolume
+        chinaCrudeImportVolume,
+        chokepointImpact,
+        chokepointImpactHistory
       ] = await Promise.all([
         loadJsonSafe(URLS.usa, { series: [] }),
         loadJsonSafe(URLS.china, { series: [] }),
@@ -5931,7 +6301,9 @@
         loadJsonSafe(URLS.ompiHistory, { history: [] }),
         loadJsonSafe(URLS.brentOutlook, {}),
         loadJsonSafe(URLS.brentOutlookHistory, { history: [] }),
-        loadJsonSafe(URLS.chinaCrudeImportVolume, {})
+        loadJsonSafe(URLS.chinaCrudeImportVolume, {}),
+        loadJsonSafe(URLS.chokepointImpact, { chokepoints: [] }),
+        loadJsonSafe(URLS.chokepointImpactHistory, { snapshots: [] })
       ]);
 
       const normalizedGlobalBalance = normalizeGlobalBalance(globalBalance);
@@ -6057,6 +6429,7 @@
         chinaCrudeImportVolume
       );
       renderHistoricalValidation(rows, ompiHistory, brentOutlookHistory, brentOutlook);
+      renderChokepointRiskMonitor(chokepointImpact, chokepointImpactHistory);
       renderCountryModule(countryFlows);
 
       document.getElementById("forecastBrent").innerText =
@@ -6514,6 +6887,9 @@
 
 </body>
 </html>
+
+
+
 
 
 
