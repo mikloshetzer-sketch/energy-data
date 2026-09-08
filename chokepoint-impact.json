@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-08 05:52 UTC",
+    "updated": "2026-09-08 11:01 UTC",
     "method": "chokepoint structural impact model v7 + me osint signal v1 + conflict end matrix signal v2",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -9,7 +9,7 @@
     "me_security_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/security-signal.json",
     "conflict_end_matrix_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/conflict-end-matrix/main/docs/latest_summary.json",
     "stale_input_flags": {
-      "all_tracked_zone_counts_zero": true,
+      "all_tracked_zone_counts_zero": false,
       "me_security_signal_stale": false,
       "conflict_end_matrix_signal_stale": true
     },
@@ -27,12 +27,12 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 49.3,
+  "global_trade_risk_index": 47.7,
   "middle_east_conflict_impact": {
     "label": "high",
-    "score": 68.1,
+    "score": 65.8,
     "components": {
-      "structural_score": 73.1,
+      "structural_score": 69.4,
       "osint_signal_score": 59.9,
       "osint_raw_total_risk": 149.81,
       "osint_risk_level": "MEDIUM",
@@ -63,7 +63,7 @@
       "osint_updated": "2026-09-08 04:40 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 1.21,
+      "osint_age_hours": 6.35,
       "osint_used_in_blend": true,
       "conflict_signal_score": 34.0,
       "conflict_signal_raw_index": -1.7,
@@ -80,8 +80,8 @@
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -0.2,
-    "middle_east_conflict_impact_change": -1.3,
+    "global_trade_risk_index_change": -1.8,
+    "middle_east_conflict_impact_change": -3.6,
     "direction_global": "down",
     "direction_middle_east": "down"
   },
@@ -89,17 +89,17 @@
     "hormuz": 0,
     "suez": 0,
     "bab_el_mandeb": 0,
-    "bosporus": 0
+    "bosporus": 1
   },
   "top_risks": [
     {
       "name": "Hormuzi-szoros",
-      "estimated_impact": 0.2507,
+      "estimated_impact": 0.2382,
       "status": "severe"
     },
     {
       "name": "Bab el-Mandeb",
-      "estimated_impact": 0.106,
+      "estimated_impact": 0.1007,
       "status": "medium"
     },
     {
@@ -109,7 +109,7 @@
     },
     {
       "name": "Szuezi térség",
-      "estimated_impact": 0.0817,
+      "estimated_impact": 0.0776,
       "status": "medium"
     },
     {
@@ -130,8 +130,8 @@
       "disruption_level": 0.915,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
-      "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.2507,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.2382,
       "status": "severe",
       "notes": "Kiemelten fontos olaj- és energiatranzit pont."
     },
@@ -146,8 +146,8 @@
       "disruption_level": 0.8456,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
-      "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.106,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.1007,
       "status": "medium",
       "notes": "Vörös-tengeri és Szuez felé irányuló forgalom kulcspontja."
     },
@@ -178,8 +178,8 @@
       "disruption_level": 0.7323,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
-      "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.0817,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.0776,
       "status": "medium",
       "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
     },
@@ -193,7 +193,7 @@
       "substitution_penalty": 0.72,
       "disruption_level": 0.4269,
       "regional_adjustment": 1.0,
-      "ais_count_signal": 0,
+      "ais_count_signal": 1,
       "ais_signal_multiplier": 1.0,
       "estimated_impact": 0.0132,
       "status": "low",
