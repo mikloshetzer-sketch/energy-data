@@ -1,4 +1,5 @@
 import json
+import math
 import os
 from datetime import datetime, timezone
 
@@ -11,6 +12,11 @@ HISTORY_FILE = "chokepoint-impact-history.json"
 ME_SECURITY_SIGNAL_URL = (
     "https://raw.githubusercontent.com/"
     "mikloshetzer-sketch/me-security-monitor/main/security-signal.json"
+)
+
+STRIKE_HISTORY_URL = (
+    "https://raw.githubusercontent.com/"
+    "mikloshetzer-sketch/me-security-monitor/main/data/strike_history.json"
 )
 
 # FONTOS:
@@ -147,6 +153,32 @@ AIS_SIGNAL_MULTIPLIER = {
 
 ME_SIGNAL_MAX_AGE_HOURS = 48
 CONFLICT_SIGNAL_MAX_AGE_HOURS = 48
+
+
+# ---------------------------------------------------------------------------
+# Chokepoint-specific Local Security Pressure (LSP)
+# ---------------------------------------------------------------------------
+# Csak Hormuz és Bab el-Mandeb kap lokális eseményalapú korrekciót.
+# A többi chokepoint jelenlegi modellje változatlan marad.
+#
+# A korrekció plafonált: maximum +0.06 disruption szintet adhat hozzá.
+# Egyetlen esemény ezért nem tudja átvenni az index irányítását.
+LOCAL_SECURITY_MAX_PREMIUM = {
+    "hormuz": 0.06,
+    "bab_el_mandeb": 0.06,
+}
+
+# Referenciapontok a földrajzi relevancia számításához (WGS84).
+LOCAL_SECURITY_CENTERS = {
+    "hormuz": (26.56, 56.25),
+    "bab_el_mandeb": (12.58, 43.33),
+}
+
+# A strike-history adatforrás frissességi korlátja.
+STRIKE_HISTORY_MAX_AGE_HOURS = 72
+
+# Csak az elmúlt 30 nap eseményei hathatnak a lokális prémiumra.
+LOCAL_SECURITY_LOOKBACK_DAYS = 30
 
 
 def safe_load_json(path, default):
@@ -287,6 +319,282 @@ def dynamic_disruption_level(key, cfg, me_signal_score, conflict_score):
     return round4(clamp(dynamic_value, 0.0, 1.0))
 
 
+
+def haversine_km(lat1, lon1, lat2, lon2):
+    """Két WGS84 pont közelítő nagy kör távolsága kilométerben."""
+    radius_km = 6371.0088
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
+    d_phi = math.radians(lat2 - lat1)
+    d_lambda = math.radians(lon2 - lon1)
+
+    a = (
+        math.sin(d_phi / 2.0) ** 2
+        + math.cos(phi1)
+        * math.cos(phi2)
+        * math.sin(d_lambda / 2.0) ** 2
+    )
+    return radius_km * 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0 - a))
+
+
+def local_time_decay(event_date, now):
+    """
+    Időbeli lecsengés:
+      0-3 nap   -> 1.00
+      4-7 nap   -> 0.75
+      8-14 nap  -> 0.45
+      15-30 nap -> 0.20
+      >30 nap   -> 0.00
+    """
+    if not event_date:
+        return 0.0
+
+    if isinstance(event_date, str):
+        try:
+            event_dt = datetime.strptime(event_date[:10], "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            )
+        except Exception:
+            return 0.0
+    else:
+        return 0.0
+
+    age_days = (now - event_dt).total_seconds() / 86400.0
+
+    # Jövőbeli / hibás rekordot nem engedünk teljes súllyal.
+    if age_days < -1:
+        return 0.0
+    if age_days <= 3:
+        return 1.00
+    if age_days <= 7:
+        return 0.75
+    if age_days <= 14:
+        return 0.45
+    if age_days <= 30:
+        return 0.20
+    return 0.0
+
+
+def local_geographic_relevance(chokepoint_key, event):
+    """
+    Földrajzi relevancia a célpont koordinátája alapján.
+
+    Hormuz:
+      <=150 km  1.00
+      <=350 km  0.75
+      <=700 km  0.40
+      egyéb     0.00
+
+    Bab el-Mandeb:
+      <=150 km  1.00
+      <=350 km  0.80
+      <=700 km  0.45
+      egyéb     0.00
+    """
+    center = LOCAL_SECURITY_CENTERS.get(chokepoint_key)
+    if not center:
+        return 0.0
+
+    lat = parse_number(event.get("latitude", event.get("lat")))
+    lon = parse_number(
+        event.get("longitude", event.get("lon", event.get("lng")))
+    )
+    if lat is None or lon is None:
+        return 0.0
+
+    distance = haversine_km(center[0], center[1], lat, lon)
+
+    if chokepoint_key == "hormuz":
+        if distance <= 150:
+            return 1.00
+        if distance <= 350:
+            return 0.75
+        if distance <= 700:
+            return 0.40
+        return 0.0
+
+    if chokepoint_key == "bab_el_mandeb":
+        if distance <= 150:
+            return 1.00
+        if distance <= 350:
+            return 0.80
+        if distance <= 700:
+            return 0.45
+        return 0.0
+
+    return 0.0
+
+
+def local_event_type_relevance(event):
+    """
+    Az esemény közvetlen chokepoint-relevanciája.
+
+    A cél nem az, hogy minden regionális támadás azonos súlyt kapjon.
+    Hajózási / kikötői esemény erősebb, általános katonai csapás gyengébb.
+    """
+    text = " ".join([
+        str(event.get("strike_type") or ""),
+        str(event.get("description") or ""),
+        str(event.get("target_location") or event.get("location") or ""),
+        str(event.get("target_country") or event.get("country") or ""),
+    ]).casefold()
+
+    maritime_terms = (
+        "hajó",
+        "tanker",
+        "ship",
+        "vessel",
+        "maritime",
+        "bab el-mandeb",
+        "bab el mandeb",
+        "strait",
+        "szoros",
+        "usv",
+    )
+    port_terms = (
+        "kikötő",
+        "port",
+        "terminal",
+        "refinery",
+        "finomító",
+        "oil facility",
+        "energia",
+        "infrastructure",
+        "infrastruktúra",
+    )
+    kinetic_terms = (
+        "rakéta",
+        "missile",
+        "uav",
+        "drone",
+        "airstrike",
+        "légicsapás",
+        "ballisztikus",
+        "cirkálórakéta",
+        "offenzíva",
+        "attack",
+        "támadás",
+    )
+
+    if any(term in text for term in maritime_terms):
+        return 1.00
+    if any(term in text for term in port_terms):
+        return 0.90
+    if any(term in text for term in kinetic_terms):
+        return 0.70
+    return 0.50
+
+
+def compute_local_security_pressure(chokepoint_key, events, now):
+    """
+    0-100 közötti lokális biztonsági nyomás.
+
+    Csak Hormuz és Bab el-Mandeb támogatott. Az eseménysúly:
+        geographic relevance × time decay × event-type relevance
+
+    A végső score telítődő görbét használ:
+        1 közvetlen friss esemény -> kb. 33 pont
+        2 hasonló esemény         -> kb. 55 pont
+        4 hasonló esemény         -> kb. 80 pont
+    Így a sűrű eseményhalmaz számít, de nem nő korlátlanul.
+    """
+    if chokepoint_key not in LOCAL_SECURITY_MAX_PREMIUM:
+        return {
+            "score": 0.0,
+            "weighted_event_sum": 0.0,
+            "relevant_event_count": 0,
+            "recent_event_count": 0,
+        }
+
+    weighted_sum = 0.0
+    relevant_count = 0
+    recent_count = 0
+
+    for event in events or []:
+        if not isinstance(event, dict):
+            continue
+
+        time_weight = local_time_decay(event.get("date"), now)
+        if time_weight <= 0:
+            continue
+
+        recent_count += 1
+        geo_weight = local_geographic_relevance(chokepoint_key, event)
+        if geo_weight <= 0:
+            continue
+
+        type_weight = local_event_type_relevance(event)
+        event_weight = geo_weight * time_weight * type_weight
+        if event_weight <= 0:
+            continue
+
+        weighted_sum += event_weight
+        relevant_count += 1
+
+    # Telítődő, plafonált 0-100 görbe.
+    score_01 = 1.0 - math.exp(-weighted_sum / 2.5)
+    score = round(clamp(score_01 * 100.0, 0.0, 100.0), 1)
+
+    return {
+        "score": score,
+        "weighted_event_sum": round4(weighted_sum),
+        "relevant_event_count": relevant_count,
+        "recent_event_count": recent_count,
+    }
+
+
+def apply_local_security_premium(chokepoint_key, disruption, local_security_score):
+    """
+    A lokális jel csak korrekció: nem új fő súly.
+
+    maximum +0.06 a támogatott chokepointoknál.
+    """
+    max_premium = LOCAL_SECURITY_MAX_PREMIUM.get(chokepoint_key, 0.0)
+    if max_premium <= 0:
+        return round4(clamp(disruption, 0.0, 1.0)), 0.0
+
+    pressure_01 = normalized_01(local_security_score)
+    premium = max_premium * pressure_01
+
+    adjusted = clamp(disruption + premium, 0.0, 1.0)
+    effective_premium = adjusted - disruption
+    return round4(adjusted), round4(effective_premium)
+
+
+def fetch_strike_history(now):
+    try:
+        response = requests.get(STRIKE_HISTORY_URL, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+    except Exception as e:
+        print(f"Figyelmeztetés: strike-history letöltése sikertelen: {e}")
+        return {
+            "available": False,
+            "generated_at": None,
+            "age_hours": None,
+            "stale": True,
+            "used_in_local_security": False,
+            "event_count": 0,
+            "events": [],
+        }
+
+    generated_at = data.get("generated_at")
+    age_hours = hours_since(generated_at, now)
+    stale = is_stale(generated_at, now, STRIKE_HISTORY_MAX_AGE_HOURS)
+    events = data.get("events", [])
+    if not isinstance(events, list):
+        events = []
+
+    return {
+        "available": True,
+        "generated_at": generated_at,
+        "age_hours": round2(age_hours) if age_hours is not None else None,
+        "stale": stale,
+        "used_in_local_security": not stale,
+        "event_count": len(events),
+        "events": events if not stale else [],
+    }
+
 def get_ais_zone_counts(tanker_data):
     if not tanker_data:
         return {
@@ -318,11 +626,19 @@ def estimated_impact_score(
     ais_count,
     me_signal_score=0.0,
     conflict_score=0.0,
+    local_security_score=0.0,
 ):
     cw = combined_weight(cfg["trade_share"], cfg["energy_share"])
-    disruption = dynamic_disruption_level(
+
+    base_dynamic_disruption = dynamic_disruption_level(
         key, cfg, me_signal_score, conflict_score
     )
+    disruption, local_security_premium = apply_local_security_premium(
+        key,
+        base_dynamic_disruption,
+        local_security_score,
+    )
+
     substitution = cfg["substitution_penalty"]
     regional = REGIONAL_ADJUSTMENT.get(cfg["region"], 1.0)
     ais_mult = ais_signal_multiplier(ais_count)
@@ -336,7 +652,14 @@ def estimated_impact_score(
         * ais_mult
         * system_mult
     )
-    return round4(score), cw, ais_mult, disruption
+    return (
+        round4(score),
+        cw,
+        ais_mult,
+        disruption,
+        base_dynamic_disruption,
+        local_security_premium,
+    )
 
 
 def status_from_score(score):
@@ -349,21 +672,38 @@ def status_from_score(score):
     return "low"
 
 
-def build_items(tanker_data, me_signal_score=0.0, conflict_score=0.0):
+def build_items(
+    tanker_data,
+    me_signal_score=0.0,
+    conflict_score=0.0,
+    local_security_signals=None,
+):
     zone_counts = get_ais_zone_counts(tanker_data)
     tanker_signal_unavailable = all_zone_counts_zero(zone_counts)
     items = []
+    local_security_signals = local_security_signals or {}
 
     for key, cfg in CHOKEPOINTS.items():
         ais_zone = DYNAMIC_ZONE_MAP.get(key)
         ais_count = zone_counts.get(ais_zone, 0) if ais_zone else 0
 
-        score, cw, ais_mult, disruption = estimated_impact_score(
+        local_info = local_security_signals.get(key, {}) or {}
+        local_security_score = parse_number(local_info.get("score")) or 0.0
+
+        (
+            score,
+            cw,
+            ais_mult,
+            disruption,
+            base_dynamic_disruption,
+            local_security_premium,
+        ) = estimated_impact_score(
             key,
             cfg,
             ais_count,
             me_signal_score=me_signal_score,
             conflict_score=conflict_score,
+            local_security_score=local_security_score,
         )
 
         # Ha minden követett zónában nulla a hajószám, azt hiányzó vagy
@@ -373,7 +713,7 @@ def build_items(tanker_data, me_signal_score=0.0, conflict_score=0.0):
             ais_mult = 1.0
             score = round4(score / max(ais_signal_multiplier(ais_count), 0.0001))
 
-        items.append({
+        item = {
             "key": key,
             "name": cfg["name"],
             "region": cfg["region"],
@@ -388,7 +728,21 @@ def build_items(tanker_data, me_signal_score=0.0, conflict_score=0.0):
             "estimated_impact": score,
             "status": status_from_score(score),
             "notes": cfg["notes"],
-        })
+        }
+
+        # Csak a két támogatott chokepointnál jelenik meg a lokális komponens.
+        if key in LOCAL_SECURITY_MAX_PREMIUM:
+            item["local_security"] = {
+                "score": round2(local_security_score),
+                "premium": local_security_premium,
+                "max_premium": LOCAL_SECURITY_MAX_PREMIUM[key],
+                "base_dynamic_disruption": base_dynamic_disruption,
+                "weighted_event_sum": local_info.get("weighted_event_sum", 0.0),
+                "relevant_event_count": local_info.get("relevant_event_count", 0),
+                "lookback_days": LOCAL_SECURITY_LOOKBACK_DAYS,
+            }
+
+        items.append(item)
 
     items.sort(key=lambda x: x["estimated_impact"], reverse=True)
     return items, zone_counts
@@ -763,14 +1117,32 @@ def main():
 
     me_signal = fetch_me_security_signal(now)
     conflict_signal = fetch_conflict_end_matrix_signal(now)
+    strike_history = fetch_strike_history(now)
 
     me_signal_score = effective_signal_score(me_signal, "normalized_risk_score")
-    conflict_signal_score = effective_signal_score(conflict_signal, "conflict_index_normalized")
+    conflict_signal_score = effective_signal_score(
+        conflict_signal,
+        "conflict_index_normalized",
+    )
+
+    local_security_signals = {
+        "hormuz": compute_local_security_pressure(
+            "hormuz",
+            strike_history["events"],
+            now,
+        ),
+        "bab_el_mandeb": compute_local_security_pressure(
+            "bab_el_mandeb",
+            strike_history["events"],
+            now,
+        ),
+    }
 
     items, zone_counts = build_items(
         tanker_data,
         me_signal_score=me_signal_score,
         conflict_score=conflict_signal_score,
+        local_security_signals=local_security_signals,
     )
 
     structural_global_index = global_trade_risk_index(items)
@@ -822,14 +1194,26 @@ def main():
             "conflict_signal_age_hours": conflict_signal["age_hours"],
             "conflict_signal_used_in_blend": conflict_signal["used_in_blend"],
             "conflict_signal_interpretation": conflict_signal["interpretation"],
+
+            "local_security_pressure": {
+                "hormuz": local_security_signals["hormuz"],
+                "bab_el_mandeb": local_security_signals["bab_el_mandeb"],
+                "source_available": strike_history["available"],
+                "source_stale": strike_history["stale"],
+                "source_updated": strike_history["generated_at"],
+                "source_age_hours": strike_history["age_hours"],
+                "source_event_count": strike_history["event_count"],
+                "used_in_model": strike_history["used_in_local_security"],
+            },
         }
     }
 
     previous_snapshot = find_previous_day_snapshot(history, today)
 
     current_method_name = (
-        "chokepoint structural impact model v7 + "
-        "me osint signal v1 + conflict end matrix signal v2"
+        "chokepoint structural impact model v8 + "
+        "me osint signal v1 + conflict end matrix signal v2 + "
+        "local security pressure v1"
     )
     previous_method_name = None
     if isinstance(previous_output, dict):
@@ -877,13 +1261,20 @@ def main():
             "uses_tanker_signal": True,
             "uses_me_security_signal": True,
             "uses_conflict_end_matrix_signal": True,
+            "uses_local_security_pressure": True,
+            "local_security_supported_chokepoints": [
+                "hormuz",
+                "bab_el_mandeb",
+            ],
             "tanker_input_source": TANKER_INPUT_FILE,
             "me_security_input_source": ME_SECURITY_SIGNAL_URL,
             "conflict_end_matrix_input_source": CONFLICT_END_MATRIX_URL,
+            "strike_history_input_source": STRIKE_HISTORY_URL,
             "stale_input_flags": {
                 "all_tracked_zone_counts_zero": tanker_zero_flag,
                 "me_security_signal_stale": me_signal["stale"],
                 "conflict_end_matrix_signal_stale": conflict_signal["stale"],
+                "strike_history_stale": strike_history["stale"],
             },
             "blend_weights": {
                 "middle_east": {
@@ -896,6 +1287,12 @@ def main():
                     "me_security_signal": 0.15,
                     "conflict_end_matrix_signal": 0.10,
                 },
+            },
+            "local_security_pressure": {
+                "method": "geographic_relevance_x_time_decay_x_event_type_saturation",
+                "max_premium": LOCAL_SECURITY_MAX_PREMIUM,
+                "lookback_days": LOCAL_SECURITY_LOOKBACK_DAYS,
+                "strike_history_max_age_hours": STRIKE_HISTORY_MAX_AGE_HOURS,
             },
             "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk",
         },
@@ -936,6 +1333,14 @@ def main():
         f"articles={conflict_signal['article_count']}"
     )
     print(
+        "Local security pressure | "
+        f"Hormuz={local_security_signals['hormuz']['score']} "
+        f"(events={local_security_signals['hormuz']['relevant_event_count']}) | "
+        f"Bab el-Mandeb={local_security_signals['bab_el_mandeb']['score']} "
+        f"(events={local_security_signals['bab_el_mandeb']['relevant_event_count']}) | "
+        f"source_stale={strike_history['stale']}"
+    )
+    print(
         "Tracked zones | "
         f"all_zero={tanker_zero_flag} | counts={zone_counts}"
     )
@@ -943,3 +1348,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
