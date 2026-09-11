@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-11 14:13 UTC",
+    "updated": "2026-09-11 18:20 UTC",
     "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -43,43 +43,43 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 49.7,
+  "global_trade_risk_index": 50.7,
   "middle_east_conflict_impact": {
     "label": "high",
-    "score": 69.0,
+    "score": 70.6,
     "components": {
-      "structural_score": 72.6,
-      "osint_signal_score": 63.1,
-      "osint_raw_total_risk": 157.8,
+      "structural_score": 74.7,
+      "osint_signal_score": 63.9,
+      "osint_raw_total_risk": 159.75,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 164,
+      "osint_total_events": 163,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 63.4
+          "risk": 69.05
         },
         {
           "name": "Saudi Arabia",
-          "risk": 19.2
+          "risk": 18.05
         },
         {
           "name": "Yemen",
-          "risk": 17.3
-        },
-        {
-          "name": "Israel",
-          "risk": 15.85
+          "risk": 17.8
         },
         {
           "name": "Gaza Strip",
-          "risk": 11.6
+          "risk": 14.8
+        },
+        {
+          "name": "Israel",
+          "risk": 12.75
         }
       ],
-      "osint_updated": "2026-09-11 11:24 UTC",
+      "osint_updated": "2026-09-11 16:31 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 2.82,
+      "osint_age_hours": 1.82,
       "osint_used_in_blend": true,
       "conflict_signal_score": 21.2,
       "conflict_signal_raw_index": -1.06,
@@ -109,23 +109,23 @@
         "source_available": true,
         "source_stale": false,
         "source_updated": "2026-09-10T20:01:22Z",
-        "source_age_hours": 18.2,
+        "source_age_hours": 22.31,
         "source_event_count": 244,
         "used_in_model": true
       }
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -1.0,
-    "middle_east_conflict_impact_change": -2.3,
-    "direction_global": "down",
+    "global_trade_risk_index_change": 0.0,
+    "middle_east_conflict_impact_change": -0.7,
+    "direction_global": "flat",
     "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
-    "suez": 0,
+    "suez": 12,
     "bab_el_mandeb": 0,
-    "bosporus": 1
+    "bosporus": 4
   },
   "top_risks": [
     {
@@ -145,12 +145,12 @@
     },
     {
       "name": "Szuezi térség",
-      "estimated_impact": 0.0778,
+      "estimated_impact": 0.0901,
       "status": "medium"
     },
     {
       "name": "Boszporusz",
-      "estimated_impact": 0.0132,
+      "estimated_impact": 0.0142,
       "status": "low"
     }
   ],
@@ -163,7 +163,7 @@
       "energy_share": 0.272,
       "combined_weight": 0.2384,
       "substitution_penalty": 0.95,
-      "disruption_level": 0.9675,
+      "disruption_level": 0.9677,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 0.95,
@@ -174,7 +174,7 @@
         "score": 86.1,
         "premium": 0.0517,
         "max_premium": 0.06,
-        "base_dynamic_disruption": 0.9158,
+        "base_dynamic_disruption": 0.916,
         "weighted_event_sum": 4.926,
         "relevant_event_count": 12,
         "lookback_days": 30
@@ -188,7 +188,7 @@
       "energy_share": 0.116,
       "combined_weight": 0.1112,
       "substitution_penalty": 0.82,
-      "disruption_level": 0.8905,
+      "disruption_level": 0.8908,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 0.95,
@@ -199,7 +199,7 @@
         "score": 72.5,
         "premium": 0.0435,
         "max_premium": 0.06,
-        "base_dynamic_disruption": 0.847,
+        "base_dynamic_disruption": 0.8473,
         "weighted_event_sum": 3.2275,
         "relevant_event_count": 8,
         "lookback_days": 30
@@ -213,7 +213,7 @@
       "energy_share": 0.299,
       "combined_weight": 0.2813,
       "substitution_penalty": 0.88,
-      "disruption_level": 0.3839,
+      "disruption_level": 0.384,
       "regional_adjustment": 1.0,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 1.0,
@@ -229,11 +229,11 @@
       "energy_share": 0.11,
       "combined_weight": 0.113,
       "substitution_penalty": 0.78,
-      "disruption_level": 0.7341,
+      "disruption_level": 0.7345,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 0,
-      "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.0778,
+      "ais_count_signal": 12,
+      "ais_signal_multiplier": 1.1,
+      "estimated_impact": 0.0901,
       "status": "medium",
       "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
     },
@@ -245,11 +245,11 @@
       "energy_share": 0.044,
       "combined_weight": 0.0428,
       "substitution_penalty": 0.72,
-      "disruption_level": 0.4273,
+      "disruption_level": 0.4274,
       "regional_adjustment": 1.0,
-      "ais_count_signal": 1,
-      "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.0132,
+      "ais_count_signal": 4,
+      "ais_signal_multiplier": 1.08,
+      "estimated_impact": 0.0142,
       "status": "low",
       "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
     },
@@ -261,7 +261,7 @@
       "energy_share": 0.06,
       "combined_weight": 0.066,
       "substitution_penalty": 0.55,
-      "disruption_level": 0.2151,
+      "disruption_level": 0.2153,
       "regional_adjustment": 1.0,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 1.0,
