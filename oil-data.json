@@ -1,18 +1,18 @@
 {
   "market": {
-    "brent": "102.22 USD/hordó",
-    "wti": "97.50 USD/hordó",
-    "inventory": "711.1 millió hordó",
+    "brent": "103.81 USD/hordó",
+    "wti": "99.19 USD/hordó",
+    "inventory": "709.4 millió hordó",
     "supply": "111.8 millió hordó/nap",
-    "brent_30d_trend": "+14.73%",
-    "brent_1d_change": "+6.99%",
-    "brent_7d_change": "+2.15%",
-    "wti_1d_change": "+5.11%",
-    "wti_7d_change": "+4.90%"
+    "brent_30d_trend": "+16.35%",
+    "brent_1d_change": "+3.19%",
+    "brent_7d_change": "+22.02%",
+    "wti_1d_change": "+3.24%",
+    "wti_7d_change": "+15.01%"
   },
   "spot": {
-    "brent": "96.02 USD/hordó",
-    "wti": "91.48 USD/hordó"
+    "brent": "109.51 USD/hordó",
+    "wti": "97.26 USD/hordó"
   },
   "production": {
     "current": "111.8 millió hordó/nap",
@@ -245,19 +245,19 @@
   },
   "regional_impact": {
     "europe": {
-      "level": "high",
-      "label": "Magas hatás",
-      "score": 9.4,
+      "level": "extreme",
+      "label": "Nagyon magas hatás",
+      "score": 13.3,
       "factor": 1.0,
       "icon": "🇪🇺",
       "dependency_label": "Közepes kitettség",
       "dependency_note": "Európa importfüggő, ezért az ár- és ellátási sokkok gyorsan átgyűrűzhetnek az inflációba és az üzemanyagköltségekbe.",
-      "text": "Európában a jelenlegi helyzet magas árnyomást és költségoldali sérülékenységet jelent, különösen az energiaintenzív ágazatok számára."
+      "text": "Az európai piacokon az importköltségek, finomított termékárak és inflációs kockázatok rendkívül erősen emelkedhetnek."
     },
     "america": {
       "level": "moderate",
       "label": "Mérsékelt hatás",
-      "score": 5.6,
+      "score": 8.0,
       "factor": 0.6,
       "icon": "🇺🇸",
       "dependency_label": "Alacsonyabb közvetlen kitettség",
@@ -267,7 +267,7 @@
     "asia": {
       "level": "extreme",
       "label": "Nagyon magas hatás",
-      "score": 14.5,
+      "score": 20.6,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
@@ -276,7 +276,7 @@
     }
   },
   "meta": {
-    "updated": "2026-09-10 11:24 UTC",
+    "updated": "2026-09-11 11:26 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
@@ -286,29 +286,29 @@
     "type": "geopolitical"
   },
   "energy_risk": {
-    "score": 50.6,
-    "level": "extreme",
-    "label": "Extrém",
+    "score": 53.6,
+    "level": "high",
+    "label": "Magas",
     "components": {
       "geopolitical": 16.6,
       "price_level": 17.0,
-      "price_momentum": 11.0,
+      "price_momentum": 14.0,
       "market_stress": 6.0,
       "supply_pressure": 0.0
     },
     "triggers": [
       "85 USD feletti olajár geopolitikai feszültség mellett",
-      "100 USD feletti ár és gyors napi emelkedés"
+      "legalább 10%-os heti Brent-emelkedés"
     ],
     "method": "Összetett index: geopolitika 40%, árszint 20%, ármozgás 20%, piaci stressz 10%, készlet és kínálat 10%."
   },
   "market_stress": {
-    "score": 42.0,
+    "score": 46.0,
     "level": "tense",
     "label": "Feszült",
     "note": "A rendelkezésre álló mutatók fokozott piaci érzékenységet és érdemi feszültséget jeleznek.",
     "components": {
-      "volatility": 15.0,
+      "volatility": 19.0,
       "price_level": 18.0,
       "geopolitical": 5.0,
       "supply_buffer": 0.0,
@@ -333,14 +333,14 @@
       ]
     },
     "observed_values": {
-      "brent": 102.22,
-      "wti": 97.5,
-      "brent_1d_change": 6.9860724233983245,
-      "brent_7d_change": 2.148936170212762,
-      "wti_1d_change": 5.113179363437898,
-      "wti_7d_change": 4.896227496846704,
-      "brent_wti_spread": 4.72,
-      "inventory_million_barrels": 711.1,
+      "brent": 103.81,
+      "wti": 99.19,
+      "brent_1d_change": 3.1944967960799096,
+      "brent_7d_change": 22.01671309192201,
+      "wti_1d_change": 3.2374482539008724,
+      "wti_7d_change": 15.005321035828324,
+      "brent_wti_spread": 4.62,
+      "inventory_million_barrels": 709.4,
       "global_supply_mbd": 111.8231232,
       "geopolitical_level": "moderate"
     }
