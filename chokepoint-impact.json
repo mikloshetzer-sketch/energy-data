@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-11 21:38 UTC",
+    "updated": "2026-09-12 00:02 UTC",
     "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -43,12 +43,12 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 49.3,
+  "global_trade_risk_index": 49.5,
   "middle_east_conflict_impact": {
     "label": "high",
-    "score": 68.1,
+    "score": 68.4,
     "components": {
-      "structural_score": 73.2,
+      "structural_score": 73.7,
       "osint_signal_score": 59.6,
       "osint_raw_total_risk": 149.01,
       "osint_risk_level": "MEDIUM",
@@ -79,7 +79,7 @@
       "osint_updated": "2026-09-11 21:00 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.64,
+      "osint_age_hours": 3.05,
       "osint_used_in_blend": true,
       "conflict_signal_score": 21.2,
       "conflict_signal_raw_index": -1.06,
@@ -95,47 +95,47 @@
       "conflict_signal_interpretation": "more_negative_is_worse",
       "local_security_pressure": {
         "hormuz": {
-          "score": 86.1,
-          "weighted_event_sum": 4.926,
+          "score": 76.6,
+          "weighted_event_sum": 3.6285,
           "relevant_event_count": 12,
           "recent_event_count": 25
         },
         "bab_el_mandeb": {
-          "score": 72.5,
-          "weighted_event_sum": 3.2275,
+          "score": 68.9,
+          "weighted_event_sum": 2.9238,
           "relevant_event_count": 8,
           "recent_event_count": 25
         },
         "source_available": true,
         "source_stale": false,
         "source_updated": "2026-09-10T20:01:22Z",
-        "source_age_hours": 25.62,
+        "source_age_hours": 28.02,
         "source_event_count": 244,
         "used_in_model": true
       }
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -1.4,
-    "middle_east_conflict_impact_change": -3.2,
-    "direction_global": "down",
-    "direction_middle_east": "down"
+    "global_trade_risk_index_change": 0.2,
+    "middle_east_conflict_impact_change": 0.3,
+    "direction_global": "up",
+    "direction_middle_east": "up"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
-    "suez": 1,
+    "suez": 3,
     "bab_el_mandeb": 0,
-    "bosporus": 8
+    "bosporus": 2
   },
   "top_risks": [
     {
       "name": "Hormuzi-szoros",
-      "estimated_impact": 0.2516,
+      "estimated_impact": 0.2502,
       "status": "severe"
     },
     {
       "name": "Bab el-Mandeb",
-      "estimated_impact": 0.1059,
+      "estimated_impact": 0.1056,
       "status": "medium"
     },
     {
@@ -145,12 +145,12 @@
     },
     {
       "name": "Szuezi térség",
-      "estimated_impact": 0.0816,
+      "estimated_impact": 0.0865,
       "status": "medium"
     },
     {
       "name": "Boszporusz",
-      "estimated_impact": 0.0145,
+      "estimated_impact": 0.0136,
       "status": "low"
     }
   ],
@@ -163,19 +163,19 @@
       "energy_share": 0.272,
       "combined_weight": 0.2384,
       "substitution_penalty": 0.95,
-      "disruption_level": 0.9666,
+      "disruption_level": 0.9609,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.2516,
+      "estimated_impact": 0.2502,
       "status": "severe",
       "notes": "Kiemelten fontos olaj- és energiatranzit pont.",
       "local_security": {
-        "score": 86.1,
-        "premium": 0.0517,
+        "score": 76.6,
+        "premium": 0.046,
         "max_premium": 0.06,
         "base_dynamic_disruption": 0.9149,
-        "weighted_event_sum": 4.926,
+        "weighted_event_sum": 3.6285,
         "relevant_event_count": 12,
         "lookback_days": 30
       }
@@ -188,19 +188,19 @@
       "energy_share": 0.116,
       "combined_weight": 0.1112,
       "substitution_penalty": 0.82,
-      "disruption_level": 0.889,
+      "disruption_level": 0.8868,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.1059,
+      "estimated_impact": 0.1056,
       "status": "medium",
       "notes": "Vörös-tengeri és Szuez felé irányuló forgalom kulcspontja.",
       "local_security": {
-        "score": 72.5,
-        "premium": 0.0435,
+        "score": 68.9,
+        "premium": 0.0413,
         "max_premium": 0.06,
         "base_dynamic_disruption": 0.8455,
-        "weighted_event_sum": 3.2275,
+        "weighted_event_sum": 2.9238,
         "relevant_event_count": 8,
         "lookback_days": 30
       }
@@ -231,9 +231,9 @@
       "substitution_penalty": 0.78,
       "disruption_level": 0.7322,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 1,
-      "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.0816,
+      "ais_count_signal": 3,
+      "ais_signal_multiplier": 1.06,
+      "estimated_impact": 0.0865,
       "status": "medium",
       "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
     },
@@ -247,9 +247,9 @@
       "substitution_penalty": 0.72,
       "disruption_level": 0.4269,
       "regional_adjustment": 1.0,
-      "ais_count_signal": 8,
-      "ais_signal_multiplier": 1.1,
-      "estimated_impact": 0.0145,
+      "ais_count_signal": 2,
+      "ais_signal_multiplier": 1.03,
+      "estimated_impact": 0.0136,
       "status": "low",
       "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
     },
