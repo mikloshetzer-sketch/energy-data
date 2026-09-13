@@ -1,8 +1,8 @@
 {
   "meta": {
-    "updated": "2026-09-12 23:17 UTC",
+    "updated": "2026-09-13 01:23 UTC",
     "source_mode": "live",
-    "generated_at": "2026-09-12T23:17:25.555734Z",
+    "generated_at": "2026-09-13T01:23:13.648148Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
@@ -38,24 +38,24 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 49.7,
-    "middle_east_conflict_impact": 68.8,
+    "global_trade_risk_index": 49.5,
+    "middle_east_conflict_impact": 68.4,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": 0.4,
-      "middle_east_conflict_impact_change": 0.7,
-      "direction_global": "up",
-      "direction_middle_east": "up"
+      "global_trade_risk_index_change": -0.2,
+      "middle_east_conflict_impact_change": -0.4,
+      "direction_global": "down",
+      "direction_middle_east": "down"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2502,
+        "estimated_impact": 0.2497,
         "status": "severe"
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.1056,
+        "estimated_impact": 0.1054,
         "status": "medium"
       },
       {
@@ -65,48 +65,48 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0898,
+        "estimated_impact": 0.0881,
         "status": "medium"
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0132,
+        "estimated_impact": 0.0125,
         "status": "low"
       }
     ],
     "me_components": {
-      "structural_score": 74.3,
-      "osint_signal_score": 59.5,
-      "osint_raw_total_risk": 148.68,
+      "structural_score": 73.9,
+      "osint_signal_score": 59.3,
+      "osint_raw_total_risk": 148.23,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 160,
+      "osint_total_events": 156,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 53.42
+          "risk": 52.37
         },
         {
           "name": "Saudi Arabia",
-          "risk": 20.5
-        },
-        {
-          "name": "Yemen",
-          "risk": 13.6
+          "risk": 19.65
         },
         {
           "name": "Iraq",
-          "risk": 12.95
+          "risk": 15.95
+        },
+        {
+          "name": "Yemen",
+          "risk": 13.65
         },
         {
           "name": "Israel",
-          "risk": 12.05
+          "risk": 12.0
         }
       ],
-      "osint_updated": "2026-09-12 18:25 UTC",
+      "osint_updated": "2026-09-12 22:19 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 3.71,
+      "osint_age_hours": 2.45,
       "osint_used_in_blend": true,
       "conflict_signal_score": 17.6,
       "conflict_signal_raw_index": -0.88,
@@ -122,27 +122,27 @@
       "conflict_signal_interpretation": "more_negative_is_worse",
       "local_security_pressure": {
         "hormuz": {
-          "score": 76.6,
-          "weighted_event_sum": 3.6285,
+          "score": 74.1,
+          "weighted_event_sum": 3.3785,
           "relevant_event_count": 12,
           "recent_event_count": 25
         },
         "bab_el_mandeb": {
-          "score": 68.9,
-          "weighted_event_sum": 2.9238,
+          "score": 65.7,
+          "weighted_event_sum": 2.6738,
           "relevant_event_count": 8,
           "recent_event_count": 25
         },
         "source_available": true,
         "source_stale": false,
         "source_updated": "2026-09-10T20:01:22Z",
-        "source_age_hours": 50.11,
+        "source_age_hours": 52.74,
         "source_event_count": 244,
         "used_in_model": true
       }
     },
     "risk_meta": {
-      "updated": "2026-09-12 22:07 UTC",
+      "updated": "2026-09-13 00:46 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
