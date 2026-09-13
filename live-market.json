@@ -1,8 +1,8 @@
 {
   "meta": {
-    "updated": "2026-09-13 12:41 UTC",
+    "updated": "2026-09-13 16:57 UTC",
     "source_mode": "live",
-    "generated_at": "2026-09-13T12:41:45.033553Z",
+    "generated_at": "2026-09-13T16:57:06.136430Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
@@ -38,19 +38,19 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 48.8,
-    "middle_east_conflict_impact": 66.8,
+    "global_trade_risk_index": 48.7,
+    "middle_east_conflict_impact": 66.6,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -0.9,
-      "middle_east_conflict_impact_change": -2.0,
+      "global_trade_risk_index_change": -1.0,
+      "middle_east_conflict_impact_change": -2.2,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2495,
+        "estimated_impact": 0.2494,
         "status": "severe"
       },
       {
@@ -65,7 +65,7 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0895,
+        "estimated_impact": 0.0894,
         "status": "medium"
       },
       {
@@ -76,40 +76,40 @@
     ],
     "me_components": {
       "structural_score": 74.0,
-      "osint_signal_score": 54.8,
-      "osint_raw_total_risk": 136.95,
+      "osint_signal_score": 54.2,
+      "osint_raw_total_risk": 135.5,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
       "osint_total_events": 156,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 49.45
+          "risk": 46.95
         },
         {
           "name": "Saudi Arabia",
-          "risk": 17.65
+          "risk": 21.05
         },
         {
           "name": "Iraq",
-          "risk": 17.2
+          "risk": 16.9
         },
         {
           "name": "Yemen",
-          "risk": 11.55
+          "risk": 12.55
         },
         {
           "name": "Israel",
-          "risk": 10.45
+          "risk": 10.2
         }
       ],
-      "osint_updated": "2026-09-13 04:51 UTC",
+      "osint_updated": "2026-09-13 11:56 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 6.7,
+      "osint_age_hours": 4.1,
       "osint_used_in_blend": true,
-      "conflict_signal_score": 17.6,
-      "conflict_signal_raw_index": -0.88,
+      "conflict_signal_score": 16.0,
+      "conflict_signal_raw_index": -0.8,
       "conflict_signal_assessment": "mild escalation",
       "conflict_signal_trajectory": "stabilizing",
       "conflict_signal_outlook": "Tension remains present, but escalation pressure may be easing.",
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": false,
         "source_updated": "2026-09-10T20:01:22Z",
-        "source_age_hours": 63.53,
+        "source_age_hours": 68.01,
         "source_event_count": 244,
         "used_in_model": true
       }
     },
     "risk_meta": {
-      "updated": "2026-09-13 11:32 UTC",
+      "updated": "2026-09-13 16:01 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
