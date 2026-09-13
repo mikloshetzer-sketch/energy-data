@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-13 18:43 UTC",
+    "updated": "2026-09-13 21:21 UTC",
     "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -18,7 +18,7 @@
       "all_tracked_zone_counts_zero": false,
       "me_security_signal_stale": false,
       "conflict_end_matrix_signal_stale": true,
-      "strike_history_stale": false
+      "strike_history_stale": true
     },
     "blend_weights": {
       "middle_east": {
@@ -43,25 +43,25 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 49.0,
+  "global_trade_risk_index": 48.2,
   "middle_east_conflict_impact": {
     "label": "high",
-    "score": 67.4,
+    "score": 66.2,
     "components": {
-      "structural_score": 74.1,
-      "osint_signal_score": 56.3,
-      "osint_raw_total_risk": 140.75,
+      "structural_score": 71.4,
+      "osint_signal_score": 57.6,
+      "osint_raw_total_risk": 144.0,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "HIGH",
-      "osint_total_events": 157,
+      "osint_total_events": 158,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 46.4
+          "risk": 48.25
         },
         {
           "name": "Saudi Arabia",
-          "risk": 23.15
+          "risk": 24.0
         },
         {
           "name": "Iraq",
@@ -69,17 +69,17 @@
         },
         {
           "name": "Yemen",
-          "risk": 14.85
+          "risk": 14.15
         },
         {
           "name": "Israel",
-          "risk": 10.2
+          "risk": 10.7
         }
       ],
-      "osint_updated": "2026-09-13 16:20 UTC",
+      "osint_updated": "2026-09-13 20:52 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 2.39,
+      "osint_age_hours": 0.48,
       "osint_used_in_blend": true,
       "conflict_signal_score": 16.0,
       "conflict_signal_raw_index": -0.8,
@@ -95,47 +95,47 @@
       "conflict_signal_interpretation": "more_negative_is_worse",
       "local_security_pressure": {
         "hormuz": {
-          "score": 74.1,
-          "weighted_event_sum": 3.3785,
-          "relevant_event_count": 12,
-          "recent_event_count": 25
+          "score": 0.0,
+          "weighted_event_sum": 0.0,
+          "relevant_event_count": 0,
+          "recent_event_count": 0
         },
         "bab_el_mandeb": {
-          "score": 65.7,
-          "weighted_event_sum": 2.6738,
-          "relevant_event_count": 8,
-          "recent_event_count": 25
+          "score": 0.0,
+          "weighted_event_sum": 0.0,
+          "relevant_event_count": 0,
+          "recent_event_count": 0
         },
         "source_available": true,
-        "source_stale": false,
+        "source_stale": true,
         "source_updated": "2026-09-10T20:01:22Z",
-        "source_age_hours": 70.7,
+        "source_age_hours": 73.33,
         "source_event_count": 244,
-        "used_in_model": true
+        "used_in_model": false
       }
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -0.7,
-    "middle_east_conflict_impact_change": -1.4,
+    "global_trade_risk_index_change": -1.5,
+    "middle_east_conflict_impact_change": -2.6,
     "direction_global": "down",
     "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
-    "suez": 25,
+    "suez": 21,
     "bab_el_mandeb": 0,
     "bosporus": 0
   },
   "top_risks": [
     {
       "name": "Hormuzi-szoros",
-      "estimated_impact": 0.2496,
+      "estimated_impact": 0.2381,
       "status": "severe"
     },
     {
       "name": "Bab el-Mandeb",
-      "estimated_impact": 0.1052,
+      "estimated_impact": 0.1006,
       "status": "medium"
     },
     {
@@ -145,7 +145,7 @@
     },
     {
       "name": "Szuezi térség",
-      "estimated_impact": 0.0896,
+      "estimated_impact": 0.0897,
       "status": "medium"
     },
     {
@@ -163,20 +163,20 @@
       "energy_share": 0.272,
       "combined_weight": 0.2384,
       "substitution_penalty": 0.95,
-      "disruption_level": 0.9586,
+      "disruption_level": 0.9144,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.2496,
+      "estimated_impact": 0.2381,
       "status": "severe",
       "notes": "Kiemelten fontos olaj- és energiatranzit pont.",
       "local_security": {
-        "score": 74.1,
-        "premium": 0.0445,
+        "score": 0.0,
+        "premium": 0.0,
         "max_premium": 0.06,
-        "base_dynamic_disruption": 0.9141,
-        "weighted_event_sum": 3.3785,
-        "relevant_event_count": 12,
+        "base_dynamic_disruption": 0.9144,
+        "weighted_event_sum": 0.0,
+        "relevant_event_count": 0,
         "lookback_days": 30
       }
     },
@@ -188,20 +188,20 @@
       "energy_share": 0.116,
       "combined_weight": 0.1112,
       "substitution_penalty": 0.82,
-      "disruption_level": 0.8835,
+      "disruption_level": 0.8446,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.1052,
+      "estimated_impact": 0.1006,
       "status": "medium",
       "notes": "Vörös-tengeri és Szuez felé irányuló forgalom kulcspontja.",
       "local_security": {
-        "score": 65.7,
-        "premium": 0.0394,
+        "score": 0.0,
+        "premium": 0.0,
         "max_premium": 0.06,
-        "base_dynamic_disruption": 0.8441,
-        "weighted_event_sum": 2.6738,
-        "relevant_event_count": 8,
+        "base_dynamic_disruption": 0.8446,
+        "weighted_event_sum": 0.0,
+        "relevant_event_count": 0,
         "lookback_days": 30
       }
     },
@@ -213,7 +213,7 @@
       "energy_share": 0.299,
       "combined_weight": 0.2813,
       "substitution_penalty": 0.88,
-      "disruption_level": 0.3835,
+      "disruption_level": 0.3836,
       "regional_adjustment": 1.0,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 1.0,
@@ -229,11 +229,11 @@
       "energy_share": 0.11,
       "combined_weight": 0.113,
       "substitution_penalty": 0.78,
-      "disruption_level": 0.7304,
+      "disruption_level": 0.7311,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 25,
+      "ais_count_signal": 21,
       "ais_signal_multiplier": 1.1,
-      "estimated_impact": 0.0896,
+      "estimated_impact": 0.0897,
       "status": "medium",
       "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
     },
@@ -245,7 +245,7 @@
       "energy_share": 0.044,
       "combined_weight": 0.0428,
       "substitution_penalty": 0.72,
-      "disruption_level": 0.4265,
+      "disruption_level": 0.4267,
       "regional_adjustment": 1.0,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 0.95,
@@ -261,7 +261,7 @@
       "energy_share": 0.06,
       "combined_weight": 0.066,
       "substitution_penalty": 0.55,
-      "disruption_level": 0.2135,
+      "disruption_level": 0.2138,
       "regional_adjustment": 1.0,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 1.0,
