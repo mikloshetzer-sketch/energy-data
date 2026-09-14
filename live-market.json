@@ -1,27 +1,27 @@
 {
   "meta": {
-    "updated": "2026-09-14 16:56 UTC",
+    "updated": "2026-09-14 20:54 UTC",
     "source_mode": "live",
-    "generated_at": "2026-09-14T16:56:07.090627Z",
+    "generated_at": "2026-09-14T20:54:42.527104Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
     "fallback_used": false
   },
   "prices": {
-    "market_brent": 106.96,
-    "market_wti": 102.44,
+    "market_brent": 106.35,
+    "market_wti": 102.03,
     "spot_brent": 109.51,
     "spot_wti": 97.26,
-    "live_brent": 106.96,
-    "live_wti": 102.44,
+    "live_brent": 106.35,
+    "live_wti": 102.03,
     "live_source": "yahoo_futures",
     "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-09-14T16:46:05Z",
-    "market_timestamp_wti": "2026-09-14T16:46:04Z",
+    "market_timestamp_brent": "2026-09-14T20:44:03Z",
+    "market_timestamp_wti": "2026-09-14T20:44:29Z",
     "brent_fallback_used": false,
     "wti_fallback_used": false,
     "currency": "USD",
@@ -38,24 +38,24 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 47.2,
-    "middle_east_conflict_impact": 64.0,
+    "global_trade_risk_index": 46.5,
+    "middle_east_conflict_impact": 62.7,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -1.0,
-      "middle_east_conflict_impact_change": -2.2,
+      "global_trade_risk_index_change": -1.7,
+      "middle_east_conflict_impact_change": -3.5,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2377,
+        "estimated_impact": 0.2375,
         "status": "severe"
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.1003,
+        "estimated_impact": 0.1001,
         "status": "medium"
       },
       {
@@ -65,7 +65,7 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0893,
+        "estimated_impact": 0.0891,
         "status": "medium"
       },
       {
@@ -75,38 +75,38 @@
       }
     ],
     "me_components": {
-      "structural_score": 71.2,
-      "osint_signal_score": 52.0,
-      "osint_raw_total_risk": 130.03,
+      "structural_score": 71.1,
+      "osint_signal_score": 48.7,
+      "osint_raw_total_risk": 121.78,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "MEDIUM",
       "osint_total_events": 142,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 42.43
+          "risk": 37.23
         },
         {
           "name": "Saudi Arabia",
-          "risk": 17.3
+          "risk": 17.8
         },
         {
           "name": "Yemen",
-          "risk": 14.4
+          "risk": 15.45
         },
         {
           "name": "Iraq",
           "risk": 13.4
         },
         {
-          "name": "Gaza Strip",
-          "risk": 12.9
+          "name": "Israel",
+          "risk": 9.7
         }
       ],
-      "osint_updated": "2026-09-14 12:50 UTC",
+      "osint_updated": "2026-09-14 19:24 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 4.09,
+      "osint_age_hours": 1.45,
       "osint_used_in_blend": true,
       "conflict_signal_score": 18.0,
       "conflict_signal_raw_index": -0.9,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-09-10T20:01:22Z",
-        "source_age_hours": 92.9,
+        "source_age_hours": 96.83,
         "source_event_count": 244,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-09-14 16:55 UTC",
+      "updated": "2026-09-14 20:51 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
