@@ -1,27 +1,27 @@
 {
   "meta": {
-    "updated": "2026-09-15 14:56 UTC",
+    "updated": "2026-09-15 18:55 UTC",
     "source_mode": "live",
-    "generated_at": "2026-09-15T14:56:13.638352Z",
+    "generated_at": "2026-09-15T18:55:53.827522Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
     "fallback_used": false
   },
   "prices": {
-    "market_brent": 102.9,
-    "market_wti": 104.13,
+    "market_brent": 108.71,
+    "market_wti": 106.01,
     "spot_brent": 109.51,
     "spot_wti": 97.26,
-    "live_brent": 102.9,
-    "live_wti": 104.13,
+    "live_brent": 108.71,
+    "live_wti": 106.01,
     "live_source": "yahoo_futures",
     "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-09-15T14:46:09Z",
-    "market_timestamp_wti": "2026-09-15T14:46:13Z",
+    "market_timestamp_brent": "2026-09-15T18:45:50Z",
+    "market_timestamp_wti": "2026-09-15T18:45:52Z",
     "brent_fallback_used": false,
     "wti_fallback_used": false,
     "currency": "USD",
@@ -38,24 +38,24 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 45.7,
-    "middle_east_conflict_impact": 61.0,
+    "global_trade_risk_index": 45.8,
+    "middle_east_conflict_impact": 61.3,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -0.7,
-      "middle_east_conflict_impact_change": -1.4,
+      "global_trade_risk_index_change": -0.6,
+      "middle_east_conflict_impact_change": -1.1,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2372,
+        "estimated_impact": 0.2373,
         "status": "severe"
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.0999,
+        "estimated_impact": 0.1,
         "status": "medium"
       },
       {
@@ -65,48 +65,48 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0888,
+        "estimated_impact": 0.0857,
         "status": "medium"
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0124,
+        "estimated_impact": 0.0125,
         "status": "low"
       }
     ],
     "me_components": {
-      "structural_score": 71.0,
-      "osint_signal_score": 44.3,
-      "osint_raw_total_risk": 110.71,
+      "structural_score": 70.5,
+      "osint_signal_score": 46.1,
+      "osint_raw_total_risk": 115.31,
       "osint_risk_level": "LOW",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 133,
+      "osint_total_events": 132,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 31.66
+          "risk": 35.81
         },
         {
           "name": "Saudi Arabia",
-          "risk": 17.7
+          "risk": 20.4
         },
         {
           "name": "Yemen",
-          "risk": 16.2
+          "risk": 13.6
         },
         {
           "name": "Iraq",
-          "risk": 9.6
+          "risk": 8.7
         },
         {
           "name": "Gaza Strip",
           "risk": 8.15
         }
       ],
-      "osint_updated": "2026-09-15 11:46 UTC",
+      "osint_updated": "2026-09-15 17:01 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 3.04,
+      "osint_age_hours": 1.83,
       "osint_used_in_blend": true,
       "conflict_signal_score": 16.4,
       "conflict_signal_raw_index": -0.82,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-09-10T20:01:22Z",
-        "source_age_hours": 114.78,
+        "source_age_hours": 118.82,
         "source_event_count": 244,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-09-15 14:48 UTC",
+      "updated": "2026-09-15 18:50 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
