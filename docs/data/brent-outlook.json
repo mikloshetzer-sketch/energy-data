@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-09-17T21:31:44Z",
+  "generated_at": "2026-09-18T00:29:49Z",
   "dataset": "brent_outlook",
   "horizon_days": 30,
   "current": {
-    "price_usd": 104.33,
-    "date": "2026-09-17",
-    "timestamp": "2026-09-17T21:31:44Z"
+    "price_usd": 103.97,
+    "date": "2026-09-18",
+    "timestamp": "2026-09-18T00:29:49Z"
   },
   "outlook": {
-    "center_price_usd": 111.05,
-    "lower_price_usd": 97.61,
-    "upper_price_usd": 124.48,
+    "center_price_usd": 110.68,
+    "lower_price_usd": 93.63,
+    "upper_price_usd": 127.73,
     "direction": "BULLISH",
-    "confidence": "MEDIUM",
+    "confidence": "LOW",
     "current_range_position": "NEAR_CENTER"
   },
   "signals": {
@@ -20,9 +20,9 @@
     "fundamental_shift_pct": 1.11,
     "momentum_shift_pct": 3.5,
     "trend_shift_pct": 1.5,
-    "raw_total_center_shift_pct": 6.44,
-    "total_center_shift_pct": 6.44,
-    "volatility_band_pct": 12.1
+    "raw_total_center_shift_pct": 6.46,
+    "total_center_shift_pct": 6.46,
+    "volatility_band_pct": 15.41
   },
   "contributions_pct": {
     "ompi": 1.11,
@@ -30,7 +30,7 @@
     "trend": 1.5,
     "inventory": 0.0,
     "supply_demand_balance": 0.0,
-    "chokepoint": 0.33,
+    "chokepoint": 0.34,
     "market_confirmation": 0.0
   },
   "driver_ranking": [
@@ -55,7 +55,7 @@
     {
       "component": "Chokepoint",
       "key": "chokepoint",
-      "contribution_pct": 0.33,
+      "contribution_pct": 0.34,
       "direction": "BULLISH"
     },
     {
@@ -80,7 +80,7 @@
   "overlay_metrics": {
     "inventory_score": 50.0,
     "latest_balance_mbd": null,
-    "chokepoint_score": 63.1,
+    "chokepoint_score": 63.8,
     "market_confirmation_score": null
   },
   "optional_inputs": {
@@ -110,27 +110,26 @@
     }
   },
   "market_metrics": {
-    "change_5d_pct": -0.27,
-    "change_20d_pct": 16.82,
-    "change_60d_pct": 18.42,
-    "weighted_momentum_pct": 13.03,
+    "change_5d_pct": -0.61,
+    "change_20d_pct": 16.41,
+    "change_60d_pct": 16.53,
+    "weighted_momentum_pct": 12.19,
     "momentum_data_coverage": 1.0,
-    "moving_average_20d": 99.26,
-    "moving_average_60d": 92.75,
-    "daily_realised_volatility_20d": 0.022089,
+    "moving_average_20d": 99.74,
+    "moving_average_60d": 92.91,
+    "daily_realised_volatility_20d": 0.028128,
     "trend_state": "STRONG_UPTREND"
   },
   "confidence_details": {
     "reasons": [
-      "OMPI, momentum and trend broadly confirm the same direction.",
-      "Confidence is capped at MEDIUM until Market Confirmation is available."
+      "Realised volatility is high, widening the scenario range."
     ],
     "market_confirmation_available": false,
     "confidence_cap": "MEDIUM"
   },
   "quality": {
     "status": "VALID",
-    "history_observations": 228,
+    "history_observations": 229,
     "minimum_required_observations": 21,
     "full_model_observations": 61,
     "market_confirmation_available": false
