@@ -1,35 +1,35 @@
 {
   "meta": {
-    "updated": "2026-09-18 21:12 UTC",
+    "updated": "2026-09-18 23:33 UTC",
     "source_mode": "live",
-    "generated_at": "2026-09-18T21:12:39.351677Z",
+    "generated_at": "2026-09-18T23:33:21.572499Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
-    "fallback_used": false
+    "fallback_used": true
   },
   "prices": {
-    "market_brent": 98.77,
+    "market_brent": 103.37,
     "market_wti": 95.47,
     "spot_brent": 130.8,
     "spot_wti": 107.02,
-    "live_brent": 98.77,
+    "live_brent": 103.37,
     "live_wti": 95.47,
-    "live_source": "yahoo_futures",
-    "market_source": "Yahoo Finance chart",
+    "live_source": "mixed_or_spot_fallback",
+    "market_source": "OilPriceAPI",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
     "market_timestamp_brent": "2026-09-18T20:58:56Z",
     "market_timestamp_wti": "2026-09-18T20:59:57Z",
-    "brent_fallback_used": false,
+    "brent_fallback_used": true,
     "wti_fallback_used": false,
     "currency": "USD",
     "unit": "USD/barrel"
   },
   "source_status": {
     "brent": {
-      "status": "market_futures",
+      "status": "independent_market_fallback",
       "error": null
     },
     "wti": {
@@ -77,36 +77,36 @@
     "me_components": {
       "structural_score": 72.8,
       "osint_signal_score": 49.5,
-      "osint_raw_total_risk": 123.65,
+      "osint_raw_total_risk": 123.8,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 137,
+      "osint_total_events": 139,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 32.85
-        },
-        {
-          "name": "Yemen",
-          "risk": 21.65
+          "risk": 36.15
         },
         {
           "name": "Saudi Arabia",
-          "risk": 19.4
+          "risk": 18.9
+        },
+        {
+          "name": "Yemen",
+          "risk": 18.25
         },
         {
           "name": "Israel",
-          "risk": 18.0
+          "risk": 16.8
         },
         {
           "name": "Gaza Strip",
           "risk": 10.7
         }
       ],
-      "osint_updated": "2026-09-18 17:42 UTC",
+      "osint_updated": "2026-09-18 20:56 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.56,
+      "osint_age_hours": 0.63,
       "osint_used_in_blend": true,
       "conflict_signal_score": 9.2,
       "conflict_signal_raw_index": -0.46,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-09-10T20:01:22Z",
-        "source_age_hours": 190.24,
+        "source_age_hours": 193.54,
         "source_event_count": 244,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-09-18 18:15 UTC",
+      "updated": "2026-09-18 21:33 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
