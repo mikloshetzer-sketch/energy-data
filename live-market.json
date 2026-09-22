@@ -1,27 +1,27 @@
 {
   "meta": {
-    "updated": "2026-09-22 01:49 UTC",
+    "updated": "2026-09-22 07:39 UTC",
     "source_mode": "live",
-    "generated_at": "2026-09-22T01:49:24.317637Z",
+    "generated_at": "2026-09-22T07:39:35.765249Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
     "fallback_used": false
   },
   "prices": {
-    "market_brent": 96.77,
-    "market_wti": 92.8,
+    "market_brent": 97.22,
+    "market_wti": 93.15,
     "spot_brent": 130.8,
     "spot_wti": 107.02,
-    "live_brent": 96.77,
-    "live_wti": 92.8,
+    "live_brent": 97.22,
+    "live_wti": 93.15,
     "live_source": "yahoo_futures",
     "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-09-22T01:38:02Z",
-    "market_timestamp_wti": "2026-09-22T01:39:17Z",
+    "market_timestamp_brent": "2026-09-22T07:29:36Z",
+    "market_timestamp_wti": "2026-09-22T07:29:32Z",
     "brent_fallback_used": false,
     "wti_fallback_used": false,
     "currency": "USD",
@@ -39,12 +39,12 @@
   },
   "risk": {
     "global_trade_risk_index": 40.5,
-    "middle_east_conflict_impact": 48.5,
+    "middle_east_conflict_impact": 48.4,
     "middle_east_conflict_label": "medium",
     "daily_change": {
-      "global_trade_risk_index_change": -7.2,
-      "middle_east_conflict_impact_change": -16.2,
-      "direction_global": "down",
+      "global_trade_risk_index_change": 0.0,
+      "middle_east_conflict_impact_change": -0.1,
+      "direction_global": "flat",
       "direction_middle_east": "down"
     },
     "top_risks": [
@@ -55,7 +55,7 @@
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.1091,
+        "estimated_impact": 0.1086,
         "status": "medium"
       },
       {
@@ -75,7 +75,7 @@
       }
     ],
     "me_components": {
-      "structural_score": 73.7,
+      "structural_score": 73.6,
       "osint_signal_score": 6.4,
       "osint_raw_total_risk": 15.93,
       "osint_risk_level": "LOW",
@@ -106,7 +106,7 @@
       "osint_updated": "2026-09-21 23:18 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.68,
+      "osint_age_hours": 5.14,
       "osint_used_in_blend": true,
       "conflict_signal_score": 14.4,
       "conflict_signal_raw_index": -0.72,
@@ -128,21 +128,21 @@
           "recent_event_count": 38
         },
         "bab_el_mandeb": {
-          "score": 78.1,
-          "weighted_event_sum": 3.7958,
+          "score": 73.3,
+          "weighted_event_sum": 3.3008,
           "relevant_event_count": 16,
           "recent_event_count": 38
         },
         "source_available": true,
         "source_stale": false,
         "source_updated": "2026-09-21T08:05:59Z",
-        "source_age_hours": 15.88,
+        "source_age_hours": 20.34,
         "source_event_count": 258,
         "used_in_model": true
       }
     },
     "risk_meta": {
-      "updated": "2026-09-21 23:58 UTC",
+      "updated": "2026-09-22 04:26 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
