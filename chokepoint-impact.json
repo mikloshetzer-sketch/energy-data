@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-21 23:58 UTC",
+    "updated": "2026-09-22 04:26 UTC",
     "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -46,9 +46,9 @@
   "global_trade_risk_index": 40.5,
   "middle_east_conflict_impact": {
     "label": "medium",
-    "score": 48.5,
+    "score": 48.4,
     "components": {
-      "structural_score": 73.7,
+      "structural_score": 73.6,
       "osint_signal_score": 6.4,
       "osint_raw_total_risk": 15.93,
       "osint_risk_level": "LOW",
@@ -79,7 +79,7 @@
       "osint_updated": "2026-09-21 23:18 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.68,
+      "osint_age_hours": 5.14,
       "osint_used_in_blend": true,
       "conflict_signal_score": 14.4,
       "conflict_signal_raw_index": -0.72,
@@ -101,24 +101,24 @@
           "recent_event_count": 38
         },
         "bab_el_mandeb": {
-          "score": 78.1,
-          "weighted_event_sum": 3.7958,
+          "score": 73.3,
+          "weighted_event_sum": 3.3008,
           "relevant_event_count": 16,
           "recent_event_count": 38
         },
         "source_available": true,
         "source_stale": false,
         "source_updated": "2026-09-21T08:05:59Z",
-        "source_age_hours": 15.88,
+        "source_age_hours": 20.34,
         "source_event_count": 258,
         "used_in_model": true
       }
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -7.2,
-    "middle_east_conflict_impact_change": -16.2,
-    "direction_global": "down",
+    "global_trade_risk_index_change": 0.0,
+    "middle_east_conflict_impact_change": -0.1,
+    "direction_global": "flat",
     "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
@@ -135,7 +135,7 @@
     },
     {
       "name": "Bab el-Mandeb",
-      "estimated_impact": 0.1091,
+      "estimated_impact": 0.1086,
       "status": "medium"
     },
     {
@@ -188,19 +188,19 @@
       "energy_share": 0.116,
       "combined_weight": 0.1112,
       "substitution_penalty": 0.82,
-      "disruption_level": 0.8696,
+      "disruption_level": 0.8667,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.1091,
+      "estimated_impact": 0.1086,
       "status": "medium",
       "notes": "Vörös-tengeri és Szuez felé irányuló forgalom kulcspontja.",
       "local_security": {
-        "score": 78.1,
-        "premium": 0.0469,
+        "score": 73.3,
+        "premium": 0.044,
         "max_premium": 0.06,
         "base_dynamic_disruption": 0.8227,
-        "weighted_event_sum": 3.7958,
+        "weighted_event_sum": 3.3008,
         "relevant_event_count": 16,
         "lookback_days": 30
       }
