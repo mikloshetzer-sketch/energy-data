@@ -1,7 +1,7 @@
 {
   "market": {
-    "brent": "98.24 USD/hordó",
-    "wti": "90.00 USD/hordó",
+    "brent": "96.20 USD/hordó",
+    "wti": "90.69 USD/hordó",
     "inventory": "708.4 millió hordó",
     "supply": "111.8 millió hordó/nap",
     "brent_30d_trend": "+52.96%",
@@ -247,7 +247,7 @@
     "europe": {
       "level": "extreme",
       "label": "Nagyon magas hatás",
-      "score": 19.4,
+      "score": 18.8,
       "factor": 1.0,
       "icon": "🇪🇺",
       "dependency_label": "Közepes kitettség",
@@ -257,7 +257,7 @@
     "america": {
       "level": "high",
       "label": "Magas hatás",
-      "score": 11.6,
+      "score": 11.3,
       "factor": 0.6,
       "icon": "🇺🇸",
       "dependency_label": "Alacsonyabb közvetlen kitettség",
@@ -267,7 +267,7 @@
     "asia": {
       "level": "extreme",
       "label": "Nagyon magas hatás",
-      "score": 30.0,
+      "score": 29.2,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
@@ -276,7 +276,7 @@
     }
   },
   "meta": {
-    "updated": "2026-09-22 11:43 UTC",
+    "updated": "2026-09-23 11:42 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
@@ -303,7 +303,7 @@
     "method": "Összetett index: geopolitika 40%, árszint 20%, ármozgás 20%, piaci stressz 10%, készlet és kínálat 10%."
   },
   "market_stress": {
-    "score": 52.0,
+    "score": 48.0,
     "level": "tense",
     "label": "Feszült",
     "note": "A rendelkezésre álló mutatók fokozott piaci érzékenységet és érdemi feszültséget jeleznek.",
@@ -312,7 +312,7 @@
       "price_level": 16.0,
       "geopolitical": 5.0,
       "supply_buffer": 0.0,
-      "brent_wti_spread": 8.0
+      "brent_wti_spread": 4.0
     },
     "triggers": [],
     "methodology": "A 0–100-as mutató a Brent és WTI napi és heti abszolút ármozgását (30%), az aktuális olajárszintet (20%), a ME Security Monitor geopolitikai kategóriáját (20%), az EIA amerikai készlet- és globális kínálati adatait (15%), valamint a Brent–WTI árkülönbséget (15%) értékeli.",
@@ -333,13 +333,13 @@
       ]
     },
     "observed_values": {
-      "brent": 98.24,
-      "wti": 90.0,
+      "brent": 96.2,
+      "wti": 90.69,
       "brent_1d_change": 7.876288659793825,
       "brent_7d_change": 27.934272300469505,
       "wti_1d_change": 4.491310290958792,
       "wti_7d_change": 15.634792004321987,
-      "brent_wti_spread": 8.24,
+      "brent_wti_spread": 5.51,
       "inventory_million_barrels": 708.4,
       "global_supply_mbd": 111.8231232,
       "geopolitical_level": "moderate"
