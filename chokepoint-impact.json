@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-23 23:32 UTC",
+    "updated": "2026-09-24 04:20 UTC",
     "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -43,12 +43,12 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 46.5,
+  "global_trade_risk_index": 46.4,
   "middle_east_conflict_impact": {
     "label": "high",
-    "score": 61.4,
+    "score": 61.3,
     "components": {
-      "structural_score": 74.6,
+      "structural_score": 74.5,
       "osint_signal_score": 39.3,
       "osint_raw_total_risk": 98.29,
       "osint_risk_level": "LOW",
@@ -79,7 +79,7 @@
       "osint_updated": "2026-09-23 22:58 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.57,
+      "osint_age_hours": 5.37,
       "osint_used_in_blend": true,
       "conflict_signal_score": 20.0,
       "conflict_signal_raw_index": -1.0,
@@ -101,25 +101,25 @@
           "recent_event_count": 37
         },
         "bab_el_mandeb": {
-          "score": 68.7,
-          "weighted_event_sum": 2.9025,
+          "score": 65.4,
+          "weighted_event_sum": 2.6525,
           "relevant_event_count": 16,
           "recent_event_count": 37
         },
         "source_available": true,
         "source_stale": false,
         "source_updated": "2026-09-21T08:05:59Z",
-        "source_age_hours": 63.44,
+        "source_age_hours": 68.24,
         "source_event_count": 258,
         "used_in_model": true
       }
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": 0.0,
-    "middle_east_conflict_impact_change": 0.0,
-    "direction_global": "flat",
-    "direction_middle_east": "flat"
+    "global_trade_risk_index_change": -0.1,
+    "middle_east_conflict_impact_change": -0.1,
+    "direction_global": "down",
+    "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
@@ -135,8 +135,8 @@
     },
     {
       "name": "Bab el-Mandeb",
-      "estimated_impact": 0.1101,
-      "status": "high"
+      "estimated_impact": 0.1098,
+      "status": "medium"
     },
     {
       "name": "Malaka-szoros",
@@ -188,19 +188,19 @@
       "energy_share": 0.116,
       "combined_weight": 0.1112,
       "substitution_penalty": 0.82,
-      "disruption_level": 0.878,
+      "disruption_level": 0.876,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.1101,
-      "status": "high",
+      "estimated_impact": 0.1098,
+      "status": "medium",
       "notes": "Vörös-tengeri és Szuez felé irányuló forgalom kulcspontja.",
       "local_security": {
-        "score": 68.7,
-        "premium": 0.0412,
+        "score": 65.4,
+        "premium": 0.0392,
         "max_premium": 0.06,
         "base_dynamic_disruption": 0.8368,
-        "weighted_event_sum": 2.9025,
+        "weighted_event_sum": 2.6525,
         "relevant_event_count": 16,
         "lookback_days": 30
       }
