@@ -1,27 +1,27 @@
 {
   "meta": {
-    "updated": "2026-09-24 23:24 UTC",
+    "updated": "2026-09-25 01:52 UTC",
     "source_mode": "live",
-    "generated_at": "2026-09-24T23:24:46.309256Z",
+    "generated_at": "2026-09-25T01:52:04.588735Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
     "fallback_used": false
   },
   "prices": {
-    "market_brent": 106.45,
-    "market_wti": 94.21,
+    "market_brent": 105.72,
+    "market_wti": 93.15,
     "spot_brent": 114.89,
     "spot_wti": 96.41,
-    "live_brent": 106.45,
-    "live_wti": 94.21,
+    "live_brent": 105.72,
+    "live_wti": 93.15,
     "live_source": "yahoo_futures",
     "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-09-24T22:30:00Z",
-    "market_timestamp_wti": "2026-09-24T23:14:25Z",
+    "market_timestamp_brent": "2026-09-25T01:41:59Z",
+    "market_timestamp_wti": "2026-09-25T01:42:00Z",
     "brent_fallback_used": false,
     "wti_fallback_used": false,
     "currency": "USD",
@@ -38,75 +38,75 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 46.8,
-    "middle_east_conflict_impact": 62.9,
+    "global_trade_risk_index": 45.8,
+    "middle_east_conflict_impact": 60.7,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": 0.3,
-      "middle_east_conflict_impact_change": 1.5,
-      "direction_global": "up",
-      "direction_middle_east": "up"
+      "global_trade_risk_index_change": -1.0,
+      "middle_east_conflict_impact_change": -2.2,
+      "direction_global": "down",
+      "direction_middle_east": "down"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2499,
+        "estimated_impact": 0.2495,
         "status": "severe"
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.1053,
+        "estimated_impact": 0.1051,
         "status": "medium"
       },
       {
         "name": "Malaka-szoros",
-        "estimated_impact": 0.0995,
+        "estimated_impact": 0.0994,
         "status": "medium"
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0808,
+        "estimated_impact": 0.0805,
         "status": "medium"
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0132,
+        "estimated_impact": 0.0131,
         "status": "low"
       }
     ],
     "me_components": {
-      "structural_score": 72.7,
-      "osint_signal_score": 46.6,
-      "osint_raw_total_risk": 116.52,
+      "structural_score": 72.5,
+      "osint_signal_score": 41.1,
+      "osint_raw_total_risk": 102.85,
       "osint_risk_level": "LOW",
-      "osint_confidence": "HIGH",
-      "osint_total_events": 151,
+      "osint_confidence": "MEDIUM",
+      "osint_total_events": 146,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 40.07
+          "risk": 35.2
         },
         {
           "name": "Saudi Arabia",
-          "risk": 15.95
-        },
-        {
-          "name": "Yemen",
-          "risk": 13.6
+          "risk": 13.3
         },
         {
           "name": "Gaza Strip",
-          "risk": 11.4
+          "risk": 10.6
         },
         {
-          "name": "Israel",
-          "risk": 8.6
+          "name": "Yemen",
+          "risk": 9.75
+        },
+        {
+          "name": "Riyadh",
+          "risk": 8.1
         }
       ],
-      "osint_updated": "2026-09-24 21:33 UTC",
+      "osint_updated": "2026-09-25 00:34 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.63,
+      "osint_age_hours": 0.77,
       "osint_used_in_blend": true,
       "conflict_signal_score": 13.6,
       "conflict_signal_raw_index": -0.68,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-09-21T08:05:59Z",
-        "source_age_hours": 86.08,
+        "source_age_hours": 89.24,
         "source_event_count": 258,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-09-24 22:10 UTC",
+      "updated": "2026-09-25 01:20 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
