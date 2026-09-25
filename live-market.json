@@ -1,35 +1,35 @@
 {
   "meta": {
-    "updated": "2026-09-25 01:52 UTC",
+    "updated": "2026-09-25 07:41 UTC",
     "source_mode": "live",
-    "generated_at": "2026-09-25T01:52:04.588735Z",
+    "generated_at": "2026-09-25T07:41:39.506720Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
-    "fallback_used": false
+    "fallback_used": true
   },
   "prices": {
-    "market_brent": 105.72,
-    "market_wti": 93.15,
+    "market_brent": 106.09,
+    "market_wti": 93.39,
     "spot_brent": 114.89,
     "spot_wti": 96.41,
-    "live_brent": 105.72,
-    "live_wti": 93.15,
-    "live_source": "yahoo_futures",
-    "market_source": "Yahoo Finance chart",
+    "live_brent": 106.09,
+    "live_wti": 93.39,
+    "live_source": "mixed_or_spot_fallback",
+    "market_source": "OilPriceAPI",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-09-25T01:41:59Z",
-    "market_timestamp_wti": "2026-09-25T01:42:00Z",
-    "brent_fallback_used": false,
+    "market_timestamp_brent": "2026-09-25T07:31:38Z",
+    "market_timestamp_wti": "2026-09-25T07:31:37Z",
+    "brent_fallback_used": true,
     "wti_fallback_used": false,
     "currency": "USD",
     "unit": "USD/barrel"
   },
   "source_status": {
     "brent": {
-      "status": "market_futures",
+      "status": "independent_market_fallback",
       "error": null
     },
     "wti": {
@@ -106,7 +106,7 @@
       "osint_updated": "2026-09-25 00:34 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.77,
+      "osint_age_hours": 6.96,
       "osint_used_in_blend": true,
       "conflict_signal_score": 13.6,
       "conflict_signal_raw_index": -0.68,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-09-21T08:05:59Z",
-        "source_age_hours": 89.24,
+        "source_age_hours": 95.42,
         "source_event_count": 258,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-09-25 01:20 UTC",
+      "updated": "2026-09-25 07:31 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
