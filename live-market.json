@@ -1,8 +1,8 @@
 {
   "meta": {
-    "updated": "2026-09-26 14:42 UTC",
+    "updated": "2026-09-26 18:32 UTC",
     "source_mode": "live",
-    "generated_at": "2026-09-26T14:42:44.141475Z",
+    "generated_at": "2026-09-26T18:32:33.644214Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
@@ -38,12 +38,12 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 45.9,
-    "middle_east_conflict_impact": 60.8,
+    "global_trade_risk_index": 46.0,
+    "middle_east_conflict_impact": 61.0,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -0.6,
-      "middle_east_conflict_impact_change": -1.2,
+      "global_trade_risk_index_change": -0.5,
+      "middle_east_conflict_impact_change": -1.0,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
@@ -76,37 +76,37 @@
     ],
     "me_components": {
       "structural_score": 72.5,
-      "osint_signal_score": 41.3,
-      "osint_raw_total_risk": 103.22,
+      "osint_signal_score": 41.8,
+      "osint_raw_total_risk": 104.47,
       "osint_risk_level": "LOW",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 145,
+      "osint_total_events": 149,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 33.93
+          "risk": 34.48
         },
         {
           "name": "Saudi Arabia",
-          "risk": 17.0
+          "risk": 15.0
         },
         {
           "name": "Israel",
-          "risk": 13.1
+          "risk": 14.0
         },
         {
           "name": "Yemen",
-          "risk": 12.25
+          "risk": 13.25
         },
         {
           "name": "West Bank",
           "risk": 5.4
         }
       ],
-      "osint_updated": "2026-09-26 11:27 UTC",
+      "osint_updated": "2026-09-26 16:25 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 1.47,
+      "osint_age_hours": 0.6,
       "osint_used_in_blend": true,
       "conflict_signal_score": 11.6,
       "conflict_signal_raw_index": -0.58,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-09-21T08:05:59Z",
-        "source_age_hours": 124.82,
+        "source_age_hours": 128.91,
         "source_event_count": 258,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-09-26 12:54 UTC",
+      "updated": "2026-09-26 17:00 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
