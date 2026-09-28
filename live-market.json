@@ -1,27 +1,27 @@
 {
   "meta": {
-    "updated": "2026-09-28 15:57 UTC",
+    "updated": "2026-09-28 21:53 UTC",
     "source_mode": "live",
-    "generated_at": "2026-09-28T15:57:56.988262Z",
+    "generated_at": "2026-09-28T21:53:26.916342Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
     "fallback_used": true
   },
   "prices": {
-    "market_brent": 107.8,
-    "market_wti": 95.51,
+    "market_brent": 106.07,
+    "market_wti": 93.29,
     "spot_brent": 114.89,
     "spot_wti": 96.41,
-    "live_brent": 107.8,
-    "live_wti": 95.51,
+    "live_brent": 106.07,
+    "live_wti": 93.29,
     "live_source": "mixed_or_spot_fallback",
     "market_source": "OilPriceAPI",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-09-28T15:47:54Z",
-    "market_timestamp_wti": "2026-09-28T15:47:55Z",
+    "market_timestamp_brent": "2026-09-28T20:58:41Z",
+    "market_timestamp_wti": "2026-09-28T20:59:58Z",
     "brent_fallback_used": true,
     "wti_fallback_used": false,
     "currency": "USD",
@@ -77,36 +77,36 @@
     "me_components": {
       "structural_score": 72.4,
       "osint_signal_score": 38.7,
-      "osint_raw_total_risk": 96.7,
+      "osint_raw_total_risk": 96.75,
       "osint_risk_level": "LOW",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 136,
+      "osint_total_events": 129,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 36.2
-        },
-        {
-          "name": "Israel",
-          "risk": 16.7
+          "risk": 44.65
         },
         {
           "name": "Yemen",
-          "risk": 14.2
+          "risk": 14.0
+        },
+        {
+          "name": "Israel",
+          "risk": 11.45
         },
         {
           "name": "Saudi Arabia",
-          "risk": 9.4
+          "risk": 9.9
         },
         {
-          "name": "Middle East",
-          "risk": 4.6
+          "name": "Iraq",
+          "risk": 3.85
         }
       ],
-      "osint_updated": "2026-09-28 14:00 UTC",
+      "osint_updated": "2026-09-28 20:36 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 1.24,
+      "osint_age_hours": 1.18,
       "osint_used_in_blend": true,
       "conflict_signal_score": 9.6,
       "conflict_signal_raw_index": -0.48,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-09-21T08:05:59Z",
-        "source_age_hours": 175.14,
+        "source_age_hours": 181.68,
         "source_event_count": 258,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-09-28 15:14 UTC",
+      "updated": "2026-09-28 21:46 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
