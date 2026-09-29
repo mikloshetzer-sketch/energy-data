@@ -1,27 +1,27 @@
 {
   "meta": {
-    "updated": "2026-09-28 21:53 UTC",
+    "updated": "2026-09-29 01:51 UTC",
     "source_mode": "live",
-    "generated_at": "2026-09-28T21:53:26.916342Z",
+    "generated_at": "2026-09-29T01:51:30.152410Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
     "fallback_used": true
   },
   "prices": {
-    "market_brent": 106.07,
-    "market_wti": 93.29,
+    "market_brent": 106.9,
+    "market_wti": 93.91,
     "spot_brent": 114.89,
     "spot_wti": 96.41,
-    "live_brent": 106.07,
-    "live_wti": 93.29,
+    "live_brent": 106.9,
+    "live_wti": 93.91,
     "live_source": "mixed_or_spot_fallback",
     "market_source": "OilPriceAPI",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-09-28T20:58:41Z",
-    "market_timestamp_wti": "2026-09-28T20:59:58Z",
+    "market_timestamp_brent": "2026-09-29T01:41:08Z",
+    "market_timestamp_wti": "2026-09-29T01:41:27Z",
     "brent_fallback_used": true,
     "wti_fallback_used": false,
     "currency": "USD",
@@ -42,10 +42,10 @@
     "middle_east_conflict_impact": 59.8,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -1.1,
-      "middle_east_conflict_impact_change": -2.3,
-      "direction_global": "down",
-      "direction_middle_east": "down"
+      "global_trade_risk_index_change": 0.0,
+      "middle_east_conflict_impact_change": 0.0,
+      "direction_global": "flat",
+      "direction_middle_east": "flat"
     },
     "top_risks": [
       {
@@ -106,7 +106,7 @@
       "osint_updated": "2026-09-28 20:36 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 1.18,
+      "osint_age_hours": 5.12,
       "osint_used_in_blend": true,
       "conflict_signal_score": 9.6,
       "conflict_signal_raw_index": -0.48,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-09-21T08:05:59Z",
-        "source_age_hours": 181.68,
+        "source_age_hours": 185.62,
         "source_event_count": 258,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-09-28 21:46 UTC",
+      "updated": "2026-09-29 01:43 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
