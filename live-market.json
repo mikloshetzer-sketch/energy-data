@@ -1,35 +1,35 @@
 {
   "meta": {
-    "updated": "2026-09-30 11:20 UTC",
+    "updated": "2026-09-30 16:59 UTC",
     "source_mode": "live",
-    "generated_at": "2026-09-30T11:20:23.871860Z",
+    "generated_at": "2026-09-30T16:59:13.860217Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
-    "fallback_used": true
+    "fallback_used": false
   },
   "prices": {
-    "market_brent": 103.61,
-    "market_wti": 90.7,
+    "market_brent": 98.71,
+    "market_wti": 91.24,
     "spot_brent": 114.89,
     "spot_wti": 96.41,
-    "live_brent": 103.61,
-    "live_wti": 90.7,
-    "live_source": "mixed_or_spot_fallback",
-    "market_source": "OilPriceAPI",
+    "live_brent": 98.71,
+    "live_wti": 91.24,
+    "live_source": "yahoo_futures",
+    "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-09-30T11:10:06Z",
-    "market_timestamp_wti": "2026-09-30T11:10:23Z",
-    "brent_fallback_used": true,
+    "market_timestamp_brent": "2026-09-30T16:49:08Z",
+    "market_timestamp_wti": "2026-09-30T16:49:11Z",
+    "brent_fallback_used": false,
     "wti_fallback_used": false,
     "currency": "USD",
     "unit": "USD/barrel"
   },
   "source_status": {
     "brent": {
-      "status": "independent_market_fallback",
+      "status": "market_futures",
       "error": null
     },
     "wti": {
@@ -38,34 +38,34 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 45.7,
-    "middle_east_conflict_impact": 60.4,
+    "global_trade_risk_index": 46.5,
+    "middle_east_conflict_impact": 62.1,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -0.5,
-      "middle_east_conflict_impact_change": -1.0,
-      "direction_global": "down",
-      "direction_middle_east": "down"
+      "global_trade_risk_index_change": 0.3,
+      "middle_east_conflict_impact_change": 0.7,
+      "direction_global": "up",
+      "direction_middle_east": "up"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2494,
+        "estimated_impact": 0.2497,
         "status": "severe"
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.1049,
+        "estimated_impact": 0.1052,
         "status": "medium"
       },
       {
         "name": "Malaka-szoros",
-        "estimated_impact": 0.0994,
+        "estimated_impact": 0.0995,
         "status": "medium"
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0804,
+        "estimated_impact": 0.0807,
         "status": "medium"
       },
       {
@@ -75,44 +75,44 @@
       }
     ],
     "me_components": {
-      "structural_score": 72.5,
-      "osint_signal_score": 40.2,
-      "osint_raw_total_risk": 100.45,
+      "structural_score": 72.6,
+      "osint_signal_score": 44.7,
+      "osint_raw_total_risk": 111.65,
       "osint_risk_level": "LOW",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 131,
+      "osint_total_events": 132,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 37.0
+          "risk": 38.4
+        },
+        {
+          "name": "Israel",
+          "risk": 16.9
+        },
+        {
+          "name": "Gaza Strip",
+          "risk": 13.5
         },
         {
           "name": "Yemen",
           "risk": 12.85
         },
         {
-          "name": "Israel",
-          "risk": 11.0
-        },
-        {
-          "name": "Gaza Strip",
-          "risk": 10.8
-        },
-        {
-          "name": "West Bank",
-          "risk": 7.6
+          "name": "Iraq",
+          "risk": 10.05
         }
       ],
-      "osint_updated": "2026-09-30 05:35 UTC",
+      "osint_updated": "2026-09-30 12:37 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.95,
+      "osint_age_hours": 0.92,
       "osint_used_in_blend": true,
       "conflict_signal_score": 0.0,
-      "conflict_signal_raw_index": 0.14,
+      "conflict_signal_raw_index": 0.12,
       "conflict_signal_assessment": "neutral",
-      "conflict_signal_trajectory": "stabilizing",
-      "conflict_signal_outlook": "The information environment is moving toward stabilization.",
+      "conflict_signal_trajectory": "uncertain",
+      "conflict_signal_outlook": "Short-term direction remains uncertain.",
       "conflict_signal_article_count": 50,
       "conflict_signal_updated": null,
       "conflict_signal_available": true,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-09-21T08:05:59Z",
-        "source_age_hours": 214.43,
+        "source_age_hours": 221.44,
         "source_event_count": 258,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-09-30 06:32 UTC",
+      "updated": "2026-09-30 13:32 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
