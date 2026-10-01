@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-30T12:59:48Z",
+  "generated_at": "2026-10-01T13:53:34Z",
   "meta": {
-    "generated_at": "2026-09-30T12:59:48Z",
+    "generated_at": "2026-10-01T13:53:34Z",
     "generator": "scripts/generate_supply_demand_balance.py",
     "generator_version": "2.1.0",
     "indicator_type": "short_term_oil_market_pressure",
@@ -10,7 +10,7 @@
     "fundamental_period_source": "global_oil_balance.current"
   },
   "indicator_type": "short_term_oil_market_pressure",
-  "short_term_pressure_score": 78.6,
+  "short_term_pressure_score": 78.4,
   "market_tightness": "high_pressure",
   "market_tightness_hu": "Erős felfelé mutató nyomás",
   "market_tightness_en": "Strong upward pressure",
@@ -18,22 +18,22 @@
   "market_direction_hu": "Árfelhajtó",
   "market_direction_en": "Bullish",
   "fundamental_balance": {
-    "period": "2026-09",
+    "period": "2026-10",
     "period_type": "current_month_estimate",
-    "global_supply_mbd": 99.413,
-    "global_demand_mbd": 104.21,
-    "balance_mbd": -4.797,
+    "global_supply_mbd": 100.557,
+    "global_demand_mbd": 102.987,
+    "balance_mbd": -2.43,
     "balance_state": "deficit_high",
     "source": "EIA STEO"
   },
   "forecast_reference": {
     "forecast_until": "2027-12",
     "next_month_forecast": {
-      "period": "2026-10",
+      "period": "2026-11",
       "period_type": "forecast",
-      "global_supply_mbd": 100.557,
-      "global_demand_mbd": 102.987,
-      "balance_mbd": -2.43,
+      "global_supply_mbd": 102.266,
+      "global_demand_mbd": 103.737,
+      "balance_mbd": -1.471,
       "balance_state": "deficit_high",
       "balance_state_hu": "Jelentős hiány",
       "balance_state_en": "Material deficit"
@@ -53,8 +53,8 @@
     "fundamental_balance": 100.0,
     "inventory_tightness": 50.0,
     "china_import_momentum": 50.0,
-    "brent_momentum": 62.7,
-    "geopolitical_supply_risk": 54.5
+    "brent_momentum": 60.9,
+    "geopolitical_supply_risk": 53.1
   },
   "component_weights": {
     "fundamental_balance": 0.55,
@@ -64,33 +64,33 @@
     "geopolitical_supply_risk": 0.1
   },
   "drivers": {
-    "physical_balance_mbd": -4.797,
-    "physical_balance_period": "2026-09",
-    "brent_change_pct": 6.34,
+    "physical_balance_mbd": -2.43,
+    "physical_balance_period": "2026-10",
+    "brent_change_pct": 5.44,
     "china_import_volume_change_pct": 0.0,
     "inventory_stress_score": 50.0,
-    "combined_risk_score": 54.5,
+    "combined_risk_score": 53.1,
     "brent_lookback_observations": 30,
     "china_lookback_observations": 30,
     "usa_production_value_change_pct": null
   },
   "data_freshness": {
-    "fundamental_period": "2026-09",
+    "fundamental_period": "2026-10",
     "brent_lookback_observations": 30,
     "china_lookback_observations": 30
   },
   "method_hu": "A rövid távú olajpiaci nyomásindikátor elsődleges alapja az EIA STEO aktuális naptári hónapra vonatkozó globális fizikai kínálat–keresleti mérlege. Ezt az amerikai készlethelyzet, a kínai importmomentum, a Brent ármomentum és a geopolitikai ellátási kockázat egészíti ki. A mutató nem árfolyam-előrejelzés.",
   "method_en": "The short-term oil-market pressure indicator is anchored in the EIA STEO global physical supply-demand balance for the current calendar month. It is supplemented by U.S. inventory conditions, China import momentum, Brent price momentum and geopolitical supply risk. The indicator is not a price forecast.",
-  "summary_hu": "Az EIA STEO jelenlegi, 2026-09 időszakra vonatkozó fizikai mérlege -4.80 millió hordó/nap. A fundamentális mérleg, a készlethelyzet és a rövid távú piaci jelek alapján az összesített nyomás 78.6/100, ami erős felfelé mutató nyomás állapotot jelez.",
-  "summary_en": "The EIA STEO current-period physical balance for 2026-09 is -4.80 million barrels per day. Based on the fundamental balance, inventories and short-term signals, the combined pressure score is 78.6/100, indicating a strong upward pressure condition.",
+  "summary_hu": "Az EIA STEO jelenlegi, 2026-10 időszakra vonatkozó fizikai mérlege -2.43 millió hordó/nap. A fundamentális mérleg, a készlethelyzet és a rövid távú piaci jelek alapján az összesített nyomás 78.4/100, ami erős felfelé mutató nyomás állapotot jelez.",
+  "summary_en": "The EIA STEO current-period physical balance for 2026-10 is -2.43 million barrels per day. Based on the fundamental balance, inventories and short-term signals, the combined pressure score is 78.4/100, indicating a strong upward pressure condition.",
   "lookback_days": 30,
-  "supply_pressure": 14.5,
+  "supply_pressure": 14.7,
   "supply_level": "LOW",
   "supply_level_hu": "Alacsony",
   "supply_level_en": "Low",
-  "demand_pressure": 53.8,
+  "demand_pressure": 53.3,
   "demand_level": "MEDIUM",
   "demand_level_hu": "Közepes",
   "demand_level_en": "Medium",
-  "balance_score": 57.2
+  "balance_score": 56.8
 }
