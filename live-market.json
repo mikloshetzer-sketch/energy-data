@@ -1,8 +1,8 @@
 {
   "meta": {
-    "updated": "2026-10-04 18:37 UTC",
+    "updated": "2026-10-04 21:56 UTC",
     "source_mode": "live",
-    "generated_at": "2026-10-04T18:37:05.404142Z",
+    "generated_at": "2026-10-04T21:56:35.896536Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
@@ -38,24 +38,24 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 47.8,
-    "middle_east_conflict_impact": 65.0,
+    "global_trade_risk_index": 48.2,
+    "middle_east_conflict_impact": 65.7,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -1.1,
-      "middle_east_conflict_impact_change": -2.3,
+      "global_trade_risk_index_change": -0.7,
+      "middle_east_conflict_impact_change": -1.6,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2502,
+        "estimated_impact": 0.2503,
         "status": "severe"
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.1056,
+        "estimated_impact": 0.1057,
         "status": "medium"
       },
       {
@@ -65,7 +65,7 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0812,
+        "estimated_impact": 0.0813,
         "status": "medium"
       },
       {
@@ -75,38 +75,38 @@
       }
     ],
     "me_components": {
-      "structural_score": 72.8,
-      "osint_signal_score": 52.1,
-      "osint_raw_total_risk": 130.13,
+      "structural_score": 72.9,
+      "osint_signal_score": 53.6,
+      "osint_raw_total_risk": 133.98,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 139,
+      "osint_total_events": 137,
       "osint_top_locations": [
         {
           "name": "Israel",
-          "risk": 31.25
+          "risk": 33.0
         },
         {
           "name": "Iran",
-          "risk": 22.24
+          "risk": 22.84
         },
         {
           "name": "Gaza Strip",
-          "risk": 19.8
-        },
-        {
-          "name": "Yemen",
-          "risk": 13.8
+          "risk": 20.6
         },
         {
           "name": "Dubai",
-          "risk": 12.8
+          "risk": 15.8
+        },
+        {
+          "name": "Yemen",
+          "risk": 14.3
         }
       ],
-      "osint_updated": "2026-10-04 15:23 UTC",
+      "osint_updated": "2026-10-04 19:39 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 2.03,
+      "osint_age_hours": 1.52,
       "osint_used_in_blend": true,
       "conflict_signal_score": 10.0,
       "conflict_signal_raw_index": -0.5,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-09-21T08:05:59Z",
-        "source_age_hours": 321.31,
+        "source_age_hours": 325.07,
         "source_event_count": 258,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-10-04 17:24 UTC",
+      "updated": "2026-10-04 21:10 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
