@@ -1,0 +1,3812 @@
+{
+  "meta": {
+    "collector": "Hormuz Flow Data Collector",
+    "version": "1.0-portwatch",
+    "generated_at": "2026-10-05T11:23:30.631805+00:00",
+    "automatic": true,
+    "repository": "energy-data"
+  },
+  "source": {
+    "provider": "IMF PortWatch",
+    "service": "Daily_Chokepoints_Data",
+    "portid": "chokepoint6",
+    "role": "traffic_and_capacity_proxy",
+    "methodological_warning": "PortWatch vessel traffic must not be interpreted directly as physical oil throughput in million barrels/day."
+  },
+  "latest_observation": {
+    "date": "2026-09-27",
+    "timestamp": "2026-09-27T00:00:00+00:00",
+    "n_total": 1,
+    "n_tanker": 1,
+    "n_cargo": 0,
+    "capacity_total": 8866.0,
+    "capacity_tanker": 8866.0,
+    "capacity_cargo": 0.0,
+    "freshness": {
+      "status": "AGING",
+      "age_days": 8
+    }
+  },
+  "freshness": {
+    "status": "AGING",
+    "age_days": 8
+  },
+  "data_quality": {
+    "score": 70,
+    "level": "MODERATE",
+    "issues": [
+      "Latest PortWatch observation is aging"
+    ]
+  },
+  "statistics": {
+    "7d": {
+      "requested_days": 7,
+      "available_days": 7,
+      "n_total": {
+        "average": 3.14,
+        "median": 3.0,
+        "min": 1.0,
+        "max": 5.0
+      },
+      "n_tanker": {
+        "average": 1.29,
+        "median": 1.0,
+        "min": 0.0,
+        "max": 3.0
+      },
+      "n_cargo": {
+        "average": 1.86,
+        "median": 2.0,
+        "min": 0.0,
+        "max": 3.0
+      },
+      "capacity_total": {
+        "average": 52376.29
+      },
+      "capacity_tanker": {
+        "average": 17831.29
+      }
+    },
+    "30d": {
+      "requested_days": 30,
+      "available_days": 30,
+      "n_total": {
+        "average": 3.73,
+        "median": 3.0,
+        "min": 1.0,
+        "max": 8.0
+      },
+      "n_tanker": {
+        "average": 1.07,
+        "median": 1.0,
+        "min": 0.0,
+        "max": 3.0
+      },
+      "n_cargo": {
+        "average": 2.67,
+        "median": 2.0,
+        "min": 0.0,
+        "max": 7.0
+      },
+      "capacity_total": {
+        "average": 74654.17
+      },
+      "capacity_tanker": {
+        "average": 14776.47
+      }
+    },
+    "90d": {
+      "requested_days": 90,
+      "available_days": 90,
+      "n_total": {
+        "average": 6.42,
+        "median": 5.0,
+        "min": 0.0,
+        "max": 29.0
+      },
+      "n_tanker": {
+        "average": 2.67,
+        "median": 2.0,
+        "min": 0.0,
+        "max": 18.0
+      },
+      "n_cargo": {
+        "average": 3.76,
+        "median": 3.0,
+        "min": 0.0,
+        "max": 16.0
+      },
+      "capacity_total": {
+        "average": 189930.17
+      },
+      "capacity_tanker": {
+        "average": 107884.98
+      }
+    }
+  },
+  "trend": {
+    "tanker_7d_vs_30d_pct": 20.56,
+    "tanker_7d_vs_90d_pct": -51.69,
+    "total_7d_vs_30d_pct": -15.82,
+    "total_7d_vs_90d_pct": -51.09
+  },
+  "diagnostics": {
+    "raw_features_received": 1000,
+    "normalized_observations": 365,
+    "available_fields": [
+      "ObjectId",
+      "capacity",
+      "capacity_cargo",
+      "capacity_container",
+      "capacity_dry_bulk",
+      "capacity_general_cargo",
+      "capacity_roro",
+      "capacity_tanker",
+      "date",
+      "day",
+      "month",
+      "n_cargo",
+      "n_container",
+      "n_dry_bulk",
+      "n_general_cargo",
+      "n_roro",
+      "n_tanker",
+      "n_total",
+      "portid",
+      "portname",
+      "year"
+    ]
+  },
+  "history": [
+    {
+      "date": "2026-09-27",
+      "timestamp": "2026-09-27T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 1,
+      "n_cargo": 0,
+      "capacity_total": 8866.0,
+      "capacity_tanker": 8866.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-09-26",
+      "timestamp": "2026-09-26T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 1,
+      "n_cargo": 3,
+      "capacity_total": 15403.0,
+      "capacity_tanker": 14589.0,
+      "capacity_cargo": 813.0
+    },
+    {
+      "date": "2026-09-25",
+      "timestamp": "2026-09-25T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 2,
+      "n_cargo": 1,
+      "capacity_total": 4771.0,
+      "capacity_tanker": 4771.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-09-24",
+      "timestamp": "2026-09-24T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 3,
+      "n_cargo": 2,
+      "capacity_total": 104329.0,
+      "capacity_tanker": 56216.0,
+      "capacity_cargo": 48113.0
+    },
+    {
+      "date": "2026-09-23",
+      "timestamp": "2026-09-23T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 1,
+      "n_cargo": 3,
+      "capacity_total": 122256.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 122256.0
+    },
+    {
+      "date": "2026-09-22",
+      "timestamp": "2026-09-22T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 41053.0,
+      "capacity_tanker": 40377.0,
+      "capacity_cargo": 675.0
+    },
+    {
+      "date": "2026-09-21",
+      "timestamp": "2026-09-21T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 69956.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 69956.0
+    },
+    {
+      "date": "2026-09-20",
+      "timestamp": "2026-09-20T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 0,
+      "n_cargo": 1,
+      "capacity_total": 48165.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 48165.0
+    },
+    {
+      "date": "2026-09-19",
+      "timestamp": "2026-09-19T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 1,
+      "n_cargo": 5,
+      "capacity_total": 30815.0,
+      "capacity_tanker": 3149.0,
+      "capacity_cargo": 27666.0
+    },
+    {
+      "date": "2026-09-18",
+      "timestamp": "2026-09-18T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 2,
+      "n_cargo": 5,
+      "capacity_total": 144871.0,
+      "capacity_tanker": 6821.0,
+      "capacity_cargo": 138049.0
+    },
+    {
+      "date": "2026-09-17",
+      "timestamp": "2026-09-17T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 0,
+      "n_cargo": 3,
+      "capacity_total": 66754.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 66754.0
+    },
+    {
+      "date": "2026-09-16",
+      "timestamp": "2026-09-16T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 0,
+      "n_cargo": 1,
+      "capacity_total": 51573.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 51573.0
+    },
+    {
+      "date": "2026-09-15",
+      "timestamp": "2026-09-15T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 1,
+      "n_cargo": 1,
+      "capacity_total": 53291.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 53291.0
+    },
+    {
+      "date": "2026-09-14",
+      "timestamp": "2026-09-14T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-09-13",
+      "timestamp": "2026-09-13T00:00:00+00:00",
+      "n_total": 8,
+      "n_tanker": 1,
+      "n_cargo": 7,
+      "capacity_total": 71701.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 71701.0
+    },
+    {
+      "date": "2026-09-12",
+      "timestamp": "2026-09-12T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 1,
+      "n_cargo": 1,
+      "capacity_total": 84568.0,
+      "capacity_tanker": 4771.0,
+      "capacity_cargo": 79797.0
+    },
+    {
+      "date": "2026-09-11",
+      "timestamp": "2026-09-11T00:00:00+00:00",
+      "n_total": 8,
+      "n_tanker": 3,
+      "n_cargo": 5,
+      "capacity_total": 96001.0,
+      "capacity_tanker": 81604.0,
+      "capacity_cargo": 14396.0
+    },
+    {
+      "date": "2026-09-10",
+      "timestamp": "2026-09-10T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 1,
+      "n_cargo": 4,
+      "capacity_total": 30768.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 30768.0
+    },
+    {
+      "date": "2026-09-09",
+      "timestamp": "2026-09-09T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 0,
+      "n_cargo": 3,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-09-08",
+      "timestamp": "2026-09-08T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 2,
+      "n_cargo": 4,
+      "capacity_total": 390320.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 390320.0
+    },
+    {
+      "date": "2026-09-07",
+      "timestamp": "2026-09-07T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 2,
+      "n_cargo": 3,
+      "capacity_total": 70380.0,
+      "capacity_tanker": 4758.0,
+      "capacity_cargo": 65622.0
+    },
+    {
+      "date": "2026-09-06",
+      "timestamp": "2026-09-06T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 2,
+      "n_cargo": 4,
+      "capacity_total": 212702.0,
+      "capacity_tanker": 60280.0,
+      "capacity_cargo": 152422.0
+    },
+    {
+      "date": "2026-09-05",
+      "timestamp": "2026-09-05T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 63174.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 63174.0
+    },
+    {
+      "date": "2026-09-04",
+      "timestamp": "2026-09-04T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 53267.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 53267.0
+    },
+    {
+      "date": "2026-09-03",
+      "timestamp": "2026-09-03T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 1,
+      "n_cargo": 1,
+      "capacity_total": 116969.0,
+      "capacity_tanker": 44440.0,
+      "capacity_cargo": 72529.0
+    },
+    {
+      "date": "2026-09-02",
+      "timestamp": "2026-09-02T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 115187.0,
+      "capacity_tanker": 45387.0,
+      "capacity_cargo": 69799.0
+    },
+    {
+      "date": "2026-09-01",
+      "timestamp": "2026-09-01T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 1,
+      "n_cargo": 3,
+      "capacity_total": 63309.0,
+      "capacity_tanker": 14589.0,
+      "capacity_cargo": 48719.0
+    },
+    {
+      "date": "2026-08-31",
+      "timestamp": "2026-08-31T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 28355.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 28355.0
+    },
+    {
+      "date": "2026-08-30",
+      "timestamp": "2026-08-30T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 2,
+      "n_cargo": 4,
+      "capacity_total": 70732.0,
+      "capacity_tanker": 42932.0,
+      "capacity_cargo": 27800.0
+    },
+    {
+      "date": "2026-08-29",
+      "timestamp": "2026-08-29T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 10089.0,
+      "capacity_tanker": 9744.0,
+      "capacity_cargo": 344.0
+    },
+    {
+      "date": "2026-08-28",
+      "timestamp": "2026-08-28T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 0,
+      "n_cargo": 7,
+      "capacity_total": 151980.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 151980.0
+    },
+    {
+      "date": "2026-08-27",
+      "timestamp": "2026-08-27T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 2,
+      "n_cargo": 0,
+      "capacity_total": 4989.0,
+      "capacity_tanker": 4989.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-08-26",
+      "timestamp": "2026-08-26T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 2,
+      "n_cargo": 3,
+      "capacity_total": 88102.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 88102.0
+    },
+    {
+      "date": "2026-08-25",
+      "timestamp": "2026-08-25T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 4,
+      "n_cargo": 0,
+      "capacity_total": 56680.0,
+      "capacity_tanker": 56680.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-08-24",
+      "timestamp": "2026-08-24T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 2,
+      "n_cargo": 1,
+      "capacity_total": 69775.0,
+      "capacity_tanker": 69775.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-08-23",
+      "timestamp": "2026-08-23T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 32472.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 32472.0
+    },
+    {
+      "date": "2026-08-22",
+      "timestamp": "2026-08-22T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 1,
+      "n_cargo": 6,
+      "capacity_total": 184497.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 184497.0
+    },
+    {
+      "date": "2026-08-21",
+      "timestamp": "2026-08-21T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 2,
+      "n_cargo": 2,
+      "capacity_total": 72476.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 72476.0
+    },
+    {
+      "date": "2026-08-20",
+      "timestamp": "2026-08-20T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 2,
+      "n_cargo": 3,
+      "capacity_total": 136645.0,
+      "capacity_tanker": 55226.0,
+      "capacity_cargo": 81418.0
+    },
+    {
+      "date": "2026-08-19",
+      "timestamp": "2026-08-19T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 4,
+      "n_cargo": 2,
+      "capacity_total": 78931.0,
+      "capacity_tanker": 78587.0,
+      "capacity_cargo": 344.0
+    },
+    {
+      "date": "2026-08-18",
+      "timestamp": "2026-08-18T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 4,
+      "n_cargo": 2,
+      "capacity_total": 312897.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 312897.0
+    },
+    {
+      "date": "2026-08-17",
+      "timestamp": "2026-08-17T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 3,
+      "n_cargo": 1,
+      "capacity_total": 24505.0,
+      "capacity_tanker": 24505.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-08-16",
+      "timestamp": "2026-08-16T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 1,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-08-15",
+      "timestamp": "2026-08-15T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 1,
+      "n_cargo": 0,
+      "capacity_total": 1067.0,
+      "capacity_tanker": 1067.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-08-14",
+      "timestamp": "2026-08-14T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 2,
+      "n_cargo": 5,
+      "capacity_total": 195694.0,
+      "capacity_tanker": 4395.0,
+      "capacity_cargo": 191299.0
+    },
+    {
+      "date": "2026-08-13",
+      "timestamp": "2026-08-13T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 2,
+      "n_cargo": 4,
+      "capacity_total": 150650.0,
+      "capacity_tanker": 36112.0,
+      "capacity_cargo": 114538.0
+    },
+    {
+      "date": "2026-08-12",
+      "timestamp": "2026-08-12T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 14580.0,
+      "capacity_tanker": 13189.0,
+      "capacity_cargo": 1391.0
+    },
+    {
+      "date": "2026-08-11",
+      "timestamp": "2026-08-11T00:00:00+00:00",
+      "n_total": 9,
+      "n_tanker": 2,
+      "n_cargo": 7,
+      "capacity_total": 99876.0,
+      "capacity_tanker": 1067.0,
+      "capacity_cargo": 98808.0
+    },
+    {
+      "date": "2026-08-10",
+      "timestamp": "2026-08-10T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 2,
+      "n_cargo": 2,
+      "capacity_total": 64034.0,
+      "capacity_tanker": 11478.0,
+      "capacity_cargo": 52556.0
+    },
+    {
+      "date": "2026-08-09",
+      "timestamp": "2026-08-09T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 0,
+      "n_cargo": 3,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-08-08",
+      "timestamp": "2026-08-08T00:00:00+00:00",
+      "n_total": 10,
+      "n_tanker": 2,
+      "n_cargo": 8,
+      "capacity_total": 389245.0,
+      "capacity_tanker": 10939.0,
+      "capacity_cargo": 378306.0
+    },
+    {
+      "date": "2026-08-07",
+      "timestamp": "2026-08-07T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 4,
+      "n_cargo": 2,
+      "capacity_total": 95136.0,
+      "capacity_tanker": 4245.0,
+      "capacity_cargo": 90890.0
+    },
+    {
+      "date": "2026-08-06",
+      "timestamp": "2026-08-06T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 25140.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 25140.0
+    },
+    {
+      "date": "2026-08-05",
+      "timestamp": "2026-08-05T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 0,
+      "n_cargo": 5,
+      "capacity_total": 4805.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 4805.0
+    },
+    {
+      "date": "2026-08-04",
+      "timestamp": "2026-08-04T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 4,
+      "n_cargo": 3,
+      "capacity_total": 214958.0,
+      "capacity_tanker": 64214.0,
+      "capacity_cargo": 150743.0
+    },
+    {
+      "date": "2026-08-03",
+      "timestamp": "2026-08-03T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 3,
+      "n_cargo": 3,
+      "capacity_total": 131517.0,
+      "capacity_tanker": 6134.0,
+      "capacity_cargo": 125383.0
+    },
+    {
+      "date": "2026-08-02",
+      "timestamp": "2026-08-02T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 0,
+      "n_cargo": 3,
+      "capacity_total": 107354.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 107354.0
+    },
+    {
+      "date": "2026-08-01",
+      "timestamp": "2026-08-01T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 3,
+      "n_cargo": 2,
+      "capacity_total": 3003.0,
+      "capacity_tanker": 3003.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-07-31",
+      "timestamp": "2026-07-31T00:00:00+00:00",
+      "n_total": 8,
+      "n_tanker": 2,
+      "n_cargo": 6,
+      "capacity_total": 470124.0,
+      "capacity_tanker": 282046.0,
+      "capacity_cargo": 188077.0
+    },
+    {
+      "date": "2026-07-30",
+      "timestamp": "2026-07-30T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 1,
+      "n_cargo": 3,
+      "capacity_total": 5325.0,
+      "capacity_tanker": 5325.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-07-29",
+      "timestamp": "2026-07-29T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 3,
+      "n_cargo": 4,
+      "capacity_total": 179594.0,
+      "capacity_tanker": 115119.0,
+      "capacity_cargo": 64475.0
+    },
+    {
+      "date": "2026-07-28",
+      "timestamp": "2026-07-28T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 1,
+      "n_cargo": 4,
+      "capacity_total": 63967.0,
+      "capacity_tanker": 38762.0,
+      "capacity_cargo": 25204.0
+    },
+    {
+      "date": "2026-07-27",
+      "timestamp": "2026-07-27T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 0,
+      "n_cargo": 5,
+      "capacity_total": 170314.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 170314.0
+    },
+    {
+      "date": "2026-07-26",
+      "timestamp": "2026-07-26T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 2,
+      "n_cargo": 1,
+      "capacity_total": 122054.0,
+      "capacity_tanker": 81157.0,
+      "capacity_cargo": 40897.0
+    },
+    {
+      "date": "2026-07-25",
+      "timestamp": "2026-07-25T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 324.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 324.0
+    },
+    {
+      "date": "2026-07-24",
+      "timestamp": "2026-07-24T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 0,
+      "n_cargo": 3,
+      "capacity_total": 591.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 591.0
+    },
+    {
+      "date": "2026-07-23",
+      "timestamp": "2026-07-23T00:00:00+00:00",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-07-22",
+      "timestamp": "2026-07-22T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 1,
+      "n_cargo": 5,
+      "capacity_total": 35435.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 35435.0
+    },
+    {
+      "date": "2026-07-21",
+      "timestamp": "2026-07-21T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 1,
+      "n_cargo": 5,
+      "capacity_total": 71614.0,
+      "capacity_tanker": 43064.0,
+      "capacity_cargo": 28549.0
+    },
+    {
+      "date": "2026-07-20",
+      "timestamp": "2026-07-20T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 2,
+      "n_cargo": 3,
+      "capacity_total": 1207.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 1207.0
+    },
+    {
+      "date": "2026-07-19",
+      "timestamp": "2026-07-19T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 2,
+      "n_cargo": 2,
+      "capacity_total": 54047.0,
+      "capacity_tanker": 39216.0,
+      "capacity_cargo": 14830.0
+    },
+    {
+      "date": "2026-07-18",
+      "timestamp": "2026-07-18T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 2,
+      "n_cargo": 4,
+      "capacity_total": 132322.0,
+      "capacity_tanker": 36937.0,
+      "capacity_cargo": 95385.0
+    },
+    {
+      "date": "2026-07-17",
+      "timestamp": "2026-07-17T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 1,
+      "n_cargo": 0,
+      "capacity_total": 1231.0,
+      "capacity_tanker": 1231.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-07-16",
+      "timestamp": "2026-07-16T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 1,
+      "n_cargo": 5,
+      "capacity_total": 28460.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 28460.0
+    },
+    {
+      "date": "2026-07-15",
+      "timestamp": "2026-07-15T00:00:00+00:00",
+      "n_total": 9,
+      "n_tanker": 3,
+      "n_cargo": 6,
+      "capacity_total": 214434.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 214434.0
+    },
+    {
+      "date": "2026-07-14",
+      "timestamp": "2026-07-14T00:00:00+00:00",
+      "n_total": 8,
+      "n_tanker": 5,
+      "n_cargo": 3,
+      "capacity_total": 87376.0,
+      "capacity_tanker": 45089.0,
+      "capacity_cargo": 42287.0
+    },
+    {
+      "date": "2026-07-13",
+      "timestamp": "2026-07-13T00:00:00+00:00",
+      "n_total": 10,
+      "n_tanker": 2,
+      "n_cargo": 8,
+      "capacity_total": 65012.0,
+      "capacity_tanker": 42247.0,
+      "capacity_cargo": 22764.0
+    },
+    {
+      "date": "2026-07-12",
+      "timestamp": "2026-07-12T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 1,
+      "n_cargo": 3,
+      "capacity_total": 63878.0,
+      "capacity_tanker": 58739.0,
+      "capacity_cargo": 5139.0
+    },
+    {
+      "date": "2026-07-11",
+      "timestamp": "2026-07-11T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 3,
+      "n_cargo": 3,
+      "capacity_total": 228875.0,
+      "capacity_tanker": 118896.0,
+      "capacity_cargo": 109979.0
+    },
+    {
+      "date": "2026-07-10",
+      "timestamp": "2026-07-10T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 4,
+      "n_cargo": 3,
+      "capacity_total": 172119.0,
+      "capacity_tanker": 50372.0,
+      "capacity_cargo": 121746.0
+    },
+    {
+      "date": "2026-07-09",
+      "timestamp": "2026-07-09T00:00:00+00:00",
+      "n_total": 10,
+      "n_tanker": 3,
+      "n_cargo": 7,
+      "capacity_total": 166887.0,
+      "capacity_tanker": 45539.0,
+      "capacity_cargo": 121347.0
+    },
+    {
+      "date": "2026-07-08",
+      "timestamp": "2026-07-08T00:00:00+00:00",
+      "n_total": 20,
+      "n_tanker": 8,
+      "n_cargo": 12,
+      "capacity_total": 535304.0,
+      "capacity_tanker": 316479.0,
+      "capacity_cargo": 218824.0
+    },
+    {
+      "date": "2026-07-07",
+      "timestamp": "2026-07-07T00:00:00+00:00",
+      "n_total": 26,
+      "n_tanker": 10,
+      "n_cargo": 16,
+      "capacity_total": 1407775.0,
+      "capacity_tanker": 1210489.0,
+      "capacity_cargo": 197285.0
+    },
+    {
+      "date": "2026-07-06",
+      "timestamp": "2026-07-06T00:00:00+00:00",
+      "n_total": 25,
+      "n_tanker": 16,
+      "n_cargo": 9,
+      "capacity_total": 2314086.0,
+      "capacity_tanker": 2149176.0,
+      "capacity_cargo": 164909.0
+    },
+    {
+      "date": "2026-07-05",
+      "timestamp": "2026-07-05T00:00:00+00:00",
+      "n_total": 22,
+      "n_tanker": 16,
+      "n_cargo": 6,
+      "capacity_total": 892809.0,
+      "capacity_tanker": 782230.0,
+      "capacity_cargo": 110578.0
+    },
+    {
+      "date": "2026-07-04",
+      "timestamp": "2026-07-04T00:00:00+00:00",
+      "n_total": 17,
+      "n_tanker": 8,
+      "n_cargo": 9,
+      "capacity_total": 545114.0,
+      "capacity_tanker": 353844.0,
+      "capacity_cargo": 191270.0
+    },
+    {
+      "date": "2026-07-03",
+      "timestamp": "2026-07-03T00:00:00+00:00",
+      "n_total": 24,
+      "n_tanker": 17,
+      "n_cargo": 7,
+      "capacity_total": 1382128.0,
+      "capacity_tanker": 1127426.0,
+      "capacity_cargo": 254702.0
+    },
+    {
+      "date": "2026-07-02",
+      "timestamp": "2026-07-02T00:00:00+00:00",
+      "n_total": 28,
+      "n_tanker": 15,
+      "n_cargo": 13,
+      "capacity_total": 582502.0,
+      "capacity_tanker": 235228.0,
+      "capacity_cargo": 347273.0
+    },
+    {
+      "date": "2026-07-01",
+      "timestamp": "2026-07-01T00:00:00+00:00",
+      "n_total": 29,
+      "n_tanker": 18,
+      "n_cargo": 11,
+      "capacity_total": 1582436.0,
+      "capacity_tanker": 1409459.0,
+      "capacity_cargo": 172976.0
+    },
+    {
+      "date": "2026-06-30",
+      "timestamp": "2026-06-30T00:00:00+00:00",
+      "n_total": 16,
+      "n_tanker": 6,
+      "n_cargo": 10,
+      "capacity_total": 565738.0,
+      "capacity_tanker": 232679.0,
+      "capacity_cargo": 333059.0
+    },
+    {
+      "date": "2026-06-29",
+      "timestamp": "2026-06-29T00:00:00+00:00",
+      "n_total": 26,
+      "n_tanker": 13,
+      "n_cargo": 13,
+      "capacity_total": 1287883.0,
+      "capacity_tanker": 976186.0,
+      "capacity_cargo": 311697.0
+    },
+    {
+      "date": "2026-06-28",
+      "timestamp": "2026-06-28T00:00:00+00:00",
+      "n_total": 16,
+      "n_tanker": 7,
+      "n_cargo": 9,
+      "capacity_total": 289138.0,
+      "capacity_tanker": 86241.0,
+      "capacity_cargo": 202897.0
+    },
+    {
+      "date": "2026-06-27",
+      "timestamp": "2026-06-27T00:00:00+00:00",
+      "n_total": 25,
+      "n_tanker": 9,
+      "n_cargo": 16,
+      "capacity_total": 955285.0,
+      "capacity_tanker": 552718.0,
+      "capacity_cargo": 402566.0
+    },
+    {
+      "date": "2026-06-26",
+      "timestamp": "2026-06-26T00:00:00+00:00",
+      "n_total": 30,
+      "n_tanker": 17,
+      "n_cargo": 13,
+      "capacity_total": 1000055.0,
+      "capacity_tanker": 655492.0,
+      "capacity_cargo": 344563.0
+    },
+    {
+      "date": "2026-06-25",
+      "timestamp": "2026-06-25T00:00:00+00:00",
+      "n_total": 46,
+      "n_tanker": 21,
+      "n_cargo": 25,
+      "capacity_total": 1866357.0,
+      "capacity_tanker": 1383947.0,
+      "capacity_cargo": 482410.0
+    },
+    {
+      "date": "2026-06-24",
+      "timestamp": "2026-06-24T00:00:00+00:00",
+      "n_total": 51,
+      "n_tanker": 20,
+      "n_cargo": 31,
+      "capacity_total": 1964318.0,
+      "capacity_tanker": 1261562.0,
+      "capacity_cargo": 702756.0
+    },
+    {
+      "date": "2026-06-23",
+      "timestamp": "2026-06-23T00:00:00+00:00",
+      "n_total": 29,
+      "n_tanker": 12,
+      "n_cargo": 17,
+      "capacity_total": 1372629.0,
+      "capacity_tanker": 953326.0,
+      "capacity_cargo": 419302.0
+    },
+    {
+      "date": "2026-06-22",
+      "timestamp": "2026-06-22T00:00:00+00:00",
+      "n_total": 16,
+      "n_tanker": 12,
+      "n_cargo": 4,
+      "capacity_total": 505171.0,
+      "capacity_tanker": 394079.0,
+      "capacity_cargo": 111092.0
+    },
+    {
+      "date": "2026-06-21",
+      "timestamp": "2026-06-21T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 1,
+      "n_cargo": 5,
+      "capacity_total": 161589.0,
+      "capacity_tanker": 65755.0,
+      "capacity_cargo": 95834.0
+    },
+    {
+      "date": "2026-06-20",
+      "timestamp": "2026-06-20T00:00:00+00:00",
+      "n_total": 25,
+      "n_tanker": 12,
+      "n_cargo": 13,
+      "capacity_total": 856885.0,
+      "capacity_tanker": 543037.0,
+      "capacity_cargo": 313848.0
+    },
+    {
+      "date": "2026-06-19",
+      "timestamp": "2026-06-19T00:00:00+00:00",
+      "n_total": 9,
+      "n_tanker": 3,
+      "n_cargo": 6,
+      "capacity_total": 729047.0,
+      "capacity_tanker": 600658.0,
+      "capacity_cargo": 128388.0
+    },
+    {
+      "date": "2026-06-18",
+      "timestamp": "2026-06-18T00:00:00+00:00",
+      "n_total": 20,
+      "n_tanker": 10,
+      "n_cargo": 10,
+      "capacity_total": 824115.0,
+      "capacity_tanker": 459872.0,
+      "capacity_cargo": 364243.0
+    },
+    {
+      "date": "2026-06-17",
+      "timestamp": "2026-06-17T00:00:00+00:00",
+      "n_total": 8,
+      "n_tanker": 0,
+      "n_cargo": 8,
+      "capacity_total": 135479.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 135479.0
+    },
+    {
+      "date": "2026-06-16",
+      "timestamp": "2026-06-16T00:00:00+00:00",
+      "n_total": 10,
+      "n_tanker": 3,
+      "n_cargo": 7,
+      "capacity_total": 38841.0,
+      "capacity_tanker": 35583.0,
+      "capacity_cargo": 3257.0
+    },
+    {
+      "date": "2026-06-15",
+      "timestamp": "2026-06-15T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 2,
+      "n_cargo": 5,
+      "capacity_total": 86520.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 86520.0
+    },
+    {
+      "date": "2026-06-14",
+      "timestamp": "2026-06-14T00:00:00+00:00",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-06-13",
+      "timestamp": "2026-06-13T00:00:00+00:00",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-06-12",
+      "timestamp": "2026-06-12T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 1,
+      "n_cargo": 0,
+      "capacity_total": 11375.0,
+      "capacity_tanker": 11375.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-06-11",
+      "timestamp": "2026-06-11T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 2,
+      "n_cargo": 0,
+      "capacity_total": 11142.0,
+      "capacity_tanker": 11142.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-06-10",
+      "timestamp": "2026-06-10T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 0,
+      "n_cargo": 3,
+      "capacity_total": 13825.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 13825.0
+    },
+    {
+      "date": "2026-06-09",
+      "timestamp": "2026-06-09T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 2,
+      "n_cargo": 2,
+      "capacity_total": 110820.0,
+      "capacity_tanker": 48671.0,
+      "capacity_cargo": 62149.0
+    },
+    {
+      "date": "2026-06-08",
+      "timestamp": "2026-06-08T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 1,
+      "n_cargo": 6,
+      "capacity_total": 61448.0,
+      "capacity_tanker": 6794.0,
+      "capacity_cargo": 54653.0
+    },
+    {
+      "date": "2026-06-07",
+      "timestamp": "2026-06-07T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 366.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 366.0
+    },
+    {
+      "date": "2026-06-06",
+      "timestamp": "2026-06-06T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 93370.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 93370.0
+    },
+    {
+      "date": "2026-06-05",
+      "timestamp": "2026-06-05T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-06-04",
+      "timestamp": "2026-06-04T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 1047.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 1047.0
+    },
+    {
+      "date": "2026-06-03",
+      "timestamp": "2026-06-03T00:00:00+00:00",
+      "n_total": 9,
+      "n_tanker": 3,
+      "n_cargo": 6,
+      "capacity_total": 115719.0,
+      "capacity_tanker": 12593.0,
+      "capacity_cargo": 103125.0
+    },
+    {
+      "date": "2026-06-02",
+      "timestamp": "2026-06-02T00:00:00+00:00",
+      "n_total": 11,
+      "n_tanker": 3,
+      "n_cargo": 8,
+      "capacity_total": 96510.0,
+      "capacity_tanker": 33268.0,
+      "capacity_cargo": 63241.0
+    },
+    {
+      "date": "2026-06-01",
+      "timestamp": "2026-06-01T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 1,
+      "n_cargo": 1,
+      "capacity_total": 90292.0,
+      "capacity_tanker": 38238.0,
+      "capacity_cargo": 52053.0
+    },
+    {
+      "date": "2026-05-31",
+      "timestamp": "2026-05-31T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 0,
+      "n_cargo": 5,
+      "capacity_total": 48820.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 48820.0
+    },
+    {
+      "date": "2026-05-30",
+      "timestamp": "2026-05-30T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 0,
+      "n_cargo": 4,
+      "capacity_total": 52574.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 52574.0
+    },
+    {
+      "date": "2026-05-29",
+      "timestamp": "2026-05-29T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 0,
+      "n_cargo": 1,
+      "capacity_total": 6056.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 6056.0
+    },
+    {
+      "date": "2026-05-28",
+      "timestamp": "2026-05-28T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 65232.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 65232.0
+    },
+    {
+      "date": "2026-05-27",
+      "timestamp": "2026-05-27T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 1,
+      "n_cargo": 0,
+      "capacity_total": 106096.0,
+      "capacity_tanker": 106096.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-05-26",
+      "timestamp": "2026-05-26T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 2,
+      "n_cargo": 2,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-05-25",
+      "timestamp": "2026-05-25T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 0,
+      "n_cargo": 4,
+      "capacity_total": 86752.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 86752.0
+    },
+    {
+      "date": "2026-05-24",
+      "timestamp": "2026-05-24T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 2,
+      "n_cargo": 3,
+      "capacity_total": 87734.0,
+      "capacity_tanker": 6839.0,
+      "capacity_cargo": 80894.0
+    },
+    {
+      "date": "2026-05-23",
+      "timestamp": "2026-05-23T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 1,
+      "n_cargo": 5,
+      "capacity_total": 312575.0,
+      "capacity_tanker": 284471.0,
+      "capacity_cargo": 28103.0
+    },
+    {
+      "date": "2026-05-22",
+      "timestamp": "2026-05-22T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-05-21",
+      "timestamp": "2026-05-21T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 2,
+      "n_cargo": 3,
+      "capacity_total": 74078.0,
+      "capacity_tanker": 42682.0,
+      "capacity_cargo": 31395.0
+    },
+    {
+      "date": "2026-05-20",
+      "timestamp": "2026-05-20T00:00:00+00:00",
+      "n_total": 8,
+      "n_tanker": 4,
+      "n_cargo": 4,
+      "capacity_total": 418971.0,
+      "capacity_tanker": 290295.0,
+      "capacity_cargo": 128675.0
+    },
+    {
+      "date": "2026-05-19",
+      "timestamp": "2026-05-19T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 3,
+      "n_cargo": 1,
+      "capacity_total": 609497.0,
+      "capacity_tanker": 570517.0,
+      "capacity_cargo": 38979.0
+    },
+    {
+      "date": "2026-05-18",
+      "timestamp": "2026-05-18T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 1,
+      "n_cargo": 3,
+      "capacity_total": 16651.0,
+      "capacity_tanker": 13968.0,
+      "capacity_cargo": 2683.0
+    },
+    {
+      "date": "2026-05-17",
+      "timestamp": "2026-05-17T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 10961.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 10961.0
+    },
+    {
+      "date": "2026-05-16",
+      "timestamp": "2026-05-16T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 1,
+      "n_cargo": 6,
+      "capacity_total": 178812.0,
+      "capacity_tanker": 36579.0,
+      "capacity_cargo": 142233.0
+    },
+    {
+      "date": "2026-05-15",
+      "timestamp": "2026-05-15T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 2,
+      "n_cargo": 2,
+      "capacity_total": 6679.0,
+      "capacity_tanker": 5341.0,
+      "capacity_cargo": 1337.0
+    },
+    {
+      "date": "2026-05-14",
+      "timestamp": "2026-05-14T00:00:00+00:00",
+      "n_total": 10,
+      "n_tanker": 3,
+      "n_cargo": 7,
+      "capacity_total": 65186.0,
+      "capacity_tanker": 42976.0,
+      "capacity_cargo": 22209.0
+    },
+    {
+      "date": "2026-05-13",
+      "timestamp": "2026-05-13T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 2,
+      "n_cargo": 2,
+      "capacity_total": 350554.0,
+      "capacity_tanker": 349804.0,
+      "capacity_cargo": 749.0
+    },
+    {
+      "date": "2026-05-12",
+      "timestamp": "2026-05-12T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 344.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 344.0
+    },
+    {
+      "date": "2026-05-11",
+      "timestamp": "2026-05-11T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 4,
+      "n_cargo": 3,
+      "capacity_total": 114837.0,
+      "capacity_tanker": 88456.0,
+      "capacity_cargo": 26381.0
+    },
+    {
+      "date": "2026-05-10",
+      "timestamp": "2026-05-10T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 2,
+      "n_cargo": 5,
+      "capacity_total": 457574.0,
+      "capacity_tanker": 319376.0,
+      "capacity_cargo": 138197.0
+    },
+    {
+      "date": "2026-05-09",
+      "timestamp": "2026-05-09T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 1,
+      "n_cargo": 0,
+      "capacity_total": 98525.0,
+      "capacity_tanker": 98525.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-05-08",
+      "timestamp": "2026-05-08T00:00:00+00:00",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-05-07",
+      "timestamp": "2026-05-07T00:00:00+00:00",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-05-06",
+      "timestamp": "2026-05-06T00:00:00+00:00",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-05-05",
+      "timestamp": "2026-05-05T00:00:00+00:00",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-05-04",
+      "timestamp": "2026-05-04T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 12784.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 12784.0
+    },
+    {
+      "date": "2026-05-03",
+      "timestamp": "2026-05-03T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 1,
+      "n_cargo": 5,
+      "capacity_total": 127798.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 127798.0
+    },
+    {
+      "date": "2026-05-02",
+      "timestamp": "2026-05-02T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 4,
+      "n_cargo": 2,
+      "capacity_total": 93041.0,
+      "capacity_tanker": 93041.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-05-01",
+      "timestamp": "2026-05-01T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 2,
+      "n_cargo": 5,
+      "capacity_total": 70976.0,
+      "capacity_tanker": 36640.0,
+      "capacity_cargo": 34335.0
+    },
+    {
+      "date": "2026-04-30",
+      "timestamp": "2026-04-30T00:00:00+00:00",
+      "n_total": 11,
+      "n_tanker": 4,
+      "n_cargo": 7,
+      "capacity_total": 175020.0,
+      "capacity_tanker": 64253.0,
+      "capacity_cargo": 110767.0
+    },
+    {
+      "date": "2026-04-29",
+      "timestamp": "2026-04-29T00:00:00+00:00",
+      "n_total": 39,
+      "n_tanker": 23,
+      "n_cargo": 16,
+      "capacity_total": 804846.0,
+      "capacity_tanker": 136489.0,
+      "capacity_cargo": 668357.0
+    },
+    {
+      "date": "2026-04-28",
+      "timestamp": "2026-04-28T00:00:00+00:00",
+      "n_total": 10,
+      "n_tanker": 3,
+      "n_cargo": 7,
+      "capacity_total": 452697.0,
+      "capacity_tanker": 323392.0,
+      "capacity_cargo": 129304.0
+    },
+    {
+      "date": "2026-04-27",
+      "timestamp": "2026-04-27T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 2,
+      "n_cargo": 5,
+      "capacity_total": 82042.0,
+      "capacity_tanker": 30787.0,
+      "capacity_cargo": 51255.0
+    },
+    {
+      "date": "2026-04-26",
+      "timestamp": "2026-04-26T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 37503.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 37503.0
+    },
+    {
+      "date": "2026-04-25",
+      "timestamp": "2026-04-25T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 2,
+      "n_cargo": 2,
+      "capacity_total": 107546.0,
+      "capacity_tanker": 53759.0,
+      "capacity_cargo": 53786.0
+    },
+    {
+      "date": "2026-04-24",
+      "timestamp": "2026-04-24T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 2,
+      "n_cargo": 4,
+      "capacity_total": 72566.0,
+      "capacity_tanker": 33283.0,
+      "capacity_cargo": 39282.0
+    },
+    {
+      "date": "2026-04-23",
+      "timestamp": "2026-04-23T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 0,
+      "n_cargo": 3,
+      "capacity_total": 33377.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 33377.0
+    },
+    {
+      "date": "2026-04-22",
+      "timestamp": "2026-04-22T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 2,
+      "n_cargo": 3,
+      "capacity_total": 120039.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 120039.0
+    },
+    {
+      "date": "2026-04-21",
+      "timestamp": "2026-04-21T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 3,
+      "n_cargo": 1,
+      "capacity_total": 76063.0,
+      "capacity_tanker": 75113.0,
+      "capacity_cargo": 950.0
+    },
+    {
+      "date": "2026-04-20",
+      "timestamp": "2026-04-20T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 2,
+      "n_cargo": 1,
+      "capacity_total": 56282.0,
+      "capacity_tanker": 36579.0,
+      "capacity_cargo": 19702.0
+    },
+    {
+      "date": "2026-04-19",
+      "timestamp": "2026-04-19T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 1,
+      "n_cargo": 1,
+      "capacity_total": 11633.0,
+      "capacity_tanker": 6839.0,
+      "capacity_cargo": 4793.0
+    },
+    {
+      "date": "2026-04-18",
+      "timestamp": "2026-04-18T00:00:00+00:00",
+      "n_total": 20,
+      "n_tanker": 12,
+      "n_cargo": 8,
+      "capacity_total": 827847.0,
+      "capacity_tanker": 516261.0,
+      "capacity_cargo": 311586.0
+    },
+    {
+      "date": "2026-04-17",
+      "timestamp": "2026-04-17T00:00:00+00:00",
+      "n_total": 8,
+      "n_tanker": 3,
+      "n_cargo": 5,
+      "capacity_total": 5366.0,
+      "capacity_tanker": 5366.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-04-16",
+      "timestamp": "2026-04-16T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 79186.0,
+      "capacity_tanker": 75745.0,
+      "capacity_cargo": 3441.0
+    },
+    {
+      "date": "2026-04-15",
+      "timestamp": "2026-04-15T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 4,
+      "n_cargo": 3,
+      "capacity_total": 344547.0,
+      "capacity_tanker": 6839.0,
+      "capacity_cargo": 337708.0
+    },
+    {
+      "date": "2026-04-14",
+      "timestamp": "2026-04-14T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 3,
+      "n_cargo": 2,
+      "capacity_total": 114192.0,
+      "capacity_tanker": 30952.0,
+      "capacity_cargo": 83239.0
+    },
+    {
+      "date": "2026-04-13",
+      "timestamp": "2026-04-13T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 4,
+      "n_cargo": 3,
+      "capacity_total": 106407.0,
+      "capacity_tanker": 34634.0,
+      "capacity_cargo": 71772.0
+    },
+    {
+      "date": "2026-04-12",
+      "timestamp": "2026-04-12T00:00:00+00:00",
+      "n_total": 12,
+      "n_tanker": 3,
+      "n_cargo": 9,
+      "capacity_total": 208464.0,
+      "capacity_tanker": 33937.0,
+      "capacity_cargo": 174526.0
+    },
+    {
+      "date": "2026-04-11",
+      "timestamp": "2026-04-11T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 3,
+      "n_cargo": 4,
+      "capacity_total": 402443.0,
+      "capacity_tanker": 287665.0,
+      "capacity_cargo": 114777.0
+    },
+    {
+      "date": "2026-04-10",
+      "timestamp": "2026-04-10T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 0,
+      "n_cargo": 3,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-04-09",
+      "timestamp": "2026-04-09T00:00:00+00:00",
+      "n_total": 8,
+      "n_tanker": 5,
+      "n_cargo": 3,
+      "capacity_total": 217203.0,
+      "capacity_tanker": 164591.0,
+      "capacity_cargo": 52612.0
+    },
+    {
+      "date": "2026-04-08",
+      "timestamp": "2026-04-08T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 0,
+      "n_cargo": 3,
+      "capacity_total": 35363.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 35363.0
+    },
+    {
+      "date": "2026-04-07",
+      "timestamp": "2026-04-07T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 2,
+      "n_cargo": 1,
+      "capacity_total": 113878.0,
+      "capacity_tanker": 69890.0,
+      "capacity_cargo": 43988.0
+    },
+    {
+      "date": "2026-04-06",
+      "timestamp": "2026-04-06T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 0,
+      "n_cargo": 5,
+      "capacity_total": 107315.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 107315.0
+    },
+    {
+      "date": "2026-04-05",
+      "timestamp": "2026-04-05T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 4,
+      "n_cargo": 0,
+      "capacity_total": 264106.0,
+      "capacity_tanker": 264106.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-04-04",
+      "timestamp": "2026-04-04T00:00:00+00:00",
+      "n_total": 11,
+      "n_tanker": 3,
+      "n_cargo": 8,
+      "capacity_total": 134722.0,
+      "capacity_tanker": 38238.0,
+      "capacity_cargo": 96483.0
+    },
+    {
+      "date": "2026-04-03",
+      "timestamp": "2026-04-03T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 2,
+      "n_cargo": 1,
+      "capacity_total": 147579.0,
+      "capacity_tanker": 97195.0,
+      "capacity_cargo": 50383.0
+    },
+    {
+      "date": "2026-04-02",
+      "timestamp": "2026-04-02T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 0,
+      "n_cargo": 1,
+      "capacity_total": 40276.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 40276.0
+    },
+    {
+      "date": "2026-04-01",
+      "timestamp": "2026-04-01T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 1,
+      "n_cargo": 6,
+      "capacity_total": 87033.0,
+      "capacity_tanker": 4062.0,
+      "capacity_cargo": 82971.0
+    },
+    {
+      "date": "2026-03-31",
+      "timestamp": "2026-03-31T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 2,
+      "n_cargo": 3,
+      "capacity_total": 84095.0,
+      "capacity_tanker": 70842.0,
+      "capacity_cargo": 13252.0
+    },
+    {
+      "date": "2026-03-30",
+      "timestamp": "2026-03-30T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 3,
+      "n_cargo": 3,
+      "capacity_total": 109762.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 109762.0
+    },
+    {
+      "date": "2026-03-29",
+      "timestamp": "2026-03-29T00:00:00+00:00",
+      "n_total": 5,
+      "n_tanker": 2,
+      "n_cargo": 3,
+      "capacity_total": 124948.0,
+      "capacity_tanker": 5464.0,
+      "capacity_cargo": 119484.0
+    },
+    {
+      "date": "2026-03-28",
+      "timestamp": "2026-03-28T00:00:00+00:00",
+      "n_total": 6,
+      "n_tanker": 1,
+      "n_cargo": 5,
+      "capacity_total": 97272.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 97272.0
+    },
+    {
+      "date": "2026-03-27",
+      "timestamp": "2026-03-27T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 68784.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 68784.0
+    },
+    {
+      "date": "2026-03-26",
+      "timestamp": "2026-03-26T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 0,
+      "n_cargo": 4,
+      "capacity_total": 73148.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 73148.0
+    },
+    {
+      "date": "2026-03-25",
+      "timestamp": "2026-03-25T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 2,
+      "n_cargo": 0,
+      "capacity_total": 3212.0,
+      "capacity_tanker": 3212.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-03-24",
+      "timestamp": "2026-03-24T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 1,
+      "n_cargo": 1,
+      "capacity_total": 12988.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 12988.0
+    },
+    {
+      "date": "2026-03-23",
+      "timestamp": "2026-03-23T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 2,
+      "n_cargo": 2,
+      "capacity_total": 137492.0,
+      "capacity_tanker": 48834.0,
+      "capacity_cargo": 88658.0
+    },
+    {
+      "date": "2026-03-22",
+      "timestamp": "2026-03-22T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 31388.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 31388.0
+    },
+    {
+      "date": "2026-03-21",
+      "timestamp": "2026-03-21T00:00:00+00:00",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-03-20",
+      "timestamp": "2026-03-20T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 2,
+      "n_cargo": 1,
+      "capacity_total": 193637.0,
+      "capacity_tanker": 118692.0,
+      "capacity_cargo": 74945.0
+    },
+    {
+      "date": "2026-03-19",
+      "timestamp": "2026-03-19T00:00:00+00:00",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-03-18",
+      "timestamp": "2026-03-18T00:00:00+00:00",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-03-17",
+      "timestamp": "2026-03-17T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 1,
+      "n_cargo": 0,
+      "capacity_total": 47804.0,
+      "capacity_tanker": 47804.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-03-16",
+      "timestamp": "2026-03-16T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 0,
+      "n_cargo": 4,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-03-15",
+      "timestamp": "2026-03-15T00:00:00+00:00",
+      "n_total": 7,
+      "n_tanker": 2,
+      "n_cargo": 5,
+      "capacity_total": 363277.0,
+      "capacity_tanker": 339183.0,
+      "capacity_cargo": 24093.0
+    },
+    {
+      "date": "2026-03-14",
+      "timestamp": "2026-03-14T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 0,
+      "n_cargo": 1,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-03-13",
+      "timestamp": "2026-03-13T00:00:00+00:00",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-03-12",
+      "timestamp": "2026-03-12T00:00:00+00:00",
+      "n_total": 1,
+      "n_tanker": 0,
+      "n_cargo": 1,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-03-11",
+      "timestamp": "2026-03-11T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 123362.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 123362.0
+    },
+    {
+      "date": "2026-03-10",
+      "timestamp": "2026-03-10T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 1,
+      "n_cargo": 1,
+      "capacity_total": 42122.0,
+      "capacity_tanker": 42122.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-03-09",
+      "timestamp": "2026-03-09T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 1,
+      "n_cargo": 1,
+      "capacity_total": 1599.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 1599.0
+    },
+    {
+      "date": "2026-03-08",
+      "timestamp": "2026-03-08T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 51168.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 51168.0
+    },
+    {
+      "date": "2026-03-07",
+      "timestamp": "2026-03-07T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 102414.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 102414.0
+    },
+    {
+      "date": "2026-03-06",
+      "timestamp": "2026-03-06T00:00:00+00:00",
+      "n_total": 2,
+      "n_tanker": 0,
+      "n_cargo": 2,
+      "capacity_total": 143.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 143.0
+    },
+    {
+      "date": "2026-03-05",
+      "timestamp": "2026-03-05T00:00:00+00:00",
+      "n_total": 3,
+      "n_tanker": 1,
+      "n_cargo": 2,
+      "capacity_total": 24031.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 24031.0
+    },
+    {
+      "date": "2026-03-04",
+      "timestamp": "2026-03-04T00:00:00+00:00",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 0.0
+    },
+    {
+      "date": "2026-03-03",
+      "timestamp": "2026-03-03T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 1,
+      "n_cargo": 3,
+      "capacity_total": 103665.0,
+      "capacity_tanker": 6701.0,
+      "capacity_cargo": 96964.0
+    },
+    {
+      "date": "2026-03-02",
+      "timestamp": "2026-03-02T00:00:00+00:00",
+      "n_total": 4,
+      "n_tanker": 1,
+      "n_cargo": 3,
+      "capacity_total": 61822.0,
+      "capacity_tanker": 0.0,
+      "capacity_cargo": 61822.0
+    },
+    {
+      "date": "2026-03-01",
+      "timestamp": "2026-03-01T00:00:00+00:00",
+      "n_total": 20,
+      "n_tanker": 5,
+      "n_cargo": 15,
+      "capacity_total": 494931.0,
+      "capacity_tanker": 153007.0,
+      "capacity_cargo": 341924.0
+    },
+    {
+      "date": "2026-02-28",
+      "timestamp": "2026-02-28T00:00:00+00:00",
+      "n_total": 57,
+      "n_tanker": 36,
+      "n_cargo": 21,
+      "capacity_total": 2946748.0,
+      "capacity_tanker": 2598963.0,
+      "capacity_cargo": 347784.0
+    },
+    {
+      "date": "2026-02-27",
+      "timestamp": "2026-02-27T00:00:00+00:00",
+      "n_total": 64,
+      "n_tanker": 37,
+      "n_cargo": 27,
+      "capacity_total": 1863357.0,
+      "capacity_tanker": 1196784.0,
+      "capacity_cargo": 666573.0
+    },
+    {
+      "date": "2026-02-26",
+      "timestamp": "2026-02-26T00:00:00+00:00",
+      "n_total": 89,
+      "n_tanker": 45,
+      "n_cargo": 44,
+      "capacity_total": 1844542.0,
+      "capacity_tanker": 909158.0,
+      "capacity_cargo": 935383.0
+    },
+    {
+      "date": "2026-02-25",
+      "timestamp": "2026-02-25T00:00:00+00:00",
+      "n_total": 116,
+      "n_tanker": 59,
+      "n_cargo": 57,
+      "capacity_total": 5597047.0,
+      "capacity_tanker": 4168541.0,
+      "capacity_cargo": 1428505.0
+    },
+    {
+      "date": "2026-02-24",
+      "timestamp": "2026-02-24T00:00:00+00:00",
+      "n_total": 93,
+      "n_tanker": 49,
+      "n_cargo": 44,
+      "capacity_total": 3251647.0,
+      "capacity_tanker": 1756199.0,
+      "capacity_cargo": 1495447.0
+    },
+    {
+      "date": "2026-02-23",
+      "timestamp": "2026-02-23T00:00:00+00:00",
+      "n_total": 104,
+      "n_tanker": 65,
+      "n_cargo": 39,
+      "capacity_total": 2632999.0,
+      "capacity_tanker": 1956111.0,
+      "capacity_cargo": 676888.0
+    },
+    {
+      "date": "2026-02-22",
+      "timestamp": "2026-02-22T00:00:00+00:00",
+      "n_total": 127,
+      "n_tanker": 69,
+      "n_cargo": 58,
+      "capacity_total": 5235136.0,
+      "capacity_tanker": 3572104.0,
+      "capacity_cargo": 1663032.0
+    },
+    {
+      "date": "2026-02-21",
+      "timestamp": "2026-02-21T00:00:00+00:00",
+      "n_total": 86,
+      "n_tanker": 53,
+      "n_cargo": 33,
+      "capacity_total": 2432463.0,
+      "capacity_tanker": 1816744.0,
+      "capacity_cargo": 615718.0
+    },
+    {
+      "date": "2026-02-20",
+      "timestamp": "2026-02-20T00:00:00+00:00",
+      "n_total": 94,
+      "n_tanker": 55,
+      "n_cargo": 39,
+      "capacity_total": 3974738.0,
+      "capacity_tanker": 2985825.0,
+      "capacity_cargo": 988912.0
+    },
+    {
+      "date": "2026-02-19",
+      "timestamp": "2026-02-19T00:00:00+00:00",
+      "n_total": 115,
+      "n_tanker": 63,
+      "n_cargo": 52,
+      "capacity_total": 5208398.0,
+      "capacity_tanker": 3441832.0,
+      "capacity_cargo": 1766565.0
+    },
+    {
+      "date": "2026-02-18",
+      "timestamp": "2026-02-18T00:00:00+00:00",
+      "n_total": 109,
+      "n_tanker": 54,
+      "n_cargo": 55,
+      "capacity_total": 4341719.0,
+      "capacity_tanker": 2925472.0,
+      "capacity_cargo": 1416246.0
+    },
+    {
+      "date": "2026-02-17",
+      "timestamp": "2026-02-17T00:00:00+00:00",
+      "n_total": 75,
+      "n_tanker": 40,
+      "n_cargo": 35,
+      "capacity_total": 2900635.0,
+      "capacity_tanker": 1902017.0,
+      "capacity_cargo": 998617.0
+    },
+    {
+      "date": "2026-02-16",
+      "timestamp": "2026-02-16T00:00:00+00:00",
+      "n_total": 54,
+      "n_tanker": 35,
+      "n_cargo": 19,
+      "capacity_total": 2274188.0,
+      "capacity_tanker": 1965358.0,
+      "capacity_cargo": 308830.0
+    },
+    {
+      "date": "2026-02-15",
+      "timestamp": "2026-02-15T00:00:00+00:00",
+      "n_total": 74,
+      "n_tanker": 42,
+      "n_cargo": 32,
+      "capacity_total": 2608269.0,
+      "capacity_tanker": 1436990.0,
+      "capacity_cargo": 1171279.0
+    },
+    {
+      "date": "2026-02-14",
+      "timestamp": "2026-02-14T00:00:00+00:00",
+      "n_total": 91,
+      "n_tanker": 53,
+      "n_cargo": 38,
+      "capacity_total": 3605080.0,
+      "capacity_tanker": 2559173.0,
+      "capacity_cargo": 1045907.0
+    },
+    {
+      "date": "2026-02-13",
+      "timestamp": "2026-02-13T00:00:00+00:00",
+      "n_total": 103,
+      "n_tanker": 54,
+      "n_cargo": 49,
+      "capacity_total": 3755606.0,
+      "capacity_tanker": 2415490.0,
+      "capacity_cargo": 1340115.0
+    },
+    {
+      "date": "2026-02-12",
+      "timestamp": "2026-02-12T00:00:00+00:00",
+      "n_total": 68,
+      "n_tanker": 32,
+      "n_cargo": 36,
+      "capacity_total": 2682780.0,
+      "capacity_tanker": 1916098.0,
+      "capacity_cargo": 766682.0
+    },
+    {
+      "date": "2026-02-11",
+      "timestamp": "2026-02-11T00:00:00+00:00",
+      "n_total": 81,
+      "n_tanker": 49,
+      "n_cargo": 32,
+      "capacity_total": 2028460.0,
+      "capacity_tanker": 1444919.0,
+      "capacity_cargo": 583541.0
+    },
+    {
+      "date": "2026-02-10",
+      "timestamp": "2026-02-10T00:00:00+00:00",
+      "n_total": 65,
+      "n_tanker": 39,
+      "n_cargo": 26,
+      "capacity_total": 3290551.0,
+      "capacity_tanker": 2479703.0,
+      "capacity_cargo": 810848.0
+    },
+    {
+      "date": "2026-02-09",
+      "timestamp": "2026-02-09T00:00:00+00:00",
+      "n_total": 53,
+      "n_tanker": 33,
+      "n_cargo": 20,
+      "capacity_total": 1763162.0,
+      "capacity_tanker": 999250.0,
+      "capacity_cargo": 763911.0
+    },
+    {
+      "date": "2026-02-08",
+      "timestamp": "2026-02-08T00:00:00+00:00",
+      "n_total": 58,
+      "n_tanker": 32,
+      "n_cargo": 26,
+      "capacity_total": 1605017.0,
+      "capacity_tanker": 1066129.0,
+      "capacity_cargo": 538887.0
+    },
+    {
+      "date": "2026-02-07",
+      "timestamp": "2026-02-07T00:00:00+00:00",
+      "n_total": 60,
+      "n_tanker": 40,
+      "n_cargo": 20,
+      "capacity_total": 2748142.0,
+      "capacity_tanker": 2323504.0,
+      "capacity_cargo": 424638.0
+    },
+    {
+      "date": "2026-02-06",
+      "timestamp": "2026-02-06T00:00:00+00:00",
+      "n_total": 60,
+      "n_tanker": 34,
+      "n_cargo": 26,
+      "capacity_total": 1694325.0,
+      "capacity_tanker": 1050896.0,
+      "capacity_cargo": 643428.0
+    },
+    {
+      "date": "2026-02-05",
+      "timestamp": "2026-02-05T00:00:00+00:00",
+      "n_total": 71,
+      "n_tanker": 36,
+      "n_cargo": 35,
+      "capacity_total": 2679244.0,
+      "capacity_tanker": 1814047.0,
+      "capacity_cargo": 865196.0
+    },
+    {
+      "date": "2026-02-04",
+      "timestamp": "2026-02-04T00:00:00+00:00",
+      "n_total": 43,
+      "n_tanker": 20,
+      "n_cargo": 23,
+      "capacity_total": 1481118.0,
+      "capacity_tanker": 986199.0,
+      "capacity_cargo": 494918.0
+    },
+    {
+      "date": "2026-02-03",
+      "timestamp": "2026-02-03T00:00:00+00:00",
+      "n_total": 66,
+      "n_tanker": 33,
+      "n_cargo": 33,
+      "capacity_total": 2028119.0,
+      "capacity_tanker": 1211012.0,
+      "capacity_cargo": 817107.0
+    },
+    {
+      "date": "2026-02-02",
+      "timestamp": "2026-02-02T00:00:00+00:00",
+      "n_total": 67,
+      "n_tanker": 41,
+      "n_cargo": 26,
+      "capacity_total": 3449459.0,
+      "capacity_tanker": 2714863.0,
+      "capacity_cargo": 734596.0
+    },
+    {
+      "date": "2026-02-01",
+      "timestamp": "2026-02-01T00:00:00+00:00",
+      "n_total": 49,
+      "n_tanker": 19,
+      "n_cargo": 30,
+      "capacity_total": 1646216.0,
+      "capacity_tanker": 1035130.0,
+      "capacity_cargo": 611086.0
+    },
+    {
+      "date": "2026-01-31",
+      "timestamp": "2026-01-31T00:00:00+00:00",
+      "n_total": 70,
+      "n_tanker": 40,
+      "n_cargo": 30,
+      "capacity_total": 3011406.0,
+      "capacity_tanker": 1652157.0,
+      "capacity_cargo": 1359248.0
+    },
+    {
+      "date": "2026-01-30",
+      "timestamp": "2026-01-30T00:00:00+00:00",
+      "n_total": 71,
+      "n_tanker": 39,
+      "n_cargo": 32,
+      "capacity_total": 2475446.0,
+      "capacity_tanker": 1648687.0,
+      "capacity_cargo": 826758.0
+    },
+    {
+      "date": "2026-01-29",
+      "timestamp": "2026-01-29T00:00:00+00:00",
+      "n_total": 72,
+      "n_tanker": 41,
+      "n_cargo": 31,
+      "capacity_total": 2316681.0,
+      "capacity_tanker": 1593036.0,
+      "capacity_cargo": 723645.0
+    },
+    {
+      "date": "2026-01-28",
+      "timestamp": "2026-01-28T00:00:00+00:00",
+      "n_total": 54,
+      "n_tanker": 28,
+      "n_cargo": 26,
+      "capacity_total": 1713078.0,
+      "capacity_tanker": 1214507.0,
+      "capacity_cargo": 498571.0
+    },
+    {
+      "date": "2026-01-27",
+      "timestamp": "2026-01-27T00:00:00+00:00",
+      "n_total": 61,
+      "n_tanker": 30,
+      "n_cargo": 31,
+      "capacity_total": 1723064.0,
+      "capacity_tanker": 1253238.0,
+      "capacity_cargo": 469825.0
+    },
+    {
+      "date": "2026-01-26",
+      "timestamp": "2026-01-26T00:00:00+00:00",
+      "n_total": 43,
+      "n_tanker": 19,
+      "n_cargo": 24,
+      "capacity_total": 1789952.0,
+      "capacity_tanker": 1238981.0,
+      "capacity_cargo": 550971.0
+    },
+    {
+      "date": "2026-01-25",
+      "timestamp": "2026-01-25T00:00:00+00:00",
+      "n_total": 64,
+      "n_tanker": 41,
+      "n_cargo": 23,
+      "capacity_total": 3131426.0,
+      "capacity_tanker": 2629818.0,
+      "capacity_cargo": 501607.0
+    },
+    {
+      "date": "2026-01-24",
+      "timestamp": "2026-01-24T00:00:00+00:00",
+      "n_total": 46,
+      "n_tanker": 21,
+      "n_cargo": 25,
+      "capacity_total": 1375843.0,
+      "capacity_tanker": 878943.0,
+      "capacity_cargo": 496899.0
+    },
+    {
+      "date": "2026-01-23",
+      "timestamp": "2026-01-23T00:00:00+00:00",
+      "n_total": 48,
+      "n_tanker": 24,
+      "n_cargo": 24,
+      "capacity_total": 1816685.0,
+      "capacity_tanker": 1230089.0,
+      "capacity_cargo": 586596.0
+    },
+    {
+      "date": "2026-01-22",
+      "timestamp": "2026-01-22T00:00:00+00:00",
+      "n_total": 64,
+      "n_tanker": 38,
+      "n_cargo": 26,
+      "capacity_total": 2283905.0,
+      "capacity_tanker": 1411533.0,
+      "capacity_cargo": 872372.0
+    },
+    {
+      "date": "2026-01-21",
+      "timestamp": "2026-01-21T00:00:00+00:00",
+      "n_total": 56,
+      "n_tanker": 29,
+      "n_cargo": 27,
+      "capacity_total": 2817276.0,
+      "capacity_tanker": 2051286.0,
+      "capacity_cargo": 765990.0
+    },
+    {
+      "date": "2026-01-20",
+      "timestamp": "2026-01-20T00:00:00+00:00",
+      "n_total": 58,
+      "n_tanker": 33,
+      "n_cargo": 25,
+      "capacity_total": 2084853.0,
+      "capacity_tanker": 1253055.0,
+      "capacity_cargo": 831797.0
+    },
+    {
+      "date": "2026-01-19",
+      "timestamp": "2026-01-19T00:00:00+00:00",
+      "n_total": 58,
+      "n_tanker": 29,
+      "n_cargo": 29,
+      "capacity_total": 2329720.0,
+      "capacity_tanker": 924715.0,
+      "capacity_cargo": 1405004.0
+    },
+    {
+      "date": "2026-01-18",
+      "timestamp": "2026-01-18T00:00:00+00:00",
+      "n_total": 54,
+      "n_tanker": 20,
+      "n_cargo": 34,
+      "capacity_total": 2205633.0,
+      "capacity_tanker": 1302150.0,
+      "capacity_cargo": 903482.0
+    },
+    {
+      "date": "2026-01-17",
+      "timestamp": "2026-01-17T00:00:00+00:00",
+      "n_total": 38,
+      "n_tanker": 23,
+      "n_cargo": 15,
+      "capacity_total": 1445923.0,
+      "capacity_tanker": 901828.0,
+      "capacity_cargo": 544094.0
+    },
+    {
+      "date": "2026-01-16",
+      "timestamp": "2026-01-16T00:00:00+00:00",
+      "n_total": 53,
+      "n_tanker": 29,
+      "n_cargo": 24,
+      "capacity_total": 1803234.0,
+      "capacity_tanker": 1066232.0,
+      "capacity_cargo": 737001.0
+    },
+    {
+      "date": "2026-01-15",
+      "timestamp": "2026-01-15T00:00:00+00:00",
+      "n_total": 62,
+      "n_tanker": 35,
+      "n_cargo": 27,
+      "capacity_total": 2717989.0,
+      "capacity_tanker": 1845107.0,
+      "capacity_cargo": 872881.0
+    },
+    {
+      "date": "2026-01-14",
+      "timestamp": "2026-01-14T00:00:00+00:00",
+      "n_total": 61,
+      "n_tanker": 34,
+      "n_cargo": 27,
+      "capacity_total": 1828588.0,
+      "capacity_tanker": 1260279.0,
+      "capacity_cargo": 568309.0
+    },
+    {
+      "date": "2026-01-13",
+      "timestamp": "2026-01-13T00:00:00+00:00",
+      "n_total": 53,
+      "n_tanker": 26,
+      "n_cargo": 27,
+      "capacity_total": 1329359.0,
+      "capacity_tanker": 641841.0,
+      "capacity_cargo": 687518.0
+    },
+    {
+      "date": "2026-01-12",
+      "timestamp": "2026-01-12T00:00:00+00:00",
+      "n_total": 52,
+      "n_tanker": 34,
+      "n_cargo": 18,
+      "capacity_total": 2028340.0,
+      "capacity_tanker": 1663154.0,
+      "capacity_cargo": 365186.0
+    },
+    {
+      "date": "2026-01-11",
+      "timestamp": "2026-01-11T00:00:00+00:00",
+      "n_total": 64,
+      "n_tanker": 31,
+      "n_cargo": 33,
+      "capacity_total": 2698117.0,
+      "capacity_tanker": 1935469.0,
+      "capacity_cargo": 762647.0
+    },
+    {
+      "date": "2026-01-10",
+      "timestamp": "2026-01-10T00:00:00+00:00",
+      "n_total": 63,
+      "n_tanker": 34,
+      "n_cargo": 29,
+      "capacity_total": 1777076.0,
+      "capacity_tanker": 1184808.0,
+      "capacity_cargo": 592268.0
+    },
+    {
+      "date": "2026-01-09",
+      "timestamp": "2026-01-09T00:00:00+00:00",
+      "n_total": 74,
+      "n_tanker": 40,
+      "n_cargo": 34,
+      "capacity_total": 3727608.0,
+      "capacity_tanker": 2991391.0,
+      "capacity_cargo": 736216.0
+    },
+    {
+      "date": "2026-01-08",
+      "timestamp": "2026-01-08T00:00:00+00:00",
+      "n_total": 62,
+      "n_tanker": 37,
+      "n_cargo": 25,
+      "capacity_total": 3008400.0,
+      "capacity_tanker": 2085390.0,
+      "capacity_cargo": 923010.0
+    },
+    {
+      "date": "2026-01-07",
+      "timestamp": "2026-01-07T00:00:00+00:00",
+      "n_total": 66,
+      "n_tanker": 37,
+      "n_cargo": 29,
+      "capacity_total": 2122045.0,
+      "capacity_tanker": 1536799.0,
+      "capacity_cargo": 585245.0
+    },
+    {
+      "date": "2026-01-06",
+      "timestamp": "2026-01-06T00:00:00+00:00",
+      "n_total": 61,
+      "n_tanker": 31,
+      "n_cargo": 30,
+      "capacity_total": 1024199.0,
+      "capacity_tanker": 379967.0,
+      "capacity_cargo": 644232.0
+    },
+    {
+      "date": "2026-01-05",
+      "timestamp": "2026-01-05T00:00:00+00:00",
+      "n_total": 61,
+      "n_tanker": 30,
+      "n_cargo": 31,
+      "capacity_total": 2711045.0,
+      "capacity_tanker": 1948403.0,
+      "capacity_cargo": 762641.0
+    },
+    {
+      "date": "2026-01-04",
+      "timestamp": "2026-01-04T00:00:00+00:00",
+      "n_total": 49,
+      "n_tanker": 26,
+      "n_cargo": 23,
+      "capacity_total": 2143949.0,
+      "capacity_tanker": 1127400.0,
+      "capacity_cargo": 1016548.0
+    },
+    {
+      "date": "2026-01-03",
+      "timestamp": "2026-01-03T00:00:00+00:00",
+      "n_total": 59,
+      "n_tanker": 34,
+      "n_cargo": 25,
+      "capacity_total": 2839469.0,
+      "capacity_tanker": 1748158.0,
+      "capacity_cargo": 1091311.0
+    },
+    {
+      "date": "2026-01-02",
+      "timestamp": "2026-01-02T00:00:00+00:00",
+      "n_total": 51,
+      "n_tanker": 23,
+      "n_cargo": 28,
+      "capacity_total": 2065317.0,
+      "capacity_tanker": 1162313.0,
+      "capacity_cargo": 903004.0
+    },
+    {
+      "date": "2026-01-01",
+      "timestamp": "2026-01-01T00:00:00+00:00",
+      "n_total": 64,
+      "n_tanker": 29,
+      "n_cargo": 35,
+      "capacity_total": 2664408.0,
+      "capacity_tanker": 1713442.0,
+      "capacity_cargo": 950965.0
+    },
+    {
+      "date": "2025-12-31",
+      "timestamp": "2025-12-31T00:00:00+00:00",
+      "n_total": 71,
+      "n_tanker": 46,
+      "n_cargo": 25,
+      "capacity_total": 1799417.0,
+      "capacity_tanker": 1449369.0,
+      "capacity_cargo": 350048.0
+    },
+    {
+      "date": "2025-12-30",
+      "timestamp": "2025-12-30T00:00:00+00:00",
+      "n_total": 66,
+      "n_tanker": 35,
+      "n_cargo": 31,
+      "capacity_total": 2531272.0,
+      "capacity_tanker": 1680707.0,
+      "capacity_cargo": 850565.0
+    },
+    {
+      "date": "2025-12-29",
+      "timestamp": "2025-12-29T00:00:00+00:00",
+      "n_total": 50,
+      "n_tanker": 26,
+      "n_cargo": 24,
+      "capacity_total": 1462025.0,
+      "capacity_tanker": 643850.0,
+      "capacity_cargo": 818174.0
+    },
+    {
+      "date": "2025-12-28",
+      "timestamp": "2025-12-28T00:00:00+00:00",
+      "n_total": 55,
+      "n_tanker": 24,
+      "n_cargo": 31,
+      "capacity_total": 2183289.0,
+      "capacity_tanker": 1632034.0,
+      "capacity_cargo": 551254.0
+    },
+    {
+      "date": "2025-12-27",
+      "timestamp": "2025-12-27T00:00:00+00:00",
+      "n_total": 66,
+      "n_tanker": 39,
+      "n_cargo": 27,
+      "capacity_total": 2669762.0,
+      "capacity_tanker": 1867382.0,
+      "capacity_cargo": 802379.0
+    },
+    {
+      "date": "2025-12-26",
+      "timestamp": "2025-12-26T00:00:00+00:00",
+      "n_total": 62,
+      "n_tanker": 36,
+      "n_cargo": 26,
+      "capacity_total": 3178834.0,
+      "capacity_tanker": 2507207.0,
+      "capacity_cargo": 671626.0
+    },
+    {
+      "date": "2025-12-25",
+      "timestamp": "2025-12-25T00:00:00+00:00",
+      "n_total": 68,
+      "n_tanker": 32,
+      "n_cargo": 36,
+      "capacity_total": 2404701.0,
+      "capacity_tanker": 1167192.0,
+      "capacity_cargo": 1237508.0
+    },
+    {
+      "date": "2025-12-24",
+      "timestamp": "2025-12-24T00:00:00+00:00",
+      "n_total": 65,
+      "n_tanker": 29,
+      "n_cargo": 36,
+      "capacity_total": 2117952.0,
+      "capacity_tanker": 929216.0,
+      "capacity_cargo": 1188735.0
+    },
+    {
+      "date": "2025-12-23",
+      "timestamp": "2025-12-23T00:00:00+00:00",
+      "n_total": 58,
+      "n_tanker": 26,
+      "n_cargo": 32,
+      "capacity_total": 3012110.0,
+      "capacity_tanker": 1994683.0,
+      "capacity_cargo": 1017426.0
+    },
+    {
+      "date": "2025-12-22",
+      "timestamp": "2025-12-22T00:00:00+00:00",
+      "n_total": 46,
+      "n_tanker": 26,
+      "n_cargo": 20,
+      "capacity_total": 1375593.0,
+      "capacity_tanker": 858100.0,
+      "capacity_cargo": 517493.0
+    },
+    {
+      "date": "2025-12-21",
+      "timestamp": "2025-12-21T00:00:00+00:00",
+      "n_total": 54,
+      "n_tanker": 29,
+      "n_cargo": 25,
+      "capacity_total": 1857869.0,
+      "capacity_tanker": 719285.0,
+      "capacity_cargo": 1138584.0
+    },
+    {
+      "date": "2025-12-20",
+      "timestamp": "2025-12-20T00:00:00+00:00",
+      "n_total": 48,
+      "n_tanker": 20,
+      "n_cargo": 28,
+      "capacity_total": 2038706.0,
+      "capacity_tanker": 1143589.0,
+      "capacity_cargo": 895117.0
+    },
+    {
+      "date": "2025-12-19",
+      "timestamp": "2025-12-19T00:00:00+00:00",
+      "n_total": 31,
+      "n_tanker": 17,
+      "n_cargo": 14,
+      "capacity_total": 1341392.0,
+      "capacity_tanker": 828897.0,
+      "capacity_cargo": 512495.0
+    },
+    {
+      "date": "2025-12-18",
+      "timestamp": "2025-12-18T00:00:00+00:00",
+      "n_total": 55,
+      "n_tanker": 33,
+      "n_cargo": 22,
+      "capacity_total": 2640513.0,
+      "capacity_tanker": 1963432.0,
+      "capacity_cargo": 677080.0
+    },
+    {
+      "date": "2025-12-17",
+      "timestamp": "2025-12-17T00:00:00+00:00",
+      "n_total": 50,
+      "n_tanker": 32,
+      "n_cargo": 18,
+      "capacity_total": 1429475.0,
+      "capacity_tanker": 862506.0,
+      "capacity_cargo": 566969.0
+    },
+    {
+      "date": "2025-12-16",
+      "timestamp": "2025-12-16T00:00:00+00:00",
+      "n_total": 55,
+      "n_tanker": 31,
+      "n_cargo": 24,
+      "capacity_total": 2870631.0,
+      "capacity_tanker": 1891843.0,
+      "capacity_cargo": 978787.0
+    },
+    {
+      "date": "2025-12-15",
+      "timestamp": "2025-12-15T00:00:00+00:00",
+      "n_total": 47,
+      "n_tanker": 18,
+      "n_cargo": 29,
+      "capacity_total": 2132683.0,
+      "capacity_tanker": 1304890.0,
+      "capacity_cargo": 827792.0
+    },
+    {
+      "date": "2025-12-14",
+      "timestamp": "2025-12-14T00:00:00+00:00",
+      "n_total": 49,
+      "n_tanker": 36,
+      "n_cargo": 13,
+      "capacity_total": 2760730.0,
+      "capacity_tanker": 2455638.0,
+      "capacity_cargo": 305091.0
+    },
+    {
+      "date": "2025-12-13",
+      "timestamp": "2025-12-13T00:00:00+00:00",
+      "n_total": 46,
+      "n_tanker": 26,
+      "n_cargo": 20,
+      "capacity_total": 1755425.0,
+      "capacity_tanker": 1256662.0,
+      "capacity_cargo": 498762.0
+    },
+    {
+      "date": "2025-12-12",
+      "timestamp": "2025-12-12T00:00:00+00:00",
+      "n_total": 41,
+      "n_tanker": 22,
+      "n_cargo": 19,
+      "capacity_total": 1729166.0,
+      "capacity_tanker": 1184935.0,
+      "capacity_cargo": 544231.0
+    },
+    {
+      "date": "2025-12-11",
+      "timestamp": "2025-12-11T00:00:00+00:00",
+      "n_total": 50,
+      "n_tanker": 30,
+      "n_cargo": 20,
+      "capacity_total": 2291678.0,
+      "capacity_tanker": 1964902.0,
+      "capacity_cargo": 326775.0
+    },
+    {
+      "date": "2025-12-10",
+      "timestamp": "2025-12-10T00:00:00+00:00",
+      "n_total": 52,
+      "n_tanker": 31,
+      "n_cargo": 21,
+      "capacity_total": 1826983.0,
+      "capacity_tanker": 1006238.0,
+      "capacity_cargo": 820745.0
+    },
+    {
+      "date": "2025-12-09",
+      "timestamp": "2025-12-09T00:00:00+00:00",
+      "n_total": 82,
+      "n_tanker": 46,
+      "n_cargo": 36,
+      "capacity_total": 2792137.0,
+      "capacity_tanker": 1806733.0,
+      "capacity_cargo": 985404.0
+    },
+    {
+      "date": "2025-12-08",
+      "timestamp": "2025-12-08T00:00:00+00:00",
+      "n_total": 59,
+      "n_tanker": 27,
+      "n_cargo": 32,
+      "capacity_total": 2187229.0,
+      "capacity_tanker": 1135754.0,
+      "capacity_cargo": 1051475.0
+    },
+    {
+      "date": "2025-12-07",
+      "timestamp": "2025-12-07T00:00:00+00:00",
+      "n_total": 64,
+      "n_tanker": 40,
+      "n_cargo": 24,
+      "capacity_total": 2876026.0,
+      "capacity_tanker": 2225547.0,
+      "capacity_cargo": 650479.0
+    },
+    {
+      "date": "2025-12-06",
+      "timestamp": "2025-12-06T00:00:00+00:00",
+      "n_total": 68,
+      "n_tanker": 39,
+      "n_cargo": 29,
+      "capacity_total": 2017076.0,
+      "capacity_tanker": 1323388.0,
+      "capacity_cargo": 693688.0
+    },
+    {
+      "date": "2025-12-05",
+      "timestamp": "2025-12-05T00:00:00+00:00",
+      "n_total": 44,
+      "n_tanker": 26,
+      "n_cargo": 18,
+      "capacity_total": 1585789.0,
+      "capacity_tanker": 1204017.0,
+      "capacity_cargo": 381771.0
+    },
+    {
+      "date": "2025-12-04",
+      "timestamp": "2025-12-04T00:00:00+00:00",
+      "n_total": 45,
+      "n_tanker": 30,
+      "n_cargo": 15,
+      "capacity_total": 2400695.0,
+      "capacity_tanker": 1715620.0,
+      "capacity_cargo": 685075.0
+    },
+    {
+      "date": "2025-12-03",
+      "timestamp": "2025-12-03T00:00:00+00:00",
+      "n_total": 51,
+      "n_tanker": 26,
+      "n_cargo": 25,
+      "capacity_total": 2422386.0,
+      "capacity_tanker": 1516768.0,
+      "capacity_cargo": 905617.0
+    },
+    {
+      "date": "2025-12-02",
+      "timestamp": "2025-12-02T00:00:00+00:00",
+      "n_total": 59,
+      "n_tanker": 30,
+      "n_cargo": 29,
+      "capacity_total": 1933339.0,
+      "capacity_tanker": 1234964.0,
+      "capacity_cargo": 698374.0
+    },
+    {
+      "date": "2025-12-01",
+      "timestamp": "2025-12-01T00:00:00+00:00",
+      "n_total": 65,
+      "n_tanker": 35,
+      "n_cargo": 30,
+      "capacity_total": 3946406.0,
+      "capacity_tanker": 3025778.0,
+      "capacity_cargo": 920628.0
+    },
+    {
+      "date": "2025-11-30",
+      "timestamp": "2025-11-30T00:00:00+00:00",
+      "n_total": 57,
+      "n_tanker": 35,
+      "n_cargo": 22,
+      "capacity_total": 2880714.0,
+      "capacity_tanker": 2472791.0,
+      "capacity_cargo": 407922.0
+    },
+    {
+      "date": "2025-11-29",
+      "timestamp": "2025-11-29T00:00:00+00:00",
+      "n_total": 57,
+      "n_tanker": 29,
+      "n_cargo": 28,
+      "capacity_total": 1413716.0,
+      "capacity_tanker": 823763.0,
+      "capacity_cargo": 589952.0
+    },
+    {
+      "date": "2025-11-28",
+      "timestamp": "2025-11-28T00:00:00+00:00",
+      "n_total": 50,
+      "n_tanker": 26,
+      "n_cargo": 24,
+      "capacity_total": 1826655.0,
+      "capacity_tanker": 1185354.0,
+      "capacity_cargo": 641300.0
+    },
+    {
+      "date": "2025-11-27",
+      "timestamp": "2025-11-27T00:00:00+00:00",
+      "n_total": 49,
+      "n_tanker": 29,
+      "n_cargo": 20,
+      "capacity_total": 2611752.0,
+      "capacity_tanker": 2042975.0,
+      "capacity_cargo": 568776.0
+    },
+    {
+      "date": "2025-11-26",
+      "timestamp": "2025-11-26T00:00:00+00:00",
+      "n_total": 51,
+      "n_tanker": 32,
+      "n_cargo": 19,
+      "capacity_total": 1609519.0,
+      "capacity_tanker": 1174915.0,
+      "capacity_cargo": 434604.0
+    },
+    {
+      "date": "2025-11-25",
+      "timestamp": "2025-11-25T00:00:00+00:00",
+      "n_total": 67,
+      "n_tanker": 36,
+      "n_cargo": 31,
+      "capacity_total": 2433647.0,
+      "capacity_tanker": 1565770.0,
+      "capacity_cargo": 867876.0
+    },
+    {
+      "date": "2025-11-24",
+      "timestamp": "2025-11-24T00:00:00+00:00",
+      "n_total": 46,
+      "n_tanker": 23,
+      "n_cargo": 23,
+      "capacity_total": 1638191.0,
+      "capacity_tanker": 939319.0,
+      "capacity_cargo": 698871.0
+    },
+    {
+      "date": "2025-11-23",
+      "timestamp": "2025-11-23T00:00:00+00:00",
+      "n_total": 61,
+      "n_tanker": 27,
+      "n_cargo": 34,
+      "capacity_total": 1354677.0,
+      "capacity_tanker": 776010.0,
+      "capacity_cargo": 578667.0
+    },
+    {
+      "date": "2025-11-22",
+      "timestamp": "2025-11-22T00:00:00+00:00",
+      "n_total": 51,
+      "n_tanker": 30,
+      "n_cargo": 21,
+      "capacity_total": 1264153.0,
+      "capacity_tanker": 962561.0,
+      "capacity_cargo": 301591.0
+    },
+    {
+      "date": "2025-11-21",
+      "timestamp": "2025-11-21T00:00:00+00:00",
+      "n_total": 49,
+      "n_tanker": 32,
+      "n_cargo": 17,
+      "capacity_total": 2091681.0,
+      "capacity_tanker": 1584138.0,
+      "capacity_cargo": 507543.0
+    },
+    {
+      "date": "2025-11-20",
+      "timestamp": "2025-11-20T00:00:00+00:00",
+      "n_total": 67,
+      "n_tanker": 43,
+      "n_cargo": 24,
+      "capacity_total": 2793698.0,
+      "capacity_tanker": 2064640.0,
+      "capacity_cargo": 729058.0
+    },
+    {
+      "date": "2025-11-19",
+      "timestamp": "2025-11-19T00:00:00+00:00",
+      "n_total": 64,
+      "n_tanker": 38,
+      "n_cargo": 26,
+      "capacity_total": 2699564.0,
+      "capacity_tanker": 1997768.0,
+      "capacity_cargo": 701795.0
+    },
+    {
+      "date": "2025-11-18",
+      "timestamp": "2025-11-18T00:00:00+00:00",
+      "n_total": 72,
+      "n_tanker": 41,
+      "n_cargo": 31,
+      "capacity_total": 2558404.0,
+      "capacity_tanker": 1609802.0,
+      "capacity_cargo": 948601.0
+    },
+    {
+      "date": "2025-11-17",
+      "timestamp": "2025-11-17T00:00:00+00:00",
+      "n_total": 60,
+      "n_tanker": 33,
+      "n_cargo": 27,
+      "capacity_total": 2160568.0,
+      "capacity_tanker": 1314019.0,
+      "capacity_cargo": 846549.0
+    },
+    {
+      "date": "2025-11-16",
+      "timestamp": "2025-11-16T00:00:00+00:00",
+      "n_total": 70,
+      "n_tanker": 33,
+      "n_cargo": 37,
+      "capacity_total": 2610839.0,
+      "capacity_tanker": 1322659.0,
+      "capacity_cargo": 1288179.0
+    },
+    {
+      "date": "2025-11-15",
+      "timestamp": "2025-11-15T00:00:00+00:00",
+      "n_total": 69,
+      "n_tanker": 38,
+      "n_cargo": 31,
+      "capacity_total": 3270241.0,
+      "capacity_tanker": 2322682.0,
+      "capacity_cargo": 947558.0
+    },
+    {
+      "date": "2025-11-14",
+      "timestamp": "2025-11-14T00:00:00+00:00",
+      "n_total": 83,
+      "n_tanker": 47,
+      "n_cargo": 36,
+      "capacity_total": 3926081.0,
+      "capacity_tanker": 3239720.0,
+      "capacity_cargo": 686360.0
+    },
+    {
+      "date": "2025-11-13",
+      "timestamp": "2025-11-13T00:00:00+00:00",
+      "n_total": 100,
+      "n_tanker": 51,
+      "n_cargo": 49,
+      "capacity_total": 3533633.0,
+      "capacity_tanker": 1940299.0,
+      "capacity_cargo": 1593333.0
+    },
+    {
+      "date": "2025-11-12",
+      "timestamp": "2025-11-12T00:00:00+00:00",
+      "n_total": 70,
+      "n_tanker": 41,
+      "n_cargo": 29,
+      "capacity_total": 2607578.0,
+      "capacity_tanker": 2040948.0,
+      "capacity_cargo": 566629.0
+    },
+    {
+      "date": "2025-11-11",
+      "timestamp": "2025-11-11T00:00:00+00:00",
+      "n_total": 100,
+      "n_tanker": 60,
+      "n_cargo": 40,
+      "capacity_total": 3842763.0,
+      "capacity_tanker": 3049537.0,
+      "capacity_cargo": 793226.0
+    },
+    {
+      "date": "2025-11-10",
+      "timestamp": "2025-11-10T00:00:00+00:00",
+      "n_total": 67,
+      "n_tanker": 41,
+      "n_cargo": 26,
+      "capacity_total": 3080936.0,
+      "capacity_tanker": 2050581.0,
+      "capacity_cargo": 1030354.0
+    },
+    {
+      "date": "2025-11-09",
+      "timestamp": "2025-11-09T00:00:00+00:00",
+      "n_total": 71,
+      "n_tanker": 45,
+      "n_cargo": 26,
+      "capacity_total": 3163747.0,
+      "capacity_tanker": 2533855.0,
+      "capacity_cargo": 629891.0
+    },
+    {
+      "date": "2025-11-08",
+      "timestamp": "2025-11-08T00:00:00+00:00",
+      "n_total": 107,
+      "n_tanker": 63,
+      "n_cargo": 44,
+      "capacity_total": 4229678.0,
+      "capacity_tanker": 3348133.0,
+      "capacity_cargo": 881545.0
+    },
+    {
+      "date": "2025-11-07",
+      "timestamp": "2025-11-07T00:00:00+00:00",
+      "n_total": 77,
+      "n_tanker": 36,
+      "n_cargo": 41,
+      "capacity_total": 2937349.0,
+      "capacity_tanker": 2024502.0,
+      "capacity_cargo": 912846.0
+    },
+    {
+      "date": "2025-11-06",
+      "timestamp": "2025-11-06T00:00:00+00:00",
+      "n_total": 69,
+      "n_tanker": 39,
+      "n_cargo": 30,
+      "capacity_total": 2673165.0,
+      "capacity_tanker": 2011944.0,
+      "capacity_cargo": 661221.0
+    },
+    {
+      "date": "2025-11-05",
+      "timestamp": "2025-11-05T00:00:00+00:00",
+      "n_total": 78,
+      "n_tanker": 47,
+      "n_cargo": 31,
+      "capacity_total": 3652477.0,
+      "capacity_tanker": 2980784.0,
+      "capacity_cargo": 671693.0
+    },
+    {
+      "date": "2025-11-04",
+      "timestamp": "2025-11-04T00:00:00+00:00",
+      "n_total": 74,
+      "n_tanker": 50,
+      "n_cargo": 24,
+      "capacity_total": 1680727.0,
+      "capacity_tanker": 987633.0,
+      "capacity_cargo": 693093.0
+    },
+    {
+      "date": "2025-11-03",
+      "timestamp": "2025-11-03T00:00:00+00:00",
+      "n_total": 51,
+      "n_tanker": 25,
+      "n_cargo": 26,
+      "capacity_total": 1303075.0,
+      "capacity_tanker": 680417.0,
+      "capacity_cargo": 622658.0
+    },
+    {
+      "date": "2025-11-02",
+      "timestamp": "2025-11-02T00:00:00+00:00",
+      "n_total": 60,
+      "n_tanker": 35,
+      "n_cargo": 25,
+      "capacity_total": 2549551.0,
+      "capacity_tanker": 1878385.0,
+      "capacity_cargo": 671166.0
+    },
+    {
+      "date": "2025-11-01",
+      "timestamp": "2025-11-01T00:00:00+00:00",
+      "n_total": 74,
+      "n_tanker": 47,
+      "n_cargo": 27,
+      "capacity_total": 2553874.0,
+      "capacity_tanker": 1808993.0,
+      "capacity_cargo": 744881.0
+    },
+    {
+      "date": "2025-10-31",
+      "timestamp": "2025-10-31T00:00:00+00:00",
+      "n_total": 80,
+      "n_tanker": 42,
+      "n_cargo": 38,
+      "capacity_total": 4365246.0,
+      "capacity_tanker": 3436232.0,
+      "capacity_cargo": 929013.0
+    },
+    {
+      "date": "2025-10-30",
+      "timestamp": "2025-10-30T00:00:00+00:00",
+      "n_total": 95,
+      "n_tanker": 48,
+      "n_cargo": 47,
+      "capacity_total": 3826916.0,
+      "capacity_tanker": 2635302.0,
+      "capacity_cargo": 1191613.0
+    },
+    {
+      "date": "2025-10-29",
+      "timestamp": "2025-10-29T00:00:00+00:00",
+      "n_total": 114,
+      "n_tanker": 70,
+      "n_cargo": 44,
+      "capacity_total": 3921704.0,
+      "capacity_tanker": 2918046.0,
+      "capacity_cargo": 1003657.0
+    },
+    {
+      "date": "2025-10-28",
+      "timestamp": "2025-10-28T00:00:00+00:00",
+      "n_total": 103,
+      "n_tanker": 52,
+      "n_cargo": 51,
+      "capacity_total": 3316791.0,
+      "capacity_tanker": 1912261.0,
+      "capacity_cargo": 1404529.0
+    },
+    {
+      "date": "2025-10-27",
+      "timestamp": "2025-10-27T00:00:00+00:00",
+      "n_total": 106,
+      "n_tanker": 57,
+      "n_cargo": 49,
+      "capacity_total": 3628192.0,
+      "capacity_tanker": 2798994.0,
+      "capacity_cargo": 829197.0
+    },
+    {
+      "date": "2025-10-26",
+      "timestamp": "2025-10-26T00:00:00+00:00",
+      "n_total": 99,
+      "n_tanker": 59,
+      "n_cargo": 40,
+      "capacity_total": 4274201.0,
+      "capacity_tanker": 3305933.0,
+      "capacity_cargo": 968267.0
+    },
+    {
+      "date": "2025-10-25",
+      "timestamp": "2025-10-25T00:00:00+00:00",
+      "n_total": 101,
+      "n_tanker": 61,
+      "n_cargo": 40,
+      "capacity_total": 4862822.0,
+      "capacity_tanker": 3609411.0,
+      "capacity_cargo": 1253410.0
+    },
+    {
+      "date": "2025-10-24",
+      "timestamp": "2025-10-24T00:00:00+00:00",
+      "n_total": 104,
+      "n_tanker": 63,
+      "n_cargo": 41,
+      "capacity_total": 3810703.0,
+      "capacity_tanker": 2242037.0,
+      "capacity_cargo": 1568665.0
+    },
+    {
+      "date": "2025-10-23",
+      "timestamp": "2025-10-23T00:00:00+00:00",
+      "n_total": 109,
+      "n_tanker": 58,
+      "n_cargo": 51,
+      "capacity_total": 4201243.0,
+      "capacity_tanker": 2955595.0,
+      "capacity_cargo": 1245647.0
+    },
+    {
+      "date": "2025-10-22",
+      "timestamp": "2025-10-22T00:00:00+00:00",
+      "n_total": 116,
+      "n_tanker": 65,
+      "n_cargo": 51,
+      "capacity_total": 4589674.0,
+      "capacity_tanker": 3684915.0,
+      "capacity_cargo": 904758.0
+    },
+    {
+      "date": "2025-10-21",
+      "timestamp": "2025-10-21T00:00:00+00:00",
+      "n_total": 103,
+      "n_tanker": 53,
+      "n_cargo": 50,
+      "capacity_total": 3501341.0,
+      "capacity_tanker": 2285006.0,
+      "capacity_cargo": 1216334.0
+    },
+    {
+      "date": "2025-10-20",
+      "timestamp": "2025-10-20T00:00:00+00:00",
+      "n_total": 82,
+      "n_tanker": 48,
+      "n_cargo": 34,
+      "capacity_total": 3004065.0,
+      "capacity_tanker": 1795983.0,
+      "capacity_cargo": 1208081.0
+    },
+    {
+      "date": "2025-10-19",
+      "timestamp": "2025-10-19T00:00:00+00:00",
+      "n_total": 82,
+      "n_tanker": 47,
+      "n_cargo": 35,
+      "capacity_total": 3438270.0,
+      "capacity_tanker": 2057561.0,
+      "capacity_cargo": 1380708.0
+    },
+    {
+      "date": "2025-10-18",
+      "timestamp": "2025-10-18T00:00:00+00:00",
+      "n_total": 72,
+      "n_tanker": 43,
+      "n_cargo": 29,
+      "capacity_total": 2797815.0,
+      "capacity_tanker": 1747594.0,
+      "capacity_cargo": 1050221.0
+    },
+    {
+      "date": "2025-10-17",
+      "timestamp": "2025-10-17T00:00:00+00:00",
+      "n_total": 58,
+      "n_tanker": 24,
+      "n_cargo": 34,
+      "capacity_total": 2289152.0,
+      "capacity_tanker": 1208079.0,
+      "capacity_cargo": 1081072.0
+    },
+    {
+      "date": "2025-10-16",
+      "timestamp": "2025-10-16T00:00:00+00:00",
+      "n_total": 51,
+      "n_tanker": 28,
+      "n_cargo": 23,
+      "capacity_total": 2119801.0,
+      "capacity_tanker": 1206092.0,
+      "capacity_cargo": 913708.0
+    },
+    {
+      "date": "2025-10-15",
+      "timestamp": "2025-10-15T00:00:00+00:00",
+      "n_total": 62,
+      "n_tanker": 38,
+      "n_cargo": 24,
+      "capacity_total": 2026327.0,
+      "capacity_tanker": 1592552.0,
+      "capacity_cargo": 433774.0
+    },
+    {
+      "date": "2025-10-14",
+      "timestamp": "2025-10-14T00:00:00+00:00",
+      "n_total": 120,
+      "n_tanker": 63,
+      "n_cargo": 57,
+      "capacity_total": 6268750.0,
+      "capacity_tanker": 4567780.0,
+      "capacity_cargo": 1700969.0
+    },
+    {
+      "date": "2025-10-13",
+      "timestamp": "2025-10-13T00:00:00+00:00",
+      "n_total": 71,
+      "n_tanker": 38,
+      "n_cargo": 33,
+      "capacity_total": 2639433.0,
+      "capacity_tanker": 1636984.0,
+      "capacity_cargo": 1002449.0
+    },
+    {
+      "date": "2025-10-12",
+      "timestamp": "2025-10-12T00:00:00+00:00",
+      "n_total": 55,
+      "n_tanker": 23,
+      "n_cargo": 32,
+      "capacity_total": 2037181.0,
+      "capacity_tanker": 890370.0,
+      "capacity_cargo": 1146810.0
+    },
+    {
+      "date": "2025-10-11",
+      "timestamp": "2025-10-11T00:00:00+00:00",
+      "n_total": 69,
+      "n_tanker": 39,
+      "n_cargo": 30,
+      "capacity_total": 2481336.0,
+      "capacity_tanker": 1820603.0,
+      "capacity_cargo": 660732.0
+    },
+    {
+      "date": "2025-10-10",
+      "timestamp": "2025-10-10T00:00:00+00:00",
+      "n_total": 69,
+      "n_tanker": 31,
+      "n_cargo": 38,
+      "capacity_total": 1848378.0,
+      "capacity_tanker": 979332.0,
+      "capacity_cargo": 869046.0
+    },
+    {
+      "date": "2025-10-09",
+      "timestamp": "2025-10-09T00:00:00+00:00",
+      "n_total": 56,
+      "n_tanker": 30,
+      "n_cargo": 26,
+      "capacity_total": 2155703.0,
+      "capacity_tanker": 1496030.0,
+      "capacity_cargo": 659672.0
+    },
+    {
+      "date": "2025-10-08",
+      "timestamp": "2025-10-08T00:00:00+00:00",
+      "n_total": 55,
+      "n_tanker": 26,
+      "n_cargo": 29,
+      "capacity_total": 1648055.0,
+      "capacity_tanker": 1037540.0,
+      "capacity_cargo": 610515.0
+    },
+    {
+      "date": "2025-10-07",
+      "timestamp": "2025-10-07T00:00:00+00:00",
+      "n_total": 101,
+      "n_tanker": 56,
+      "n_cargo": 45,
+      "capacity_total": 3511635.0,
+      "capacity_tanker": 2677093.0,
+      "capacity_cargo": 834542.0
+    },
+    {
+      "date": "2025-10-06",
+      "timestamp": "2025-10-06T00:00:00+00:00",
+      "n_total": 89,
+      "n_tanker": 44,
+      "n_cargo": 45,
+      "capacity_total": 3741189.0,
+      "capacity_tanker": 2090605.0,
+      "capacity_cargo": 1650583.0
+    },
+    {
+      "date": "2025-10-05",
+      "timestamp": "2025-10-05T00:00:00+00:00",
+      "n_total": 121,
+      "n_tanker": 72,
+      "n_cargo": 49,
+      "capacity_total": 4557078.0,
+      "capacity_tanker": 3521158.0,
+      "capacity_cargo": 1035919.0
+    },
+    {
+      "date": "2025-10-04",
+      "timestamp": "2025-10-04T00:00:00+00:00",
+      "n_total": 118,
+      "n_tanker": 73,
+      "n_cargo": 45,
+      "capacity_total": 2804847.0,
+      "capacity_tanker": 1767642.0,
+      "capacity_cargo": 1037205.0
+    },
+    {
+      "date": "2025-10-03",
+      "timestamp": "2025-10-03T00:00:00+00:00",
+      "n_total": 101,
+      "n_tanker": 55,
+      "n_cargo": 46,
+      "capacity_total": 4217949.0,
+      "capacity_tanker": 2985012.0,
+      "capacity_cargo": 1232937.0
+    },
+    {
+      "date": "2025-10-02",
+      "timestamp": "2025-10-02T00:00:00+00:00",
+      "n_total": 94,
+      "n_tanker": 56,
+      "n_cargo": 38,
+      "capacity_total": 5125971.0,
+      "capacity_tanker": 4213415.0,
+      "capacity_cargo": 912555.0
+    },
+    {
+      "date": "2025-10-01",
+      "timestamp": "2025-10-01T00:00:00+00:00",
+      "n_total": 116,
+      "n_tanker": 72,
+      "n_cargo": 44,
+      "capacity_total": 4190857.0,
+      "capacity_tanker": 3296811.0,
+      "capacity_cargo": 894045.0
+    },
+    {
+      "date": "2025-09-30",
+      "timestamp": "2025-09-30T00:00:00+00:00",
+      "n_total": 100,
+      "n_tanker": 56,
+      "n_cargo": 44,
+      "capacity_total": 3284740.0,
+      "capacity_tanker": 2097595.0,
+      "capacity_cargo": 1187145.0
+    },
+    {
+      "date": "2025-09-29",
+      "timestamp": "2025-09-29T00:00:00+00:00",
+      "n_total": 129,
+      "n_tanker": 70,
+      "n_cargo": 59,
+      "capacity_total": 4259656.0,
+      "capacity_tanker": 2652585.0,
+      "capacity_cargo": 1607071.0
+    },
+    {
+      "date": "2025-09-28",
+      "timestamp": "2025-09-28T00:00:00+00:00",
+      "n_total": 124,
+      "n_tanker": 76,
+      "n_cargo": 48,
+      "capacity_total": 5198166.0,
+      "capacity_tanker": 3732513.0,
+      "capacity_cargo": 1465653.0
+    }
+  ]
+}
