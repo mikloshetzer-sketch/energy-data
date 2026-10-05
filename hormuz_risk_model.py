@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-Hormuz Risk Model v2
-====================
+Hormuz Risk Model v2.1
+======================
 
 Purpose
 -------
@@ -17,21 +17,18 @@ Target architecture:
                         ↓
                  HORMUZ COMPOSITE
 
-Version 0.1 implements the SECURITY layer.
+Version 2.1 improves the SECURITY layer.
 
-Primary live sources:
-- me-security-monitor/events.json
-- me-security-monitor/security-signal.json
-
-Historical/context source:
-- me-security-monitor/data/strike_history.json
-
-Important methodological rules:
-- AIS is NOT treated as physical throughput.
-- Missing/stale data must NOT automatically become zero risk.
-- Regional Middle East risk is context, not direct Hormuz risk.
-- Hormuz relevance is determined from text + geography + context.
-- Flow and logistics layers are intentionally not scored yet.
+Main methodological changes from v2.0:
+- Geographic proximity alone cannot make an event Hormuz-security relevant.
+- Aviation / airline incidents are explicitly excluded from maritime security.
+- "War" or generic military context is not treated as a physical attack.
+- Flow/recovery news is separated from security events.
+- Direct Hormuz political threats/closure/blockade statements are treated
+  separately from physical maritime attacks.
+- Maritime + attack combinations remain strong security signals.
+- Regional ME security remains contextual only.
+- Stale strike history remains historical context only.
 """
 
 from __future__ import annotations
@@ -51,7 +48,7 @@ from urllib.request import Request, urlopen
 # CONFIG
 # ============================================================
 
-MODEL_VERSION = "2.0-security-alpha"
+MODEL_VERSION = "2.1-security-filter"
 
 OUTPUT_FILE = Path("hormuz-risk.json")
 
@@ -70,13 +67,10 @@ HTTP_TIMEOUT_SECONDS = 20
 HORMUZ_LAT = 26.56
 HORMUZ_LON = 56.25
 
-# Events inside this distance may receive geographic relevance.
+# Geography is supporting context only.
 GEO_MAX_DISTANCE_KM = 650.0
 
-# Live-event scoring window.
 LIVE_WINDOW_DAYS = 7
-
-# Older events can still contribute, but with strong decay.
 MAX_EVENT_AGE_DAYS = 30
 
 
@@ -97,17 +91,46 @@ MARITIME_TERMS = [
     "crude tanker",
     "lng tanker",
     "vessel",
-    "ship",
-    "shipping",
-    "maritime",
     "merchant vessel",
     "commercial vessel",
     "cargo ship",
     "oil carrier",
-    "naval",
+    "shipping",
+    "maritime",
+    "ship lane",
+    "ship lanes",
+    "shipping lane",
+    "shipping lanes",
+    "naval vessel",
+    "warship",
+    "merchant ship",
 ]
 
-ATTACK_TERMS = [
+PHYSICAL_ATTACK_TERMS = [
+    "tanker attacked",
+    "tanker struck",
+    "vessel attacked",
+    "vessel struck",
+    "ship attacked",
+    "ship struck",
+    "maritime attack",
+    "naval attack",
+    "hit by missile",
+    "hit by projectile",
+    "struck by missile",
+    "struck by projectile",
+    "anti-ship missile",
+    "anti ship missile",
+    "sea mine",
+    "naval mine",
+    "drone boat",
+    "drone vessel",
+    "explosion aboard",
+    "explosion on board",
+    "sabotage",
+]
+
+GENERIC_ATTACK_TERMS = [
     "attack",
     "attacked",
     "strike",
@@ -122,17 +145,40 @@ ATTACK_TERMS = [
     "usv",
     "mine",
     "explosion",
-    "intercept",
-    "interception",
+    "sabotage",
+]
+
+MARITIME_SECURITY_TERMS = [
     "seizure",
     "seized",
-    "detained",
     "boarding",
     "boarded",
-    "sabotage",
-    "threat",
-    "threatened",
-    "fire",
+    "detained vessel",
+    "intercepted vessel",
+    "interception of vessel",
+    "hijack",
+    "hijacked",
+    "piracy",
+    "harassment",
+]
+
+CLOSURE_THREAT_TERMS = [
+    "hormuz closed",
+    "hormuz closure",
+    "close hormuz",
+    "close the strait",
+    "strait will remain closed",
+    "strait remains closed",
+    "will not reopen",
+    "not reopen",
+    "blockade",
+    "blocked",
+    "blocking the strait",
+    "shipping blockade",
+    "ship lanes blocked",
+    "ship lanes choked",
+    "chokes ship lanes",
+    "closure of the strait",
 ]
 
 ENERGY_TERMS = [
@@ -148,6 +194,23 @@ ENERGY_TERMS = [
     "pipeline",
     "export",
     "exports",
+    "shipment",
+    "shipments",
+    "barrel",
+    "barrels",
+]
+
+ENERGY_INFRASTRUCTURE_TERMS = [
+    "oil terminal",
+    "lng terminal",
+    "gas terminal",
+    "export terminal",
+    "oil facility",
+    "gas facility",
+    "refinery",
+    "pipeline",
+    "loading terminal",
+    "port facility",
 ]
 
 REGIONAL_MARITIME_TERMS = [
@@ -174,16 +237,44 @@ REGIONAL_ACTOR_TERMS = [
     "united arab emirates",
 ]
 
+# These terms identify stories that are primarily aviation related.
+# They should not become Hormuz maritime-security events merely
+# because Dubai/UAE is geographically close.
+AVIATION_TERMS = [
+    "flydubai",
+    "airline",
+    "aircraft",
+    "airplane",
+    "aeroplane",
+    "flight",
+    "co-pilot",
+    "copilot",
+    "pilot",
+    "cockpit",
+    "passenger plane",
+    "aviation",
+    "airport",
+]
+
 FLOW_POSITIVE_TERMS = [
     "exports exceed",
     "exports rise",
     "exports increase",
+    "exports recover",
     "traffic recovers",
     "traffic recovery",
     "flows recover",
     "flows increase",
+    "shipments rise",
+    "shipments increase",
+    "shipments through hormuz",
+    "highest since",
     "pre-war levels",
     "prewar levels",
+    "back to pre-war",
+    "back to prewar",
+    "transported",
+    "million barrels",
 ]
 
 FLOW_NEGATIVE_TERMS = [
@@ -193,16 +284,19 @@ FLOW_NEGATIVE_TERMS = [
     "traffic drops",
     "flows fall",
     "flows decline",
+    "shipments fall",
+    "shipments decline",
     "disruption",
     "closure",
     "closed",
     "blocked",
     "blockade",
+    "chokes ship lanes",
 ]
 
 
 # ============================================================
-# DATA CLASSES
+# DATA CLASS
 # ============================================================
 
 @dataclass
@@ -219,16 +313,22 @@ class EventAssessment:
 
     direct_hormuz: bool
     maritime: bool
-    attack: bool
+    physical_attack: bool
+    generic_attack: bool
+    maritime_security: bool
+    closure_threat: bool
     energy: bool
+    energy_infrastructure: bool
     regional_maritime: bool
     regional_actor: bool
+    aviation: bool
 
     distance_km: Optional[float]
     geographic_relevance: float
     textual_relevance: float
     temporal_weight: float
 
+    security_event_type: str
     security_score: float
     relevance_level: str
 
@@ -291,7 +391,9 @@ def parse_date(value: Any) -> Optional[datetime]:
             continue
 
     try:
-        dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+        dt = datetime.fromisoformat(
+            text.replace("Z", "+00:00")
+        )
 
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=timezone.utc)
@@ -310,7 +412,10 @@ def age_in_days(date_value: Any) -> Optional[int]:
 
     delta = utc_now() - dt
 
-    return max(0, int(delta.total_seconds() // 86400))
+    return max(
+        0,
+        int(delta.total_seconds() // 86400),
+    )
 
 
 # ============================================================
@@ -327,7 +432,7 @@ def fetch_json(url: str) -> Tuple[Optional[Any], Dict[str, Any]]:
     request = Request(
         url,
         headers={
-            "User-Agent": "energy-data-hormuz-risk-model/2.0",
+            "User-Agent": "energy-data-hormuz-risk-model/2.1",
             "Accept": "application/json",
         },
     )
@@ -467,7 +572,7 @@ def temporal_weight(age_days: int) -> float:
 
 
 # ============================================================
-# EVENT ANALYSIS
+# EVENT TEXT
 # ============================================================
 
 def build_event_text(event: Dict[str, Any]) -> str:
@@ -504,99 +609,148 @@ def build_event_text(event: Dict[str, Any]) -> str:
     )
 
 
-def calculate_textual_relevance(
+# ============================================================
+# EVENT CLASSIFICATION
+# ============================================================
+
+def classify_security_event(
+    *,
     direct_hormuz: bool,
     maritime: bool,
-    attack: bool,
+    physical_attack: bool,
+    generic_attack: bool,
+    maritime_security: bool,
+    closure_threat: bool,
+    energy_infrastructure: bool,
+    regional_maritime: bool,
+    aviation: bool,
+) -> str:
+
+    # Aviation incidents are excluded unless there is also an
+    # explicit, independent Hormuz maritime-security component.
+    if aviation and not (
+        maritime
+        or maritime_security
+        or closure_threat
+    ):
+        return "NOT_SECURITY"
+
+    if maritime and physical_attack:
+        return "MARITIME_ATTACK"
+
+    if maritime and generic_attack:
+        return "MARITIME_ATTACK"
+
+    if maritime and maritime_security:
+        return "MARITIME_SECURITY_INCIDENT"
+
+    if direct_hormuz and closure_threat:
+        return "HORMUZ_CLOSURE_THREAT"
+
+    if regional_maritime and closure_threat:
+        return "MARITIME_DISRUPTION_THREAT"
+
+    if energy_infrastructure and generic_attack:
+        return "ENERGY_INFRASTRUCTURE_ATTACK"
+
+    # Direct Hormuz mention + generic attack is accepted only if
+    # maritime context is also present. This prevents generic war
+    # reporting from becoming a Hormuz attack.
+    if (
+        direct_hormuz
+        and maritime
+        and generic_attack
+    ):
+        return "HORMUZ_MARITIME_THREAT"
+
+    return "NOT_SECURITY"
+
+
+def calculate_textual_relevance(
+    *,
+    direct_hormuz: bool,
+    maritime: bool,
+    physical_attack: bool,
+    generic_attack: bool,
+    maritime_security: bool,
+    closure_threat: bool,
     energy: bool,
+    energy_infrastructure: bool,
     regional_maritime: bool,
     regional_actor: bool,
+    security_event_type: str,
 ) -> float:
+
+    if security_event_type == "NOT_SECURITY":
+        return 0.0
 
     score = 0.0
 
-    # Direct Hormuz reference is strongest.
     if direct_hormuz:
-        score += 0.65
-
-    # Regional maritime geography is also strong.
-    if regional_maritime:
         score += 0.35
 
-    # Maritime context.
-    if maritime:
+    if regional_maritime:
         score += 0.25
 
-    # Attack/security context.
-    if attack:
+    if maritime:
         score += 0.20
 
-    # Energy relevance.
-    if energy:
+    if physical_attack:
+        score += 0.35
+
+    elif generic_attack:
+        score += 0.20
+
+    if maritime_security:
+        score += 0.25
+
+    if closure_threat:
+        score += 0.30
+
+    if energy_infrastructure:
         score += 0.15
 
-    # Iran/UAE/Oman alone is intentionally weak.
-    if regional_actor:
+    elif energy:
         score += 0.05
 
-    # Context combinations.
-    if maritime and attack:
-        score += 0.20
-
-    if maritime and energy:
-        score += 0.10
-
-    if regional_actor and maritime:
-        score += 0.10
-
-    if regional_actor and attack and maritime:
-        score += 0.10
+    if regional_actor:
+        score += 0.05
 
     return clamp(score, 0.0, 1.0)
 
 
 def calculate_event_security_score(
+    *,
     textual: float,
     geographic: float,
     confidence: float,
     temporal: float,
-    direct_hormuz: bool,
-    maritime: bool,
-    attack: bool,
+    event_type: str,
 ) -> float:
 
-    # Text is more important than raw coordinates because the
-    # ME monitor can assign broad regional locations to relevant
-    # Hormuz articles.
+    if event_type == "NOT_SECURITY":
+        return 0.0
+
+    # Geography is now only a small supporting modifier.
     relevance = (
-        textual * 0.75
-        + geographic * 0.25
+        textual * 0.90
+        + geographic * 0.10
     )
 
-    severity = 0.30
+    severity_by_type = {
+        "MARITIME_ATTACK": 1.00,
+        "MARITIME_SECURITY_INCIDENT": 0.80,
+        "HORMUZ_CLOSURE_THREAT": 0.75,
+        "MARITIME_DISRUPTION_THREAT": 0.65,
+        "ENERGY_INFRASTRUCTURE_ATTACK": 0.75,
+        "HORMUZ_MARITIME_THREAT": 0.70,
+    }
 
-    if maritime:
-        severity += 0.15
-
-    if attack:
-        severity += 0.30
-
-    if maritime and attack:
-        severity += 0.15
-
-    if direct_hormuz:
-        severity += 0.10
-
-    severity = clamp(
-        severity,
+    severity = severity_by_type.get(
+        event_type,
         0.0,
-        1.0,
     )
 
-    # ME events currently often use confidence around 0.55.
-    # We do not want medium confidence to suppress the signal
-    # excessively, therefore confidence is converted to a
-    # multiplier between 0.70 and 1.00.
     confidence_multiplier = (
         0.70
         + clamp(confidence, 0.0, 1.0) * 0.30
@@ -633,6 +787,10 @@ def relevance_level(score: float) -> str:
     return "MINIMAL"
 
 
+# ============================================================
+# EVENT ASSESSMENT
+# ============================================================
+
 def assess_event(
     event: Dict[str, Any],
 ) -> Optional[EventAssessment]:
@@ -658,14 +816,34 @@ def assess_event(
         MARITIME_TERMS,
     )
 
-    attack = contains_any(
+    physical_attack = contains_any(
         text,
-        ATTACK_TERMS,
+        PHYSICAL_ATTACK_TERMS,
+    )
+
+    generic_attack = contains_any(
+        text,
+        GENERIC_ATTACK_TERMS,
+    )
+
+    maritime_security = contains_any(
+        text,
+        MARITIME_SECURITY_TERMS,
+    )
+
+    closure_threat = contains_any(
+        text,
+        CLOSURE_THREAT_TERMS,
     )
 
     energy = contains_any(
         text,
         ENERGY_TERMS,
+    )
+
+    energy_infrastructure = contains_any(
+        text,
+        ENERGY_INFRASTRUCTURE_TERMS,
     )
 
     regional_maritime = contains_any(
@@ -678,19 +856,82 @@ def assess_event(
         REGIONAL_ACTOR_TERMS,
     )
 
+    aviation = contains_any(
+        text,
+        AVIATION_TERMS,
+    )
+
+    flow_positive = contains_any(
+        text,
+        FLOW_POSITIVE_TERMS,
+    )
+
+    flow_negative = contains_any(
+        text,
+        FLOW_NEGATIVE_TERMS,
+    )
+
     location = event.get("location", {})
 
     distance_km, geo_score = geographic_relevance(
         location
     )
 
+    security_event_type = classify_security_event(
+        direct_hormuz=direct_hormuz,
+        maritime=maritime,
+        physical_attack=physical_attack,
+        generic_attack=generic_attack,
+        maritime_security=maritime_security,
+        closure_threat=closure_threat,
+        energy_infrastructure=energy_infrastructure,
+        regional_maritime=regional_maritime,
+        aviation=aviation,
+    )
+
+    # Keep an event if it has either:
+    # 1. a real Hormuz security role, or
+    # 2. a useful Hormuz flow signal.
+    #
+    # This allows recovery/throughput news to survive for the
+    # future Flow layer without contaminating Security.
+    useful_flow_event = (
+        direct_hormuz
+        and (
+            flow_positive
+            or flow_negative
+            or energy
+        )
+    )
+
+    useful_regional_flow_event = (
+        maritime
+        and energy
+        and (
+            flow_positive
+            or flow_negative
+        )
+    )
+
+    if (
+        security_event_type == "NOT_SECURITY"
+        and not useful_flow_event
+        and not useful_regional_flow_event
+    ):
+        return None
+
     text_score = calculate_textual_relevance(
         direct_hormuz=direct_hormuz,
         maritime=maritime,
-        attack=attack,
+        physical_attack=physical_attack,
+        generic_attack=generic_attack,
+        maritime_security=maritime_security,
+        closure_threat=closure_threat,
         energy=energy,
+        energy_infrastructure=energy_infrastructure,
         regional_maritime=regional_maritime,
         regional_actor=regional_actor,
+        security_event_type=security_event_type,
     )
 
     temporal = temporal_weight(age)
@@ -709,41 +950,8 @@ def assess_event(
         geographic=geo_score,
         confidence=confidence,
         temporal=temporal,
-        direct_hormuz=direct_hormuz,
-        maritime=maritime,
-        attack=attack,
+        event_type=security_event_type,
     )
-
-    # Avoid broad regional noise.
-    #
-    # An event is considered Hormuz relevant if:
-    # - it directly mentions Hormuz, OR
-    # - it has regional maritime context, OR
-    # - it combines maritime content with attack/energy/actor,
-    # - or it is geographically close AND has useful context.
-    relevant = (
-        direct_hormuz
-        or regional_maritime
-        or (
-            maritime
-            and (
-                attack
-                or energy
-                or regional_actor
-            )
-        )
-        or (
-            geo_score >= 0.60
-            and (
-                maritime
-                or attack
-                or energy
-            )
-        )
-    )
-
-    if not relevant:
-        return None
 
     source = event.get("source", {})
 
@@ -765,16 +973,6 @@ def assess_event(
     else:
         location_name = str(location)
 
-    flow_positive = contains_any(
-        text,
-        FLOW_POSITIVE_TERMS,
-    )
-
-    flow_negative = contains_any(
-        text,
-        FLOW_NEGATIVE_TERMS,
-    )
-
     return EventAssessment(
         event_id=str(
             event.get("id", "")
@@ -794,12 +992,19 @@ def assess_event(
             3,
         ),
         age_days=age,
+
         direct_hormuz=direct_hormuz,
         maritime=maritime,
-        attack=attack,
+        physical_attack=physical_attack,
+        generic_attack=generic_attack,
+        maritime_security=maritime_security,
+        closure_threat=closure_threat,
         energy=energy,
+        energy_infrastructure=energy_infrastructure,
         regional_maritime=regional_maritime,
         regional_actor=regional_actor,
+        aviation=aviation,
+
         distance_km=distance_km,
         geographic_relevance=round(
             geo_score,
@@ -813,10 +1018,13 @@ def assess_event(
             temporal,
             3,
         ),
+
+        security_event_type=security_event_type,
         security_score=security_score,
         relevance_level=relevance_level(
             security_score
         ),
+
         flow_positive_signal=flow_positive,
         flow_negative_signal=flow_negative,
     )
@@ -919,28 +1127,29 @@ def aggregate_security(
     regional_security: Dict[str, Any],
 ) -> Dict[str, Any]:
 
-    recent = [
+    # Only genuine security events enter the security score.
+    security_events = [
         event
         for event in events
-        if event.age_days <= LIVE_WINDOW_DAYS
+        if (
+            event.age_days <= LIVE_WINDOW_DAYS
+            and event.security_event_type
+            != "NOT_SECURITY"
+        )
     ]
 
-    recent_sorted = sorted(
-        recent,
+    security_events.sort(
         key=lambda item: item.security_score,
         reverse=True,
     )
 
-    # We use the strongest recent events rather than summing
-    # everything. This limits duplicate-news amplification.
     top_scores = [
         event.security_score
-        for event in recent_sorted[:8]
+        for event in security_events[:8]
     ]
 
     if top_scores:
 
-        # Weighted top-event signal.
         weights = [
             1.00,
             0.85,
@@ -985,10 +1194,6 @@ def aggregate_security(
         )
     )
 
-    # Regional security is contextual only.
-    #
-    # It cannot create a high Hormuz score on its own.
-    # Its maximum contribution is intentionally limited.
     if regional_score is not None:
 
         regional_context = clamp(
@@ -1019,11 +1224,9 @@ def aggregate_security(
 
     else:
 
-        # No current Hormuz-specific events:
-        # do NOT return zero automatically.
-        #
-        # Regional context can provide a low-confidence
-        # background estimate, but it is capped.
+        # No live Hormuz-specific security events.
+        # Regional ME context may provide only a capped
+        # low-confidence background estimate.
         if regional_context is not None:
             final_score = min(
                 regional_context * 0.35,
@@ -1042,17 +1245,27 @@ def aggregate_security(
             2,
         )
 
-    direct_count = sum(
-        1
-        for event in recent
-        if event.direct_hormuz
-    )
-
     maritime_attack_count = sum(
         1
-        for event in recent
-        if event.maritime
-        and event.attack
+        for event in security_events
+        if event.security_event_type
+        == "MARITIME_ATTACK"
+    )
+
+    closure_count = sum(
+        1
+        for event in security_events
+        if event.security_event_type
+        in {
+            "HORMUZ_CLOSURE_THREAT",
+            "MARITIME_DISRUPTION_THREAT",
+        }
+    )
+
+    direct_hormuz_security_count = sum(
+        1
+        for event in security_events
+        if event.direct_hormuz
     )
 
     if final_score is None:
@@ -1073,16 +1286,14 @@ def aggregate_security(
     else:
         level = "LOW"
 
-    if recent:
+    if maritime_attack_count >= 1:
+        confidence = "HIGH"
 
-        if direct_count >= 1:
-            confidence = "HIGH"
+    elif direct_hormuz_security_count >= 1:
+        confidence = "MEDIUM"
 
-        elif maritime_attack_count >= 1:
-            confidence = "MEDIUM"
-
-        else:
-            confidence = "LOW"
+    elif security_events:
+        confidence = "MEDIUM"
 
     elif regional_score is not None:
         confidence = "LOW"
@@ -1104,10 +1315,17 @@ def aggregate_security(
             if regional_context is not None
             else None
         ),
-        "events_7d": len(recent),
-        "direct_hormuz_events_7d": direct_count,
+        "security_events_7d": len(
+            security_events
+        ),
+        "direct_hormuz_security_events_7d": (
+            direct_hormuz_security_count
+        ),
         "maritime_attack_events_7d": (
             maritime_attack_count
+        ),
+        "closure_threat_events_7d": (
+            closure_count
         ),
     }
 
@@ -1126,9 +1344,7 @@ def inspect_strike_history(
         "age_days": None,
         "freshness": "UNAVAILABLE",
         "event_count": None,
-        "role": (
-            "historical_context_only"
-        ),
+        "role": "historical_context_only",
     }
 
     if not isinstance(
@@ -1188,11 +1404,10 @@ def calculate_data_quality(
     events_meta: Dict[str, Any],
     security_meta: Dict[str, Any],
     strike_meta: Dict[str, Any],
-    relevant_events: List[EventAssessment],
+    assessments: List[EventAssessment],
 ) -> Dict[str, Any]:
 
     score = 0
-
     issues: List[str] = []
 
     if events_meta.get("success"):
@@ -1209,6 +1424,7 @@ def calculate_data_quality(
             "ME security-signal.json unavailable"
         )
 
+    # Historical strike data has deliberately low importance.
     if strike_meta.get("success"):
         score += 10
     else:
@@ -1216,17 +1432,21 @@ def calculate_data_quality(
             "Historical strike_history unavailable"
         )
 
-    recent_relevant = [
+    live_security = [
         event
-        for event in relevant_events
-        if event.age_days <= LIVE_WINDOW_DAYS
+        for event in assessments
+        if (
+            event.age_days <= LIVE_WINDOW_DAYS
+            and event.security_event_type
+            != "NOT_SECURITY"
+        )
     ]
 
-    if recent_relevant:
+    if live_security:
         score += 15
     else:
         issues.append(
-            "No Hormuz-relevant live events detected in 7-day window"
+            "No live Hormuz-specific security events detected"
         )
 
     score = int(
@@ -1327,36 +1547,46 @@ def build_model() -> Dict[str, Any]:
     flow_signals = [
         event
         for event in assessments
-        if event.age_days <= LIVE_WINDOW_DAYS
-        and (
-            event.flow_positive_signal
-            or event.flow_negative_signal
+        if (
+            event.age_days <= LIVE_WINDOW_DAYS
+            and (
+                event.flow_positive_signal
+                or event.flow_negative_signal
+            )
         )
     ]
 
-    # Security is the only operational layer in this version.
-    #
-    # Flow and Logistics remain explicitly unavailable rather
-    # than receiving artificial zero values.
+    security_events = [
+        event
+        for event in assessments
+        if (
+            event.age_days <= LIVE_WINDOW_DAYS
+            and event.security_event_type
+            != "NOT_SECURITY"
+        )
+    ]
+
     layers = {
         "security": {
             "weight": 0.40,
             "status": "ACTIVE",
             **security_layer,
         },
+
         "flow": {
             "weight": 0.35,
             "status": "NOT_YET_IMPLEMENTED",
             "score": None,
             "note": (
                 "Physical throughput requires a dedicated "
-                "flow data source. News text is retained only "
-                "as a supporting signal."
+                "flow data source. News text is retained "
+                "only as a supporting signal."
             ),
             "supporting_news_signals": len(
                 flow_signals
             ),
         },
+
         "logistics": {
             "weight": 0.25,
             "status": "NOT_YET_IMPLEMENTED",
@@ -1369,8 +1599,6 @@ def build_model() -> Dict[str, Any]:
         },
     }
 
-    # No composite is calculated until all three layers are
-    # implemented. This prevents a misleading Hormuz score.
     composite = {
         "score": None,
         "level": "PENDING",
@@ -1382,9 +1610,13 @@ def build_model() -> Dict[str, Any]:
         ),
     }
 
-    top_events = [
+    top_security_events = [
         asdict(event)
-        for event in assessments[:20]
+        for event in sorted(
+            security_events,
+            key=lambda item: item.security_score,
+            reverse=True,
+        )[:20]
     ]
 
     supporting_flow_news = [
@@ -1399,9 +1631,35 @@ def build_model() -> Dict[str, Any]:
             "negative_flow_signal": (
                 event.flow_negative_signal
             ),
+            "security_event_type": (
+                event.security_event_type
+            ),
         }
-        for event in flow_signals[:10]
+        for event in flow_signals[:15]
     ]
+
+    # Diagnostic list:
+    # useful for checking stories retained for Flow but excluded
+    # from Security.
+    non_security_flow_events = [
+        {
+            "date": event.date,
+            "title": event.title,
+            "source": event.source,
+            "security_event_type": (
+                event.security_event_type
+            ),
+            "positive_flow_signal": (
+                event.flow_positive_signal
+            ),
+            "negative_flow_signal": (
+                event.flow_negative_signal
+            ),
+        }
+        for event in flow_signals
+        if event.security_event_type
+        == "NOT_SECURITY"
+    ][:15]
 
     return {
         "meta": {
@@ -1413,14 +1671,14 @@ def build_model() -> Dict[str, Any]:
             "repository": "energy-data",
             "automatic": True,
         },
+
         "methodology": {
             "security_weight": 0.40,
             "flow_weight": 0.35,
             "logistics_weight": 0.25,
+
             "principles": [
-                (
-                    "AIS is not physical throughput."
-                ),
+                "AIS is not physical throughput.",
                 (
                     "Missing data does not automatically "
                     "equal zero risk."
@@ -1430,8 +1688,16 @@ def build_model() -> Dict[str, Any]:
                     "not direct Hormuz risk."
                 ),
                 (
-                    "Hormuz relevance uses text, geography "
-                    "and contextual combinations."
+                    "Geographic proximity alone cannot "
+                    "create a Hormuz security event."
+                ),
+                (
+                    "Aviation incidents are excluded from "
+                    "Hormuz maritime security."
+                ),
+                (
+                    "Flow/recovery reporting is separated "
+                    "from physical security incidents."
                 ),
                 (
                     "Historical strike history is context "
@@ -1440,31 +1706,48 @@ def build_model() -> Dict[str, Any]:
                 ),
             ],
         },
+
         "sources": {
             "events": events_meta,
             "regional_security": security_meta,
             "strike_history": strike_meta,
         },
+
         "regional_security": regional_security,
+
         "historical_context": historical_context,
+
         "data_quality": data_quality,
+
         "layers": layers,
+
         "composite": composite,
-        "relevant_event_count_30d": len(
-            assessments
+
+        "security_event_count_7d": len(
+            security_events
         ),
-        "relevant_event_count_7d": sum(
-            1
-            for event in assessments
-            if event.age_days
-            <= LIVE_WINDOW_DAYS
+
+        "flow_signal_count_7d": len(
+            flow_signals
         ),
-        "top_relevant_events": top_events,
+
+        "top_security_events": (
+            top_security_events
+        ),
+
         "supporting_flow_news": (
             supporting_flow_news
         ),
+
+        "non_security_flow_events": (
+            non_security_flow_events
+        ),
     }
 
+
+# ============================================================
+# MAIN
+# ============================================================
 
 def main() -> int:
 
@@ -1496,6 +1779,13 @@ def main() -> int:
         print("---------------------------")
 
         print(
+            "Model version:",
+            result.get("meta", {}).get(
+                "version"
+            ),
+        )
+
+        print(
             "Security score:",
             security.get("score"),
         )
@@ -1511,9 +1801,30 @@ def main() -> int:
         )
 
         print(
-            "Relevant events 7d:",
+            "Security events 7d:",
             result.get(
-                "relevant_event_count_7d"
+                "security_event_count_7d"
+            ),
+        )
+
+        print(
+            "Maritime attacks 7d:",
+            security.get(
+                "maritime_attack_events_7d"
+            ),
+        )
+
+        print(
+            "Closure threats 7d:",
+            security.get(
+                "closure_threat_events_7d"
+            ),
+        )
+
+        print(
+            "Flow signals 7d:",
+            result.get(
+                "flow_signal_count_7d"
             ),
         )
 
