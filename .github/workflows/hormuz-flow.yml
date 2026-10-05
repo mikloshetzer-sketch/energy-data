@@ -1,0 +1,236 @@
+name: Hormuz Flow Data
+
+on:
+  # Egyelőre kizárólag kézzel indítható.
+  # Ha a rendszer stabil, később ide kerül a schedule.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-hormuz-flow:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ------------------------------------------------------
+      # 1. Repository letöltése
+      # ------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------
+      # 2. Python környezet
+      # ------------------------------------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # ------------------------------------------------------
+      # 3. Python verzió
+      # ------------------------------------------------------
+      - name: Show Python version
+        run: python --version
+
+      # ------------------------------------------------------
+      # 4. Hormuz Flow Collector futtatása
+      # ------------------------------------------------------
+      - name: Fetch Hormuz flow data
+        run: python fetch_hormuz_flow.py
+
+      # ------------------------------------------------------
+      # 5. Ellenőrizzük, hogy létrejött-e a JSON
+      # ------------------------------------------------------
+      - name: Validate output file
+        run: |
+          if [ ! -f hormuz-flow.json ]; then
+            echo "ERROR: hormuz-flow.json was not generated."
+            exit 1
+          fi
+
+          echo "hormuz-flow.json successfully generated."
+
+      # ------------------------------------------------------
+      # 6. JSON szintaktikai és tartalmi ellenőrzése
+      # ------------------------------------------------------
+      - name: Validate JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("hormuz-flow.json")
+
+          with path.open("r", encoding="utf-8") as f:
+              data = json.load(f)
+
+          print("JSON validation: OK")
+
+          meta = data.get("meta", {})
+          latest = data.get("latest_observation", {})
+          freshness = data.get("freshness", {})
+          quality = data.get("data_quality", {})
+          statistics = data.get("statistics", {})
+          stats_7d = statistics.get("7d", {})
+          diagnostics = data.get("diagnostics", {})
+
+          print()
+          print("Collector:", meta.get("collector"))
+          print("Version:", meta.get("version"))
+
+          print()
+          print("Latest observation:", latest.get("date"))
+          print("Freshness:", freshness.get("status"))
+          print("Age days:", freshness.get("age_days"))
+
+          print()
+          print("Latest total vessels:", latest.get("n_total"))
+          print("Latest tankers:", latest.get("n_tanker"))
+          print("Latest cargo:", latest.get("n_cargo"))
+
+          print()
+          print(
+              "7d average tankers:",
+              stats_7d.get("n_tanker", {}).get("average")
+          )
+
+          print(
+              "7d average total:",
+              stats_7d.get("n_total", {}).get("average")
+          )
+
+          print()
+          print(
+              "Data quality:",
+              quality.get("level"),
+              quality.get("score")
+          )
+
+          print(
+              "Normalized observations:",
+              diagnostics.get("normalized_observations")
+          )
+
+          print()
+          print("Available PortWatch fields:")
+
+          for field in diagnostics.get("available_fields", []):
+              print(" -", field)
+          PY
+
+      # ------------------------------------------------------
+      # 7. Rövid összefoglaló a GitHub Actions Summary oldalra
+      # ------------------------------------------------------
+      - name: Create workflow summary
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          data = json.loads(
+              Path("hormuz-flow.json").read_text(encoding="utf-8")
+          )
+
+          latest = data.get("latest_observation", {})
+          freshness = data.get("freshness", {})
+          quality = data.get("data_quality", {})
+          stats = data.get("statistics", {})
+          stats_7d = stats.get("7d", {})
+          trend = data.get("trend", {})
+
+          summary_path = os.environ["GITHUB_STEP_SUMMARY"]
+
+          with open(summary_path, "a", encoding="utf-8") as f:
+              f.write("# Hormuz Flow Data\n\n")
+
+              f.write("## Latest PortWatch observation\n\n")
+              f.write(
+                  f"- Date: **{latest.get('date')}**\n"
+              )
+              f.write(
+                  f"- Freshness: **{freshness.get('status')}**\n"
+              )
+              f.write(
+                  f"- Age: **{freshness.get('age_days')} days**\n"
+              )
+              f.write(
+                  f"- Total vessels: **{latest.get('n_total')}**\n"
+              )
+              f.write(
+                  f"- Tankers: **{latest.get('n_tanker')}**\n"
+              )
+              f.write(
+                  f"- Cargo vessels: **{latest.get('n_cargo')}**\n\n"
+              )
+
+              f.write("## 7-day averages\n\n")
+              f.write(
+                  f"- Tankers: **"
+                  f"{stats_7d.get('n_tanker', {}).get('average')}**\n"
+              )
+              f.write(
+                  f"- Total vessels: **"
+                  f"{stats_7d.get('n_total', {}).get('average')}**\n\n"
+              )
+
+              f.write("## Trend\n\n")
+              f.write(
+                  f"- Tanker 7d vs 30d: **"
+                  f"{trend.get('tanker_7d_vs_30d_pct')}%**\n"
+              )
+              f.write(
+                  f"- Tanker 7d vs 90d: **"
+                  f"{trend.get('tanker_7d_vs_90d_pct')}%**\n"
+              )
+              f.write(
+                  f"- Total 7d vs 30d: **"
+                  f"{trend.get('total_7d_vs_30d_pct')}%**\n"
+              )
+              f.write(
+                  f"- Total 7d vs 90d: **"
+                  f"{trend.get('total_7d_vs_90d_pct')}%**\n\n"
+              )
+
+              f.write("## Data quality\n\n")
+              f.write(
+                  f"- Level: **{quality.get('level')}**\n"
+              )
+              f.write(
+                  f"- Score: **{quality.get('score')}/100**\n"
+              )
+
+              issues = quality.get("issues", [])
+
+              if issues:
+                  f.write("\n### Issues\n\n")
+
+                  for issue in issues:
+                      f.write(f"- {issue}\n")
+
+              f.write(
+                  "\n> PortWatch vessel traffic is treated as a "
+                  "traffic/flow proxy, not as direct physical oil "
+                  "throughput in million barrels per day.\n"
+              )
+          PY
+
+      # ------------------------------------------------------
+      # 8. Teljes JSON megjelenítése a logban
+      # ------------------------------------------------------
+      - name: Show Hormuz flow output
+        run: |
+          echo "======================================"
+          echo " HORMUZ FLOW DATA OUTPUT"
+          echo "======================================"
+          cat hormuz-flow.json
+
+      # ------------------------------------------------------
+      # 9. Generált JSON visszamentése a repóba
+      # ------------------------------------------------------
+      - name: Commit generated Hormuz flow data
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update Hormuz flow data"
+          file_pattern: "hormuz-flow.json"
