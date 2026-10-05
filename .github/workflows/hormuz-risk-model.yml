@@ -1,0 +1,109 @@
+name: Hormuz Risk Model
+
+on:
+  # Egyelőre csak kézi futtatás.
+  # Ha a modell stabil, később ide kerül a schedule / cron.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-hormuz-risk:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ------------------------------------------------------
+      # 1. Repository letöltése
+      # ------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------
+      # 2. Python környezet
+      # ------------------------------------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # ------------------------------------------------------
+      # 3. Python verzió ellenőrzése
+      # ------------------------------------------------------
+      - name: Show Python version
+        run: python --version
+
+      # ------------------------------------------------------
+      # 4. Hormuz Risk Model futtatása
+      # ------------------------------------------------------
+      - name: Run Hormuz Risk Model
+        run: python hormuz_risk_model.py
+
+      # ------------------------------------------------------
+      # 5. Ellenőrizzük, hogy létrejött-e a JSON
+      # ------------------------------------------------------
+      - name: Validate output file
+        run: |
+          if [ ! -f hormuz-risk.json ]; then
+            echo "ERROR: hormuz-risk.json was not generated."
+            exit 1
+          fi
+
+          echo "hormuz-risk.json successfully generated."
+
+      # ------------------------------------------------------
+      # 6. JSON szintaktikai ellenőrzése
+      # ------------------------------------------------------
+      - name: Validate JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("hormuz-risk.json")
+
+          with path.open("r", encoding="utf-8") as f:
+              data = json.load(f)
+
+          print("JSON validation: OK")
+          print("Model:", data.get("meta", {}).get("model"))
+          print("Version:", data.get("meta", {}).get("version"))
+
+          security = data.get("layers", {}).get("security", {})
+
+          print("Security score:", security.get("score"))
+          print("Security level:", security.get("level"))
+          print("Security confidence:", security.get("confidence"))
+
+          print(
+              "Relevant events 7d:",
+              data.get("relevant_event_count_7d")
+          )
+
+          quality = data.get("data_quality", {})
+
+          print(
+              "Data quality:",
+              quality.get("level"),
+              quality.get("score")
+          )
+          PY
+
+      # ------------------------------------------------------
+      # 7. Eredmény megjelenítése a workflow logban
+      # ------------------------------------------------------
+      - name: Show Hormuz Risk output
+        run: |
+          echo "======================================"
+          echo " HORMUZ RISK MODEL OUTPUT"
+          echo "======================================"
+          cat hormuz-risk.json
+
+      # ------------------------------------------------------
+      # 8. A generált JSON mentése a repóba
+      # ------------------------------------------------------
+      - name: Commit generated Hormuz risk data
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update Hormuz risk model data"
+          file_pattern: "hormuz-risk.json"
