@@ -2,36 +2,28 @@
 # -*- coding: utf-8 -*-
 
 """
-Hormuz Flow Data Collector v1.0
-===============================
+Hormuz Flow Data Collector v1.1
+================================
 
 Purpose
 -------
-Fetch Strait of Hormuz transit data from IMF PortWatch's public
-ArcGIS Feature Service and create a normalized local JSON file:
+Fetch Strait of Hormuz transit data from IMF PortWatch and create:
 
     hormuz-flow.json
 
-This module does NOT calculate the final Hormuz Risk Score.
+Main methodological changes in v1.1
+-----------------------------------
+1. Fixed pre-disruption baseline.
+2. Moving 90-day average is NOT used as the normal baseline.
+3. Tanker count and tanker capacity are evaluated separately.
+4. Suspicious tanker-capacity zero values are flagged.
+5. Capacity averages exclude invalid/suspicious observations.
+6. Baseline coverage and confidence are reported explicitly.
+7. No final Hormuz Flow Risk Score is calculated yet.
 
-Its only responsibilities are:
-
-1. Download PortWatch data.
-2. Select Strait of Hormuz (chokepoint6).
-3. Normalize daily observations.
-4. Calculate 7 / 30 / 90 day statistics.
-5. Measure data freshness.
-6. Detect obvious data-quality problems.
-7. Write hormuz-flow.json.
-
-Important methodological rule
------------------------------
-PortWatch vessel counts are traffic / flow proxies.
-
-They MUST NOT be interpreted directly as physical crude-oil
-throughput in million barrels per day.
-
-AIS / vessel count != physical oil flow.
+Important:
+PortWatch is a traffic/capacity proxy.
+It is NOT direct physical oil throughput in mb/d.
 """
 
 from __future__ import annotations
@@ -39,7 +31,7 @@ from __future__ import annotations
 import json
 import statistics
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.error import HTTPError, URLError
@@ -52,7 +44,7 @@ from urllib.request import Request, urlopen
 # ============================================================
 
 MODEL_NAME = "Hormuz Flow Data Collector"
-MODEL_VERSION = "1.0-portwatch"
+MODEL_VERSION = "1.1-portwatch-baseline"
 
 OUTPUT_FILE = Path("hormuz-flow.json")
 
@@ -66,13 +58,36 @@ PORTWATCH_SERVICE_URL = (
 
 HORMUZ_PORT_ID = "chokepoint6"
 
-# Maximum number of observations requested from ArcGIS.
 MAX_RECORDS = 5000
-
-# We keep this much history in the normalized JSON.
 MAX_HISTORY_DAYS = 365
 
-# Freshness thresholds.
+# ------------------------------------------------------------
+# FIXED BASELINE
+# ------------------------------------------------------------
+#
+# The baseline must represent the pre-disruption operating
+# regime and must NOT move forward with the crisis.
+#
+# Current initial baseline:
+# 2026-05-01 -> 2026-06-07
+#
+# We deliberately end the baseline before the major June
+# disruption visible in the PortWatch series.
+#
+# This is configurable and will be validated from the actual
+# observations returned by PortWatch.
+# ------------------------------------------------------------
+
+BASELINE_START = date(2026, 5, 1)
+BASELINE_END = date(2026, 6, 7)
+
+MIN_BASELINE_DAYS_GOOD = 28
+MIN_BASELINE_DAYS_USABLE = 14
+
+# ------------------------------------------------------------
+# Freshness
+# ------------------------------------------------------------
+
 FRESH_MAX_DAYS = 3
 RECENT_MAX_DAYS = 7
 AGING_MAX_DAYS = 14
@@ -135,18 +150,8 @@ def parse_arcgis_date(
     value: Any,
 ) -> Optional[datetime]:
 
-    """
-    ArcGIS frequently returns dates as Unix epoch milliseconds.
-
-    This function also accepts ISO date strings as fallback.
-    """
-
     if value is None:
         return None
-
-    # --------------------------------------------------------
-    # Epoch milliseconds
-    # --------------------------------------------------------
 
     if isinstance(value, (int, float)):
 
@@ -156,19 +161,18 @@ def parse_arcgis_date(
                 tz=timezone.utc,
             )
 
-        except (ValueError, OSError, OverflowError):
+        except (
+            ValueError,
+            OSError,
+            OverflowError,
+        ):
             return None
-
-    # --------------------------------------------------------
-    # String
-    # --------------------------------------------------------
 
     text = str(value).strip()
 
     if not text:
         return None
 
-    # Numeric string containing epoch milliseconds.
     try:
         numeric = float(text)
 
@@ -181,11 +185,12 @@ def parse_arcgis_date(
     except ValueError:
         pass
 
-    # ISO fallback.
     try:
-
         dt = datetime.fromisoformat(
-            text.replace("Z", "+00:00")
+            text.replace(
+                "Z",
+                "+00:00",
+            )
         )
 
         if dt.tzinfo is None:
@@ -199,18 +204,6 @@ def parse_arcgis_date(
 
     except ValueError:
         return None
-
-
-def iso_date(
-    value: Any,
-) -> Optional[str]:
-
-    dt = parse_arcgis_date(value)
-
-    if dt is None:
-        return None
-
-    return dt.date().isoformat()
 
 
 def age_days(
@@ -236,14 +229,6 @@ def age_days(
 # ============================================================
 
 def build_portwatch_url() -> str:
-
-    """
-    Build the ArcGIS FeatureServer query.
-
-    We request all available attributes because PortWatch's
-    field structure may evolve. The normalization step below
-    extracts only the fields we need.
-    """
 
     params = {
         "where": (
@@ -273,7 +258,7 @@ def fetch_json(
         url,
         headers={
             "User-Agent": (
-                "energy-data-hormuz-flow/1.0"
+                "energy-data-hormuz-flow/1.1"
             ),
             "Accept": "application/json",
         },
@@ -286,8 +271,10 @@ def fetch_json(
             timeout=HTTP_TIMEOUT_SECONDS,
         ) as response:
 
-            raw = response.read().decode(
-                "utf-8"
+            raw = (
+                response
+                .read()
+                .decode("utf-8")
             )
 
             return json.loads(raw)
@@ -327,12 +314,10 @@ def extract_features(
     payload: Dict[str, Any],
 ) -> List[Dict[str, Any]]:
 
-    """
-    Extract ArcGIS features and check for ArcGIS-level errors.
-    """
-
-    if not isinstance(payload, dict):
-
+    if not isinstance(
+        payload,
+        dict,
+    ):
         raise RuntimeError(
             "Unexpected PortWatch response type"
         )
@@ -341,10 +326,13 @@ def extract_features(
 
         error = payload.get(
             "error",
-            {}
+            {},
         )
 
-        if isinstance(error, dict):
+        if isinstance(
+            error,
+            dict,
+        ):
 
             message = error.get(
                 "message",
@@ -367,11 +355,13 @@ def extract_features(
 
     features = payload.get(
         "features",
-        []
+        [],
     )
 
-    if not isinstance(features, list):
-
+    if not isinstance(
+        features,
+        list,
+    ):
         raise RuntimeError(
             "PortWatch response contains "
             "no valid feature list"
@@ -381,7 +371,7 @@ def extract_features(
 
 
 # ============================================================
-# FIELD DETECTION
+# FIELD HELPERS
 # ============================================================
 
 def first_existing(
@@ -389,17 +379,12 @@ def first_existing(
     candidates: List[str],
 ) -> Any:
 
-    """
-    PortWatch schemas can change field naming slightly.
-
-    This helper makes the collector more tolerant by checking
-    several possible names.
-    """
-
     for field in candidates:
 
         if field in attributes:
-            return attributes.get(field)
+            return attributes.get(
+                field
+            )
 
     return None
 
@@ -414,10 +399,13 @@ def detect_available_fields(
 
         attributes = feature.get(
             "attributes",
-            {}
+            {},
         )
 
-        if isinstance(attributes, dict):
+        if isinstance(
+            attributes,
+            dict,
+        ):
             fields.update(
                 attributes.keys()
             )
@@ -435,7 +423,7 @@ def normalize_feature(
 
     attributes = feature.get(
         "attributes",
-        {}
+        {},
     )
 
     if not isinstance(
@@ -511,9 +499,7 @@ def normalize_feature(
         )
     )
 
-    # PortWatch datasets may contain tonnage / capacity fields.
-    # We preserve them if present, but do not assume they exist.
-    total_capacity = safe_float(
+    capacity_total = safe_float(
         first_existing(
             attributes,
             [
@@ -526,27 +512,61 @@ def normalize_feature(
         )
     )
 
-    tanker_capacity = safe_float(
+    capacity_tanker = safe_float(
         first_existing(
             attributes,
             [
-                "tanker_capacity",
                 "capacity_tanker",
+                "tanker_capacity",
                 "tanker_dwt",
             ],
         )
     )
 
-    cargo_capacity = safe_float(
+    capacity_cargo = safe_float(
         first_existing(
             attributes,
             [
-                "cargo_capacity",
                 "capacity_cargo",
+                "cargo_capacity",
                 "cargo_dwt",
             ],
         )
     )
+
+    # --------------------------------------------------------
+    # Tanker capacity quality flag
+    # --------------------------------------------------------
+
+    tanker_capacity_valid = True
+    tanker_capacity_issue = None
+
+    if n_tanker is None:
+
+        tanker_capacity_valid = False
+        tanker_capacity_issue = (
+            "tanker_count_missing"
+        )
+
+    elif n_tanker > 0:
+
+        if (
+            capacity_tanker is None
+            or capacity_tanker <= 0
+        ):
+
+            tanker_capacity_valid = False
+
+            tanker_capacity_issue = (
+                "positive_tanker_count_"
+                "but_zero_or_missing_capacity"
+            )
+
+    elif n_tanker == 0:
+
+        # Zero tanker count + zero capacity is logically valid.
+        if capacity_tanker is None:
+            capacity_tanker = 0.0
 
     return {
         "date": (
@@ -555,27 +575,37 @@ def normalize_feature(
         "timestamp": (
             date_dt.isoformat()
         ),
+
         "n_total": n_total,
         "n_tanker": n_tanker,
         "n_cargo": n_cargo,
+
         "capacity_total": (
             round_or_none(
-                total_capacity,
-                2,
+                capacity_total
             )
         ),
+
         "capacity_tanker": (
             round_or_none(
-                tanker_capacity,
-                2,
+                capacity_tanker
             )
         ),
+
         "capacity_cargo": (
             round_or_none(
-                cargo_capacity,
-                2,
+                capacity_cargo
             )
         ),
+
+        "quality_flags": {
+            "tanker_capacity_valid": (
+                tanker_capacity_valid
+            ),
+            "tanker_capacity_issue": (
+                tanker_capacity_issue
+            ),
+        },
     }
 
 
@@ -589,20 +619,25 @@ def normalize_features(
 
     for feature in features:
 
-        normalized = normalize_feature(
-            feature
+        normalized = (
+            normalize_feature(
+                feature
+            )
         )
 
         if normalized is None:
             continue
 
-        date = normalized["date"]
+        observation_date = (
+            normalized["date"]
+        )
 
-        # One observation per day.
-        if date in seen_dates:
+        if observation_date in seen_dates:
             continue
 
-        seen_dates.add(date)
+        seen_dates.add(
+            observation_date
+        )
 
         observations.append(
             normalized
@@ -619,7 +654,7 @@ def normalize_features(
 
 
 # ============================================================
-# STATISTICS
+# GENERIC STATISTICS
 # ============================================================
 
 def numeric_values(
@@ -631,7 +666,9 @@ def numeric_values(
 
     for item in observations:
 
-        value = item.get(field)
+        value = item.get(
+            field
+        )
 
         if isinstance(
             value,
@@ -644,15 +681,45 @@ def numeric_values(
     return values
 
 
-def calculate_average(
+def valid_tanker_capacity_values(
     observations: List[Dict[str, Any]],
-    field: str,
-) -> Optional[float]:
+) -> List[float]:
 
-    values = numeric_values(
-        observations,
-        field,
-    )
+    values = []
+
+    for item in observations:
+
+        flags = item.get(
+            "quality_flags",
+            {},
+        )
+
+        if not flags.get(
+            "tanker_capacity_valid",
+            False,
+        ):
+            continue
+
+        value = item.get(
+            "capacity_tanker"
+        )
+
+        if not isinstance(
+            value,
+            (int, float),
+        ):
+            continue
+
+        values.append(
+            float(value)
+        )
+
+    return values
+
+
+def average(
+    values: List[float],
+) -> Optional[float]:
 
     if not values:
         return None
@@ -663,15 +730,9 @@ def calculate_average(
     )
 
 
-def calculate_median(
-    observations: List[Dict[str, Any]],
-    field: str,
+def median(
+    values: List[float],
 ) -> Optional[float]:
-
-    values = numeric_values(
-        observations,
-        field,
-    )
 
     if not values:
         return None
@@ -682,15 +743,9 @@ def calculate_median(
     )
 
 
-def calculate_min(
-    observations: List[Dict[str, Any]],
-    field: str,
+def minimum(
+    values: List[float],
 ) -> Optional[float]:
-
-    values = numeric_values(
-        observations,
-        field,
-    )
 
     if not values:
         return None
@@ -701,15 +756,9 @@ def calculate_min(
     )
 
 
-def calculate_max(
-    observations: List[Dict[str, Any]],
-    field: str,
+def maximum(
+    values: List[float],
 ) -> Optional[float]:
-
-    values = numeric_values(
-        observations,
-        field,
-    )
 
     if not values:
         return None
@@ -720,6 +769,31 @@ def calculate_max(
     )
 
 
+def metric_stats(
+    values: List[float],
+) -> Dict[str, Any]:
+
+    return {
+        "observations": len(values),
+        "average": average(
+            values
+        ),
+        "median": median(
+            values
+        ),
+        "min": minimum(
+            values
+        ),
+        "max": maximum(
+            values
+        ),
+    }
+
+
+# ============================================================
+# WINDOW STATISTICS
+# ============================================================
+
 def build_window_stats(
     observations: List[Dict[str, Any]],
     days: int,
@@ -727,85 +801,276 @@ def build_window_stats(
 
     window = observations[:days]
 
+    tanker_capacity_values = (
+        valid_tanker_capacity_values(
+            window
+        )
+    )
+
+    invalid_tanker_capacity_days = sum(
+        1
+        for item in window
+        if not item.get(
+            "quality_flags",
+            {},
+        ).get(
+            "tanker_capacity_valid",
+            False,
+        )
+    )
+
     return {
         "requested_days": days,
-        "available_days": len(window),
+        "available_days": len(
+            window
+        ),
 
-        "n_total": {
-            "average": calculate_average(
+        "n_total": metric_stats(
+            numeric_values(
                 window,
                 "n_total",
-            ),
-            "median": calculate_median(
-                window,
-                "n_total",
-            ),
-            "min": calculate_min(
-                window,
-                "n_total",
-            ),
-            "max": calculate_max(
-                window,
-                "n_total",
-            ),
-        },
+            )
+        ),
 
-        "n_tanker": {
-            "average": calculate_average(
+        "n_tanker": metric_stats(
+            numeric_values(
                 window,
                 "n_tanker",
-            ),
-            "median": calculate_median(
-                window,
-                "n_tanker",
-            ),
-            "min": calculate_min(
-                window,
-                "n_tanker",
-            ),
-            "max": calculate_max(
-                window,
-                "n_tanker",
-            ),
-        },
+            )
+        ),
 
-        "n_cargo": {
-            "average": calculate_average(
+        "n_cargo": metric_stats(
+            numeric_values(
                 window,
                 "n_cargo",
-            ),
-            "median": calculate_median(
-                window,
-                "n_cargo",
-            ),
-            "min": calculate_min(
-                window,
-                "n_cargo",
-            ),
-            "max": calculate_max(
-                window,
-                "n_cargo",
-            ),
-        },
+            )
+        ),
 
-        "capacity_total": {
-            "average": calculate_average(
+        "capacity_total": metric_stats(
+            numeric_values(
                 window,
                 "capacity_total",
-            ),
-        },
+            )
+        ),
 
-        "capacity_tanker": {
-            "average": calculate_average(
-                window,
-                "capacity_tanker",
+        "capacity_tanker_valid_only": (
+            metric_stats(
+                tanker_capacity_values
+            )
+        ),
+
+        "capacity_quality": {
+            "valid_days": len(
+                tanker_capacity_values
+            ),
+            "invalid_days": (
+                invalid_tanker_capacity_days
             ),
         },
     }
 
 
 # ============================================================
-# BASELINE COMPARISON
+# FIXED PRE-DISRUPTION BASELINE
+# ============================================================
+
+def get_fixed_baseline_observations(
+    observations: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+
+    result = []
+
+    for item in observations:
+
+        try:
+            observation_date = (
+                date.fromisoformat(
+                    item["date"]
+                )
+            )
+
+        except (
+            KeyError,
+            ValueError,
+        ):
+            continue
+
+        if (
+            BASELINE_START
+            <= observation_date
+            <= BASELINE_END
+        ):
+            result.append(
+                item
+            )
+
+    result.sort(
+        key=lambda item: item["date"]
+    )
+
+    return result
+
+
+def determine_baseline_confidence(
+    baseline: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+
+    available_days = len(
+        baseline
+    )
+
+    valid_capacity_days = sum(
+        1
+        for item in baseline
+        if item.get(
+            "quality_flags",
+            {},
+        ).get(
+            "tanker_capacity_valid",
+            False,
+        )
+    )
+
+    if (
+        available_days
+        >= MIN_BASELINE_DAYS_GOOD
+    ):
+        coverage_level = "GOOD"
+
+    elif (
+        available_days
+        >= MIN_BASELINE_DAYS_USABLE
+    ):
+        coverage_level = "USABLE"
+
+    else:
+        coverage_level = "POOR"
+
+    if available_days > 0:
+
+        capacity_valid_pct = round(
+            (
+                valid_capacity_days
+                / available_days
+            )
+            * 100.0,
+            2,
+        )
+
+    else:
+        capacity_valid_pct = 0.0
+
+    if (
+        coverage_level == "GOOD"
+        and capacity_valid_pct >= 80
+    ):
+        confidence = "HIGH"
+
+    elif (
+        coverage_level
+        in {"GOOD", "USABLE"}
+        and capacity_valid_pct >= 50
+    ):
+        confidence = "MEDIUM"
+
+    else:
+        confidence = "LOW"
+
+    return {
+        "coverage_level": (
+            coverage_level
+        ),
+        "confidence": confidence,
+        "available_days": (
+            available_days
+        ),
+        "valid_tanker_capacity_days": (
+            valid_capacity_days
+        ),
+        "valid_tanker_capacity_pct": (
+            capacity_valid_pct
+        ),
+    }
+
+
+def build_fixed_baseline(
+    observations: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+
+    baseline = (
+        get_fixed_baseline_observations(
+            observations
+        )
+    )
+
+    confidence = (
+        determine_baseline_confidence(
+            baseline
+        )
+    )
+
+    tanker_capacity_values = (
+        valid_tanker_capacity_values(
+            baseline
+        )
+    )
+
+    return {
+        "type": (
+            "fixed_pre_disruption"
+        ),
+
+        "start_date": (
+            BASELINE_START.isoformat()
+        ),
+
+        "end_date": (
+            BASELINE_END.isoformat()
+        ),
+
+        "methodological_reason": (
+            "Fixed pre-disruption baseline prevents "
+            "the reference level from drifting downward "
+            "during a prolonged disruption."
+        ),
+
+        "confidence": confidence,
+
+        "metrics": {
+            "n_total": metric_stats(
+                numeric_values(
+                    baseline,
+                    "n_total",
+                )
+            ),
+
+            "n_tanker": metric_stats(
+                numeric_values(
+                    baseline,
+                    "n_tanker",
+                )
+            ),
+
+            "capacity_total": (
+                metric_stats(
+                    numeric_values(
+                        baseline,
+                        "capacity_total",
+                    )
+                )
+            ),
+
+            "capacity_tanker_valid_only": (
+                metric_stats(
+                    tanker_capacity_values
+                )
+            ),
+        },
+    }
+
+
+# ============================================================
+# COMPARISONS
 # ============================================================
 
 def percentage_change(
@@ -830,7 +1095,218 @@ def percentage_change(
     )
 
 
-def build_trend_comparison(
+def ratio_to_baseline(
+    current: Optional[float],
+    baseline: Optional[float],
+) -> Optional[float]:
+
+    if (
+        current is None
+        or baseline is None
+        or baseline == 0
+    ):
+        return None
+
+    return round(
+        current / baseline,
+        4,
+    )
+
+
+def build_baseline_comparison(
+    stats_7d: Dict[str, Any],
+    stats_30d: Dict[str, Any],
+    baseline: Dict[str, Any],
+) -> Dict[str, Any]:
+
+    baseline_metrics = baseline.get(
+        "metrics",
+        {},
+    )
+
+    tanker_baseline = (
+        baseline_metrics
+        .get("n_tanker", {})
+        .get("average")
+    )
+
+    total_baseline = (
+        baseline_metrics
+        .get("n_total", {})
+        .get("average")
+    )
+
+    tanker_capacity_baseline = (
+        baseline_metrics
+        .get(
+            "capacity_tanker_valid_only",
+            {},
+        )
+        .get("average")
+    )
+
+    tanker_7d = (
+        stats_7d
+        .get("n_tanker", {})
+        .get("average")
+    )
+
+    tanker_30d = (
+        stats_30d
+        .get("n_tanker", {})
+        .get("average")
+    )
+
+    total_7d = (
+        stats_7d
+        .get("n_total", {})
+        .get("average")
+    )
+
+    total_30d = (
+        stats_30d
+        .get("n_total", {})
+        .get("average")
+    )
+
+    tanker_capacity_7d = (
+        stats_7d
+        .get(
+            "capacity_tanker_valid_only",
+            {},
+        )
+        .get("average")
+    )
+
+    tanker_capacity_30d = (
+        stats_30d
+        .get(
+            "capacity_tanker_valid_only",
+            {},
+        )
+        .get("average")
+    )
+
+    return {
+        "tanker_count": {
+            "baseline_average": (
+                tanker_baseline
+            ),
+
+            "7d_average": (
+                tanker_7d
+            ),
+
+            "30d_average": (
+                tanker_30d
+            ),
+
+            "7d_vs_baseline_pct": (
+                percentage_change(
+                    tanker_7d,
+                    tanker_baseline,
+                )
+            ),
+
+            "30d_vs_baseline_pct": (
+                percentage_change(
+                    tanker_30d,
+                    tanker_baseline,
+                )
+            ),
+
+            "7d_baseline_ratio": (
+                ratio_to_baseline(
+                    tanker_7d,
+                    tanker_baseline,
+                )
+            ),
+
+            "30d_baseline_ratio": (
+                ratio_to_baseline(
+                    tanker_30d,
+                    tanker_baseline,
+                )
+            ),
+        },
+
+        "total_vessels": {
+            "baseline_average": (
+                total_baseline
+            ),
+
+            "7d_average": (
+                total_7d
+            ),
+
+            "30d_average": (
+                total_30d
+            ),
+
+            "7d_vs_baseline_pct": (
+                percentage_change(
+                    total_7d,
+                    total_baseline,
+                )
+            ),
+
+            "30d_vs_baseline_pct": (
+                percentage_change(
+                    total_30d,
+                    total_baseline,
+                )
+            ),
+
+            "7d_baseline_ratio": (
+                ratio_to_baseline(
+                    total_7d,
+                    total_baseline,
+                )
+            ),
+        },
+
+        "tanker_capacity": {
+            "baseline_average_valid_only": (
+                tanker_capacity_baseline
+            ),
+
+            "7d_average_valid_only": (
+                tanker_capacity_7d
+            ),
+
+            "30d_average_valid_only": (
+                tanker_capacity_30d
+            ),
+
+            "7d_vs_baseline_pct": (
+                percentage_change(
+                    tanker_capacity_7d,
+                    tanker_capacity_baseline,
+                )
+            ),
+
+            "30d_vs_baseline_pct": (
+                percentage_change(
+                    tanker_capacity_30d,
+                    tanker_capacity_baseline,
+                )
+            ),
+
+            "7d_baseline_ratio": (
+                ratio_to_baseline(
+                    tanker_capacity_7d,
+                    tanker_capacity_baseline,
+                )
+            ),
+        },
+    }
+
+
+# ============================================================
+# MOVING TREND
+# ============================================================
+
+def build_moving_trend(
     stats_7d: Dict[str, Any],
     stats_30d: Dict[str, Any],
     stats_90d: Dict[str, Any],
@@ -854,25 +1330,16 @@ def build_trend_comparison(
         .get("average")
     )
 
-    total_7 = (
-        stats_7d
-        .get("n_total", {})
-        .get("average")
-    )
-
-    total_30 = (
-        stats_30d
-        .get("n_total", {})
-        .get("average")
-    )
-
-    total_90 = (
-        stats_90d
-        .get("n_total", {})
-        .get("average")
-    )
-
     return {
+        "role": (
+            "short_term_trend_only"
+        ),
+
+        "warning": (
+            "The moving 90-day average is NOT "
+            "used as the normal baseline."
+        ),
+
         "tanker_7d_vs_30d_pct": (
             percentage_change(
                 tanker_7,
@@ -884,20 +1351,6 @@ def build_trend_comparison(
             percentage_change(
                 tanker_7,
                 tanker_90,
-            )
-        ),
-
-        "total_7d_vs_30d_pct": (
-            percentage_change(
-                total_7,
-                total_30,
-            )
-        ),
-
-        "total_7d_vs_90d_pct": (
-            percentage_change(
-                total_7,
-                total_90,
             )
         ),
     }
@@ -947,6 +1400,7 @@ def determine_freshness(
 def evaluate_data_quality(
     observations: List[Dict[str, Any]],
     freshness: Dict[str, Any],
+    baseline: Dict[str, Any],
 ) -> Dict[str, Any]:
 
     score = 100
@@ -970,6 +1424,7 @@ def evaluate_data_quality(
         score -= 10
 
     elif freshness_status == "AGING":
+
         score -= 30
 
         issues.append(
@@ -977,6 +1432,7 @@ def evaluate_data_quality(
         )
 
     elif freshness_status == "STALE":
+
         score -= 55
 
         issues.append(
@@ -984,68 +1440,74 @@ def evaluate_data_quality(
         )
 
     elif freshness_status == "UNKNOWN":
+
         score -= 40
 
         issues.append(
-            "Latest observation age cannot be determined"
+            "Latest observation age "
+            "cannot be determined"
         )
-
-    # --------------------------------------------------------
-    # Missing values
-    # --------------------------------------------------------
 
     recent = observations[:30]
 
-    missing_total = sum(
+    invalid_capacity = sum(
         1
         for item in recent
-        if item.get("n_total") is None
+        if not item.get(
+            "quality_flags",
+            {},
+        ).get(
+            "tanker_capacity_valid",
+            False,
+        )
     )
 
-    missing_tanker = sum(
-        1
-        for item in recent
-        if item.get("n_tanker") is None
+    if invalid_capacity > 0:
+
+        invalid_pct = (
+            invalid_capacity
+            / max(
+                1,
+                len(recent),
+            )
+        )
+
+        if invalid_pct >= 0.50:
+            score -= 20
+
+        elif invalid_pct >= 0.25:
+            score -= 10
+
+        else:
+            score -= 5
+
+        issues.append(
+            f"{invalid_capacity} of "
+            f"{len(recent)} recent days "
+            f"have invalid/suspicious "
+            f"tanker-capacity values"
+        )
+
+    baseline_confidence = (
+        baseline
+        .get("confidence", {})
+        .get("confidence")
     )
 
-    if missing_total > 5:
+    if baseline_confidence == "LOW":
 
-        score -= 10
-
-        issues.append(
-            "Multiple recent n_total values are missing"
-        )
-
-    if missing_tanker > 5:
-
-        score -= 15
+        score -= 20
 
         issues.append(
-            "Multiple recent n_tanker values are missing"
+            "Fixed baseline confidence is LOW"
         )
 
-    # --------------------------------------------------------
-    # All-zero detection
-    # --------------------------------------------------------
+    elif baseline_confidence == "MEDIUM":
 
-    tanker_values = numeric_values(
-        recent,
-        "n_tanker",
-    )
-
-    if (
-        tanker_values
-        and all(
-            value == 0
-            for value in tanker_values
-        )
-    ):
-
-        score -= 30
+        score -= 5
 
         issues.append(
-            "Recent tanker observations are all zero; "
-            "possible AIS/data coverage issue"
+            "Fixed baseline confidence is MEDIUM"
         )
 
     score = max(
@@ -1083,7 +1545,9 @@ def build_flow_dataset() -> Dict[str, Any]:
 
     generated_at = utc_now()
 
-    query_url = build_portwatch_url()
+    query_url = (
+        build_portwatch_url()
+    )
 
     print(
         "Fetching IMF PortWatch Hormuz data..."
@@ -1118,8 +1582,10 @@ def build_flow_dataset() -> Dict[str, Any]:
         )
     )
 
-    observations = normalize_features(
-        features
+    observations = (
+        normalize_features(
+            features
+        )
     )
 
     if not observations:
@@ -1132,11 +1598,15 @@ def build_flow_dataset() -> Dict[str, Any]:
     latest = observations[0]
 
     latest_dt = parse_arcgis_date(
-        latest.get("timestamp")
+        latest.get(
+            "timestamp"
+        )
     )
 
-    freshness = determine_freshness(
-        latest_dt
+    freshness = (
+        determine_freshness(
+            latest_dt
+        )
     )
 
     stats_7d = build_window_stats(
@@ -1154,16 +1624,33 @@ def build_flow_dataset() -> Dict[str, Any]:
         90,
     )
 
-    trend = build_trend_comparison(
-        stats_7d,
-        stats_30d,
-        stats_90d,
+    baseline = (
+        build_fixed_baseline(
+            observations
+        )
+    )
+
+    baseline_comparison = (
+        build_baseline_comparison(
+            stats_7d,
+            stats_30d,
+            baseline,
+        )
+    )
+
+    moving_trend = (
+        build_moving_trend(
+            stats_7d,
+            stats_30d,
+            stats_90d,
+        )
     )
 
     data_quality = (
         evaluate_data_quality(
             observations,
             freshness,
+            baseline,
         )
     )
 
@@ -1188,9 +1675,10 @@ def build_flow_dataset() -> Dict[str, Any]:
                 "traffic_and_capacity_proxy"
             ),
             "methodological_warning": (
-                "PortWatch vessel traffic must not "
-                "be interpreted directly as physical "
-                "oil throughput in million barrels/day."
+                "PortWatch vessel traffic and "
+                "capacity are proxies and must "
+                "not be interpreted directly as "
+                "physical oil throughput in mb/d."
             ),
         },
 
@@ -1203,21 +1691,31 @@ def build_flow_dataset() -> Dict[str, Any]:
 
         "data_quality": data_quality,
 
+        "fixed_baseline": baseline,
+
         "statistics": {
             "7d": stats_7d,
             "30d": stats_30d,
             "90d": stats_90d,
         },
 
-        "trend": trend,
+        "baseline_comparison": (
+            baseline_comparison
+        ),
+
+        "moving_trend": (
+            moving_trend
+        ),
 
         "diagnostics": {
             "raw_features_received": (
                 len(features)
             ),
+
             "normalized_observations": (
                 len(observations)
             ),
+
             "available_fields": (
                 available_fields
             ),
@@ -1235,7 +1733,9 @@ def main() -> int:
 
     try:
 
-        result = build_flow_dataset()
+        result = (
+            build_flow_dataset()
+        )
 
         OUTPUT_FILE.write_text(
             json.dumps(
@@ -1262,20 +1762,36 @@ def main() -> int:
             {},
         )
 
-        stats = result.get(
-            "statistics",
+        baseline = result.get(
+            "fixed_baseline",
             {},
         )
 
-        stats_7d = stats.get(
-            "7d",
+        comparison = result.get(
+            "baseline_comparison",
             {},
+        )
+
+        tanker_comparison = (
+            comparison.get(
+                "tanker_count",
+                {},
+            )
+        )
+
+        capacity_comparison = (
+            comparison.get(
+                "tanker_capacity",
+                {},
+            )
         )
 
         print()
         print(
-            "Hormuz Flow Data Collector completed"
+            "Hormuz Flow Data Collector "
+            "v1.1 completed"
         )
+
         print(
             "------------------------------------"
         )
@@ -1295,46 +1811,111 @@ def main() -> int:
             freshness.get("age_days"),
         )
 
+        print()
         print(
-            "Latest total vessels:",
-            latest.get("n_total"),
+            "FIXED PRE-DISRUPTION BASELINE"
         )
 
         print(
-            "Latest tankers:",
-            latest.get("n_tanker"),
+            "Baseline period:",
+            baseline.get("start_date"),
+            "->",
+            baseline.get("end_date"),
         )
 
         print(
-            "7d average tankers:",
-            stats_7d
-            .get("n_tanker", {})
-            .get("average"),
+            "Baseline confidence:",
+            baseline
+            .get("confidence", {})
+            .get("confidence"),
         )
 
         print(
-            "7d average total:",
-            stats_7d
-            .get("n_total", {})
-            .get("average"),
+            "Baseline available days:",
+            baseline
+            .get("confidence", {})
+            .get("available_days"),
         )
 
+        print()
+        print(
+            "Tanker baseline average:",
+            tanker_comparison.get(
+                "baseline_average"
+            ),
+        )
+
+        print(
+            "Tanker 7d average:",
+            tanker_comparison.get(
+                "7d_average"
+            ),
+        )
+
+        print(
+            "Tanker 7d vs baseline:",
+            tanker_comparison.get(
+                "7d_vs_baseline_pct"
+            ),
+            "%",
+        )
+
+        print(
+            "Tanker 7d baseline ratio:",
+            tanker_comparison.get(
+                "7d_baseline_ratio"
+            ),
+        )
+
+        print()
+        print(
+            "Tanker capacity baseline:",
+            capacity_comparison.get(
+                "baseline_average_valid_only"
+            ),
+        )
+
+        print(
+            "Tanker capacity 7d:",
+            capacity_comparison.get(
+                "7d_average_valid_only"
+            ),
+        )
+
+        print(
+            "Tanker capacity 7d vs baseline:",
+            capacity_comparison.get(
+                "7d_vs_baseline_pct"
+            ),
+            "%",
+        )
+
+        print()
         print(
             "Data quality:",
             quality.get("level"),
             f"({quality.get('score')}/100)",
         )
 
-        print(
-            "Normalized observations:",
-            result.get(
-                "diagnostics",
-                {},
-            ).get(
-                "normalized_observations"
-            ),
+        issues = quality.get(
+            "issues",
+            [],
         )
 
+        if issues:
+
+            print(
+                "Data quality issues:"
+            )
+
+            for issue in issues:
+
+                print(
+                    " -",
+                    issue,
+                )
+
+        print()
         print(
             "Output:",
             OUTPUT_FILE,
@@ -1355,4 +1936,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(
+        main()
+    )
