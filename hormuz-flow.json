@@ -1,27 +1,31 @@
 {
   "meta": {
     "collector": "Hormuz Flow Data Collector",
-    "version": "1.2-monthly-diagnostics",
-    "generated_at": "2026-10-06T06:38:12.033109+00:00",
+    "version": "1.3-ais-observed-disruption",
+    "generated_at": "2026-10-06T07:21:32.882072+00:00",
     "automatic": true,
     "repository": "energy-data",
-    "mode": "DIAGNOSTIC"
+    "mode": "AIS_FLOW_OBSERVATION"
   },
   "methodology": {
     "war_start_reference": "2026-02-28",
-    "warning": "No final Flow Risk Score is calculated in this version.",
-    "baseline_status": "UNDER_REVIEW",
+    "structural_baseline": "2025-01-01/2025-12-31",
+    "prewar_control": "2026-02-01/2026-02-27",
+    "final_flow_risk_calculated": false,
     "principles": [
-      "PortWatch transit counts are AIS-derived traffic proxies.",
-      "PortWatch capacity is not direct physical oil throughput in mb/d.",
-      "Calendar 2025 and immediate pre-war February 2026 are compared before selecting the final baseline.",
-      "Suspicious zero tanker-capacity values are excluded from valid capacity statistics."
+      "PortWatch is treated as an AIS-observed traffic proxy.",
+      "AIS-observed traffic is not equivalent to physical oil throughput in mb/d.",
+      "The full calendar year 2025 is the fixed structural baseline.",
+      "February 1-27 2026 is retained as an immediate pre-war control.",
+      "AIS Observed Disruption is an observation layer, not the final Flow Risk Score.",
+      "Independent physical-flow validation is required before integration into Hormuz Risk."
     ]
   },
   "source": {
     "provider": "IMF PortWatch",
     "service": "Daily_Chokepoints_Data",
-    "portid": "chokepoint6"
+    "portid": "chokepoint6",
+    "measurement_role": "AIS-observed vessel traffic proxy"
   },
   "latest_observation": {
     "date": "2026-09-27",
@@ -57,10 +61,12 @@
     ]
   },
   "reference_periods": {
-    "calendar_2025": {
+    "structural_baseline": {
+      "name": "STRUCTURAL_BASELINE",
       "start_date": "2025-01-01",
       "end_date": "2025-12-31",
-      "role": "candidate_normal_baseline",
+      "status": "FIXED",
+      "purpose": "Long-run normal AIS-observed Hormuz traffic reference",
       "days": 365,
       "n_total": {
         "observations": 365,
@@ -103,10 +109,12 @@
         "valid_pct": 100.0
       }
     },
-    "february_2026_prewar": {
+    "prewar_control": {
+      "name": "PREWAR_CONTROL",
       "start_date": "2026-02-01",
       "end_date": "2026-02-27",
-      "role": "immediate_prewar_reference",
+      "status": "VALID",
+      "purpose": "Immediate pre-war control for baseline validation",
       "days": 27,
       "n_total": {
         "observations": 27,
@@ -147,51 +155,6 @@
         "valid_days": 27,
         "invalid_days": 0,
         "valid_pct": 100.0
-      }
-    },
-    "postwar_since_2026_02_28": {
-      "start_date": "2026-02-28",
-      "role": "disruption_period",
-      "days": 212,
-      "n_total": {
-        "observations": 212,
-        "average": 6.8,
-        "median": 4.0,
-        "min": 0.0,
-        "max": 57.0
-      },
-      "n_tanker": {
-        "observations": 212,
-        "average": 2.81,
-        "median": 1.5,
-        "min": 0.0,
-        "max": 36.0
-      },
-      "n_cargo": {
-        "observations": 212,
-        "average": 3.99,
-        "median": 3.0,
-        "min": 0.0,
-        "max": 31.0
-      },
-      "capacity_total": {
-        "observations": 212,
-        "average": 206657.55,
-        "median": 77497.0,
-        "min": 0.0,
-        "max": 2946748.0
-      },
-      "capacity_tanker_valid_only": {
-        "observations": 181,
-        "average": 143925.91,
-        "median": 30787.0,
-        "min": 0.0,
-        "max": 2598963.0
-      },
-      "capacity_quality": {
-        "valid_days": 181,
-        "invalid_days": 31,
-        "valid_pct": 85.38
       }
     }
   },
@@ -326,30 +289,40 @@
       }
     }
   },
-  "diagnostic_comparison": {
-    "tanker_count_7d": {
-      "current": 1.29,
-      "calendar_2025_average": 48.18,
-      "feb_2026_prewar_average": 43.74,
-      "current_vs_2025_pct": -97.32,
-      "current_vs_2025_ratio": 0.0268,
-      "current_vs_feb_prewar_pct": -97.05,
-      "current_vs_feb_prewar_ratio": 0.0295
+  "ais_observed_disruption": {
+    "indicator_name": "AIS_OBSERVED_DISRUPTION",
+    "status": "VALIDATION_REQUIRED",
+    "role": "AIS traffic observation layer only",
+    "final_flow_risk": false,
+    "scale": {
+      "minimum": 0,
+      "maximum": 100,
+      "meaning": "0 = observed traffic at or above structural baseline; 100 = no AIS-observed tanker traffic"
     },
-    "total_vessels_7d": {
-      "current": 3.14,
-      "calendar_2025_average": 85.53,
-      "feb_2026_prewar_average": 79.07,
-      "current_vs_2025_pct": -96.33,
-      "current_vs_2025_ratio": 0.0367,
-      "current_vs_feb_prewar_pct": -96.03,
-      "current_vs_feb_prewar_ratio": 0.0397
-    }
+    "structural_baseline_tankers_per_day": 48.18,
+    "prewar_control_tankers_per_day": 43.74,
+    "current_7d_tankers_per_day": 1.29,
+    "current_30d_tankers_per_day": 1.07,
+    "seven_day": {
+      "ratio": 0.0268,
+      "disruption_score": 97.32,
+      "level": "SEVERE"
+    },
+    "thirty_day": {
+      "ratio": 0.0222,
+      "disruption_score": 97.78,
+      "level": "SEVERE"
+    },
+    "baseline_control_check": {
+      "prewar_control_vs_structural_ratio": 0.9078,
+      "difference_score": 9.22,
+      "interpretation": "Used to verify that the structural baseline is broadly consistent with the immediate pre-war period."
+    },
+    "validation_warning": "AIS-observed disruption must not be interpreted as an equivalent decline in physical oil throughput. Independent physical-flow validation is required."
   },
   "monthly_diagnostics": [
     {
       "month": "2024-07",
-      "period": "PRE_WAR",
       "days": 12,
       "n_total": {
         "observations": 12,
@@ -394,7 +367,6 @@
     },
     {
       "month": "2024-08",
-      "period": "PRE_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -439,7 +411,6 @@
     },
     {
       "month": "2024-09",
-      "period": "PRE_WAR",
       "days": 30,
       "n_total": {
         "observations": 30,
@@ -484,7 +455,6 @@
     },
     {
       "month": "2024-10",
-      "period": "PRE_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -529,7 +499,6 @@
     },
     {
       "month": "2024-11",
-      "period": "PRE_WAR",
       "days": 30,
       "n_total": {
         "observations": 30,
@@ -574,7 +543,6 @@
     },
     {
       "month": "2024-12",
-      "period": "PRE_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -619,7 +587,6 @@
     },
     {
       "month": "2025-01",
-      "period": "PRE_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -664,7 +631,6 @@
     },
     {
       "month": "2025-02",
-      "period": "PRE_WAR",
       "days": 28,
       "n_total": {
         "observations": 28,
@@ -709,7 +675,6 @@
     },
     {
       "month": "2025-03",
-      "period": "PRE_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -754,7 +719,6 @@
     },
     {
       "month": "2025-04",
-      "period": "PRE_WAR",
       "days": 30,
       "n_total": {
         "observations": 30,
@@ -799,7 +763,6 @@
     },
     {
       "month": "2025-05",
-      "period": "PRE_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -844,7 +807,6 @@
     },
     {
       "month": "2025-06",
-      "period": "PRE_WAR",
       "days": 30,
       "n_total": {
         "observations": 30,
@@ -889,7 +851,6 @@
     },
     {
       "month": "2025-07",
-      "period": "PRE_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -934,7 +895,6 @@
     },
     {
       "month": "2025-08",
-      "period": "PRE_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -979,7 +939,6 @@
     },
     {
       "month": "2025-09",
-      "period": "PRE_WAR",
       "days": 30,
       "n_total": {
         "observations": 30,
@@ -1024,7 +983,6 @@
     },
     {
       "month": "2025-10",
-      "period": "PRE_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -1069,7 +1027,6 @@
     },
     {
       "month": "2025-11",
-      "period": "PRE_WAR",
       "days": 30,
       "n_total": {
         "observations": 30,
@@ -1114,7 +1071,6 @@
     },
     {
       "month": "2025-12",
-      "period": "PRE_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -1159,7 +1115,6 @@
     },
     {
       "month": "2026-01",
-      "period": "PRE_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -1204,7 +1159,6 @@
     },
     {
       "month": "2026-02",
-      "period": "PRE_WAR",
       "days": 28,
       "n_total": {
         "observations": 28,
@@ -1249,7 +1203,6 @@
     },
     {
       "month": "2026-03",
-      "period": "POST_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -1294,7 +1247,6 @@
     },
     {
       "month": "2026-04",
-      "period": "POST_WAR",
       "days": 30,
       "n_total": {
         "observations": 30,
@@ -1339,7 +1291,6 @@
     },
     {
       "month": "2026-05",
-      "period": "POST_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -1384,7 +1335,6 @@
     },
     {
       "month": "2026-06",
-      "period": "POST_WAR",
       "days": 30,
       "n_total": {
         "observations": 30,
@@ -1429,7 +1379,6 @@
     },
     {
       "month": "2026-07",
-      "period": "POST_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -1474,7 +1423,6 @@
     },
     {
       "month": "2026-08",
-      "period": "POST_WAR",
       "days": 31,
       "n_total": {
         "observations": 31,
@@ -1519,7 +1467,6 @@
     },
     {
       "month": "2026-09",
-      "period": "POST_WAR",
       "days": 27,
       "n_total": {
         "observations": 27,
