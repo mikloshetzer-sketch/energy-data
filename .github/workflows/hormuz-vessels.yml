@@ -3,6 +3,11 @@ name: Hormuz Vessel Monitor
 on:
   workflow_dispatch:
 
+  schedule:
+    # Run every 30 minutes.
+    # GitHub Actions cron uses UTC.
+    - cron: "*/30 * * * *"
+
 permissions:
   contents: write
 
@@ -42,6 +47,8 @@ jobs:
 
           meta = data.get("meta", {})
           analysis = data.get("analysis", {})
+          tracking = data.get("persistent_tracking", {})
+          tracking_summary = tracking.get("summary", {})
           quality = data.get("data_quality", {})
           vessels = data.get("vessels", [])
 
@@ -58,6 +65,10 @@ jobs:
               "Generated:",
               meta.get("generated_at")
           )
+
+          print()
+          print("VESSEL SNAPSHOT")
+          print("--------------------------------------")
 
           print(
               "Total vessels:",
@@ -94,18 +105,253 @@ jobs:
               len(vessels)
           )
 
+          print()
+          print("BROAD ZONES")
+          print("--------------------------------------")
+
           print(
-              "Data quality:",
-              quality.get("status"),
+              "Oil tankers:",
+              analysis.get("oil_tankers_by_zone", {})
+          )
+
+          print(
+              "Crude tankers:",
+              analysis.get("crude_tankers_by_zone", {})
+          )
+
+          print(
+              "VLCC / ULCC:",
+              analysis.get("vlcc_ulcc_by_zone", {})
+          )
+
+          print()
+          print("HORMUZ MICRO ZONES")
+          print("--------------------------------------")
+
+          print(
+              "Oil tankers:",
+              analysis.get(
+                  "oil_tankers_by_micro_zone",
+                  {}
+              )
+          )
+
+          print(
+              "Crude tankers:",
+              analysis.get(
+                  "crude_tankers_by_micro_zone",
+                  {}
+              )
+          )
+
+          print(
+              "VLCC / ULCC:",
+              analysis.get(
+                  "vlcc_ulcc_by_micro_zone",
+                  {}
+              )
+          )
+
+          print()
+          print("MOVEMENT TRACKING")
+          print("--------------------------------------")
+
+          print(
+              "Broad zone changes:",
+              tracking_summary.get(
+                  "zone_changes_this_run",
+                  0
+              )
+          )
+
+          print(
+              "Oil tanker broad changes:",
+              tracking_summary.get(
+                  "oil_tanker_zone_changes_this_run",
+                  0
+              )
+          )
+
+          print(
+              "Large tanker broad changes:",
+              tracking_summary.get(
+                  "large_tanker_zone_changes_this_run",
+                  0
+              )
+          )
+
+          print(
+              "VLCC / ULCC broad changes:",
+              tracking_summary.get(
+                  "vlcc_ulcc_zone_changes_this_run",
+                  0
+              )
+          )
+
+          print()
+          print(
+              "Micro zone changes:",
+              tracking_summary.get(
+                  "micro_zone_changes_this_run",
+                  0
+              )
+          )
+
+          print(
+              "Oil tanker micro changes:",
+              tracking_summary.get(
+                  "oil_tanker_micro_zone_changes_this_run",
+                  0
+              )
+          )
+
+          print(
+              "Large tanker micro changes:",
+              tracking_summary.get(
+                  "large_tanker_micro_zone_changes_this_run",
+                  0
+              )
+          )
+
+          print(
+              "VLCC / ULCC micro changes:",
+              tracking_summary.get(
+                  "vlcc_ulcc_micro_zone_changes_this_run",
+                  0
+              )
+          )
+
+          print()
+          print("TRANSIT DETECTION")
+          print("--------------------------------------")
+
+          print(
+              "Confirmed broad transits:",
+              tracking_summary.get(
+                  "confirmed_transits_this_run",
+                  0
+              )
+          )
+
+          print(
+              "Confirmed micro transits:",
+              tracking_summary.get(
+                  "confirmed_micro_transits_this_run",
+                  0
+              )
+          )
+
+          print(
+              "Possible direct transits:",
+              tracking_summary.get(
+                  "possible_direct_transits_this_run",
+                  0
+              )
+          )
+
+          print(
+              "Possible skipped-core transits:",
+              tracking_summary.get(
+                  "possible_micro_skipped_core_transits_this_run",
+                  0
+              )
+          )
+
+          print()
+          print("PERSISTENT TRACKING")
+          print("--------------------------------------")
+
+          print(
+              "Persistent state vessels:",
+              tracking_summary.get(
+                  "persistent_state_vessels",
+                  0
+              )
+          )
+
+          print(
+              "Confirmed present:",
+              tracking_summary.get(
+                  "confirmed_present_vessels",
+                  0
+              )
+          )
+
+          print(
+              "Temporarily missing:",
+              tracking_summary.get(
+                  "temporarily_missing_vessels",
+                  0
+              )
+          )
+
+          print(
+              "Raw appeared:",
+              tracking_summary.get(
+                  "raw_appeared_this_run",
+                  0
+              )
+          )
+
+          print(
+              "Raw missing:",
+              tracking_summary.get(
+                  "raw_missing_this_run",
+                  0
+              )
+          )
+
+          print(
+              "Confirmed new:",
+              tracking_summary.get(
+                  "confirmed_new_this_run",
+                  0
+              )
+          )
+
+          print(
+              "Confirmed disappeared:",
+              tracking_summary.get(
+                  "confirmed_disappeared_this_run",
+                  0
+              )
+          )
+
+          print()
+          print("DATA QUALITY")
+          print("--------------------------------------")
+
+          print(
+              "Status:",
+              quality.get("status")
+          )
+
+          print(
+              "Score:",
               quality.get("score")
           )
 
           print(
-              "Identifier coverage:",
+              "Snapshot churn:",
               quality.get(
-                  "identifier_coverage_pct"
+                  "snapshot_churn_pct"
               )
           )
+
+          issues = quality.get(
+              "issues",
+              []
+          )
+
+          if issues:
+              print()
+              print("Quality warnings:")
+
+              for issue in issues:
+                  print(
+                      " -",
+                      issue
+                  )
 
           if not isinstance(vessels, list):
               raise SystemExit(
@@ -124,6 +370,7 @@ jobs:
 
           print()
           print("TANKER SIZE COUNTS")
+          print("--------------------------------------")
 
           for size, count in (
               analysis
@@ -132,37 +379,6 @@ jobs:
           ):
               print(
                   f"  {size}: {count}"
-              )
-
-          print()
-          print("LARGE TANKER OBSERVATIONS")
-
-          large = analysis.get(
-              "large_tanker_observations",
-              []
-          )
-
-          if not large:
-              print(
-                  "  No large oil tanker "
-                  "identified in current snapshot."
-              )
-
-          for vessel in large[:20]:
-
-              print(
-                  "  ",
-                  vessel.get("vessel_id"),
-                  "|",
-                  vessel.get("ship_category"),
-                  "| DWT:",
-                  vessel.get("dwt"),
-                  "|",
-                  vessel.get("tanker_size"),
-                  "| direction:",
-                  vessel.get("direction"),
-                  "| region:",
-                  vessel.get("region"),
               )
 
           print()
@@ -185,7 +401,18 @@ jobs:
 
           meta = data.get("meta", {})
           analysis = data.get("analysis", {})
-          quality = data.get("data_quality", {})
+          tracking = data.get(
+              "persistent_tracking",
+              {}
+          )
+          tracking_summary = tracking.get(
+              "summary",
+              {}
+          )
+          quality = data.get(
+              "data_quality",
+              {}
+          )
 
           summary_path = os.environ.get(
               "GITHUB_STEP_SUMMARY"
@@ -210,17 +437,46 @@ jobs:
               f"- Large oil tankers: **{analysis.get('large_oil_tankers')}**",
               f"- VLCC / ULCC: **{analysis.get('vlcc_ulcc_count')}**",
               "",
+              "## Hormuz micro zones",
+              "",
+              f"- Oil tankers: **{analysis.get('oil_tankers_by_micro_zone', {})}**",
+              f"- Crude tankers: **{analysis.get('crude_tankers_by_micro_zone', {})}**",
+              f"- VLCC / ULCC: **{analysis.get('vlcc_ulcc_by_micro_zone', {})}**",
+              "",
+              "## Movement",
+              "",
+              f"- Oil tanker broad-zone changes: **{tracking_summary.get('oil_tanker_zone_changes_this_run', 0)}**",
+              f"- Oil tanker micro-zone changes: **{tracking_summary.get('oil_tanker_micro_zone_changes_this_run', 0)}**",
+              f"- Large tanker micro-zone changes: **{tracking_summary.get('large_tanker_micro_zone_changes_this_run', 0)}**",
+              f"- VLCC / ULCC micro-zone changes: **{tracking_summary.get('vlcc_ulcc_micro_zone_changes_this_run', 0)}**",
+              "",
+              "## Transit detection",
+              "",
+              f"- Confirmed broad transits: **{tracking_summary.get('confirmed_transits_this_run', 0)}**",
+              f"- Confirmed micro transits: **{tracking_summary.get('confirmed_micro_transits_this_run', 0)}**",
+              f"- Possible direct transits: **{tracking_summary.get('possible_direct_transits_this_run', 0)}**",
+              f"- Possible skipped-core transits: **{tracking_summary.get('possible_micro_skipped_core_transits_this_run', 0)}**",
+              "",
+              "## Persistent tracking",
+              "",
+              f"- Confirmed present: **{tracking_summary.get('confirmed_present_vessels', 0)}**",
+              f"- Temporarily missing: **{tracking_summary.get('temporarily_missing_vessels', 0)}**",
+              f"- Raw appeared: **{tracking_summary.get('raw_appeared_this_run', 0)}**",
+              f"- Raw missing: **{tracking_summary.get('raw_missing_this_run', 0)}**",
+              "",
               "## Data quality",
               "",
               f"- Status: **{quality.get('status')}**",
               f"- Score: **{quality.get('score')}**",
-              f"- Identifier coverage: **{quality.get('identifier_coverage_pct')}%**",
+              f"- Snapshot churn: **{quality.get('snapshot_churn_pct')}%**",
               "",
               "## Important",
               "",
               "AIS vessel observations are not direct physical oil-flow measurements.",
               "",
-              "No Hormuz Risk, Flow or OMPI model has been modified.",
+              "Micro-zone transit detection is an AIS logistics indicator.",
+              "",
+              "No Hormuz Risk, physical Flow or OMPI model has been modified.",
           ]
 
           with open(
@@ -247,4 +503,6 @@ jobs:
           fi
 
           git commit -m "Update Hormuz vessel snapshot"
-          git push
+
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin HEAD:"${GITHUB_REF_NAME}"
