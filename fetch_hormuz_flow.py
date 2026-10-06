@@ -2,28 +2,39 @@
 # -*- coding: utf-8 -*-
 
 """
-Hormuz Flow Data Collector v1.1
-================================
+Hormuz Flow Data Collector v1.2
+===============================
+
+DIAGNOSTIC VERSION
 
 Purpose
 -------
-Fetch Strait of Hormuz transit data from IMF PortWatch and create:
+Fetch IMF PortWatch Strait of Hormuz data and create:
 
     hormuz-flow.json
 
-Main methodological changes in v1.1
------------------------------------
-1. Fixed pre-disruption baseline.
-2. Moving 90-day average is NOT used as the normal baseline.
-3. Tanker count and tanker capacity are evaluated separately.
-4. Suspicious tanker-capacity zero values are flagged.
-5. Capacity averages exclude invalid/suspicious observations.
-6. Baseline coverage and confidence are reported explicitly.
-7. No final Hormuz Flow Risk Score is calculated yet.
+Version 1.2 does NOT calculate a Flow Risk Score.
 
-Important:
-PortWatch is a traffic/capacity proxy.
-It is NOT direct physical oil throughput in mb/d.
+Main purpose:
+1. Inspect the structure of the PortWatch Hormuz series.
+2. Produce monthly diagnostics.
+3. Compare:
+      - calendar year 2025
+      - 2026-02-01 -> 2026-02-27
+      - post-war observations
+4. Detect tanker-capacity quality problems.
+5. Help select the final baseline empirically.
+
+Important dates
+---------------
+War / major Hormuz disruption reference:
+    2026-02-28
+
+Important methodological rule
+-----------------------------
+PortWatch data are AIS-derived vessel transit/capacity proxies.
+
+They are NOT direct physical oil throughput in mb/d.
 """
 
 from __future__ import annotations
@@ -31,6 +42,8 @@ from __future__ import annotations
 import json
 import statistics
 import sys
+
+from collections import defaultdict
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -44,7 +57,7 @@ from urllib.request import Request, urlopen
 # ============================================================
 
 MODEL_NAME = "Hormuz Flow Data Collector"
-MODEL_VERSION = "1.1-portwatch-baseline"
+MODEL_VERSION = "1.2-monthly-diagnostics"
 
 OUTPUT_FILE = Path("hormuz-flow.json")
 
@@ -59,34 +72,17 @@ PORTWATCH_SERVICE_URL = (
 HORMUZ_PORT_ID = "chokepoint6"
 
 MAX_RECORDS = 5000
-MAX_HISTORY_DAYS = 365
 
-# ------------------------------------------------------------
-# FIXED BASELINE
-# ------------------------------------------------------------
-#
-# The baseline must represent the pre-disruption operating
-# regime and must NOT move forward with the crisis.
-#
-# Current initial baseline:
-# 2026-05-01 -> 2026-06-07
-#
-# We deliberately end the baseline before the major June
-# disruption visible in the PortWatch series.
-#
-# This is configurable and will be validated from the actual
-# observations returned by PortWatch.
-# ------------------------------------------------------------
+# Keep enough history to include all of 2025.
+MAX_HISTORY_DAYS = 800
 
-BASELINE_START = date(2026, 5, 1)
-BASELINE_END = date(2026, 6, 7)
+WAR_START_DATE = date(2026, 2, 28)
 
-MIN_BASELINE_DAYS_GOOD = 28
-MIN_BASELINE_DAYS_USABLE = 14
+PREWAR_2026_START = date(2026, 2, 1)
+PREWAR_2026_END = date(2026, 2, 27)
 
-# ------------------------------------------------------------
-# Freshness
-# ------------------------------------------------------------
+BASELINE_2025_START = date(2025, 1, 1)
+BASELINE_2025_END = date(2025, 12, 31)
 
 FRESH_MAX_DAYS = 3
 RECENT_MAX_DAYS = 7
@@ -94,7 +90,7 @@ AGING_MAX_DAYS = 14
 
 
 # ============================================================
-# BASIC HELPERS
+# HELPERS
 # ============================================================
 
 def utc_now() -> datetime:
@@ -177,6 +173,7 @@ def parse_arcgis_date(
         numeric = float(text)
 
         if numeric > 10000000000:
+
             return datetime.fromtimestamp(
                 numeric / 1000.0,
                 tz=timezone.utc,
@@ -186,6 +183,7 @@ def parse_arcgis_date(
         pass
 
     try:
+
         dt = datetime.fromisoformat(
             text.replace(
                 "Z",
@@ -258,7 +256,7 @@ def fetch_json(
         url,
         headers={
             "User-Agent": (
-                "energy-data-hormuz-flow/1.1"
+                "energy-data-hormuz-flow/1.2"
             ),
             "Accept": "application/json",
         },
@@ -307,7 +305,7 @@ def fetch_json(
 
 
 # ============================================================
-# PORTWATCH RESPONSE
+# RESPONSE
 # ============================================================
 
 def extract_features(
@@ -329,26 +327,6 @@ def extract_features(
             {},
         )
 
-        if isinstance(
-            error,
-            dict,
-        ):
-
-            message = error.get(
-                "message",
-                "Unknown ArcGIS error",
-            )
-
-            details = error.get(
-                "details",
-                [],
-            )
-
-            raise RuntimeError(
-                f"ArcGIS error: {message}; "
-                f"details={details}"
-            )
-
         raise RuntimeError(
             f"ArcGIS error: {error}"
         )
@@ -363,16 +341,11 @@ def extract_features(
         list,
     ):
         raise RuntimeError(
-            "PortWatch response contains "
-            "no valid feature list"
+            "No valid PortWatch features"
         )
 
     return features
 
-
-# ============================================================
-# FIELD HELPERS
-# ============================================================
 
 def first_existing(
     attributes: Dict[str, Any],
@@ -382,9 +355,7 @@ def first_existing(
     for field in candidates:
 
         if field in attributes:
-            return attributes.get(
-                field
-            )
+            return attributes.get(field)
 
     return None
 
@@ -395,7 +366,7 @@ def detect_available_fields(
 
     fields = set()
 
-    for feature in features[:20]:
+    for feature in features[:30]:
 
         attributes = feature.get(
             "attributes",
@@ -459,8 +430,7 @@ def normalize_feature(
 
     if (
         portid is not None
-        and str(portid)
-        != HORMUZ_PORT_ID
+        and str(portid) != HORMUZ_PORT_ID
     ):
         return None
 
@@ -471,7 +441,6 @@ def normalize_feature(
                 "n_total",
                 "n_tot",
                 "total",
-                "total_transits",
             ],
         )
     )
@@ -483,7 +452,6 @@ def normalize_feature(
                 "n_tanker",
                 "tankers",
                 "tanker",
-                "tanker_transits",
             ],
         )
     )
@@ -494,7 +462,6 @@ def normalize_feature(
             [
                 "n_cargo",
                 "cargo",
-                "cargo_transits",
             ],
         )
     )
@@ -506,8 +473,6 @@ def normalize_feature(
                 "capacity",
                 "total_capacity",
                 "capacity_total",
-                "dwt",
-                "total_dwt",
             ],
         )
     )
@@ -518,24 +483,12 @@ def normalize_feature(
             [
                 "capacity_tanker",
                 "tanker_capacity",
-                "tanker_dwt",
-            ],
-        )
-    )
-
-    capacity_cargo = safe_float(
-        first_existing(
-            attributes,
-            [
-                "capacity_cargo",
-                "cargo_capacity",
-                "cargo_dwt",
             ],
         )
     )
 
     # --------------------------------------------------------
-    # Tanker capacity quality flag
+    # Capacity quality
     # --------------------------------------------------------
 
     tanker_capacity_valid = True
@@ -544,6 +497,7 @@ def normalize_feature(
     if n_tanker is None:
 
         tanker_capacity_valid = False
+
         tanker_capacity_issue = (
             "tanker_count_missing"
         )
@@ -564,16 +518,41 @@ def normalize_feature(
 
     elif n_tanker == 0:
 
-        # Zero tanker count + zero capacity is logically valid.
         if capacity_tanker is None:
             capacity_tanker = 0.0
 
+    observation_date = (
+        date_dt.date()
+    )
+
     return {
         "date": (
-            date_dt.date().isoformat()
+            observation_date.isoformat()
         ),
+
         "timestamp": (
             date_dt.isoformat()
+        ),
+
+        "year": (
+            observation_date.year
+        ),
+
+        "month": (
+            observation_date.month
+        ),
+
+        "year_month": (
+            observation_date.strftime(
+                "%Y-%m"
+            )
+        ),
+
+        "period": (
+            "PRE_WAR"
+            if observation_date
+            < WAR_START_DATE
+            else "POST_WAR"
         ),
 
         "n_total": n_total,
@@ -592,16 +571,11 @@ def normalize_feature(
             )
         ),
 
-        "capacity_cargo": (
-            round_or_none(
-                capacity_cargo
-            )
-        ),
-
         "quality_flags": {
             "tanker_capacity_valid": (
                 tanker_capacity_valid
             ),
+
             "tanker_capacity_issue": (
                 tanker_capacity_issue
             ),
@@ -619,17 +593,15 @@ def normalize_features(
 
     for feature in features:
 
-        normalized = (
-            normalize_feature(
-                feature
-            )
+        item = normalize_feature(
+            feature
         )
 
-        if normalized is None:
+        if item is None:
             continue
 
         observation_date = (
-            normalized["date"]
+            item["date"]
         )
 
         if observation_date in seen_dates:
@@ -640,7 +612,7 @@ def normalize_features(
         )
 
         observations.append(
-            normalized
+            item
         )
 
     observations.sort(
@@ -654,7 +626,7 @@ def normalize_features(
 
 
 # ============================================================
-# GENERIC STATISTICS
+# STATISTICS
 # ============================================================
 
 def numeric_values(
@@ -662,30 +634,28 @@ def numeric_values(
     field: str,
 ) -> List[float]:
 
-    values = []
+    result = []
 
     for item in observations:
 
-        value = item.get(
-            field
-        )
+        value = item.get(field)
 
         if isinstance(
             value,
             (int, float),
         ):
-            values.append(
+            result.append(
                 float(value)
             )
 
-    return values
+    return result
 
 
 def valid_tanker_capacity_values(
     observations: List[Dict[str, Any]],
 ) -> List[float]:
 
-    values = []
+    result = []
 
     for item in observations:
 
@@ -704,112 +674,63 @@ def valid_tanker_capacity_values(
             "capacity_tanker"
         )
 
-        if not isinstance(
+        if isinstance(
             value,
             (int, float),
         ):
-            continue
+            result.append(
+                float(value)
+            )
 
-        values.append(
-            float(value)
-        )
-
-    return values
-
-
-def average(
-    values: List[float],
-) -> Optional[float]:
-
-    if not values:
-        return None
-
-    return round(
-        statistics.mean(values),
-        2,
-    )
-
-
-def median(
-    values: List[float],
-) -> Optional[float]:
-
-    if not values:
-        return None
-
-    return round(
-        statistics.median(values),
-        2,
-    )
-
-
-def minimum(
-    values: List[float],
-) -> Optional[float]:
-
-    if not values:
-        return None
-
-    return round(
-        min(values),
-        2,
-    )
-
-
-def maximum(
-    values: List[float],
-) -> Optional[float]:
-
-    if not values:
-        return None
-
-    return round(
-        max(values),
-        2,
-    )
+    return result
 
 
 def metric_stats(
     values: List[float],
 ) -> Dict[str, Any]:
 
+    if not values:
+
+        return {
+            "observations": 0,
+            "average": None,
+            "median": None,
+            "min": None,
+            "max": None,
+        }
+
     return {
         "observations": len(values),
-        "average": average(
-            values
+
+        "average": round(
+            statistics.mean(values),
+            2,
         ),
-        "median": median(
-            values
+
+        "median": round(
+            statistics.median(values),
+            2,
         ),
-        "min": minimum(
-            values
+
+        "min": round(
+            min(values),
+            2,
         ),
-        "max": maximum(
-            values
+
+        "max": round(
+            max(values),
+            2,
         ),
     }
 
 
-# ============================================================
-# WINDOW STATISTICS
-# ============================================================
-
-def build_window_stats(
+def build_period_stats(
     observations: List[Dict[str, Any]],
-    days: int,
 ) -> Dict[str, Any]:
 
-    window = observations[:days]
-
-    tanker_capacity_values = (
-        valid_tanker_capacity_values(
-            window
-        )
-    )
-
-    invalid_tanker_capacity_days = sum(
+    invalid_capacity_days = sum(
         1
-        for item in window
+        for item in observations
         if not item.get(
             "quality_flags",
             {},
@@ -819,63 +740,143 @@ def build_window_stats(
         )
     )
 
+    valid_capacity_values = (
+        valid_tanker_capacity_values(
+            observations
+        )
+    )
+
     return {
-        "requested_days": days,
-        "available_days": len(
-            window
+        "days": len(
+            observations
         ),
 
         "n_total": metric_stats(
             numeric_values(
-                window,
+                observations,
                 "n_total",
             )
         ),
 
         "n_tanker": metric_stats(
             numeric_values(
-                window,
+                observations,
                 "n_tanker",
             )
         ),
 
         "n_cargo": metric_stats(
             numeric_values(
-                window,
+                observations,
                 "n_cargo",
             )
         ),
 
-        "capacity_total": metric_stats(
-            numeric_values(
-                window,
-                "capacity_total",
+        "capacity_total": (
+            metric_stats(
+                numeric_values(
+                    observations,
+                    "capacity_total",
+                )
             )
         ),
 
         "capacity_tanker_valid_only": (
             metric_stats(
-                tanker_capacity_values
+                valid_capacity_values
             )
         ),
 
         "capacity_quality": {
             "valid_days": len(
-                tanker_capacity_values
+                valid_capacity_values
             ),
+
             "invalid_days": (
-                invalid_tanker_capacity_days
+                invalid_capacity_days
+            ),
+
+            "valid_pct": (
+                round(
+                    (
+                        len(
+                            valid_capacity_values
+                        )
+                        / len(observations)
+                    )
+                    * 100.0,
+                    2,
+                )
+                if observations
+                else None
             ),
         },
     }
 
 
 # ============================================================
-# FIXED PRE-DISRUPTION BASELINE
+# MONTHLY DIAGNOSTICS
 # ============================================================
 
-def get_fixed_baseline_observations(
+def build_monthly_diagnostics(
     observations: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+
+    grouped: Dict[
+        str,
+        List[Dict[str, Any]]
+    ] = defaultdict(list)
+
+    for item in observations:
+
+        key = item.get(
+            "year_month"
+        )
+
+        if key:
+            grouped[key].append(
+                item
+            )
+
+    result = []
+
+    for month in sorted(
+        grouped.keys()
+    ):
+
+        rows = grouped[
+            month
+        ]
+
+        stats = build_period_stats(
+            rows
+        )
+
+        result.append(
+            {
+                "month": month,
+
+                "period": (
+                    "PRE_WAR"
+                    if month < "2026-03"
+                    else "POST_WAR"
+                ),
+
+                **stats,
+            }
+        )
+
+    return result
+
+
+# ============================================================
+# SPECIFIC PERIODS
+# ============================================================
+
+def select_period(
+    observations: List[Dict[str, Any]],
+    start: date,
+    end: date,
 ) -> List[Dict[str, Any]]:
 
     result = []
@@ -883,7 +884,7 @@ def get_fixed_baseline_observations(
     for item in observations:
 
         try:
-            observation_date = (
+            item_date = (
                 date.fromisoformat(
                     item["date"]
                 )
@@ -896,182 +897,154 @@ def get_fixed_baseline_observations(
             continue
 
         if (
-            BASELINE_START
-            <= observation_date
-            <= BASELINE_END
+            start
+            <= item_date
+            <= end
         ):
             result.append(
                 item
             )
 
-    result.sort(
-        key=lambda item: item["date"]
-    )
-
     return result
 
 
-def determine_baseline_confidence(
-    baseline: List[Dict[str, Any]],
-) -> Dict[str, Any]:
-
-    available_days = len(
-        baseline
-    )
-
-    valid_capacity_days = sum(
-        1
-        for item in baseline
-        if item.get(
-            "quality_flags",
-            {},
-        ).get(
-            "tanker_capacity_valid",
-            False,
-        )
-    )
-
-    if (
-        available_days
-        >= MIN_BASELINE_DAYS_GOOD
-    ):
-        coverage_level = "GOOD"
-
-    elif (
-        available_days
-        >= MIN_BASELINE_DAYS_USABLE
-    ):
-        coverage_level = "USABLE"
-
-    else:
-        coverage_level = "POOR"
-
-    if available_days > 0:
-
-        capacity_valid_pct = round(
-            (
-                valid_capacity_days
-                / available_days
-            )
-            * 100.0,
-            2,
-        )
-
-    else:
-        capacity_valid_pct = 0.0
-
-    if (
-        coverage_level == "GOOD"
-        and capacity_valid_pct >= 80
-    ):
-        confidence = "HIGH"
-
-    elif (
-        coverage_level
-        in {"GOOD", "USABLE"}
-        and capacity_valid_pct >= 50
-    ):
-        confidence = "MEDIUM"
-
-    else:
-        confidence = "LOW"
-
-    return {
-        "coverage_level": (
-            coverage_level
-        ),
-        "confidence": confidence,
-        "available_days": (
-            available_days
-        ),
-        "valid_tanker_capacity_days": (
-            valid_capacity_days
-        ),
-        "valid_tanker_capacity_pct": (
-            capacity_valid_pct
-        ),
-    }
-
-
-def build_fixed_baseline(
+def build_reference_periods(
     observations: List[Dict[str, Any]],
 ) -> Dict[str, Any]:
 
-    baseline = (
-        get_fixed_baseline_observations(
-            observations
-        )
+    full_2025 = select_period(
+        observations,
+        BASELINE_2025_START,
+        BASELINE_2025_END,
     )
 
-    confidence = (
-        determine_baseline_confidence(
-            baseline
-        )
+    feb_prewar = select_period(
+        observations,
+        PREWAR_2026_START,
+        PREWAR_2026_END,
     )
 
-    tanker_capacity_values = (
-        valid_tanker_capacity_values(
-            baseline
-        )
-    )
+    postwar = []
+
+    for item in observations:
+
+        try:
+
+            item_date = (
+                date.fromisoformat(
+                    item["date"]
+                )
+            )
+
+        except (
+            KeyError,
+            ValueError,
+        ):
+            continue
+
+        if item_date >= WAR_START_DATE:
+
+            postwar.append(
+                item
+            )
 
     return {
-        "type": (
-            "fixed_pre_disruption"
-        ),
-
-        "start_date": (
-            BASELINE_START.isoformat()
-        ),
-
-        "end_date": (
-            BASELINE_END.isoformat()
-        ),
-
-        "methodological_reason": (
-            "Fixed pre-disruption baseline prevents "
-            "the reference level from drifting downward "
-            "during a prolonged disruption."
-        ),
-
-        "confidence": confidence,
-
-        "metrics": {
-            "n_total": metric_stats(
-                numeric_values(
-                    baseline,
-                    "n_total",
-                )
+        "calendar_2025": {
+            "start_date": (
+                BASELINE_2025_START.isoformat()
             ),
 
-            "n_tanker": metric_stats(
-                numeric_values(
-                    baseline,
-                    "n_tanker",
-                )
+            "end_date": (
+                BASELINE_2025_END.isoformat()
             ),
 
-            "capacity_total": (
-                metric_stats(
-                    numeric_values(
-                        baseline,
-                        "capacity_total",
-                    )
-                )
+            "role": (
+                "candidate_normal_baseline"
             ),
 
-            "capacity_tanker_valid_only": (
-                metric_stats(
-                    tanker_capacity_values
-                )
+            **build_period_stats(
+                full_2025
+            ),
+        },
+
+        "february_2026_prewar": {
+            "start_date": (
+                PREWAR_2026_START.isoformat()
+            ),
+
+            "end_date": (
+                PREWAR_2026_END.isoformat()
+            ),
+
+            "role": (
+                "immediate_prewar_reference"
+            ),
+
+            **build_period_stats(
+                feb_prewar
+            ),
+        },
+
+        "postwar_since_2026_02_28": {
+            "start_date": (
+                WAR_START_DATE.isoformat()
+            ),
+
+            "role": (
+                "disruption_period"
+            ),
+
+            **build_period_stats(
+                postwar
             ),
         },
     }
 
 
 # ============================================================
-# COMPARISONS
+# RECENT WINDOWS
 # ============================================================
+
+def build_recent_windows(
+    observations: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+
+    return {
+        "7d": build_period_stats(
+            observations[:7]
+        ),
+
+        "30d": build_period_stats(
+            observations[:30]
+        ),
+
+        "90d": build_period_stats(
+            observations[:90]
+        ),
+    }
+
+
+# ============================================================
+# COMPARISON
+# ============================================================
+
+def ratio(
+    current: Optional[float],
+    baseline: Optional[float],
+) -> Optional[float]:
+
+    if (
+        current is None
+        or baseline is None
+        or baseline == 0
+    ):
+        return None
+
+    return round(
+        current / baseline,
+        4,
+    )
+
 
 def percentage_change(
     current: Optional[float],
@@ -1095,264 +1068,150 @@ def percentage_change(
     )
 
 
-def ratio_to_baseline(
-    current: Optional[float],
-    baseline: Optional[float],
-) -> Optional[float]:
-
-    if (
-        current is None
-        or baseline is None
-        or baseline == 0
-    ):
-        return None
-
-    return round(
-        current / baseline,
-        4,
-    )
-
-
-def build_baseline_comparison(
-    stats_7d: Dict[str, Any],
-    stats_30d: Dict[str, Any],
-    baseline: Dict[str, Any],
+def build_diagnostic_comparison(
+    recent: Dict[str, Any],
+    references: Dict[str, Any],
 ) -> Dict[str, Any]:
 
-    baseline_metrics = baseline.get(
-        "metrics",
-        {},
+    current_7d = recent.get(
+        "7d",
+        {}
     )
 
-    tanker_baseline = (
-        baseline_metrics
+    baseline_2025 = (
+        references.get(
+            "calendar_2025",
+            {},
+        )
+    )
+
+    feb_prewar = (
+        references.get(
+            "february_2026_prewar",
+            {},
+        )
+    )
+
+    current_tankers = (
+        current_7d
         .get("n_tanker", {})
         .get("average")
     )
 
-    total_baseline = (
-        baseline_metrics
-        .get("n_total", {})
-        .get("average")
-    )
-
-    tanker_capacity_baseline = (
-        baseline_metrics
-        .get(
-            "capacity_tanker_valid_only",
-            {},
-        )
-        .get("average")
-    )
-
-    tanker_7d = (
-        stats_7d
+    baseline_2025_tankers = (
+        baseline_2025
         .get("n_tanker", {})
         .get("average")
     )
 
-    tanker_30d = (
-        stats_30d
+    feb_tankers = (
+        feb_prewar
         .get("n_tanker", {})
         .get("average")
     )
 
-    total_7d = (
-        stats_7d
+    current_total = (
+        current_7d
         .get("n_total", {})
         .get("average")
     )
 
-    total_30d = (
-        stats_30d
+    baseline_2025_total = (
+        baseline_2025
         .get("n_total", {})
         .get("average")
     )
 
-    tanker_capacity_7d = (
-        stats_7d
-        .get(
-            "capacity_tanker_valid_only",
-            {},
-        )
-        .get("average")
-    )
-
-    tanker_capacity_30d = (
-        stats_30d
-        .get(
-            "capacity_tanker_valid_only",
-            {},
-        )
+    feb_total = (
+        feb_prewar
+        .get("n_total", {})
         .get("average")
     )
 
     return {
-        "tanker_count": {
-            "baseline_average": (
-                tanker_baseline
+        "tanker_count_7d": {
+            "current": (
+                current_tankers
             ),
 
-            "7d_average": (
-                tanker_7d
+            "calendar_2025_average": (
+                baseline_2025_tankers
             ),
 
-            "30d_average": (
-                tanker_30d
+            "feb_2026_prewar_average": (
+                feb_tankers
             ),
 
-            "7d_vs_baseline_pct": (
+            "current_vs_2025_pct": (
                 percentage_change(
-                    tanker_7d,
-                    tanker_baseline,
+                    current_tankers,
+                    baseline_2025_tankers,
                 )
             ),
 
-            "30d_vs_baseline_pct": (
+            "current_vs_2025_ratio": (
+                ratio(
+                    current_tankers,
+                    baseline_2025_tankers,
+                )
+            ),
+
+            "current_vs_feb_prewar_pct": (
                 percentage_change(
-                    tanker_30d,
-                    tanker_baseline,
+                    current_tankers,
+                    feb_tankers,
                 )
             ),
 
-            "7d_baseline_ratio": (
-                ratio_to_baseline(
-                    tanker_7d,
-                    tanker_baseline,
-                )
-            ),
-
-            "30d_baseline_ratio": (
-                ratio_to_baseline(
-                    tanker_30d,
-                    tanker_baseline,
+            "current_vs_feb_prewar_ratio": (
+                ratio(
+                    current_tankers,
+                    feb_tankers,
                 )
             ),
         },
 
-        "total_vessels": {
-            "baseline_average": (
-                total_baseline
+        "total_vessels_7d": {
+            "current": (
+                current_total
             ),
 
-            "7d_average": (
-                total_7d
+            "calendar_2025_average": (
+                baseline_2025_total
             ),
 
-            "30d_average": (
-                total_30d
+            "feb_2026_prewar_average": (
+                feb_total
             ),
 
-            "7d_vs_baseline_pct": (
+            "current_vs_2025_pct": (
                 percentage_change(
-                    total_7d,
-                    total_baseline,
+                    current_total,
+                    baseline_2025_total,
                 )
             ),
 
-            "30d_vs_baseline_pct": (
-                percentage_change(
-                    total_30d,
-                    total_baseline,
+            "current_vs_2025_ratio": (
+                ratio(
+                    current_total,
+                    baseline_2025_total,
                 )
             ),
 
-            "7d_baseline_ratio": (
-                ratio_to_baseline(
-                    total_7d,
-                    total_baseline,
+            "current_vs_feb_prewar_pct": (
+                percentage_change(
+                    current_total,
+                    feb_total,
+                )
+            ),
+
+            "current_vs_feb_prewar_ratio": (
+                ratio(
+                    current_total,
+                    feb_total,
                 )
             ),
         },
-
-        "tanker_capacity": {
-            "baseline_average_valid_only": (
-                tanker_capacity_baseline
-            ),
-
-            "7d_average_valid_only": (
-                tanker_capacity_7d
-            ),
-
-            "30d_average_valid_only": (
-                tanker_capacity_30d
-            ),
-
-            "7d_vs_baseline_pct": (
-                percentage_change(
-                    tanker_capacity_7d,
-                    tanker_capacity_baseline,
-                )
-            ),
-
-            "30d_vs_baseline_pct": (
-                percentage_change(
-                    tanker_capacity_30d,
-                    tanker_capacity_baseline,
-                )
-            ),
-
-            "7d_baseline_ratio": (
-                ratio_to_baseline(
-                    tanker_capacity_7d,
-                    tanker_capacity_baseline,
-                )
-            ),
-        },
-    }
-
-
-# ============================================================
-# MOVING TREND
-# ============================================================
-
-def build_moving_trend(
-    stats_7d: Dict[str, Any],
-    stats_30d: Dict[str, Any],
-    stats_90d: Dict[str, Any],
-) -> Dict[str, Any]:
-
-    tanker_7 = (
-        stats_7d
-        .get("n_tanker", {})
-        .get("average")
-    )
-
-    tanker_30 = (
-        stats_30d
-        .get("n_tanker", {})
-        .get("average")
-    )
-
-    tanker_90 = (
-        stats_90d
-        .get("n_tanker", {})
-        .get("average")
-    )
-
-    return {
-        "role": (
-            "short_term_trend_only"
-        ),
-
-        "warning": (
-            "The moving 90-day average is NOT "
-            "used as the normal baseline."
-        ),
-
-        "tanker_7d_vs_30d_pct": (
-            percentage_change(
-                tanker_7,
-                tanker_30,
-            )
-        ),
-
-        "tanker_7d_vs_90d_pct": (
-            percentage_change(
-                tanker_7,
-                tanker_90,
-            )
-        ),
     }
 
 
@@ -1400,27 +1259,20 @@ def determine_freshness(
 def evaluate_data_quality(
     observations: List[Dict[str, Any]],
     freshness: Dict[str, Any],
-    baseline: Dict[str, Any],
+    references: Dict[str, Any],
 ) -> Dict[str, Any]:
 
     score = 100
     issues = []
 
-    if not observations:
-
-        return {
-            "score": 0,
-            "level": "POOR",
-            "issues": [
-                "No PortWatch observations available"
-            ],
-        }
-
-    freshness_status = freshness.get(
-        "status"
+    freshness_status = (
+        freshness.get(
+            "status"
+        )
     )
 
     if freshness_status == "RECENT":
+
         score -= 10
 
     elif freshness_status == "AGING":
@@ -1439,18 +1291,9 @@ def evaluate_data_quality(
             "Latest PortWatch observation is stale"
         )
 
-    elif freshness_status == "UNKNOWN":
-
-        score -= 40
-
-        issues.append(
-            "Latest observation age "
-            "cannot be determined"
-        )
-
     recent = observations[:30]
 
-    invalid_capacity = sum(
+    invalid_recent = sum(
         1
         for item in recent
         if not item.get(
@@ -1462,10 +1305,10 @@ def evaluate_data_quality(
         )
     )
 
-    if invalid_capacity > 0:
+    if invalid_recent:
 
         invalid_pct = (
-            invalid_capacity
+            invalid_recent
             / max(
                 1,
                 len(recent),
@@ -1482,32 +1325,24 @@ def evaluate_data_quality(
             score -= 5
 
         issues.append(
-            f"{invalid_capacity} of "
+            f"{invalid_recent} of "
             f"{len(recent)} recent days "
-            f"have invalid/suspicious "
-            f"tanker-capacity values"
+            f"have invalid tanker-capacity values"
         )
 
-    baseline_confidence = (
-        baseline
-        .get("confidence", {})
-        .get("confidence")
+    baseline_days = (
+        references
+        .get("calendar_2025", {})
+        .get("days", 0)
     )
 
-    if baseline_confidence == "LOW":
+    if baseline_days < 300:
 
         score -= 20
 
         issues.append(
-            "Fixed baseline confidence is LOW"
-        )
-
-    elif baseline_confidence == "MEDIUM":
-
-        score -= 5
-
-        issues.append(
-            "Fixed baseline confidence is MEDIUM"
+            "Calendar 2025 reference coverage "
+            "is incomplete"
         )
 
     score = max(
@@ -1538,23 +1373,19 @@ def evaluate_data_quality(
 
 
 # ============================================================
-# MODEL
+# BUILD DATASET
 # ============================================================
 
 def build_flow_dataset() -> Dict[str, Any]:
 
     generated_at = utc_now()
 
-    query_url = (
-        build_portwatch_url()
-    )
-
     print(
         "Fetching IMF PortWatch Hormuz data..."
     )
 
     payload = fetch_json(
-        query_url
+        build_portwatch_url()
     )
 
     features = extract_features(
@@ -1562,23 +1393,13 @@ def build_flow_dataset() -> Dict[str, Any]:
     )
 
     print(
-        f"PortWatch features received: "
-        f"{len(features)}"
+        "PortWatch features received:",
+        len(features),
     )
 
     available_fields = (
         detect_available_fields(
             features
-        )
-    )
-
-    print(
-        "Available PortWatch fields:"
-    )
-
-    print(
-        ", ".join(
-            available_fields
         )
     )
 
@@ -1591,8 +1412,7 @@ def build_flow_dataset() -> Dict[str, Any]:
     if not observations:
 
         raise RuntimeError(
-            "No valid Hormuz observations "
-            "could be normalized"
+            "No valid Hormuz observations"
         )
 
     latest = observations[0]
@@ -1603,46 +1423,32 @@ def build_flow_dataset() -> Dict[str, Any]:
         )
     )
 
-    freshness = (
-        determine_freshness(
-            latest_dt
-        )
+    freshness = determine_freshness(
+        latest_dt
     )
 
-    stats_7d = build_window_stats(
-        observations,
-        7,
-    )
-
-    stats_30d = build_window_stats(
-        observations,
-        30,
-    )
-
-    stats_90d = build_window_stats(
-        observations,
-        90,
-    )
-
-    baseline = (
-        build_fixed_baseline(
+    monthly = (
+        build_monthly_diagnostics(
             observations
         )
     )
 
-    baseline_comparison = (
-        build_baseline_comparison(
-            stats_7d,
-            stats_30d,
-            baseline,
+    references = (
+        build_reference_periods(
+            observations
         )
     )
 
-    moving_trend = (
-        build_moving_trend(
-            stats_7d,
-            stats_30d,
-            stats_90d,
+    recent = (
+        build_recent_windows(
+            observations
+        )
+    )
+
+    comparison = (
+        build_diagnostic_comparison(
+            recent,
+            references,
         )
     )
 
@@ -1650,7 +1456,7 @@ def build_flow_dataset() -> Dict[str, Any]:
         evaluate_data_quality(
             observations,
             freshness,
-            baseline,
+            references,
         )
     )
 
@@ -1658,27 +1464,69 @@ def build_flow_dataset() -> Dict[str, Any]:
         "meta": {
             "collector": MODEL_NAME,
             "version": MODEL_VERSION,
+
             "generated_at": (
                 generated_at.isoformat()
             ),
+
             "automatic": True,
-            "repository": "energy-data",
+
+            "repository": (
+                "energy-data"
+            ),
+
+            "mode": (
+                "DIAGNOSTIC"
+            ),
+        },
+
+        "methodology": {
+            "war_start_reference": (
+                WAR_START_DATE.isoformat()
+            ),
+
+            "warning": (
+                "No final Flow Risk Score is "
+                "calculated in this version."
+            ),
+
+            "baseline_status": (
+                "UNDER_REVIEW"
+            ),
+
+            "principles": [
+                (
+                    "PortWatch transit counts are "
+                    "AIS-derived traffic proxies."
+                ),
+                (
+                    "PortWatch capacity is not direct "
+                    "physical oil throughput in mb/d."
+                ),
+                (
+                    "Calendar 2025 and immediate "
+                    "pre-war February 2026 are compared "
+                    "before selecting the final baseline."
+                ),
+                (
+                    "Suspicious zero tanker-capacity "
+                    "values are excluded from valid "
+                    "capacity statistics."
+                ),
+            ],
         },
 
         "source": {
-            "provider": "IMF PortWatch",
+            "provider": (
+                "IMF PortWatch"
+            ),
+
             "service": (
                 "Daily_Chokepoints_Data"
             ),
-            "portid": HORMUZ_PORT_ID,
-            "role": (
-                "traffic_and_capacity_proxy"
-            ),
-            "methodological_warning": (
-                "PortWatch vessel traffic and "
-                "capacity are proxies and must "
-                "not be interpreted directly as "
-                "physical oil throughput in mb/d."
+
+            "portid": (
+                HORMUZ_PORT_ID
             ),
         },
 
@@ -1689,22 +1537,24 @@ def build_flow_dataset() -> Dict[str, Any]:
 
         "freshness": freshness,
 
-        "data_quality": data_quality,
-
-        "fixed_baseline": baseline,
-
-        "statistics": {
-            "7d": stats_7d,
-            "30d": stats_30d,
-            "90d": stats_90d,
-        },
-
-        "baseline_comparison": (
-            baseline_comparison
+        "data_quality": (
+            data_quality
         ),
 
-        "moving_trend": (
-            moving_trend
+        "reference_periods": (
+            references
+        ),
+
+        "recent_windows": (
+            recent
+        ),
+
+        "diagnostic_comparison": (
+            comparison
+        ),
+
+        "monthly_diagnostics": (
+            monthly
         ),
 
         "diagnostics": {
@@ -1719,6 +1569,14 @@ def build_flow_dataset() -> Dict[str, Any]:
             "available_fields": (
                 available_fields
             ),
+
+            "oldest_observation": (
+                observations[-1]["date"]
+            ),
+
+            "newest_observation": (
+                observations[0]["date"]
+            ),
         },
 
         "history": observations,
@@ -1726,8 +1584,71 @@ def build_flow_dataset() -> Dict[str, Any]:
 
 
 # ============================================================
-# MAIN
+# CONSOLE DIAGNOSTICS
 # ============================================================
+
+def print_monthly_table(
+    monthly: List[Dict[str, Any]],
+) -> None:
+
+    print()
+    print(
+        "MONTHLY PORTWATCH DIAGNOSTICS"
+    )
+
+    print(
+        "============================================================"
+    )
+
+    print(
+        f"{'Month':<9}"
+        f"{'Days':>6}"
+        f"{'Tank avg':>11}"
+        f"{'Tank med':>11}"
+        f"{'Tank max':>11}"
+        f"{'Total avg':>12}"
+        f"{'Cap avg':>14}"
+        f"{'Bad cap':>9}"
+    )
+
+    print(
+        "------------------------------------------------------------"
+        "----------------"
+    )
+
+    for item in monthly:
+
+        tanker = item.get(
+            "n_tanker",
+            {},
+        )
+
+        total = item.get(
+            "n_total",
+            {},
+        )
+
+        capacity = item.get(
+            "capacity_tanker_valid_only",
+            {},
+        )
+
+        quality = item.get(
+            "capacity_quality",
+            {},
+        )
+
+        print(
+            f"{item.get('month', ''):<9}"
+            f"{item.get('days', 0):>6}"
+            f"{str(tanker.get('average')):>11}"
+            f"{str(tanker.get('median')):>11}"
+            f"{str(tanker.get('max')):>11}"
+            f"{str(total.get('average')):>12}"
+            f"{str(capacity.get('average')):>14}"
+            f"{quality.get('invalid_days', 0):>9}"
+        )
+
 
 def main() -> int:
 
@@ -1757,43 +1678,28 @@ def main() -> int:
             {},
         )
 
+        references = result.get(
+            "reference_periods",
+            {},
+        )
+
+        comparison = result.get(
+            "diagnostic_comparison",
+            {},
+        )
+
         quality = result.get(
             "data_quality",
             {},
         )
 
-        baseline = result.get(
-            "fixed_baseline",
-            {},
-        )
-
-        comparison = result.get(
-            "baseline_comparison",
-            {},
-        )
-
-        tanker_comparison = (
-            comparison.get(
-                "tanker_count",
-                {},
-            )
-        )
-
-        capacity_comparison = (
-            comparison.get(
-                "tanker_capacity",
-                {},
-            )
-        )
-
         print()
         print(
-            "Hormuz Flow Data Collector "
-            "v1.1 completed"
+            "Hormuz Flow Collector v1.2"
         )
 
         print(
-            "------------------------------------"
+            "========================================"
         )
 
         print(
@@ -1813,107 +1719,139 @@ def main() -> int:
 
         print()
         print(
-            "FIXED PRE-DISRUPTION BASELINE"
+            "REFERENCE PERIODS"
         )
 
         print(
-            "Baseline period:",
-            baseline.get("start_date"),
-            "->",
-            baseline.get("end_date"),
+            "========================================"
+        )
+
+        baseline_2025 = (
+            references.get(
+                "calendar_2025",
+                {},
+            )
+        )
+
+        feb_prewar = (
+            references.get(
+                "february_2026_prewar",
+                {},
+            )
         )
 
         print(
-            "Baseline confidence:",
-            baseline
-            .get("confidence", {})
-            .get("confidence"),
+            "2025 days:",
+            baseline_2025.get(
+                "days"
+            ),
         )
 
         print(
-            "Baseline available days:",
-            baseline
-            .get("confidence", {})
-            .get("available_days"),
+            "2025 tanker/day average:",
+            baseline_2025
+            .get("n_tanker", {})
+            .get("average"),
+        )
+
+        print(
+            "2025 total/day average:",
+            baseline_2025
+            .get("n_total", {})
+            .get("average"),
         )
 
         print()
         print(
-            "Tanker baseline average:",
-            tanker_comparison.get(
-                "baseline_average"
+            "2026 Feb 1-27 days:",
+            feb_prewar.get(
+                "days"
             ),
         )
 
         print(
-            "Tanker 7d average:",
-            tanker_comparison.get(
-                "7d_average"
+            "Feb pre-war tanker/day:",
+            feb_prewar
+            .get("n_tanker", {})
+            .get("average"),
+        )
+
+        print(
+            "Feb pre-war total/day:",
+            feb_prewar
+            .get("n_total", {})
+            .get("average"),
+        )
+
+        print()
+        print(
+            "CURRENT 7D VS REFERENCES"
+        )
+
+        print(
+            "========================================"
+        )
+
+        tanker_compare = (
+            comparison.get(
+                "tanker_count_7d",
+                {},
+            )
+        )
+
+        print(
+            "Current 7d tanker/day:",
+            tanker_compare.get(
+                "current"
             ),
         )
 
         print(
-            "Tanker 7d vs baseline:",
-            tanker_comparison.get(
-                "7d_vs_baseline_pct"
+            "vs 2025:",
+            tanker_compare.get(
+                "current_vs_2025_pct"
             ),
             "%",
         )
 
         print(
-            "Tanker 7d baseline ratio:",
-            tanker_comparison.get(
-                "7d_baseline_ratio"
-            ),
-        )
-
-        print()
-        print(
-            "Tanker capacity baseline:",
-            capacity_comparison.get(
-                "baseline_average_valid_only"
-            ),
-        )
-
-        print(
-            "Tanker capacity 7d:",
-            capacity_comparison.get(
-                "7d_average_valid_only"
-            ),
-        )
-
-        print(
-            "Tanker capacity 7d vs baseline:",
-            capacity_comparison.get(
-                "7d_vs_baseline_pct"
+            "vs Feb pre-war:",
+            tanker_compare.get(
+                "current_vs_feb_prewar_pct"
             ),
             "%",
         )
 
+        print_monthly_table(
+            result.get(
+                "monthly_diagnostics",
+                [],
+            )
+        )
+
         print()
         print(
-            "Data quality:",
+            "DATA QUALITY"
+        )
+
+        print(
+            "========================================"
+        )
+
+        print(
             quality.get("level"),
             f"({quality.get('score')}/100)",
         )
 
-        issues = quality.get(
+        for issue in quality.get(
             "issues",
             [],
-        )
-
-        if issues:
+        ):
 
             print(
-                "Data quality issues:"
+                " -",
+                issue,
             )
-
-            for issue in issues:
-
-                print(
-                    " -",
-                    issue,
-                )
 
         print()
         print(
@@ -1936,6 +1874,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+
     raise SystemExit(
         main()
     )
