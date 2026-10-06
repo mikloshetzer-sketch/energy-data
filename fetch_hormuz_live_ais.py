@@ -2,36 +2,55 @@
 # -*- coding: utf-8 -*-
 
 """
-Hormuz Vessel Monitor v1.0
-==========================
+Hormuz Live AIS Collector v1.1
+==============================
 
-Fetch individual vessel observations from the public Hormuz API.
+Purpose
+-------
+Fetch and analyse live / near-live AIS-derived Strait of Hormuz data
+from the public Hormuz API.
 
 Output:
-    hormuz-vessels.json
+    hormuz-live-ais.json
 
-Purpose:
-- maintain a current vessel-level observation layer
-- identify oil-related tankers
-- classify tanker size
-- preserve identifiers for later run-to-run tracking
-- identify potentially relevant large tanker movements
-- prepare vessel-level data for daily Hormuz monitoring
+IMPORTANT
+---------
+This collector remains independent from:
 
-IMPORTANT:
-- AIS observations are not physical oil-flow measurements.
-- Missing AIS vessels do not mean missing physical traffic.
-- GPS/AIS disruption, dark transit and coverage gaps are possible.
-- This script does NOT calculate the final Hormuz risk score.
-- This script does NOT modify PortWatch, Live AIS, OMPI or risk outputs.
+    fetch_hormuz_flow.py
+    hormuz-flow.json
+    hormuz_risk_model.py
+    hormuz-risk.json
+    OMPI
+
+It does NOT modify or overwrite any existing model output.
+
+The Hormuz API is treated as a LIVE AIS observation source.
+
+Estimated oil-export values are AIS-derived estimates,
+NOT independently measured physical oil throughput.
+
+Version 1.1 adds:
+- complete-day detection
+- 7 / 14 / 30 day crossing statistics
+- 7 / 30 day oil-export proxy statistics
+- missing oil-export day detection
+- trend calculations
+- data-quality assessment
+- normalized model-role metadata
+
+No final Flow Risk Score is calculated here.
 """
 
 from __future__ import annotations
 
 import json
 import sys
-from datetime import datetime, timezone
+
+from collections import defaultdict
+from datetime import datetime, timezone, date
 from pathlib import Path
+from statistics import mean
 from typing import Any, Dict, List, Optional
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -41,53 +60,34 @@ from urllib.request import Request, urlopen
 # CONFIG
 # ============================================================
 
-MODEL_NAME = "Hormuz Vessel Monitor"
-MODEL_VERSION = "1.0-vessel-observation"
+MODEL_NAME = "Hormuz Live AIS Collector"
+MODEL_VERSION = "1.1-live-analysis"
 
 BASE_URL = "https://hormuz.data-tracking.net"
-SHIPS_ENDPOINT = "/api/ships"
 
-OUTPUT_FILE = Path("hormuz-vessels.json")
+OUTPUT_FILE = Path("hormuz-live-ais.json")
 
-HTTP_TIMEOUT_SECONDS = 45
+HTTP_TIMEOUT_SECONDS = 30
 
+SUMMARY_HOURS = 24
+DAILY_DAYS = 30
 
-# ============================================================
-# TANKER DEFINITIONS
-# ============================================================
-
-OIL_RELATED_CATEGORIES = {
-    "crude oil tanker",
-    "tanker",
-    "vlcc/ulcc",
-    "oil tanker",
-    "oil/chemical tanker",
-    "oil products tanker",
-    "product tanker",
-    "product/chemical tanker",
-    "product/chem tanker",
-    "chemical/oil products tanker",
-    "asphalt/bitumen tanker",
-}
-
-CRUDE_RELATED_CATEGORIES = {
-    "crude oil tanker",
-    "vlcc/ulcc",
-}
-
-PRODUCT_RELATED_CATEGORIES = {
-    "oil/chemical tanker",
-    "oil products tanker",
-    "product tanker",
-    "product/chemical tanker",
-    "product/chem tanker",
-    "chemical/oil products tanker",
-    "asphalt/bitumen tanker",
+ENDPOINTS = {
+    "summary": f"/api/summary?hours={SUMMARY_HOURS}",
+    "crossings_by_type": (
+        f"/api/crossings/by_type?hours={SUMMARY_HOURS}"
+    ),
+    "daily_crossings": (
+        f"/api/crossings/daily?days={DAILY_DAYS}"
+    ),
+    "daily_oil_export": (
+        f"/api/oil_export/daily?days={DAILY_DAYS}"
+    ),
 }
 
 
 # ============================================================
-# HELPERS
+# BASIC HELPERS
 # ============================================================
 
 def utc_now() -> datetime:
@@ -124,38 +124,61 @@ def safe_int(
         return default
 
 
-def normalize_text(
-    value: Any,
-) -> str:
+def round_or_none(
+    value: Optional[float],
+    digits: int = 2,
+) -> Optional[float]:
 
     if value is None:
-        return ""
+        return None
 
-    return str(value).strip()
+    return round(value, digits)
 
 
-def normalize_category(
+def pct_change(
+    current: Optional[float],
+    baseline: Optional[float],
+) -> Optional[float]:
+
+    if (
+        current is None
+        or baseline is None
+        or baseline == 0
+    ):
+        return None
+
+    return (
+        (current - baseline)
+        / baseline
+        * 100.0
+    )
+
+
+def average(
+    values: List[float],
+) -> Optional[float]:
+
+    if not values:
+        return None
+
+    return mean(values)
+
+
+def parse_day(
     value: Any,
-) -> str:
+) -> Optional[date]:
 
-    return normalize_text(
-        value
-    ).lower()
+    if not value:
+        return None
 
+    try:
+        return datetime.strptime(
+            str(value),
+            "%Y-%m-%d",
+        ).date()
 
-def first_value(
-    row: Dict[str, Any],
-    keys: List[str],
-) -> Any:
-
-    for key in keys:
-
-        value = row.get(key)
-
-        if value is not None:
-            return value
-
-    return None
+    except ValueError:
+        return None
 
 
 # ============================================================
@@ -172,7 +195,7 @@ def fetch_json(
         url,
         headers={
             "User-Agent": (
-                "energy-data-hormuz-vessel-monitor/1.0"
+                "energy-data-hormuz-live-ais/1.1"
             ),
             "Accept": "application/json",
         },
@@ -200,651 +223,559 @@ def fetch_json(
             if status != 200:
 
                 raise RuntimeError(
-                    f"HTTP {status}"
+                    f"HTTP {status} for {endpoint}"
                 )
 
-            return json.loads(raw)
+            data = json.loads(raw)
+
+            if not isinstance(
+                data,
+                (dict, list),
+            ):
+
+                raise RuntimeError(
+                    f"Unexpected JSON type "
+                    f"for {endpoint}"
+                )
+
+            return data
 
     except HTTPError as exc:
 
         raise RuntimeError(
-            f"HTTP error: "
+            f"HTTP error for {endpoint}: "
             f"{exc.code} {exc.reason}"
         ) from exc
 
     except URLError as exc:
 
         raise RuntimeError(
-            f"URL error: {exc.reason}"
+            f"URL error for {endpoint}: "
+            f"{exc.reason}"
         ) from exc
 
     except TimeoutError as exc:
 
         raise RuntimeError(
-            "Hormuz API timeout"
+            f"Timeout for {endpoint}"
         ) from exc
 
     except json.JSONDecodeError as exc:
 
         raise RuntimeError(
-            "Invalid JSON from Hormuz API"
+            f"Invalid JSON from {endpoint}"
         ) from exc
 
 
+def safe_fetch(
+    name: str,
+    endpoint: str,
+) -> Dict[str, Any]:
+
+    try:
+
+        data = fetch_json(endpoint)
+
+        return {
+            "status": "OK",
+            "endpoint": endpoint,
+            "data": data,
+            "error": None,
+        }
+
+    except Exception as exc:
+
+        return {
+            "status": "ERROR",
+            "endpoint": endpoint,
+            "data": None,
+            "error": (
+                f"{type(exc).__name__}: {exc}"
+            ),
+        }
+
+
 # ============================================================
-# RESPONSE EXTRACTION
+# SUMMARY NORMALIZATION
 # ============================================================
 
-def extract_ship_rows(
+def normalize_summary(
     raw: Any,
-) -> List[Dict[str, Any]]:
-
-    if isinstance(raw, list):
-
-        return [
-            row
-            for row in raw
-            if isinstance(row, dict)
-        ]
+) -> Dict[str, Any]:
 
     if not isinstance(raw, dict):
-        return []
 
-    possible_keys = [
-        "ships",
-        "vessels",
-        "data",
-        "results",
-        "items",
-    ]
+        return {
+            "available": False,
+            "raw": raw,
+        }
 
-    for key in possible_keys:
+    return {
+        "available": True,
 
-        value = raw.get(key)
+        "period_hours": safe_int(
+            raw.get("period_hours")
+        ),
 
-        if isinstance(value, list):
+        "last_poll": raw.get(
+            "last_poll"
+        ),
 
-            return [
-                row
-                for row in value
-                if isinstance(row, dict)
-            ]
+        "total_ships": safe_int(
+            raw.get("total_ships")
+        ),
 
-    return []
+        "persian_gulf_ships": safe_int(
+            raw.get("persian_gulf_ships")
+        ),
+
+        "gulf_of_oman_ships": safe_int(
+            raw.get("gulf_of_oman_ships")
+        ),
+
+        "in_strait": safe_int(
+            raw.get("in_strait")
+        ),
+
+        "crossings": {
+            "inbound": safe_int(
+                raw.get("inbound")
+            ),
+
+            "outbound": safe_int(
+                raw.get("outbound")
+            ),
+
+            "total": safe_int(
+                raw.get("total_crossings")
+            ),
+        },
+
+        "estimated_oil_export": {
+            "barrels": safe_float(
+                raw.get("oil_export_barrels")
+            ),
+
+            "crude_barrels": safe_float(
+                raw.get(
+                    "oil_export_crude_barrels"
+                )
+            ),
+
+            "petrochem_barrels": safe_float(
+                raw.get(
+                    "oil_export_petrochem_barrels"
+                )
+            ),
+
+            "measurement_role": (
+                "AIS-derived oil export estimate"
+            ),
+
+            "physical_flow_measurement": False,
+        },
+
+        "raw": raw,
+    }
 
 
 # ============================================================
-# VESSEL CLASSIFICATION
+# SOURCE STATUS
 # ============================================================
 
-def classify_tanker_size(
-    dwt: Optional[float],
-) -> str:
-
-    if dwt is None:
-        return "UNKNOWN"
-
-    if dwt >= 320000:
-        return "ULCC"
-
-    if dwt >= 200000:
-        return "VLCC"
-
-    if dwt >= 120000:
-        return "SUEZMAX"
-
-    if dwt >= 80000:
-        return "AFRAMAX"
-
-    if dwt >= 55000:
-        return "PANAMAX_LR1"
-
-    if dwt >= 35000:
-        return "HANDYMAX_MR"
-
-    if dwt > 0:
-        return "SMALL"
-
-    return "UNKNOWN"
-
-
-def tanker_relevance(
-    category: str,
+def evaluate_source_status(
+    results: Dict[str, Dict[str, Any]],
 ) -> Dict[str, Any]:
 
-    normalized = normalize_category(
-        category
+    total = len(results)
+
+    successful = sum(
+        1
+        for result in results.values()
+        if result.get("status") == "OK"
     )
 
-    oil_related = (
-        normalized
-        in OIL_RELATED_CATEGORIES
-    )
+    failed = total - successful
 
-    crude_related = (
-        normalized
-        in CRUDE_RELATED_CATEGORIES
-    )
+    if successful == total:
+        status = "AVAILABLE"
+        confidence = "HIGH"
 
-    product_related = (
-        normalized
-        in PRODUCT_RELATED_CATEGORIES
-    )
+    elif successful >= 2:
+        status = "PARTIAL"
+        confidence = "MODERATE"
 
-    if crude_related:
-        role = "CRUDE"
-
-    elif product_related:
-        role = "PRODUCT_OR_CHEMICAL"
-
-    elif oil_related:
-        role = "OIL_RELATED"
+    elif successful == 1:
+        status = "LIMITED"
+        confidence = "LOW"
 
     else:
-        role = "NON_OIL"
+        status = "UNAVAILABLE"
+        confidence = "NONE"
 
     return {
-        "oil_related": oil_related,
-        "crude_related": crude_related,
-        "product_related": product_related,
-        "energy_role": role,
+        "status": status,
+        "confidence": confidence,
+        "endpoints_total": total,
+        "endpoints_successful": successful,
+        "endpoints_failed": failed,
     }
 
 
 # ============================================================
-# VESSEL NORMALIZATION
+# CROSSING NORMALIZATION
 # ============================================================
 
-def normalize_ship(
-    row: Dict[str, Any],
+def normalize_crossings(
+    raw: Any,
+    current_utc_day: date,
+) -> Dict[str, Dict[str, int]]:
+
+    daily: Dict[str, Dict[str, int]] = defaultdict(
+        lambda: {
+            "in_strait": 0,
+            "inbound": 0,
+            "outbound": 0,
+        }
+    )
+
+    if not isinstance(raw, list):
+        return {}
+
+    for row in raw:
+
+        if not isinstance(row, dict):
+            continue
+
+        day = row.get("day")
+        direction = row.get("direction")
+        count = safe_int(
+            row.get("count"),
+            0,
+        )
+
+        parsed = parse_day(day)
+
+        if parsed is None:
+            continue
+
+        if direction not in {
+            "in_strait",
+            "inbound",
+            "outbound",
+        }:
+            continue
+
+        daily[str(parsed)][direction] = (
+            count or 0
+        )
+
+    return dict(
+        sorted(
+            daily.items()
+        )
+    )
+
+
+def complete_crossing_days(
+    daily: Dict[str, Dict[str, int]],
+    current_utc_day: date,
+) -> List[str]:
+
+    return [
+        day
+        for day in sorted(daily.keys())
+        if parse_day(day) is not None
+        and parse_day(day) < current_utc_day
+    ]
+
+
+def crossing_window(
+    daily: Dict[str, Dict[str, int]],
+    complete_days: List[str],
+    window: int,
 ) -> Dict[str, Any]:
 
-    category = normalize_text(
-        first_value(
-            row,
-            [
-                "ship_category",
-                "category",
-                "ship_type",
-                "vessel_type",
-                "type",
-            ],
-        )
-    )
+    selected = complete_days[-window:]
 
-    dwt = safe_float(
-        first_value(
-            row,
-            [
-                "dwt",
-                "deadweight",
-                "deadweight_tonnage",
-            ],
-        )
-    )
+    if not selected:
 
-    mmsi = normalize_text(
-        first_value(
-            row,
-            [
-                "mmsi",
-                "MMSI",
-            ],
-        )
-    )
+        return {
+            "requested_days": window,
+            "observed_days": 0,
+        }
 
-    imo = normalize_text(
-        first_value(
-            row,
-            [
-                "imo",
-                "imo_number",
-                "IMO",
-            ],
-        )
-    )
+    inbound = [
+        daily[d]["inbound"]
+        for d in selected
+    ]
 
-    name = normalize_text(
-        first_value(
-            row,
-            [
-                "name",
-                "ship_name",
-                "vessel_name",
-            ],
-        )
-    )
+    outbound = [
+        daily[d]["outbound"]
+        for d in selected
+    ]
 
-    latitude = safe_float(
-        first_value(
-            row,
-            [
-                "lat",
-                "latitude",
-            ],
-        )
-    )
+    in_strait = [
+        daily[d]["in_strait"]
+        for d in selected
+    ]
 
-    longitude = safe_float(
-        first_value(
-            row,
-            [
-                "lon",
-                "lng",
-                "longitude",
-            ],
-        )
-    )
-
-    speed = safe_float(
-        first_value(
-            row,
-            [
-                "speed",
-                "sog",
-                "speed_over_ground",
-            ],
-        )
-    )
-
-    course = safe_float(
-        first_value(
-            row,
-            [
-                "course",
-                "cog",
-                "course_over_ground",
-            ],
-        )
-    )
-
-    heading = safe_float(
-        first_value(
-            row,
-            [
-                "heading",
-                "true_heading",
-            ],
-        )
-    )
-
-    direction = normalize_text(
-        first_value(
-            row,
-            [
-                "direction",
-                "movement",
-                "crossing_direction",
-            ],
-        )
-    )
-
-    region = normalize_text(
-        first_value(
-            row,
-            [
-                "region",
-                "zone",
-                "area",
-                "location",
-            ],
-        )
-    )
-
-    destination = normalize_text(
-        first_value(
-            row,
-            [
-                "destination",
-                "dest",
-            ],
-        )
-    )
-
-    timestamp = normalize_text(
-        first_value(
-            row,
-            [
-                "timestamp",
-                "last_seen",
-                "position_time",
-                "updated_at",
-                "last_update",
-            ],
-        )
-    )
-
-    flag = normalize_text(
-        first_value(
-            row,
-            [
-                "flag",
-                "flag_country",
-                "country",
-            ],
-        )
-    )
-
-    relevance = tanker_relevance(
-        category
-    )
-
-    tanker_size = (
-        classify_tanker_size(dwt)
-        if relevance["oil_related"]
-        else "NOT_APPLICABLE"
-    )
-
-    vessel_id = None
-
-    if imo:
-        vessel_id = f"IMO:{imo}"
-
-    elif mmsi:
-        vessel_id = f"MMSI:{mmsi}"
-
-    elif name:
-        vessel_id = f"NAME:{name}"
+    total_crossings = [
+        daily[d]["inbound"]
+        + daily[d]["outbound"]
+        for d in selected
+    ]
 
     return {
-        "vessel_id": vessel_id,
-        "name": name or None,
-        "imo": imo or None,
-        "mmsi": mmsi or None,
-        "flag": flag or None,
+        "requested_days": window,
+        "observed_days": len(selected),
+        "start_day": selected[0],
+        "end_day": selected[-1],
 
-        "ship_category": (
-            category or None
+        "inbound_avg": round_or_none(
+            average(inbound)
         ),
 
-        "dwt": dwt,
-
-        "tanker_size": tanker_size,
-
-        "oil_related": (
-            relevance["oil_related"]
+        "outbound_avg": round_or_none(
+            average(outbound)
         ),
 
-        "crude_related": (
-            relevance["crude_related"]
+        "total_crossings_avg": round_or_none(
+            average(total_crossings)
         ),
 
-        "product_related": (
-            relevance["product_related"]
+        "in_strait_avg": round_or_none(
+            average(in_strait)
         ),
 
-        "energy_role": (
-            relevance["energy_role"]
+        "inbound_total": sum(inbound),
+        "outbound_total": sum(outbound),
+
+        "total_crossings": sum(
+            total_crossings
         ),
-
-        "position": {
-            "latitude": latitude,
-            "longitude": longitude,
-            "region": region or None,
-        },
-
-        "navigation": {
-            "direction": (
-                direction or None
-            ),
-            "speed": speed,
-            "course": course,
-            "heading": heading,
-            "destination": (
-                destination or None
-            ),
-        },
-
-        "last_observation": (
-            timestamp or None
-        ),
-
-        "raw": row,
     }
 
 
 # ============================================================
-# ANALYSIS
+# OIL EXPORT NORMALIZATION
 # ============================================================
 
-def build_analysis(
-    vessels: List[Dict[str, Any]],
+def normalize_oil_days(
+    raw: Any,
+) -> Dict[str, Dict[str, Any]]:
+
+    if not isinstance(raw, dict):
+        return {}
+
+    rows = raw.get("days")
+
+    if not isinstance(rows, list):
+        return {}
+
+    normalized = {}
+
+    for row in rows:
+
+        if not isinstance(row, dict):
+            continue
+
+        parsed = parse_day(
+            row.get("day")
+        )
+
+        if parsed is None:
+            continue
+
+        crude = row.get(
+            "crude",
+            {},
+        )
+
+        petrochem = row.get(
+            "petrochem",
+            {},
+        )
+
+        if not isinstance(crude, dict):
+            crude = {}
+
+        if not isinstance(
+            petrochem,
+            dict,
+        ):
+            petrochem = {}
+
+        normalized[str(parsed)] = {
+            "crude_ships": safe_int(
+                crude.get("ships"),
+                0,
+            ),
+
+            "crude_barrels": safe_float(
+                crude.get("barrels"),
+                0.0,
+            ),
+
+            "petrochem_ships": safe_int(
+                petrochem.get("ships"),
+                0,
+            ),
+
+            "petrochem_barrels": safe_float(
+                petrochem.get("barrels"),
+                0.0,
+            ),
+
+            "total_barrels": safe_float(
+                row.get("total_barrels"),
+                0.0,
+            ),
+        }
+
+    return dict(
+        sorted(
+            normalized.items()
+        )
+    )
+
+
+def oil_export_window(
+    oil_days: Dict[str, Dict[str, Any]],
+    crossing_days: List[str],
+    window: int,
 ) -> Dict[str, Any]:
 
-    total = len(vessels)
+    expected_days = crossing_days[-window:]
 
-    identified = [
-        vessel
-        for vessel in vessels
-        if vessel.get("vessel_id")
-    ]
+    if not expected_days:
 
-    oil = [
-        vessel
-        for vessel in vessels
-        if vessel.get("oil_related")
-    ]
-
-    crude = [
-        vessel
-        for vessel in oil
-        if vessel.get("crude_related")
-    ]
-
-    products = [
-        vessel
-        for vessel in oil
-        if vessel.get("product_related")
-    ]
-
-    large_tankers = [
-        vessel
-        for vessel in oil
-        if vessel.get("tanker_size")
-        in {
-            "AFRAMAX",
-            "SUEZMAX",
-            "VLCC",
-            "ULCC",
+        return {
+            "requested_days": window,
+            "expected_complete_days": 0,
+            "observed_oil_days": 0,
+            "missing_days": [],
         }
+
+    observed_days = [
+        day
+        for day in expected_days
+        if day in oil_days
     ]
 
-    vlcc_ulcc = [
-        vessel
-        for vessel in oil
-        if vessel.get("tanker_size")
-        in {
-            "VLCC",
-            "ULCC",
-        }
+    missing_days = [
+        day
+        for day in expected_days
+        if day not in oil_days
     ]
 
-    size_counts: Dict[str, int] = {}
+    # IMPORTANT:
+    # Missing oil-export days are NOT converted to zero.
+    # Only explicitly observed days are used here.
 
-    for vessel in oil:
-
-        size = vessel.get(
-            "tanker_size",
-            "UNKNOWN",
-        )
-
-        size_counts[size] = (
-            size_counts.get(
-                size,
-                0,
-            )
-            + 1
-        )
-
-    category_counts: Dict[str, int] = {}
-
-    for vessel in vessels:
-
-        category = (
-            vessel.get(
-                "ship_category"
-            )
-            or "UNKNOWN"
-        )
-
-        category_counts[category] = (
-            category_counts.get(
-                category,
-                0,
-            )
-            + 1
-        )
-
-    direction_counts: Dict[str, int] = {}
-
-    for vessel in oil:
-
-        direction = (
-            vessel
-            .get(
-                "navigation",
-                {},
-            )
-            .get("direction")
-            or "UNKNOWN"
-        )
-
-        direction_counts[direction] = (
-            direction_counts.get(
-                direction,
-                0,
-            )
-            + 1
-        )
-
-    known_dwt = [
-        vessel.get("dwt")
-        for vessel in oil
-        if vessel.get("dwt")
+    total_values = [
+        oil_days[d]["total_barrels"]
+        for d in observed_days
+        if oil_days[d]["total_barrels"]
         is not None
     ]
 
-    total_oil_dwt = (
-        round(
-            sum(known_dwt),
-            2,
-        )
-        if known_dwt
-        else None
+    crude_values = [
+        oil_days[d]["crude_barrels"]
+        for d in observed_days
+        if oil_days[d]["crude_barrels"]
+        is not None
+    ]
+
+    petro_values = [
+        oil_days[d]["petrochem_barrels"]
+        for d in observed_days
+        if oil_days[d]["petrochem_barrels"]
+        is not None
+    ]
+
+    crude_ships = sum(
+        oil_days[d]["crude_ships"] or 0
+        for d in observed_days
+    )
+
+    petro_ships = sum(
+        oil_days[d]["petrochem_ships"] or 0
+        for d in observed_days
+    )
+
+    completeness = (
+        len(observed_days)
+        / len(expected_days)
+        * 100.0
     )
 
     return {
-        "total_vessels": total,
+        "requested_days": window,
 
-        "identified_vessels": len(
-            identified
+        "expected_complete_days": len(
+            expected_days
         ),
 
-        "oil_related_vessels": len(
-            oil
+        "observed_oil_days": len(
+            observed_days
         ),
 
-        "crude_related_vessels": len(
-            crude
+        "missing_day_count": len(
+            missing_days
         ),
 
-        "product_related_vessels": len(
-            products
+        "missing_days": missing_days,
+
+        "completeness_pct": round(
+            completeness,
+            2,
         ),
 
-        "large_oil_tankers": len(
-            large_tankers
-        ),
-
-        "vlcc_ulcc_count": len(
-            vlcc_ulcc
-        ),
-
-        "known_oil_tanker_dwt_count": len(
-            known_dwt
-        ),
-
-        "total_observed_oil_tanker_dwt": (
-            total_oil_dwt
-        ),
-
-        "tanker_size_counts": dict(
-            sorted(
-                size_counts.items()
+        "observed_day_average_barrels": (
+            round_or_none(
+                average(total_values)
             )
         ),
 
-        "oil_tanker_direction_counts": dict(
-            sorted(
-                direction_counts.items()
+        "observed_day_average_crude_barrels": (
+            round_or_none(
+                average(crude_values)
             )
         ),
 
-        "ship_category_counts": dict(
-            sorted(
-                category_counts.items(),
-                key=lambda item: (
-                    -item[1],
-                    item[0],
-                ),
+        "observed_day_average_petrochem_barrels": (
+            round_or_none(
+                average(petro_values)
             )
         ),
 
-        "large_tanker_observations": [
-            {
-                "vessel_id": (
-                    vessel.get(
-                        "vessel_id"
-                    )
-                ),
-                "name": (
-                    vessel.get("name")
-                ),
-                "ship_category": (
-                    vessel.get(
-                        "ship_category"
-                    )
-                ),
-                "dwt": (
-                    vessel.get("dwt")
-                ),
-                "tanker_size": (
-                    vessel.get(
-                        "tanker_size"
-                    )
-                ),
-                "direction": (
-                    vessel
-                    .get(
-                        "navigation",
-                        {},
-                    )
-                    .get("direction")
-                ),
-                "region": (
-                    vessel
-                    .get(
-                        "position",
-                        {},
-                    )
-                    .get("region")
-                ),
-                "destination": (
-                    vessel
-                    .get(
-                        "navigation",
-                        {},
-                    )
-                    .get("destination")
-                ),
-                "last_observation": (
-                    vessel.get(
-                        "last_observation"
-                    )
-                ),
-            }
-            for vessel in large_tankers
-        ],
+        "observed_total_barrels": round_or_none(
+            sum(total_values)
+            if total_values
+            else None
+        ),
+
+        "observed_crude_barrels": round_or_none(
+            sum(crude_values)
+            if crude_values
+            else None
+        ),
+
+        "observed_petrochem_barrels": (
+            round_or_none(
+                sum(petro_values)
+                if petro_values
+                else None
+            )
+        ),
+
+        "observed_crude_ships": crude_ships,
+        "observed_petrochem_ships": petro_ships,
+
+        "missing_days_treated_as_zero": False,
+
+        "physical_flow_measurement": False,
     }
 
 
@@ -852,87 +783,62 @@ def build_analysis(
 # DATA QUALITY
 # ============================================================
 
-def evaluate_quality(
-    vessels: List[Dict[str, Any]],
-    analysis: Dict[str, Any],
+def evaluate_data_quality(
+    source_status: Dict[str, Any],
+    crossings_30d: Dict[str, Any],
+    oil_30d: Dict[str, Any],
 ) -> Dict[str, Any]:
 
     score = 100
     issues = []
 
-    total = len(vessels)
+    if source_status.get(
+        "status"
+    ) != "AVAILABLE":
 
-    if total == 0:
+        score -= 30
 
-        return {
-            "score": 0,
-            "status": "UNAVAILABLE",
-            "issues": [
-                "No vessel observations returned."
-            ],
-        }
+        issues.append(
+            "Not all live API endpoints are available."
+        )
 
-    with_id = sum(
-        1
-        for vessel in vessels
-        if vessel.get("vessel_id")
-    )
+    crossing_days = safe_int(
+        crossings_30d.get(
+            "observed_days"
+        ),
+        0,
+    ) or 0
 
-    id_pct = (
-        with_id
-        / total
-        * 100.0
-    )
+    if crossing_days < 25:
 
-    if id_pct < 95:
+        score -= 20
+
+        issues.append(
+            "Crossing history contains fewer than "
+            "25 complete days."
+        )
+
+    oil_completeness = safe_float(
+        oil_30d.get(
+            "completeness_pct"
+        ),
+        0.0,
+    ) or 0.0
+
+    if oil_completeness < 90:
 
         score -= 10
 
         issues.append(
-            "Some vessels lack a stable "
-            "IMO/MMSI/name identifier."
+            "Oil-export proxy has missing days."
         )
 
-    if id_pct < 75:
+    if oil_completeness < 75:
 
-        score -= 15
-
-    oil_count = analysis.get(
-        "oil_related_vessels",
-        0,
-    )
-
-    oil_with_dwt = analysis.get(
-        "known_oil_tanker_dwt_count",
-        0,
-    )
-
-    if oil_count > 0:
-
-        dwt_pct = (
-            oil_with_dwt
-            / oil_count
-            * 100.0
-        )
-
-        if dwt_pct < 80:
-
-            score -= 10
-
-            issues.append(
-                "Some oil-related vessels "
-                "lack DWT data."
-            )
-
-        if dwt_pct < 50:
-
-            score -= 15
-
-    else:
+        score -= 10
 
         issues.append(
-            "No oil-related tanker was "
-            "identified in the current snapshot."
+            "Oil-export proxy completeness is below 75%."
         )
 
     score = max(
@@ -959,18 +865,217 @@ def evaluate_quality(
         "score": score,
         "status": status,
         "issues": issues,
-
-        "identifier_coverage_pct": round(
-            id_pct,
-            2,
-        ),
-
         "interpretation": (
-            "Quality describes the usability "
-            "of the vessel-level AIS snapshot. "
-            "It does not measure physical "
-            "oil-flow accuracy."
+            "Quality describes usability of the live AIS "
+            "observation layer, not accuracy of physical "
+            "oil throughput."
         ),
+    }
+
+
+# ============================================================
+# LIVE ANALYSIS
+# ============================================================
+
+def build_live_analysis(
+    raw_crossings: Any,
+    raw_oil_export: Any,
+    source_status: Dict[str, Any],
+    generated_at: datetime,
+) -> Dict[str, Any]:
+
+    today = generated_at.date()
+
+    crossings = normalize_crossings(
+        raw_crossings,
+        today,
+    )
+
+    complete_days = (
+        complete_crossing_days(
+            crossings,
+            today,
+        )
+    )
+
+    current_day = (
+        str(today)
+        if str(today) in crossings
+        else None
+    )
+
+    crossing_7 = crossing_window(
+        crossings,
+        complete_days,
+        7,
+    )
+
+    crossing_14 = crossing_window(
+        crossings,
+        complete_days,
+        14,
+    )
+
+    crossing_30 = crossing_window(
+        crossings,
+        complete_days,
+        30,
+    )
+
+    oil_days = normalize_oil_days(
+        raw_oil_export
+    )
+
+    oil_7 = oil_export_window(
+        oil_days,
+        complete_days,
+        7,
+    )
+
+    oil_30 = oil_export_window(
+        oil_days,
+        complete_days,
+        30,
+    )
+
+    outbound_trend = pct_change(
+        safe_float(
+            crossing_7.get(
+                "outbound_avg"
+            )
+        ),
+        safe_float(
+            crossing_30.get(
+                "outbound_avg"
+            )
+        ),
+    )
+
+    total_crossing_trend = pct_change(
+        safe_float(
+            crossing_7.get(
+                "total_crossings_avg"
+            )
+        ),
+        safe_float(
+            crossing_30.get(
+                "total_crossings_avg"
+            )
+        ),
+    )
+
+    oil_trend = pct_change(
+        safe_float(
+            oil_7.get(
+                "observed_day_average_barrels"
+            )
+        ),
+        safe_float(
+            oil_30.get(
+                "observed_day_average_barrels"
+            )
+        ),
+    )
+
+    data_quality = evaluate_data_quality(
+        source_status,
+        crossing_30,
+        oil_30,
+    )
+
+    return {
+        "complete_day_logic": {
+            "current_utc_day": str(today),
+            "current_day_excluded_from_averages": True,
+            "current_day_present_in_crossings": (
+                current_day is not None
+            ),
+            "current_day": current_day,
+            "complete_crossing_days_available": len(
+                complete_days
+            ),
+        },
+
+        "crossing_statistics": {
+            "7d": crossing_7,
+            "14d": crossing_14,
+            "30d": crossing_30,
+
+            "trend": {
+                "outbound_7d_vs_30d_pct": (
+                    round_or_none(
+                        outbound_trend
+                    )
+                ),
+
+                "total_crossings_7d_vs_30d_pct": (
+                    round_or_none(
+                        total_crossing_trend
+                    )
+                ),
+            },
+        },
+
+        "oil_export_proxy": {
+            "7d": oil_7,
+            "30d": oil_30,
+
+            "trend": {
+                "observed_day_average_7d_vs_30d_pct": (
+                    round_or_none(
+                        oil_trend
+                    )
+                ),
+            },
+
+            "status": (
+                "PARTIAL_OBSERVATION"
+                if (
+                    oil_30.get(
+                        "missing_day_count",
+                        0,
+                    )
+                    > 0
+                )
+                else "COMPLETE_OBSERVATION"
+            ),
+
+            "warning": (
+                "AIS-derived tanker/DWT estimate. "
+                "Missing days are not assumed to mean "
+                "zero physical oil flow."
+            ),
+
+            "physical_flow_measurement": False,
+        },
+
+        "data_quality": data_quality,
+
+        "model_role": {
+            "historical_baseline_source": False,
+
+            "live_ais_observation": True,
+
+            "flow_disruption_role": (
+                "SUPPORTING_PROXY"
+            ),
+
+            "logistics_stress_role": (
+                "PRIMARY_INPUT_CANDIDATE"
+            ),
+
+            "physical_flow_role": False,
+
+            "ready_for_direct_risk_integration": False,
+
+            "reason": (
+                "Live AIS observations are useful for "
+                "traffic and logistics assessment but "
+                "require comparison with PortWatch and "
+                "independent physical-flow validation "
+                "before risk-model integration."
+            ),
+        },
     }
 
 
@@ -983,42 +1088,80 @@ def build_dataset() -> Dict[str, Any]:
     generated_at = utc_now()
 
     print(
-        "Hormuz Vessel Monitor v1.0"
+        "Hormuz Live AIS Collector v1.1"
     )
 
     print(
         "========================================"
     )
 
-    print(
-        f"Fetching {SHIPS_ENDPOINT}"
+    results: Dict[str, Dict[str, Any]] = {}
+
+    for name, endpoint in ENDPOINTS.items():
+
+        print(
+            f"Fetching {name}: {endpoint}"
+        )
+
+        result = safe_fetch(
+            name,
+            endpoint,
+        )
+
+        results[name] = result
+
+        print(
+            f" -> {result['status']}"
+        )
+
+        if result.get("error"):
+
+            print(
+                f"    {result['error']}"
+            )
+
+    source_status = (
+        evaluate_source_status(
+            results
+        )
     )
 
-    raw = fetch_json(
-        SHIPS_ENDPOINT
+    summary_result = results.get(
+        "summary",
+        {},
     )
 
-    rows = extract_ship_rows(
-        raw
+    summary = normalize_summary(
+        summary_result.get("data")
+        if summary_result.get(
+            "status"
+        ) == "OK"
+        else None
     )
 
-    print(
-        "Raw vessel rows:",
-        len(rows),
+    raw_crossings = (
+        results
+        .get(
+            "daily_crossings",
+            {},
+        )
+        .get("data")
     )
 
-    vessels = [
-        normalize_ship(row)
-        for row in rows
-    ]
-
-    analysis = build_analysis(
-        vessels
+    raw_oil_export = (
+        results
+        .get(
+            "daily_oil_export",
+            {},
+        )
+        .get("data")
     )
 
-    quality = evaluate_quality(
-        vessels,
-        analysis,
+    live_analysis = build_live_analysis(
+        raw_crossings,
+        raw_oil_export,
+        source_status,
+        generated_at,
     )
 
     return {
@@ -1029,9 +1172,8 @@ def build_dataset() -> Dict[str, Any]:
                 generated_at.isoformat()
             ),
             "repository": "energy-data",
-            "mode": (
-                "VESSEL_LEVEL_AIS_OBSERVATION"
-            ),
+            "automatic": True,
+            "mode": "LIVE_AIS_OBSERVATION",
         },
 
         "methodology": {
@@ -1039,35 +1181,49 @@ def build_dataset() -> Dict[str, Any]:
 
             "principles": [
                 (
-                    "Individual vessels are "
-                    "AIS observations."
+                    "This dataset is independent "
+                    "from the existing PortWatch "
+                    "Hormuz flow collector."
                 ),
+
                 (
-                    "Oil-related tanker "
-                    "classification is based "
-                    "on reported ship category."
+                    "No existing Hormuz model "
+                    "output is modified."
                 ),
+
                 (
-                    "Tanker size classification "
-                    "uses reported DWT."
+                    "Hormuz API observations are "
+                    "treated as live AIS-derived "
+                    "traffic information."
                 ),
+
                 (
-                    "AIS absence is not evidence "
-                    "of physical vessel absence."
+                    "Oil export values are "
+                    "AIS-derived estimates and are "
+                    "not direct physical throughput "
+                    "measurements."
                 ),
+
                 (
                     "AIS suppression, GPS jamming, "
                     "dark transit and coverage gaps "
-                    "may affect observations."
+                    "may cause under-observation."
                 ),
+
                 (
-                    "No physical oil throughput "
-                    "is calculated from this "
-                    "snapshot."
+                    "Current UTC day is excluded "
+                    "from rolling daily averages."
                 ),
+
                 (
-                    "No final Hormuz risk score "
-                    "is calculated here."
+                    "Missing oil-export days are "
+                    "not interpreted as zero flow."
+                ),
+
+                (
+                    "This collector does not "
+                    "calculate the final Hormuz "
+                    "Flow Disruption Score."
                 ),
             ],
         },
@@ -1075,149 +1231,228 @@ def build_dataset() -> Dict[str, Any]:
         "source": {
             "name": "Hormuz API",
             "base_url": BASE_URL,
-            "endpoint": SHIPS_ENDPOINT,
             "measurement_role": (
-                "Vessel-level live AIS "
-                "observation"
+                "Live AIS observation layer"
             ),
             "physical_flow_source": False,
         },
 
-        "analysis": analysis,
+        "source_status": source_status,
 
-        "data_quality": quality,
+        "summary": summary,
 
-        "vessels": vessels,
+        "endpoint_results": {
+            name: {
+                "status": result.get(
+                    "status"
+                ),
+                "endpoint": result.get(
+                    "endpoint"
+                ),
+                "error": result.get(
+                    "error"
+                ),
+            }
+            for name, result
+            in results.items()
+        },
+
+        "crossings_by_type": (
+            results
+            .get(
+                "crossings_by_type",
+                {},
+            )
+            .get("data")
+        ),
+
+        "daily_crossings": raw_crossings,
+
+        "daily_oil_export": raw_oil_export,
+
+        "live_ais_analysis": live_analysis,
 
         "integration": {
-            "integrated_into_live_ais": False,
             "integrated_into_hormuz_flow": False,
             "integrated_into_hormuz_risk": False,
             "integrated_into_ompi": False,
 
             "existing_models_modified": False,
 
-            "model_role": {
-                "daily_vessel_monitoring": (
-                    "PRIMARY_INPUT"
-                ),
-                "logistics_stress": (
-                    "SUPPORTING_INPUT"
-                ),
-                "flow_disruption": (
-                    "SUPPORTING_PROXY"
-                ),
-                "physical_flow": False,
-            },
-
             "next_step": (
-                "Validate the vessel endpoint "
-                "structure and identifiers, then "
-                "add snapshot history and "
-                "run-to-run vessel movement "
-                "detection."
+                "Compare normalized live AIS metrics "
+                "with IMF PortWatch and independent "
+                "physical-flow observations before "
+                "risk-model integration."
             ),
         },
     }
 
 
 # ============================================================
-# CONSOLE
+# CONSOLE SUMMARY
 # ============================================================
 
-def print_summary(
-    dataset: Dict[str, Any],
+def print_analysis_summary(
+    result: Dict[str, Any],
 ) -> None:
 
-    analysis = dataset.get(
-        "analysis",
+    analysis = result.get(
+        "live_ais_analysis",
         {},
     )
 
-    quality = dataset.get(
+    crossing = analysis.get(
+        "crossing_statistics",
+        {},
+    )
+
+    oil = analysis.get(
+        "oil_export_proxy",
+        {},
+    )
+
+    quality = analysis.get(
         "data_quality",
         {},
     )
 
     print()
     print(
-        "VESSEL SUMMARY"
+        "LIVE AIS ANALYSIS"
     )
 
     print(
         "========================================"
     )
 
-    print(
-        "Total vessels:",
-        analysis.get(
-            "total_vessels"
-        ),
-    )
+    for window in (
+        "7d",
+        "14d",
+        "30d",
+    ):
 
-    print(
-        "Oil-related vessels:",
-        analysis.get(
-            "oil_related_vessels"
-        ),
-    )
+        values = crossing.get(
+            window,
+            {},
+        )
 
-    print(
-        "Crude-related vessels:",
-        analysis.get(
-            "crude_related_vessels"
-        ),
-    )
+        print()
+        print(
+            f"{window.upper()} crossings"
+        )
 
-    print(
-        "Product-related vessels:",
-        analysis.get(
-            "product_related_vessels"
-        ),
-    )
+        print(
+            "  Observed days:",
+            values.get(
+                "observed_days"
+            ),
+        )
 
-    print(
-        "Large oil tankers:",
-        analysis.get(
-            "large_oil_tankers"
-        ),
-    )
+        print(
+            "  Inbound avg:",
+            values.get(
+                "inbound_avg"
+            ),
+        )
 
-    print(
-        "VLCC / ULCC:",
-        analysis.get(
-            "vlcc_ulcc_count"
-        ),
-    )
+        print(
+            "  Outbound avg:",
+            values.get(
+                "outbound_avg"
+            ),
+        )
 
-    print(
-        "Observed oil tanker DWT:",
-        analysis.get(
-            "total_observed_oil_tanker_dwt"
-        ),
+        print(
+            "  Total avg:",
+            values.get(
+                "total_crossings_avg"
+            ),
+        )
+
+        print(
+            "  In-strait avg:",
+            values.get(
+                "in_strait_avg"
+            ),
+        )
+
+    trend = crossing.get(
+        "trend",
+        {},
     )
 
     print()
     print(
-        "TANKER SIZE COUNTS"
+        "Outbound 7d vs 30d:",
+        trend.get(
+            "outbound_7d_vs_30d_pct"
+        ),
+        "%",
+    )
+
+    print(
+        "Total crossings 7d vs 30d:",
+        trend.get(
+            "total_crossings_7d_vs_30d_pct"
+        ),
+        "%",
+    )
+
+    oil30 = oil.get(
+        "30d",
+        {},
+    )
+
+    print()
+    print(
+        "OIL EXPORT PROXY"
     )
 
     print(
         "========================================"
     )
 
-    for size, count in (
-        analysis
-        .get(
-            "tanker_size_counts",
-            {},
-        )
-        .items()
-    ):
+    print(
+        "Status:",
+        oil.get("status"),
+    )
 
-        print(
-            f"{size}: {count}"
-        )
+    print(
+        "30d expected days:",
+        oil30.get(
+            "expected_complete_days"
+        ),
+    )
+
+    print(
+        "30d observed oil days:",
+        oil30.get(
+            "observed_oil_days"
+        ),
+    )
+
+    print(
+        "30d missing days:",
+        oil30.get(
+            "missing_day_count"
+        ),
+    )
+
+    print(
+        "30d completeness:",
+        oil30.get(
+            "completeness_pct"
+        ),
+        "%",
+    )
+
+    print(
+        "30d observed-day avg barrels:",
+        oil30.get(
+            "observed_day_average_barrels"
+        ),
+    )
 
     print()
     print(
@@ -1230,24 +1465,12 @@ def print_summary(
 
     print(
         "Score:",
-        quality.get(
-            "score"
-        ),
+        quality.get("score"),
     )
 
     print(
         "Status:",
-        quality.get(
-            "status"
-        ),
-    )
-
-    print(
-        "Identifier coverage:",
-        quality.get(
-            "identifier_coverage_pct"
-        ),
-        "%",
+        quality.get("status"),
     )
 
     for issue in quality.get(
@@ -1269,11 +1492,11 @@ def main() -> int:
 
     try:
 
-        dataset = build_dataset()
+        result = build_dataset()
 
         OUTPUT_FILE.write_text(
             json.dumps(
-                dataset,
+                result,
                 ensure_ascii=False,
                 indent=2,
             )
@@ -1281,8 +1504,127 @@ def main() -> int:
             encoding="utf-8",
         )
 
-        print_summary(
-            dataset
+        print()
+        print(
+            "SOURCE STATUS"
+        )
+
+        print(
+            "========================================"
+        )
+
+        status = result.get(
+            "source_status",
+            {},
+        )
+
+        print(
+            "Status:",
+            status.get("status"),
+        )
+
+        print(
+            "Confidence:",
+            status.get("confidence"),
+        )
+
+        print(
+            "Successful endpoints:",
+            status.get(
+                "endpoints_successful"
+            ),
+            "/",
+            status.get(
+                "endpoints_total"
+            ),
+        )
+
+        summary = result.get(
+            "summary",
+            {},
+        )
+
+        if summary.get(
+            "available"
+        ):
+
+            print()
+            print(
+                "LIVE SUMMARY"
+            )
+
+            print(
+                "========================================"
+            )
+
+            print(
+                "Last poll:",
+                summary.get(
+                    "last_poll"
+                ),
+            )
+
+            print(
+                "Total ships:",
+                summary.get(
+                    "total_ships"
+                ),
+            )
+
+            print(
+                "In strait:",
+                summary.get(
+                    "in_strait"
+                ),
+            )
+
+            crossings = summary.get(
+                "crossings",
+                {},
+            )
+
+            print(
+                "Inbound:",
+                crossings.get(
+                    "inbound"
+                ),
+            )
+
+            print(
+                "Outbound:",
+                crossings.get(
+                    "outbound"
+                ),
+            )
+
+            print(
+                "Total crossings:",
+                crossings.get(
+                    "total"
+                ),
+            )
+
+            oil = summary.get(
+                "estimated_oil_export",
+                {},
+            )
+
+            print(
+                "Estimated oil export barrels:",
+                oil.get(
+                    "barrels"
+                ),
+            )
+
+            print(
+                "Estimated crude barrels:",
+                oil.get(
+                    "crude_barrels"
+                ),
+            )
+
+        print_analysis_summary(
+            result
         )
 
         print()
