@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """
-Hormuz Live AIS Collector v1.0
+Hormuz Live AIS Collector v1.1
 ==============================
 
 Purpose
 -------
-Fetch live / near-live AIS-derived Strait of Hormuz data
+Fetch and analyse live / near-live AIS-derived Strait of Hormuz data
 from the public Hormuz API.
 
 Output:
@@ -15,7 +15,7 @@ Output:
 
 IMPORTANT
 ---------
-This collector is completely independent from:
+This collector remains independent from:
 
     fetch_hormuz_flow.py
     hormuz-flow.json
@@ -27,8 +27,17 @@ It does NOT modify or overwrite any existing model output.
 
 The Hormuz API is treated as a LIVE AIS observation source.
 
-Estimated oil-export values from the API are AIS-derived estimates,
+Estimated oil-export values are AIS-derived estimates,
 NOT independently measured physical oil throughput.
+
+Version 1.1 adds:
+- complete-day detection
+- 7 / 14 / 30 day crossing statistics
+- 7 / 30 day oil-export proxy statistics
+- missing oil-export day detection
+- trend calculations
+- data-quality assessment
+- normalized model-role metadata
 
 No final Flow Risk Score is calculated here.
 """
@@ -38,9 +47,11 @@ from __future__ import annotations
 import json
 import sys
 
-from datetime import datetime, timezone
+from collections import defaultdict
+from datetime import datetime, timezone, date
 from pathlib import Path
-from typing import Any, Dict, Optional
+from statistics import mean
+from typing import Any, Dict, List, Optional
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -50,7 +61,7 @@ from urllib.request import Request, urlopen
 # ============================================================
 
 MODEL_NAME = "Hormuz Live AIS Collector"
-MODEL_VERSION = "1.0"
+MODEL_VERSION = "1.1-live-analysis"
 
 BASE_URL = "https://hormuz.data-tracking.net"
 
@@ -76,7 +87,7 @@ ENDPOINTS = {
 
 
 # ============================================================
-# HELPERS
+# BASIC HELPERS
 # ============================================================
 
 def utc_now() -> datetime:
@@ -113,13 +124,70 @@ def safe_int(
         return default
 
 
+def round_or_none(
+    value: Optional[float],
+    digits: int = 2,
+) -> Optional[float]:
+
+    if value is None:
+        return None
+
+    return round(value, digits)
+
+
+def pct_change(
+    current: Optional[float],
+    baseline: Optional[float],
+) -> Optional[float]:
+
+    if (
+        current is None
+        or baseline is None
+        or baseline == 0
+    ):
+        return None
+
+    return (
+        (current - baseline)
+        / baseline
+        * 100.0
+    )
+
+
+def average(
+    values: List[float],
+) -> Optional[float]:
+
+    if not values:
+        return None
+
+    return mean(values)
+
+
+def parse_day(
+    value: Any,
+) -> Optional[date]:
+
+    if not value:
+        return None
+
+    try:
+        return datetime.strptime(
+            str(value),
+            "%Y-%m-%d",
+        ).date()
+
+    except ValueError:
+        return None
+
+
 # ============================================================
 # HTTP
 # ============================================================
 
 def fetch_json(
     endpoint: str,
-) -> Dict[str, Any]:
+) -> Any:
 
     url = BASE_URL + endpoint
 
@@ -127,7 +195,7 @@ def fetch_json(
         url,
         headers={
             "User-Agent": (
-                "energy-data-hormuz-live-ais/1.0"
+                "energy-data-hormuz-live-ais/1.1"
             ),
             "Accept": "application/json",
         },
@@ -199,10 +267,6 @@ def fetch_json(
         ) from exc
 
 
-# ============================================================
-# SAFE ENDPOINT FETCH
-# ============================================================
-
 def safe_fetch(
     name: str,
     endpoint: str,
@@ -210,9 +274,7 @@ def safe_fetch(
 
     try:
 
-        data = fetch_json(
-            endpoint
-        )
+        data = fetch_json(endpoint)
 
         return {
             "status": "OK",
@@ -241,10 +303,7 @@ def normalize_summary(
     raw: Any,
 ) -> Dict[str, Any]:
 
-    if not isinstance(
-        raw,
-        dict,
-    ):
+    if not isinstance(raw, dict):
 
         return {
             "available": False,
@@ -255,9 +314,7 @@ def normalize_summary(
         "available": True,
 
         "period_hours": safe_int(
-            raw.get(
-                "period_hours"
-            )
+            raw.get("period_hours")
         ),
 
         "last_poll": raw.get(
@@ -265,54 +322,38 @@ def normalize_summary(
         ),
 
         "total_ships": safe_int(
-            raw.get(
-                "total_ships"
-            )
+            raw.get("total_ships")
         ),
 
         "persian_gulf_ships": safe_int(
-            raw.get(
-                "persian_gulf_ships"
-            )
+            raw.get("persian_gulf_ships")
         ),
 
         "gulf_of_oman_ships": safe_int(
-            raw.get(
-                "gulf_of_oman_ships"
-            )
+            raw.get("gulf_of_oman_ships")
         ),
 
         "in_strait": safe_int(
-            raw.get(
-                "in_strait"
-            )
+            raw.get("in_strait")
         ),
 
         "crossings": {
             "inbound": safe_int(
-                raw.get(
-                    "inbound"
-                )
+                raw.get("inbound")
             ),
 
             "outbound": safe_int(
-                raw.get(
-                    "outbound"
-                )
+                raw.get("outbound")
             ),
 
             "total": safe_int(
-                raw.get(
-                    "total_crossings"
-                )
+                raw.get("total_crossings")
             ),
         },
 
         "estimated_oil_export": {
             "barrels": safe_float(
-                raw.get(
-                    "oil_export_barrels"
-                )
+                raw.get("oil_export_barrels")
             ),
 
             "crude_barrels": safe_float(
@@ -339,7 +380,7 @@ def normalize_summary(
 
 
 # ============================================================
-# QUALITY / STATUS
+# SOURCE STATUS
 # ============================================================
 
 def evaluate_source_status(
@@ -382,6 +423,663 @@ def evaluate_source_status(
 
 
 # ============================================================
+# CROSSING NORMALIZATION
+# ============================================================
+
+def normalize_crossings(
+    raw: Any,
+    current_utc_day: date,
+) -> Dict[str, Dict[str, int]]:
+
+    daily: Dict[str, Dict[str, int]] = defaultdict(
+        lambda: {
+            "in_strait": 0,
+            "inbound": 0,
+            "outbound": 0,
+        }
+    )
+
+    if not isinstance(raw, list):
+        return {}
+
+    for row in raw:
+
+        if not isinstance(row, dict):
+            continue
+
+        day = row.get("day")
+        direction = row.get("direction")
+        count = safe_int(
+            row.get("count"),
+            0,
+        )
+
+        parsed = parse_day(day)
+
+        if parsed is None:
+            continue
+
+        if direction not in {
+            "in_strait",
+            "inbound",
+            "outbound",
+        }:
+            continue
+
+        daily[str(parsed)][direction] = (
+            count or 0
+        )
+
+    return dict(
+        sorted(
+            daily.items()
+        )
+    )
+
+
+def complete_crossing_days(
+    daily: Dict[str, Dict[str, int]],
+    current_utc_day: date,
+) -> List[str]:
+
+    return [
+        day
+        for day in sorted(daily.keys())
+        if parse_day(day) is not None
+        and parse_day(day) < current_utc_day
+    ]
+
+
+def crossing_window(
+    daily: Dict[str, Dict[str, int]],
+    complete_days: List[str],
+    window: int,
+) -> Dict[str, Any]:
+
+    selected = complete_days[-window:]
+
+    if not selected:
+
+        return {
+            "requested_days": window,
+            "observed_days": 0,
+        }
+
+    inbound = [
+        daily[d]["inbound"]
+        for d in selected
+    ]
+
+    outbound = [
+        daily[d]["outbound"]
+        for d in selected
+    ]
+
+    in_strait = [
+        daily[d]["in_strait"]
+        for d in selected
+    ]
+
+    total_crossings = [
+        daily[d]["inbound"]
+        + daily[d]["outbound"]
+        for d in selected
+    ]
+
+    return {
+        "requested_days": window,
+        "observed_days": len(selected),
+        "start_day": selected[0],
+        "end_day": selected[-1],
+
+        "inbound_avg": round_or_none(
+            average(inbound)
+        ),
+
+        "outbound_avg": round_or_none(
+            average(outbound)
+        ),
+
+        "total_crossings_avg": round_or_none(
+            average(total_crossings)
+        ),
+
+        "in_strait_avg": round_or_none(
+            average(in_strait)
+        ),
+
+        "inbound_total": sum(inbound),
+        "outbound_total": sum(outbound),
+
+        "total_crossings": sum(
+            total_crossings
+        ),
+    }
+
+
+# ============================================================
+# OIL EXPORT NORMALIZATION
+# ============================================================
+
+def normalize_oil_days(
+    raw: Any,
+) -> Dict[str, Dict[str, Any]]:
+
+    if not isinstance(raw, dict):
+        return {}
+
+    rows = raw.get("days")
+
+    if not isinstance(rows, list):
+        return {}
+
+    normalized = {}
+
+    for row in rows:
+
+        if not isinstance(row, dict):
+            continue
+
+        parsed = parse_day(
+            row.get("day")
+        )
+
+        if parsed is None:
+            continue
+
+        crude = row.get(
+            "crude",
+            {},
+        )
+
+        petrochem = row.get(
+            "petrochem",
+            {},
+        )
+
+        if not isinstance(crude, dict):
+            crude = {}
+
+        if not isinstance(
+            petrochem,
+            dict,
+        ):
+            petrochem = {}
+
+        normalized[str(parsed)] = {
+            "crude_ships": safe_int(
+                crude.get("ships"),
+                0,
+            ),
+
+            "crude_barrels": safe_float(
+                crude.get("barrels"),
+                0.0,
+            ),
+
+            "petrochem_ships": safe_int(
+                petrochem.get("ships"),
+                0,
+            ),
+
+            "petrochem_barrels": safe_float(
+                petrochem.get("barrels"),
+                0.0,
+            ),
+
+            "total_barrels": safe_float(
+                row.get("total_barrels"),
+                0.0,
+            ),
+        }
+
+    return dict(
+        sorted(
+            normalized.items()
+        )
+    )
+
+
+def oil_export_window(
+    oil_days: Dict[str, Dict[str, Any]],
+    crossing_days: List[str],
+    window: int,
+) -> Dict[str, Any]:
+
+    expected_days = crossing_days[-window:]
+
+    if not expected_days:
+
+        return {
+            "requested_days": window,
+            "expected_complete_days": 0,
+            "observed_oil_days": 0,
+            "missing_days": [],
+        }
+
+    observed_days = [
+        day
+        for day in expected_days
+        if day in oil_days
+    ]
+
+    missing_days = [
+        day
+        for day in expected_days
+        if day not in oil_days
+    ]
+
+    # IMPORTANT:
+    # Missing oil-export days are NOT converted to zero.
+    # Only explicitly observed days are used here.
+
+    total_values = [
+        oil_days[d]["total_barrels"]
+        for d in observed_days
+        if oil_days[d]["total_barrels"]
+        is not None
+    ]
+
+    crude_values = [
+        oil_days[d]["crude_barrels"]
+        for d in observed_days
+        if oil_days[d]["crude_barrels"]
+        is not None
+    ]
+
+    petro_values = [
+        oil_days[d]["petrochem_barrels"]
+        for d in observed_days
+        if oil_days[d]["petrochem_barrels"]
+        is not None
+    ]
+
+    crude_ships = sum(
+        oil_days[d]["crude_ships"] or 0
+        for d in observed_days
+    )
+
+    petro_ships = sum(
+        oil_days[d]["petrochem_ships"] or 0
+        for d in observed_days
+    )
+
+    completeness = (
+        len(observed_days)
+        / len(expected_days)
+        * 100.0
+    )
+
+    return {
+        "requested_days": window,
+
+        "expected_complete_days": len(
+            expected_days
+        ),
+
+        "observed_oil_days": len(
+            observed_days
+        ),
+
+        "missing_day_count": len(
+            missing_days
+        ),
+
+        "missing_days": missing_days,
+
+        "completeness_pct": round(
+            completeness,
+            2,
+        ),
+
+        "observed_day_average_barrels": (
+            round_or_none(
+                average(total_values)
+            )
+        ),
+
+        "observed_day_average_crude_barrels": (
+            round_or_none(
+                average(crude_values)
+            )
+        ),
+
+        "observed_day_average_petrochem_barrels": (
+            round_or_none(
+                average(petro_values)
+            )
+        ),
+
+        "observed_total_barrels": round_or_none(
+            sum(total_values)
+            if total_values
+            else None
+        ),
+
+        "observed_crude_barrels": round_or_none(
+            sum(crude_values)
+            if crude_values
+            else None
+        ),
+
+        "observed_petrochem_barrels": (
+            round_or_none(
+                sum(petro_values)
+                if petro_values
+                else None
+            )
+        ),
+
+        "observed_crude_ships": crude_ships,
+        "observed_petrochem_ships": petro_ships,
+
+        "missing_days_treated_as_zero": False,
+
+        "physical_flow_measurement": False,
+    }
+
+
+# ============================================================
+# DATA QUALITY
+# ============================================================
+
+def evaluate_data_quality(
+    source_status: Dict[str, Any],
+    crossings_30d: Dict[str, Any],
+    oil_30d: Dict[str, Any],
+) -> Dict[str, Any]:
+
+    score = 100
+    issues = []
+
+    if source_status.get(
+        "status"
+    ) != "AVAILABLE":
+
+        score -= 30
+
+        issues.append(
+            "Not all live API endpoints are available."
+        )
+
+    crossing_days = safe_int(
+        crossings_30d.get(
+            "observed_days"
+        ),
+        0,
+    ) or 0
+
+    if crossing_days < 25:
+
+        score -= 20
+
+        issues.append(
+            "Crossing history contains fewer than "
+            "25 complete days."
+        )
+
+    oil_completeness = safe_float(
+        oil_30d.get(
+            "completeness_pct"
+        ),
+        0.0,
+    ) or 0.0
+
+    if oil_completeness < 90:
+
+        score -= 10
+
+        issues.append(
+            "Oil-export proxy has missing days."
+        )
+
+    if oil_completeness < 75:
+
+        score -= 10
+
+        issues.append(
+            "Oil-export proxy completeness is below 75%."
+        )
+
+    score = max(
+        0,
+        min(
+            100,
+            score,
+        ),
+    )
+
+    if score >= 85:
+        status = "HIGH"
+
+    elif score >= 70:
+        status = "MODERATE"
+
+    elif score >= 50:
+        status = "LIMITED"
+
+    else:
+        status = "LOW"
+
+    return {
+        "score": score,
+        "status": status,
+        "issues": issues,
+        "interpretation": (
+            "Quality describes usability of the live AIS "
+            "observation layer, not accuracy of physical "
+            "oil throughput."
+        ),
+    }
+
+
+# ============================================================
+# LIVE ANALYSIS
+# ============================================================
+
+def build_live_analysis(
+    raw_crossings: Any,
+    raw_oil_export: Any,
+    source_status: Dict[str, Any],
+    generated_at: datetime,
+) -> Dict[str, Any]:
+
+    today = generated_at.date()
+
+    crossings = normalize_crossings(
+        raw_crossings,
+        today,
+    )
+
+    complete_days = (
+        complete_crossing_days(
+            crossings,
+            today,
+        )
+    )
+
+    current_day = (
+        str(today)
+        if str(today) in crossings
+        else None
+    )
+
+    crossing_7 = crossing_window(
+        crossings,
+        complete_days,
+        7,
+    )
+
+    crossing_14 = crossing_window(
+        crossings,
+        complete_days,
+        14,
+    )
+
+    crossing_30 = crossing_window(
+        crossings,
+        complete_days,
+        30,
+    )
+
+    oil_days = normalize_oil_days(
+        raw_oil_export
+    )
+
+    oil_7 = oil_export_window(
+        oil_days,
+        complete_days,
+        7,
+    )
+
+    oil_30 = oil_export_window(
+        oil_days,
+        complete_days,
+        30,
+    )
+
+    outbound_trend = pct_change(
+        safe_float(
+            crossing_7.get(
+                "outbound_avg"
+            )
+        ),
+        safe_float(
+            crossing_30.get(
+                "outbound_avg"
+            )
+        ),
+    )
+
+    total_crossing_trend = pct_change(
+        safe_float(
+            crossing_7.get(
+                "total_crossings_avg"
+            )
+        ),
+        safe_float(
+            crossing_30.get(
+                "total_crossings_avg"
+            )
+        ),
+    )
+
+    oil_trend = pct_change(
+        safe_float(
+            oil_7.get(
+                "observed_day_average_barrels"
+            )
+        ),
+        safe_float(
+            oil_30.get(
+                "observed_day_average_barrels"
+            )
+        ),
+    )
+
+    data_quality = evaluate_data_quality(
+        source_status,
+        crossing_30,
+        oil_30,
+    )
+
+    return {
+        "complete_day_logic": {
+            "current_utc_day": str(today),
+            "current_day_excluded_from_averages": True,
+            "current_day_present_in_crossings": (
+                current_day is not None
+            ),
+            "current_day": current_day,
+            "complete_crossing_days_available": len(
+                complete_days
+            ),
+        },
+
+        "crossing_statistics": {
+            "7d": crossing_7,
+            "14d": crossing_14,
+            "30d": crossing_30,
+
+            "trend": {
+                "outbound_7d_vs_30d_pct": (
+                    round_or_none(
+                        outbound_trend
+                    )
+                ),
+
+                "total_crossings_7d_vs_30d_pct": (
+                    round_or_none(
+                        total_crossing_trend
+                    )
+                ),
+            },
+        },
+
+        "oil_export_proxy": {
+            "7d": oil_7,
+            "30d": oil_30,
+
+            "trend": {
+                "observed_day_average_7d_vs_30d_pct": (
+                    round_or_none(
+                        oil_trend
+                    )
+                ),
+            },
+
+            "status": (
+                "PARTIAL_OBSERVATION"
+                if (
+                    oil_30.get(
+                        "missing_day_count",
+                        0,
+                    )
+                    > 0
+                )
+                else "COMPLETE_OBSERVATION"
+            ),
+
+            "warning": (
+                "AIS-derived tanker/DWT estimate. "
+                "Missing days are not assumed to mean "
+                "zero physical oil flow."
+            ),
+
+            "physical_flow_measurement": False,
+        },
+
+        "data_quality": data_quality,
+
+        "model_role": {
+            "historical_baseline_source": False,
+
+            "live_ais_observation": True,
+
+            "flow_disruption_role": (
+                "SUPPORTING_PROXY"
+            ),
+
+            "logistics_stress_role": (
+                "PRIMARY_INPUT_CANDIDATE"
+            ),
+
+            "physical_flow_role": False,
+
+            "ready_for_direct_risk_integration": False,
+
+            "reason": (
+                "Live AIS observations are useful for "
+                "traffic and logistics assessment but "
+                "require comparison with PortWatch and "
+                "independent physical-flow validation "
+                "before risk-model integration."
+            ),
+        },
+    }
+
+
+# ============================================================
 # BUILD OUTPUT
 # ============================================================
 
@@ -390,14 +1088,14 @@ def build_dataset() -> Dict[str, Any]:
     generated_at = utc_now()
 
     print(
-        "Hormuz Live AIS Collector v1.0"
+        "Hormuz Live AIS Collector v1.1"
     )
 
     print(
         "========================================"
     )
 
-    results = {}
+    results: Dict[str, Dict[str, Any]] = {}
 
     for name, endpoint in ENDPOINTS.items():
 
@@ -434,13 +1132,36 @@ def build_dataset() -> Dict[str, Any]:
     )
 
     summary = normalize_summary(
-        summary_result.get(
-            "data"
-        )
+        summary_result.get("data")
         if summary_result.get(
             "status"
         ) == "OK"
         else None
+    )
+
+    raw_crossings = (
+        results
+        .get(
+            "daily_crossings",
+            {},
+        )
+        .get("data")
+    )
+
+    raw_oil_export = (
+        results
+        .get(
+            "daily_oil_export",
+            {},
+        )
+        .get("data")
+    )
+
+    live_analysis = build_live_analysis(
+        raw_crossings,
+        raw_oil_export,
+        source_status,
+        generated_at,
     )
 
     return {
@@ -490,6 +1211,16 @@ def build_dataset() -> Dict[str, Any]:
                 ),
 
                 (
+                    "Current UTC day is excluded "
+                    "from rolling daily averages."
+                ),
+
+                (
+                    "Missing oil-export days are "
+                    "not interpreted as zero flow."
+                ),
+
+                (
                     "This collector does not "
                     "calculate the final Hormuz "
                     "Flow Disruption Score."
@@ -535,36 +1266,222 @@ def build_dataset() -> Dict[str, Any]:
             .get("data")
         ),
 
-        "daily_crossings": (
-            results
-            .get(
-                "daily_crossings",
-                {},
-            )
-            .get("data")
-        ),
+        "daily_crossings": raw_crossings,
 
-        "daily_oil_export": (
-            results
-            .get(
-                "daily_oil_export",
-                {},
-            )
-            .get("data")
-        ),
+        "daily_oil_export": raw_oil_export,
+
+        "live_ais_analysis": live_analysis,
 
         "integration": {
             "integrated_into_hormuz_flow": False,
             "integrated_into_hormuz_risk": False,
             "integrated_into_ompi": False,
 
+            "existing_models_modified": False,
+
             "next_step": (
-                "Validate live API output and "
-                "compare with IMF PortWatch before "
-                "any model integration."
+                "Compare normalized live AIS metrics "
+                "with IMF PortWatch and independent "
+                "physical-flow observations before "
+                "risk-model integration."
             ),
         },
     }
+
+
+# ============================================================
+# CONSOLE SUMMARY
+# ============================================================
+
+def print_analysis_summary(
+    result: Dict[str, Any],
+) -> None:
+
+    analysis = result.get(
+        "live_ais_analysis",
+        {},
+    )
+
+    crossing = analysis.get(
+        "crossing_statistics",
+        {},
+    )
+
+    oil = analysis.get(
+        "oil_export_proxy",
+        {},
+    )
+
+    quality = analysis.get(
+        "data_quality",
+        {},
+    )
+
+    print()
+    print(
+        "LIVE AIS ANALYSIS"
+    )
+
+    print(
+        "========================================"
+    )
+
+    for window in (
+        "7d",
+        "14d",
+        "30d",
+    ):
+
+        values = crossing.get(
+            window,
+            {},
+        )
+
+        print()
+        print(
+            f"{window.upper()} crossings"
+        )
+
+        print(
+            "  Observed days:",
+            values.get(
+                "observed_days"
+            ),
+        )
+
+        print(
+            "  Inbound avg:",
+            values.get(
+                "inbound_avg"
+            ),
+        )
+
+        print(
+            "  Outbound avg:",
+            values.get(
+                "outbound_avg"
+            ),
+        )
+
+        print(
+            "  Total avg:",
+            values.get(
+                "total_crossings_avg"
+            ),
+        )
+
+        print(
+            "  In-strait avg:",
+            values.get(
+                "in_strait_avg"
+            ),
+        )
+
+    trend = crossing.get(
+        "trend",
+        {},
+    )
+
+    print()
+    print(
+        "Outbound 7d vs 30d:",
+        trend.get(
+            "outbound_7d_vs_30d_pct"
+        ),
+        "%",
+    )
+
+    print(
+        "Total crossings 7d vs 30d:",
+        trend.get(
+            "total_crossings_7d_vs_30d_pct"
+        ),
+        "%",
+    )
+
+    oil30 = oil.get(
+        "30d",
+        {},
+    )
+
+    print()
+    print(
+        "OIL EXPORT PROXY"
+    )
+
+    print(
+        "========================================"
+    )
+
+    print(
+        "Status:",
+        oil.get("status"),
+    )
+
+    print(
+        "30d expected days:",
+        oil30.get(
+            "expected_complete_days"
+        ),
+    )
+
+    print(
+        "30d observed oil days:",
+        oil30.get(
+            "observed_oil_days"
+        ),
+    )
+
+    print(
+        "30d missing days:",
+        oil30.get(
+            "missing_day_count"
+        ),
+    )
+
+    print(
+        "30d completeness:",
+        oil30.get(
+            "completeness_pct"
+        ),
+        "%",
+    )
+
+    print(
+        "30d observed-day avg barrels:",
+        oil30.get(
+            "observed_day_average_barrels"
+        ),
+    )
+
+    print()
+    print(
+        "DATA QUALITY"
+    )
+
+    print(
+        "========================================"
+    )
+
+    print(
+        "Score:",
+        quality.get("score"),
+    )
+
+    print(
+        "Status:",
+        quality.get("status"),
+    )
+
+    for issue in quality.get(
+        "issues",
+        [],
+    ):
+
+        print(
+            "-",
+            issue,
+        )
 
 
 # ============================================================
@@ -705,6 +1622,10 @@ def main() -> int:
                     "crude_barrels"
                 ),
             )
+
+        print_analysis_summary(
+            result
+        )
 
         print()
         print(
