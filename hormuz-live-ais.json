@@ -1,8 +1,8 @@
 {
   "meta": {
     "collector": "Hormuz Live AIS Collector",
-    "version": "1.0",
-    "generated_at": "2026-10-06T07:49:04.886815+00:00",
+    "version": "1.1-live-analysis",
+    "generated_at": "2026-10-06T08:04:21.040676+00:00",
     "repository": "energy-data",
     "automatic": true,
     "mode": "LIVE_AIS_OBSERVATION"
@@ -15,6 +15,8 @@
       "Hormuz API observations are treated as live AIS-derived traffic information.",
       "Oil export values are AIS-derived estimates and are not direct physical throughput measurements.",
       "AIS suppression, GPS jamming, dark transit and coverage gaps may cause under-observation.",
+      "Current UTC day is excluded from rolling daily averages.",
+      "Missing oil-export days are not interpreted as zero flow.",
       "This collector does not calculate the final Hormuz Flow Disruption Score."
     ]
   },
@@ -244,7 +246,7 @@
     {
       "day": "2026-09-06",
       "direction": "in_strait",
-      "count": 74
+      "count": 71
     },
     {
       "day": "2026-09-06",
@@ -694,7 +696,7 @@
     {
       "day": "2026-10-06",
       "direction": "in_strait",
-      "count": 39
+      "count": 40
     },
     {
       "day": "2026-10-06",
@@ -1019,10 +1021,137 @@
       "Product/Chem Tanker"
     ]
   },
+  "live_ais_analysis": {
+    "complete_day_logic": {
+      "current_utc_day": "2026-10-06",
+      "current_day_excluded_from_averages": true,
+      "current_day_present_in_crossings": true,
+      "current_day": "2026-10-06",
+      "complete_crossing_days_available": 30
+    },
+    "crossing_statistics": {
+      "7d": {
+        "requested_days": 7,
+        "observed_days": 7,
+        "start_day": "2026-09-29",
+        "end_day": "2026-10-05",
+        "inbound_avg": 9.14,
+        "outbound_avg": 10.43,
+        "total_crossings_avg": 19.57,
+        "in_strait_avg": 66.57,
+        "inbound_total": 64,
+        "outbound_total": 73,
+        "total_crossings": 137
+      },
+      "14d": {
+        "requested_days": 14,
+        "observed_days": 14,
+        "start_day": "2026-09-22",
+        "end_day": "2026-10-05",
+        "inbound_avg": 8.93,
+        "outbound_avg": 10.71,
+        "total_crossings_avg": 19.64,
+        "in_strait_avg": 70.14,
+        "inbound_total": 125,
+        "outbound_total": 150,
+        "total_crossings": 275
+      },
+      "30d": {
+        "requested_days": 30,
+        "observed_days": 30,
+        "start_day": "2026-09-06",
+        "end_day": "2026-10-05",
+        "inbound_avg": 8.77,
+        "outbound_avg": 11.07,
+        "total_crossings_avg": 19.83,
+        "in_strait_avg": 68.8,
+        "inbound_total": 263,
+        "outbound_total": 332,
+        "total_crossings": 595
+      },
+      "trend": {
+        "outbound_7d_vs_30d_pct": -5.78,
+        "total_crossings_7d_vs_30d_pct": -1.31
+      }
+    },
+    "oil_export_proxy": {
+      "7d": {
+        "requested_days": 7,
+        "expected_complete_days": 7,
+        "observed_oil_days": 4,
+        "missing_day_count": 3,
+        "missing_days": [
+          "2026-09-29",
+          "2026-10-02",
+          "2026-10-04"
+        ],
+        "completeness_pct": 57.14,
+        "observed_day_average_barrels": 1012395.5,
+        "observed_day_average_crude_barrels": 261129.5,
+        "observed_day_average_petrochem_barrels": 751266.0,
+        "observed_total_barrels": 4049582.0,
+        "observed_crude_barrels": 1044518.0,
+        "observed_petrochem_barrels": 3005064.0,
+        "observed_crude_ships": 1,
+        "observed_petrochem_ships": 9,
+        "missing_days_treated_as_zero": false,
+        "physical_flow_measurement": false
+      },
+      "30d": {
+        "requested_days": 30,
+        "expected_complete_days": 30,
+        "observed_oil_days": 24,
+        "missing_day_count": 6,
+        "missing_days": [
+          "2026-09-23",
+          "2026-09-25",
+          "2026-09-26",
+          "2026-09-29",
+          "2026-10-02",
+          "2026-10-04"
+        ],
+        "completeness_pct": 80.0,
+        "observed_day_average_barrels": 1140614.96,
+        "observed_day_average_crude_barrels": 752314.5,
+        "observed_day_average_petrochem_barrels": 388300.46,
+        "observed_total_barrels": 27374759.0,
+        "observed_crude_barrels": 18055548.0,
+        "observed_petrochem_barrels": 9319211.0,
+        "observed_crude_ships": 14,
+        "observed_petrochem_ships": 34,
+        "missing_days_treated_as_zero": false,
+        "physical_flow_measurement": false
+      },
+      "trend": {
+        "observed_day_average_7d_vs_30d_pct": -11.24
+      },
+      "status": "PARTIAL_OBSERVATION",
+      "warning": "AIS-derived tanker/DWT estimate. Missing days are not assumed to mean zero physical oil flow.",
+      "physical_flow_measurement": false
+    },
+    "data_quality": {
+      "score": 90,
+      "status": "HIGH",
+      "issues": [
+        "Oil-export proxy has missing days."
+      ],
+      "interpretation": "Quality describes usability of the live AIS observation layer, not accuracy of physical oil throughput."
+    },
+    "model_role": {
+      "historical_baseline_source": false,
+      "live_ais_observation": true,
+      "flow_disruption_role": "SUPPORTING_PROXY",
+      "logistics_stress_role": "PRIMARY_INPUT_CANDIDATE",
+      "physical_flow_role": false,
+      "ready_for_direct_risk_integration": false,
+      "reason": "Live AIS observations are useful for traffic and logistics assessment but require comparison with PortWatch and independent physical-flow validation before risk-model integration."
+    }
+  },
   "integration": {
     "integrated_into_hormuz_flow": false,
     "integrated_into_hormuz_risk": false,
     "integrated_into_ompi": false,
-    "next_step": "Validate live API output and compare with IMF PortWatch before any model integration."
+    "existing_models_modified": false,
+    "next_step": "Compare normalized live AIS metrics with IMF PortWatch and independent physical-flow observations before risk-model integration."
   }
 }
