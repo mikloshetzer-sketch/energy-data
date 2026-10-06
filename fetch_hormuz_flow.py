@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-Hormuz Flow Data Collector v1.2
-===============================
-
-DIAGNOSTIC VERSION
+Hormuz Flow Data Collector v1.3
+================================
 
 Purpose
 -------
@@ -13,28 +11,28 @@ Fetch IMF PortWatch Strait of Hormuz data and create:
 
     hormuz-flow.json
 
-Version 1.2 does NOT calculate a Flow Risk Score.
+v1.3 introduces:
 
-Main purpose:
-1. Inspect the structure of the PortWatch Hormuz series.
-2. Produce monthly diagnostics.
-3. Compare:
-      - calendar year 2025
-      - 2026-02-01 -> 2026-02-27
-      - post-war observations
-4. Detect tanker-capacity quality problems.
-5. Help select the final baseline empirically.
+1. STRUCTURAL_BASELINE
+   Full calendar year 2025.
 
-Important dates
----------------
-War / major Hormuz disruption reference:
-    2026-02-28
+2. PREWAR_CONTROL
+   2026-02-01 -> 2026-02-27.
 
-Important methodological rule
------------------------------
-PortWatch data are AIS-derived vessel transit/capacity proxies.
+3. AIS OBSERVED DISRUPTION
+   Measures how far currently AIS-observed tanker traffic
+   is below the 2025 structural baseline.
 
-They are NOT direct physical oil throughput in mb/d.
+IMPORTANT
+---------
+AIS Observed Disruption is NOT the final Flow Risk Score.
+
+PortWatch is treated as an AIS-observed traffic proxy,
+not as direct physical oil throughput in mb/d.
+
+A very low PortWatch observation must therefore be validated
+against independent physical-flow information before being
+used as the final Hormuz Flow Disruption component.
 """
 
 from __future__ import annotations
@@ -57,7 +55,7 @@ from urllib.request import Request, urlopen
 # ============================================================
 
 MODEL_NAME = "Hormuz Flow Data Collector"
-MODEL_VERSION = "1.2-monthly-diagnostics"
+MODEL_VERSION = "1.3-ais-observed-disruption"
 
 OUTPUT_FILE = Path("hormuz-flow.json")
 
@@ -72,17 +70,15 @@ PORTWATCH_SERVICE_URL = (
 HORMUZ_PORT_ID = "chokepoint6"
 
 MAX_RECORDS = 5000
-
-# Keep enough history to include all of 2025.
 MAX_HISTORY_DAYS = 800
 
 WAR_START_DATE = date(2026, 2, 28)
 
-PREWAR_2026_START = date(2026, 2, 1)
-PREWAR_2026_END = date(2026, 2, 27)
+STRUCTURAL_BASELINE_START = date(2025, 1, 1)
+STRUCTURAL_BASELINE_END = date(2025, 12, 31)
 
-BASELINE_2025_START = date(2025, 1, 1)
-BASELINE_2025_END = date(2025, 12, 31)
+PREWAR_CONTROL_START = date(2026, 2, 1)
+PREWAR_CONTROL_END = date(2026, 2, 27)
 
 FRESH_MAX_DAYS = 3
 RECENT_MAX_DAYS = 7
@@ -90,7 +86,7 @@ AGING_MAX_DAYS = 14
 
 
 # ============================================================
-# HELPERS
+# GENERIC HELPERS
 # ============================================================
 
 def utc_now() -> datetime:
@@ -136,6 +132,18 @@ def round_or_none(
         return None
 
     return round(value, digits)
+
+
+def clamp(
+    value: float,
+    minimum: float = 0.0,
+    maximum: float = 100.0,
+) -> float:
+
+    return max(
+        minimum,
+        min(maximum, value),
+    )
 
 
 # ============================================================
@@ -229,15 +237,11 @@ def age_days(
 def build_portwatch_url() -> str:
 
     params = {
-        "where": (
-            f"portid='{HORMUZ_PORT_ID}'"
-        ),
+        "where": f"portid='{HORMUZ_PORT_ID}'",
         "outFields": "*",
         "returnGeometry": "false",
         "orderByFields": "date DESC",
-        "resultRecordCount": str(
-            MAX_RECORDS
-        ),
+        "resultRecordCount": str(MAX_RECORDS),
         "f": "json",
     }
 
@@ -256,7 +260,7 @@ def fetch_json(
         url,
         headers={
             "User-Agent": (
-                "energy-data-hormuz-flow/1.2"
+                "energy-data-hormuz-flow/1.3"
             ),
             "Accept": "application/json",
         },
@@ -305,30 +309,24 @@ def fetch_json(
 
 
 # ============================================================
-# RESPONSE
+# RESPONSE HANDLING
 # ============================================================
 
 def extract_features(
     payload: Dict[str, Any],
 ) -> List[Dict[str, Any]]:
 
-    if not isinstance(
-        payload,
-        dict,
-    ):
+    if not isinstance(payload, dict):
+
         raise RuntimeError(
             "Unexpected PortWatch response type"
         )
 
     if "error" in payload:
 
-        error = payload.get(
-            "error",
-            {},
-        )
-
         raise RuntimeError(
-            f"ArcGIS error: {error}"
+            f"ArcGIS error: "
+            f"{payload.get('error')}"
         )
 
     features = payload.get(
@@ -336,10 +334,8 @@ def extract_features(
         [],
     )
 
-    if not isinstance(
-        features,
-        list,
-    ):
+    if not isinstance(features, list):
+
         raise RuntimeError(
             "No valid PortWatch features"
         )
@@ -373,10 +369,7 @@ def detect_available_fields(
             {},
         )
 
-        if isinstance(
-            attributes,
-            dict,
-        ):
+        if isinstance(attributes, dict):
             fields.update(
                 attributes.keys()
             )
@@ -397,19 +390,12 @@ def normalize_feature(
         {},
     )
 
-    if not isinstance(
-        attributes,
-        dict,
-    ):
+    if not isinstance(attributes, dict):
         return None
 
     raw_date = first_existing(
         attributes,
-        [
-            "date",
-            "Date",
-            "DATE",
-        ],
+        ["date", "Date", "DATE"],
     )
 
     date_dt = parse_arcgis_date(
@@ -487,10 +473,6 @@ def normalize_feature(
         )
     )
 
-    # --------------------------------------------------------
-    # Capacity quality
-    # --------------------------------------------------------
-
     tanker_capacity_valid = True
     tanker_capacity_issue = None
 
@@ -521,26 +503,14 @@ def normalize_feature(
         if capacity_tanker is None:
             capacity_tanker = 0.0
 
-    observation_date = (
-        date_dt.date()
-    )
+    observation_date = date_dt.date()
 
     return {
-        "date": (
-            observation_date.isoformat()
-        ),
+        "date": observation_date.isoformat(),
+        "timestamp": date_dt.isoformat(),
 
-        "timestamp": (
-            date_dt.isoformat()
-        ),
-
-        "year": (
-            observation_date.year
-        ),
-
-        "month": (
-            observation_date.month
-        ),
+        "year": observation_date.year,
+        "month": observation_date.month,
 
         "year_month": (
             observation_date.strftime(
@@ -588,7 +558,6 @@ def normalize_features(
 ) -> List[Dict[str, Any]]:
 
     observations = []
-
     seen_dates = set()
 
     for feature in features:
@@ -747,9 +716,7 @@ def build_period_stats(
     )
 
     return {
-        "days": len(
-            observations
-        ),
+        "days": len(observations),
 
         "n_total": metric_stats(
             numeric_values(
@@ -772,12 +739,10 @@ def build_period_stats(
             )
         ),
 
-        "capacity_total": (
-            metric_stats(
-                numeric_values(
-                    observations,
-                    "capacity_total",
-                )
+        "capacity_total": metric_stats(
+            numeric_values(
+                observations,
+                "capacity_total",
             )
         ),
 
@@ -815,6 +780,398 @@ def build_period_stats(
 
 
 # ============================================================
+# PERIOD SELECTION
+# ============================================================
+
+def select_period(
+    observations: List[Dict[str, Any]],
+    start: date,
+    end: date,
+) -> List[Dict[str, Any]]:
+
+    result = []
+
+    for item in observations:
+
+        try:
+
+            item_date = date.fromisoformat(
+                item["date"]
+            )
+
+        except (
+            KeyError,
+            ValueError,
+        ):
+            continue
+
+        if start <= item_date <= end:
+            result.append(item)
+
+    return result
+
+
+# ============================================================
+# REFERENCE PERIODS
+# ============================================================
+
+def build_reference_periods(
+    observations: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+
+    structural = select_period(
+        observations,
+        STRUCTURAL_BASELINE_START,
+        STRUCTURAL_BASELINE_END,
+    )
+
+    prewar_control = select_period(
+        observations,
+        PREWAR_CONTROL_START,
+        PREWAR_CONTROL_END,
+    )
+
+    structural_stats = build_period_stats(
+        structural
+    )
+
+    control_stats = build_period_stats(
+        prewar_control
+    )
+
+    structural_complete = (
+        structural_stats.get(
+            "days",
+            0,
+        ) >= 365
+    )
+
+    control_complete = (
+        control_stats.get(
+            "days",
+            0,
+        ) >= 27
+    )
+
+    return {
+        "structural_baseline": {
+            "name": (
+                "STRUCTURAL_BASELINE"
+            ),
+
+            "start_date": (
+                STRUCTURAL_BASELINE_START
+                .isoformat()
+            ),
+
+            "end_date": (
+                STRUCTURAL_BASELINE_END
+                .isoformat()
+            ),
+
+            "status": (
+                "FIXED"
+                if structural_complete
+                else "INCOMPLETE"
+            ),
+
+            "purpose": (
+                "Long-run normal AIS-observed "
+                "Hormuz traffic reference"
+            ),
+
+            **structural_stats,
+        },
+
+        "prewar_control": {
+            "name": (
+                "PREWAR_CONTROL"
+            ),
+
+            "start_date": (
+                PREWAR_CONTROL_START
+                .isoformat()
+            ),
+
+            "end_date": (
+                PREWAR_CONTROL_END
+                .isoformat()
+            ),
+
+            "status": (
+                "VALID"
+                if control_complete
+                else "INCOMPLETE"
+            ),
+
+            "purpose": (
+                "Immediate pre-war control "
+                "for baseline validation"
+            ),
+
+            **control_stats,
+        },
+    }
+
+
+# ============================================================
+# RECENT WINDOWS
+# ============================================================
+
+def build_recent_windows(
+    observations: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+
+    return {
+        "7d": build_period_stats(
+            observations[:7]
+        ),
+
+        "30d": build_period_stats(
+            observations[:30]
+        ),
+
+        "90d": build_period_stats(
+            observations[:90]
+        ),
+    }
+
+
+# ============================================================
+# AIS OBSERVED DISRUPTION
+# ============================================================
+
+def calculate_disruption_from_ratio(
+    current: Optional[float],
+    baseline: Optional[float],
+) -> Dict[str, Any]:
+
+    if (
+        current is None
+        or baseline is None
+        or baseline <= 0
+    ):
+
+        return {
+            "ratio": None,
+            "disruption_score": None,
+        }
+
+    traffic_ratio = (
+        current / baseline
+    )
+
+    # 1.00 baseline traffic = 0 disruption
+    # 0.00 observed traffic = 100 disruption
+    #
+    # Values above baseline do not create
+    # negative disruption.
+
+    disruption = (
+        1.0 - traffic_ratio
+    ) * 100.0
+
+    disruption = clamp(
+        disruption
+    )
+
+    return {
+        "ratio": round(
+            traffic_ratio,
+            4,
+        ),
+
+        "disruption_score": round(
+            disruption,
+            2,
+        ),
+    }
+
+
+def classify_disruption(
+    score: Optional[float],
+) -> Optional[str]:
+
+    if score is None:
+        return None
+
+    if score < 15:
+        return "NORMAL"
+
+    if score < 35:
+        return "LOW"
+
+    if score < 55:
+        return "MODERATE"
+
+    if score < 75:
+        return "HIGH"
+
+    return "SEVERE"
+
+
+def build_ais_observed_disruption(
+    recent: Dict[str, Any],
+    references: Dict[str, Any],
+) -> Dict[str, Any]:
+
+    baseline = references.get(
+        "structural_baseline",
+        {},
+    )
+
+    control = references.get(
+        "prewar_control",
+        {},
+    )
+
+    current_7d_tanker = (
+        recent
+        .get("7d", {})
+        .get("n_tanker", {})
+        .get("average")
+    )
+
+    current_30d_tanker = (
+        recent
+        .get("30d", {})
+        .get("n_tanker", {})
+        .get("average")
+    )
+
+    baseline_tanker = (
+        baseline
+        .get("n_tanker", {})
+        .get("average")
+    )
+
+    control_tanker = (
+        control
+        .get("n_tanker", {})
+        .get("average")
+    )
+
+    seven_day = (
+        calculate_disruption_from_ratio(
+            current_7d_tanker,
+            baseline_tanker,
+        )
+    )
+
+    thirty_day = (
+        calculate_disruption_from_ratio(
+            current_30d_tanker,
+            baseline_tanker,
+        )
+    )
+
+    control_check = (
+        calculate_disruption_from_ratio(
+            control_tanker,
+            baseline_tanker,
+        )
+    )
+
+    score_7d = seven_day.get(
+        "disruption_score"
+    )
+
+    return {
+        "indicator_name": (
+            "AIS_OBSERVED_DISRUPTION"
+        ),
+
+        "status": (
+            "VALIDATION_REQUIRED"
+        ),
+
+        "role": (
+            "AIS traffic observation layer only"
+        ),
+
+        "final_flow_risk": False,
+
+        "scale": {
+            "minimum": 0,
+            "maximum": 100,
+
+            "meaning": (
+                "0 = observed traffic at or above "
+                "structural baseline; "
+                "100 = no AIS-observed tanker traffic"
+            ),
+        },
+
+        "structural_baseline_tankers_per_day": (
+            baseline_tanker
+        ),
+
+        "prewar_control_tankers_per_day": (
+            control_tanker
+        ),
+
+        "current_7d_tankers_per_day": (
+            current_7d_tanker
+        ),
+
+        "current_30d_tankers_per_day": (
+            current_30d_tanker
+        ),
+
+        "seven_day": {
+            **seven_day,
+
+            "level": (
+                classify_disruption(
+                    score_7d
+                )
+            ),
+        },
+
+        "thirty_day": {
+            **thirty_day,
+
+            "level": (
+                classify_disruption(
+                    thirty_day.get(
+                        "disruption_score"
+                    )
+                )
+            ),
+        },
+
+        "baseline_control_check": {
+            "prewar_control_vs_structural_ratio": (
+                control_check.get(
+                    "ratio"
+                )
+            ),
+
+            "difference_score": (
+                control_check.get(
+                    "disruption_score"
+                )
+            ),
+
+            "interpretation": (
+                "Used to verify that the "
+                "structural baseline is broadly "
+                "consistent with the immediate "
+                "pre-war period."
+            ),
+        },
+
+        "validation_warning": (
+            "AIS-observed disruption must not be "
+            "interpreted as an equivalent decline "
+            "in physical oil throughput. "
+            "Independent physical-flow validation "
+            "is required."
+        ),
+    }
+
+
+# ============================================================
 # MONTHLY DIAGNOSTICS
 # ============================================================
 
@@ -848,371 +1205,14 @@ def build_monthly_diagnostics(
             month
         ]
 
-        stats = build_period_stats(
-            rows
-        )
-
         result.append(
             {
                 "month": month,
-
-                "period": (
-                    "PRE_WAR"
-                    if month < "2026-03"
-                    else "POST_WAR"
-                ),
-
-                **stats,
+                **build_period_stats(rows),
             }
         )
 
     return result
-
-
-# ============================================================
-# SPECIFIC PERIODS
-# ============================================================
-
-def select_period(
-    observations: List[Dict[str, Any]],
-    start: date,
-    end: date,
-) -> List[Dict[str, Any]]:
-
-    result = []
-
-    for item in observations:
-
-        try:
-            item_date = (
-                date.fromisoformat(
-                    item["date"]
-                )
-            )
-
-        except (
-            KeyError,
-            ValueError,
-        ):
-            continue
-
-        if (
-            start
-            <= item_date
-            <= end
-        ):
-            result.append(
-                item
-            )
-
-    return result
-
-
-def build_reference_periods(
-    observations: List[Dict[str, Any]],
-) -> Dict[str, Any]:
-
-    full_2025 = select_period(
-        observations,
-        BASELINE_2025_START,
-        BASELINE_2025_END,
-    )
-
-    feb_prewar = select_period(
-        observations,
-        PREWAR_2026_START,
-        PREWAR_2026_END,
-    )
-
-    postwar = []
-
-    for item in observations:
-
-        try:
-
-            item_date = (
-                date.fromisoformat(
-                    item["date"]
-                )
-            )
-
-        except (
-            KeyError,
-            ValueError,
-        ):
-            continue
-
-        if item_date >= WAR_START_DATE:
-
-            postwar.append(
-                item
-            )
-
-    return {
-        "calendar_2025": {
-            "start_date": (
-                BASELINE_2025_START.isoformat()
-            ),
-
-            "end_date": (
-                BASELINE_2025_END.isoformat()
-            ),
-
-            "role": (
-                "candidate_normal_baseline"
-            ),
-
-            **build_period_stats(
-                full_2025
-            ),
-        },
-
-        "february_2026_prewar": {
-            "start_date": (
-                PREWAR_2026_START.isoformat()
-            ),
-
-            "end_date": (
-                PREWAR_2026_END.isoformat()
-            ),
-
-            "role": (
-                "immediate_prewar_reference"
-            ),
-
-            **build_period_stats(
-                feb_prewar
-            ),
-        },
-
-        "postwar_since_2026_02_28": {
-            "start_date": (
-                WAR_START_DATE.isoformat()
-            ),
-
-            "role": (
-                "disruption_period"
-            ),
-
-            **build_period_stats(
-                postwar
-            ),
-        },
-    }
-
-
-# ============================================================
-# RECENT WINDOWS
-# ============================================================
-
-def build_recent_windows(
-    observations: List[Dict[str, Any]],
-) -> Dict[str, Any]:
-
-    return {
-        "7d": build_period_stats(
-            observations[:7]
-        ),
-
-        "30d": build_period_stats(
-            observations[:30]
-        ),
-
-        "90d": build_period_stats(
-            observations[:90]
-        ),
-    }
-
-
-# ============================================================
-# COMPARISON
-# ============================================================
-
-def ratio(
-    current: Optional[float],
-    baseline: Optional[float],
-) -> Optional[float]:
-
-    if (
-        current is None
-        or baseline is None
-        or baseline == 0
-    ):
-        return None
-
-    return round(
-        current / baseline,
-        4,
-    )
-
-
-def percentage_change(
-    current: Optional[float],
-    baseline: Optional[float],
-) -> Optional[float]:
-
-    if (
-        current is None
-        or baseline is None
-        or baseline == 0
-    ):
-        return None
-
-    return round(
-        (
-            (current - baseline)
-            / baseline
-        )
-        * 100.0,
-        2,
-    )
-
-
-def build_diagnostic_comparison(
-    recent: Dict[str, Any],
-    references: Dict[str, Any],
-) -> Dict[str, Any]:
-
-    current_7d = recent.get(
-        "7d",
-        {}
-    )
-
-    baseline_2025 = (
-        references.get(
-            "calendar_2025",
-            {},
-        )
-    )
-
-    feb_prewar = (
-        references.get(
-            "february_2026_prewar",
-            {},
-        )
-    )
-
-    current_tankers = (
-        current_7d
-        .get("n_tanker", {})
-        .get("average")
-    )
-
-    baseline_2025_tankers = (
-        baseline_2025
-        .get("n_tanker", {})
-        .get("average")
-    )
-
-    feb_tankers = (
-        feb_prewar
-        .get("n_tanker", {})
-        .get("average")
-    )
-
-    current_total = (
-        current_7d
-        .get("n_total", {})
-        .get("average")
-    )
-
-    baseline_2025_total = (
-        baseline_2025
-        .get("n_total", {})
-        .get("average")
-    )
-
-    feb_total = (
-        feb_prewar
-        .get("n_total", {})
-        .get("average")
-    )
-
-    return {
-        "tanker_count_7d": {
-            "current": (
-                current_tankers
-            ),
-
-            "calendar_2025_average": (
-                baseline_2025_tankers
-            ),
-
-            "feb_2026_prewar_average": (
-                feb_tankers
-            ),
-
-            "current_vs_2025_pct": (
-                percentage_change(
-                    current_tankers,
-                    baseline_2025_tankers,
-                )
-            ),
-
-            "current_vs_2025_ratio": (
-                ratio(
-                    current_tankers,
-                    baseline_2025_tankers,
-                )
-            ),
-
-            "current_vs_feb_prewar_pct": (
-                percentage_change(
-                    current_tankers,
-                    feb_tankers,
-                )
-            ),
-
-            "current_vs_feb_prewar_ratio": (
-                ratio(
-                    current_tankers,
-                    feb_tankers,
-                )
-            ),
-        },
-
-        "total_vessels_7d": {
-            "current": (
-                current_total
-            ),
-
-            "calendar_2025_average": (
-                baseline_2025_total
-            ),
-
-            "feb_2026_prewar_average": (
-                feb_total
-            ),
-
-            "current_vs_2025_pct": (
-                percentage_change(
-                    current_total,
-                    baseline_2025_total,
-                )
-            ),
-
-            "current_vs_2025_ratio": (
-                ratio(
-                    current_total,
-                    baseline_2025_total,
-                )
-            ),
-
-            "current_vs_feb_prewar_pct": (
-                percentage_change(
-                    current_total,
-                    feb_total,
-                )
-            ),
-
-            "current_vs_feb_prewar_ratio": (
-                ratio(
-                    current_total,
-                    feb_total,
-                )
-            ),
-        },
-    }
 
 
 # ============================================================
@@ -1265,10 +1265,8 @@ def evaluate_data_quality(
     score = 100
     issues = []
 
-    freshness_status = (
-        freshness.get(
-            "status"
-        )
+    freshness_status = freshness.get(
+        "status"
     )
 
     if freshness_status == "RECENT":
@@ -1330,19 +1328,38 @@ def evaluate_data_quality(
             f"have invalid tanker-capacity values"
         )
 
-    baseline_days = (
-        references
-        .get("calendar_2025", {})
-        .get("days", 0)
+    structural = references.get(
+        "structural_baseline",
+        {},
     )
 
-    if baseline_days < 300:
+    if structural.get(
+        "status"
+    ) != "FIXED":
 
         score -= 20
 
         issues.append(
-            "Calendar 2025 reference coverage "
-            "is incomplete"
+            "Structural baseline is incomplete"
+        )
+
+    structural_capacity_pct = (
+        structural
+        .get("capacity_quality", {})
+        .get("valid_pct")
+    )
+
+    if (
+        structural_capacity_pct
+        is not None
+        and structural_capacity_pct < 90
+    ):
+
+        score -= 10
+
+        issues.append(
+            "Structural baseline tanker-capacity "
+            "quality is below 90%"
         )
 
     score = max(
@@ -1403,10 +1420,8 @@ def build_flow_dataset() -> Dict[str, Any]:
         )
     )
 
-    observations = (
-        normalize_features(
-            features
-        )
+    observations = normalize_features(
+        features
     )
 
     if not observations:
@@ -1427,28 +1442,26 @@ def build_flow_dataset() -> Dict[str, Any]:
         latest_dt
     )
 
-    monthly = (
-        build_monthly_diagnostics(
-            observations
-        )
-    )
-
     references = (
         build_reference_periods(
             observations
         )
     )
 
-    recent = (
-        build_recent_windows(
-            observations
+    recent = build_recent_windows(
+        observations
+    )
+
+    ais_disruption = (
+        build_ais_observed_disruption(
+            recent,
+            references,
         )
     )
 
-    comparison = (
-        build_diagnostic_comparison(
-            recent,
-            references,
+    monthly = (
+        build_monthly_diagnostics(
+            observations
         )
     )
 
@@ -1470,13 +1483,10 @@ def build_flow_dataset() -> Dict[str, Any]:
             ),
 
             "automatic": True,
-
-            "repository": (
-                "energy-data"
-            ),
+            "repository": "energy-data",
 
             "mode": (
-                "DIAGNOSTIC"
+                "AIS_FLOW_OBSERVATION"
             ),
         },
 
@@ -1485,48 +1495,65 @@ def build_flow_dataset() -> Dict[str, Any]:
                 WAR_START_DATE.isoformat()
             ),
 
-            "warning": (
-                "No final Flow Risk Score is "
-                "calculated in this version."
+            "structural_baseline": (
+                "2025-01-01/2025-12-31"
             ),
 
-            "baseline_status": (
-                "UNDER_REVIEW"
+            "prewar_control": (
+                "2026-02-01/2026-02-27"
+            ),
+
+            "final_flow_risk_calculated": (
+                False
             ),
 
             "principles": [
                 (
-                    "PortWatch transit counts are "
-                    "AIS-derived traffic proxies."
+                    "PortWatch is treated as an "
+                    "AIS-observed traffic proxy."
                 ),
+
                 (
-                    "PortWatch capacity is not direct "
-                    "physical oil throughput in mb/d."
+                    "AIS-observed traffic is not "
+                    "equivalent to physical oil "
+                    "throughput in mb/d."
                 ),
+
                 (
-                    "Calendar 2025 and immediate "
-                    "pre-war February 2026 are compared "
-                    "before selecting the final baseline."
+                    "The full calendar year 2025 "
+                    "is the fixed structural baseline."
                 ),
+
                 (
-                    "Suspicious zero tanker-capacity "
-                    "values are excluded from valid "
-                    "capacity statistics."
+                    "February 1-27 2026 is retained "
+                    "as an immediate pre-war control."
+                ),
+
+                (
+                    "AIS Observed Disruption is an "
+                    "observation layer, not the final "
+                    "Flow Risk Score."
+                ),
+
+                (
+                    "Independent physical-flow "
+                    "validation is required before "
+                    "integration into Hormuz Risk."
                 ),
             ],
         },
 
         "source": {
-            "provider": (
-                "IMF PortWatch"
-            ),
+            "provider": "IMF PortWatch",
 
             "service": (
                 "Daily_Chokepoints_Data"
             ),
 
-            "portid": (
-                HORMUZ_PORT_ID
+            "portid": HORMUZ_PORT_ID,
+
+            "measurement_role": (
+                "AIS-observed vessel traffic proxy"
             ),
         },
 
@@ -1537,25 +1564,17 @@ def build_flow_dataset() -> Dict[str, Any]:
 
         "freshness": freshness,
 
-        "data_quality": (
-            data_quality
+        "data_quality": data_quality,
+
+        "reference_periods": references,
+
+        "recent_windows": recent,
+
+        "ais_observed_disruption": (
+            ais_disruption
         ),
 
-        "reference_periods": (
-            references
-        ),
-
-        "recent_windows": (
-            recent
-        ),
-
-        "diagnostic_comparison": (
-            comparison
-        ),
-
-        "monthly_diagnostics": (
-            monthly
-        ),
+        "monthly_diagnostics": monthly,
 
         "diagnostics": {
             "raw_features_received": (
@@ -1584,79 +1603,14 @@ def build_flow_dataset() -> Dict[str, Any]:
 
 
 # ============================================================
-# CONSOLE DIAGNOSTICS
+# CONSOLE
 # ============================================================
-
-def print_monthly_table(
-    monthly: List[Dict[str, Any]],
-) -> None:
-
-    print()
-    print(
-        "MONTHLY PORTWATCH DIAGNOSTICS"
-    )
-
-    print(
-        "============================================================"
-    )
-
-    print(
-        f"{'Month':<9}"
-        f"{'Days':>6}"
-        f"{'Tank avg':>11}"
-        f"{'Tank med':>11}"
-        f"{'Tank max':>11}"
-        f"{'Total avg':>12}"
-        f"{'Cap avg':>14}"
-        f"{'Bad cap':>9}"
-    )
-
-    print(
-        "------------------------------------------------------------"
-        "----------------"
-    )
-
-    for item in monthly:
-
-        tanker = item.get(
-            "n_tanker",
-            {},
-        )
-
-        total = item.get(
-            "n_total",
-            {},
-        )
-
-        capacity = item.get(
-            "capacity_tanker_valid_only",
-            {},
-        )
-
-        quality = item.get(
-            "capacity_quality",
-            {},
-        )
-
-        print(
-            f"{item.get('month', ''):<9}"
-            f"{item.get('days', 0):>6}"
-            f"{str(tanker.get('average')):>11}"
-            f"{str(tanker.get('median')):>11}"
-            f"{str(tanker.get('max')):>11}"
-            f"{str(total.get('average')):>12}"
-            f"{str(capacity.get('average')):>14}"
-            f"{quality.get('invalid_days', 0):>9}"
-        )
-
 
 def main() -> int:
 
     try:
 
-        result = (
-            build_flow_dataset()
-        )
+        result = build_flow_dataset()
 
         OUTPUT_FILE.write_text(
             json.dumps(
@@ -1668,23 +1622,28 @@ def main() -> int:
             encoding="utf-8",
         )
 
-        latest = result.get(
-            "latest_observation",
-            {},
-        )
-
-        freshness = result.get(
-            "freshness",
-            {},
-        )
-
         references = result.get(
             "reference_periods",
             {},
         )
 
-        comparison = result.get(
-            "diagnostic_comparison",
+        structural = references.get(
+            "structural_baseline",
+            {},
+        )
+
+        control = references.get(
+            "prewar_control",
+            {},
+        )
+
+        disruption = result.get(
+            "ais_observed_disruption",
+            {},
+        )
+
+        freshness = result.get(
+            "freshness",
             {},
         )
 
@@ -1695,7 +1654,7 @@ def main() -> int:
 
         print()
         print(
-            "Hormuz Flow Collector v1.2"
+            "Hormuz Flow Collector v1.3"
         )
 
         print(
@@ -1704,7 +1663,9 @@ def main() -> int:
 
         print(
             "Latest observation:",
-            latest.get("date"),
+            result
+            .get("latest_observation", {})
+            .get("date"),
         )
 
         print(
@@ -1719,114 +1680,138 @@ def main() -> int:
 
         print()
         print(
-            "REFERENCE PERIODS"
+            "STRUCTURAL BASELINE"
         )
 
         print(
             "========================================"
         )
 
-        baseline_2025 = (
-            references.get(
-                "calendar_2025",
-                {},
-            )
-        )
-
-        feb_prewar = (
-            references.get(
-                "february_2026_prewar",
-                {},
-            )
+        print(
+            "Status:",
+            structural.get("status"),
         )
 
         print(
-            "2025 days:",
-            baseline_2025.get(
-                "days"
-            ),
+            "Days:",
+            structural.get("days"),
         )
 
         print(
-            "2025 tanker/day average:",
-            baseline_2025
+            "Tanker/day:",
+            structural
             .get("n_tanker", {})
             .get("average"),
         )
 
         print(
-            "2025 total/day average:",
-            baseline_2025
+            "Total vessels/day:",
+            structural
             .get("n_total", {})
             .get("average"),
         )
 
         print()
         print(
-            "2026 Feb 1-27 days:",
-            feb_prewar.get(
-                "days"
-            ),
-        )
-
-        print(
-            "Feb pre-war tanker/day:",
-            feb_prewar
-            .get("n_tanker", {})
-            .get("average"),
-        )
-
-        print(
-            "Feb pre-war total/day:",
-            feb_prewar
-            .get("n_total", {})
-            .get("average"),
-        )
-
-        print()
-        print(
-            "CURRENT 7D VS REFERENCES"
+            "PREWAR CONTROL"
         )
 
         print(
             "========================================"
         )
 
-        tanker_compare = (
-            comparison.get(
-                "tanker_count_7d",
-                {},
-            )
+        print(
+            "Status:",
+            control.get("status"),
         )
 
         print(
-            "Current 7d tanker/day:",
-            tanker_compare.get(
-                "current"
+            "Tanker/day:",
+            control
+            .get("n_tanker", {})
+            .get("average"),
+        )
+
+        print(
+            "Total vessels/day:",
+            control
+            .get("n_total", {})
+            .get("average"),
+        )
+
+        print()
+        print(
+            "AIS OBSERVED DISRUPTION"
+        )
+
+        print(
+            "========================================"
+        )
+
+        print(
+            "7d tankers/day:",
+            disruption.get(
+                "current_7d_tankers_per_day"
             ),
         )
 
         print(
-            "vs 2025:",
-            tanker_compare.get(
-                "current_vs_2025_pct"
+            "30d tankers/day:",
+            disruption.get(
+                "current_30d_tankers_per_day"
             ),
-            "%",
         )
 
         print(
-            "vs Feb pre-war:",
-            tanker_compare.get(
-                "current_vs_feb_prewar_pct"
-            ),
-            "%",
+            "7d baseline ratio:",
+            disruption
+            .get("seven_day", {})
+            .get("ratio"),
         )
 
-        print_monthly_table(
-            result.get(
-                "monthly_diagnostics",
-                [],
-            )
+        print(
+            "7d observed disruption:",
+            disruption
+            .get("seven_day", {})
+            .get("disruption_score"),
+        )
+
+        print(
+            "7d level:",
+            disruption
+            .get("seven_day", {})
+            .get("level"),
+        )
+
+        print(
+            "30d observed disruption:",
+            disruption
+            .get("thirty_day", {})
+            .get("disruption_score"),
+        )
+
+        print(
+            "Prewar control / structural ratio:",
+            disruption
+            .get("baseline_control_check", {})
+            .get(
+                "prewar_control_vs_structural_ratio"
+            ),
+        )
+
+        print()
+        print(
+            "IMPORTANT:"
+        )
+
+        print(
+            "AIS Observed Disruption is NOT "
+            "the final Flow Risk Score."
+        )
+
+        print(
+            "Independent physical-flow "
+            "validation is required."
         )
 
         print()
