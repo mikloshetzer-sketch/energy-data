@@ -2,26 +2,30 @@
 # -*- coding: utf-8 -*-
 
 """
-Hormuz Vessel Monitor v1.1
+Hormuz Vessel Monitor v1.2
 ==========================
 
-Individual-vessel AIS monitoring with run-to-run comparison.
+Persistent vessel tracking for the Strait of Hormuz.
 
 Output:
     hormuz-vessels.json
 
-New in v1.1:
-- loads previous hormuz-vessels.json before overwrite
-- compares vessels by stable vessel_id
-- detects new / disappeared vessels
-- detects zone changes
-- identifies tanker zone changes
-- identifies large tanker and VLCC/ULCC movements
-- counts tankers by zone
-- creates movement signals
-- preserves compact snapshot history
-- does NOT calculate physical oil flow
-- does NOT calculate final Hormuz risk
+Main changes in v1.2:
+- persistent vessel state across snapshots
+- temporary AIS disappearance is not treated as real departure
+- NEW requires confirmation in 2 consecutive snapshots
+- DISAPPEARED requires absence from 2 consecutive snapshots
+- zone changes require consecutive observations
+- persistent zone path is stored per vessel
+- candidate Hormuz transit detection
+- confirmed Hormuz transit:
+    Persian Gulf -> Strait -> Gulf of Oman
+    Gulf of Oman -> Strait -> Persian Gulf
+- direct PG <-> GoO jumps are stored as possible skipped-zone transitions,
+  not confirmed transits
+- AIS observations remain logistics proxies
+- no physical oil-flow calculation
+- no final Hormuz risk calculation
 """
 
 from __future__ import annotations
@@ -41,7 +45,7 @@ from urllib.request import Request, urlopen
 # ============================================================
 
 MODEL_NAME = "Hormuz Vessel Monitor"
-MODEL_VERSION = "1.1-vessel-change-monitor"
+MODEL_VERSION = "1.2-persistent-vessel-tracking"
 
 BASE_URL = "https://hormuz.data-tracking.net"
 SHIPS_ENDPOINT = "/api/ships"
@@ -51,6 +55,13 @@ OUTPUT_FILE = Path("hormuz-vessels.json")
 HTTP_TIMEOUT_SECONDS = 45
 
 MAX_HISTORY_SNAPSHOTS = 30
+
+MAX_ZONE_HISTORY = 12
+
+NEW_CONFIRMATION_RUNS = 2
+MISSING_CONFIRMATION_RUNS = 2
+
+MAX_MISSING_RUNS_TO_KEEP = 6
 
 
 # ============================================================
@@ -100,7 +111,7 @@ VERY_LARGE_CLASSES = {
 
 
 # ============================================================
-# HELPERS
+# BASIC HELPERS
 # ============================================================
 
 def utc_now() -> datetime:
@@ -117,6 +128,18 @@ def safe_float(
 
     try:
         return float(value)
+
+    except (TypeError, ValueError):
+        return default
+
+
+def safe_int(
+    value: Any,
+    default: int = 0,
+) -> int:
+
+    try:
+        return int(value)
 
     except (TypeError, ValueError):
         return default
@@ -184,7 +207,7 @@ def fetch_json(endpoint: str) -> Any:
         url,
         headers={
             "User-Agent":
-                "energy-data-hormuz-vessel-monitor/1.1",
+                "energy-data-hormuz-vessel-monitor/1.2",
             "Accept": "application/json",
         },
     )
@@ -226,7 +249,7 @@ def fetch_json(endpoint: str) -> Any:
 
 
 # ============================================================
-# PREVIOUS SNAPSHOT
+# PREVIOUS DATASET
 # ============================================================
 
 def load_previous_dataset() -> Optional[Dict[str, Any]]:
@@ -520,8 +543,7 @@ def normalize_ship(
 
     vessel_id = None
 
-    # Keep same ID logic as v1.0 for
-    # backwards-compatible comparisons.
+    # Keep previous ID priority for compatibility.
     if imo:
         vessel_id = f"IMO:{imo}"
 
@@ -538,13 +560,14 @@ def normalize_ship(
         "mmsi": mmsi or None,
         "flag": flag or None,
 
-        "ship_category": (
-            category or None
-        ),
+        "ship_category":
+            category or None,
 
-        "dwt": dwt,
+        "dwt":
+            dwt,
 
-        "tanker_size": tanker_size,
+        "tanker_size":
+            tanker_size,
 
         "oil_related":
             relevance["oil_related"],
@@ -565,8 +588,6 @@ def normalize_ship(
         },
 
         "navigation": {
-            # API does not currently provide
-            # reliable direction in /api/ships.
             "direction": None,
             "speed": speed,
             "course": course,
@@ -578,7 +599,8 @@ def normalize_ship(
         "last_observation":
             timestamp or None,
 
-        "raw": row,
+        "raw":
+            row,
     }
 
 
@@ -633,6 +655,68 @@ def haversine_km(
         radius * c,
         2,
     )
+
+
+# ============================================================
+# COMPACT VESSEL
+# ============================================================
+
+def compact_vessel(
+    vessel: Dict[str, Any],
+) -> Dict[str, Any]:
+
+    return {
+        "vessel_id":
+            vessel.get("vessel_id"),
+
+        "name":
+            vessel.get("name"),
+
+        "ship_category":
+            vessel.get("ship_category"),
+
+        "energy_role":
+            vessel.get("energy_role"),
+
+        "dwt":
+            vessel.get("dwt"),
+
+        "tanker_size":
+            vessel.get("tanker_size"),
+
+        "region":
+            vessel
+            .get("position", {})
+            .get("region"),
+
+        "latitude":
+            vessel
+            .get("position", {})
+            .get("latitude"),
+
+        "longitude":
+            vessel
+            .get("position", {})
+            .get("longitude"),
+
+        "speed":
+            vessel
+            .get("navigation", {})
+            .get("speed"),
+
+        "course":
+            vessel
+            .get("navigation", {})
+            .get("course"),
+
+        "destination":
+            vessel
+            .get("navigation", {})
+            .get("destination"),
+
+        "last_observation":
+            vessel.get("last_observation"),
+    }
 
 
 # ============================================================
@@ -737,7 +821,8 @@ def build_analysis(
     ]
 
     return {
-        "total_vessels": len(vessels),
+        "total_vessels":
+            len(vessels),
 
         "identified_vessels":
             len(identified),
@@ -800,71 +885,7 @@ def build_analysis(
 
 
 # ============================================================
-# COMPACT VESSEL
-# ============================================================
-
-def compact_vessel(
-    vessel: Dict[str, Any],
-) -> Dict[str, Any]:
-
-    return {
-        "vessel_id":
-            vessel.get("vessel_id"),
-
-        "name":
-            vessel.get("name"),
-
-        "ship_category":
-            vessel.get("ship_category"),
-
-        "energy_role":
-            vessel.get("energy_role"),
-
-        "dwt":
-            vessel.get("dwt"),
-
-        "tanker_size":
-            vessel.get("tanker_size"),
-
-        "region":
-            vessel
-            .get("position", {})
-            .get("region"),
-
-        "latitude":
-            vessel
-            .get("position", {})
-            .get("latitude"),
-
-        "longitude":
-            vessel
-            .get("position", {})
-            .get("longitude"),
-
-        "speed":
-            vessel
-            .get("navigation", {})
-            .get("speed"),
-
-        "course":
-            vessel
-            .get("navigation", {})
-            .get("course"),
-
-        "destination":
-            vessel
-            .get("navigation", {})
-            .get("destination"),
-
-        "last_observation":
-            vessel.get(
-                "last_observation"
-            ),
-    }
-
-
-# ============================================================
-# RUN-TO-RUN COMPARISON
+# VESSEL MAP
 # ============================================================
 
 def build_vessel_map(
@@ -878,197 +899,522 @@ def build_vessel_map(
     }
 
 
-def compare_snapshots(
-    previous_dataset: Optional[
-        Dict[str, Any]
-    ],
-    current_vessels: List[
-        Dict[str, Any]
-    ],
-) -> Dict[str, Any]:
+# ============================================================
+# PERSISTENT STATE
+# ============================================================
+
+def bootstrap_previous_state(
+    previous_dataset: Optional[Dict[str, Any]],
+) -> Dict[str, Dict[str, Any]]:
 
     if not previous_dataset:
+        return {}
 
-        return {
-            "comparison_available": False,
-            "reason":
-                "No previous vessel snapshot available.",
-            "previous_generated_at": None,
-            "new_vessels": [],
-            "disappeared_vessels": [],
-            "zone_changes": [],
-            "oil_tanker_zone_changes": [],
-            "large_tanker_zone_changes": [],
-            "vlcc_ulcc_zone_changes": [],
+    existing_state = previous_dataset.get(
+        "persistent_vessel_state"
+    )
+
+    if isinstance(existing_state, dict):
+        return existing_state
+
+    # Upgrade from v1.0/v1.1:
+    # use previous vessels as first persistent state.
+    state: Dict[str, Dict[str, Any]] = {}
+
+    previous_generated_at = (
+        previous_dataset
+        .get("meta", {})
+        .get("generated_at")
+    )
+
+    for vessel in previous_dataset.get(
+        "vessels",
+        [],
+    ):
+
+        vessel_id = vessel.get(
+            "vessel_id"
+        )
+
+        if not vessel_id:
+            continue
+
+        zone = (
+            vessel
+            .get("position", {})
+            .get("region")
+        )
+
+        state[vessel_id] = {
+            "vessel_id":
+                vessel_id,
+
+            "name":
+                vessel.get("name"),
+
+            "ship_category":
+                vessel.get(
+                    "ship_category"
+                ),
+
+            "energy_role":
+                vessel.get(
+                    "energy_role"
+                ),
+
+            "oil_related":
+                vessel.get(
+                    "oil_related",
+                    False,
+                ),
+
+            "crude_related":
+                vessel.get(
+                    "crude_related",
+                    False,
+                ),
+
+            "product_related":
+                vessel.get(
+                    "product_related",
+                    False,
+                ),
+
+            "tanker_size":
+                vessel.get(
+                    "tanker_size"
+                ),
+
+            "dwt":
+                vessel.get("dwt"),
+
+            "first_seen":
+                previous_generated_at,
+
+            "last_seen":
+                previous_generated_at,
+
+            "seen_runs":
+                1,
+
+            "consecutive_seen_runs":
+                1,
+
+            "missing_runs":
+                0,
+
+            "confirmed_present":
+                True,
+
+            "confirmed_disappeared":
+                False,
+
+            "last_zone":
+                zone,
+
+            "zone_history": (
+                [
+                    {
+                        "zone": zone,
+                        "observed_at":
+                            previous_generated_at,
+                    }
+                ]
+                if zone
+                else []
+            ),
+
+            "confirmed_transit_count":
+                0,
+
+            "last_transit":
+                None,
         }
 
-    previous_vessels = (
-        previous_dataset.get(
-            "vessels",
-            [],
-        )
-    )
+    return state
 
-    previous_map = build_vessel_map(
-        previous_vessels
-    )
+
+def update_persistent_state(
+    previous_state: Dict[str, Dict[str, Any]],
+    current_vessels: List[Dict[str, Any]],
+    generated_at: datetime,
+) -> Dict[str, Any]:
 
     current_map = build_vessel_map(
         current_vessels
     )
 
-    previous_ids = set(
-        previous_map.keys()
-    )
+    now_iso = generated_at.isoformat()
 
-    current_ids = set(
-        current_map.keys()
-    )
+    state = {
+        key: dict(value)
+        for key, value
+        in previous_state.items()
+    }
 
-    new_ids = (
-        current_ids - previous_ids
-    )
+    raw_appeared = []
+    raw_missing = []
 
-    disappeared_ids = (
-        previous_ids - current_ids
-    )
-
-    common_ids = (
-        previous_ids & current_ids
-    )
-
-    new_vessels = [
-        compact_vessel(
-            current_map[vessel_id]
-        )
-        for vessel_id in sorted(
-            new_ids
-        )
-    ]
-
-    disappeared_vessels = [
-        compact_vessel(
-            previous_map[vessel_id]
-        )
-        for vessel_id in sorted(
-            disappeared_ids
-        )
-    ]
+    confirmed_new = []
+    confirmed_disappeared = []
 
     zone_changes = []
+    oil_zone_changes = []
+    large_zone_changes = []
+    vlcc_zone_changes = []
 
-    for vessel_id in sorted(
-        common_ids
-    ):
+    possible_direct_transits = []
+    confirmed_transits = []
 
-        old = previous_map[vessel_id]
-        new = current_map[vessel_id]
+    # --------------------------------------------------------
+    # VESSELS OBSERVED NOW
+    # --------------------------------------------------------
 
-        old_zone = (
-            old
+    for vessel_id, vessel in current_map.items():
+
+        current_zone = (
+            vessel
             .get("position", {})
             .get("region")
         )
 
-        new_zone = (
-            new
-            .get("position", {})
-            .get("region")
-        )
+        if vessel_id not in state:
 
-        old_lat = (
-            old
-            .get("position", {})
-            .get("latitude")
-        )
+            raw_appeared.append(
+                compact_vessel(vessel)
+            )
 
-        old_lon = (
-            old
-            .get("position", {})
-            .get("longitude")
-        )
-
-        new_lat = (
-            new
-            .get("position", {})
-            .get("latitude")
-        )
-
-        new_lon = (
-            new
-            .get("position", {})
-            .get("longitude")
-        )
-
-        distance = haversine_km(
-            old_lat,
-            old_lon,
-            new_lat,
-            new_lon,
-        )
-
-        if (
-            old_zone
-            and new_zone
-            and old_zone != new_zone
-        ):
-
-            zone_changes.append({
+            state[vessel_id] = {
                 "vessel_id":
                     vessel_id,
 
                 "name":
-                    new.get("name"),
+                    vessel.get("name"),
 
                 "ship_category":
-                    new.get(
+                    vessel.get(
                         "ship_category"
                     ),
 
                 "energy_role":
-                    new.get(
+                    vessel.get(
                         "energy_role"
                     ),
 
                 "oil_related":
-                    new.get(
+                    vessel.get(
                         "oil_related",
                         False,
                     ),
 
                 "crude_related":
-                    new.get(
+                    vessel.get(
+                        "crude_related",
+                        False,
+                    ),
+
+                "product_related":
+                    vessel.get(
+                        "product_related",
+                        False,
+                    ),
+
+                "tanker_size":
+                    vessel.get(
+                        "tanker_size"
+                    ),
+
+                "dwt":
+                    vessel.get("dwt"),
+
+                "first_seen":
+                    now_iso,
+
+                "last_seen":
+                    now_iso,
+
+                "seen_runs":
+                    1,
+
+                "consecutive_seen_runs":
+                    1,
+
+                "missing_runs":
+                    0,
+
+                "confirmed_present":
+                    False,
+
+                "confirmed_disappeared":
+                    False,
+
+                "last_zone":
+                    current_zone,
+
+                "zone_history": (
+                    [
+                        {
+                            "zone":
+                                current_zone,
+                            "observed_at":
+                                now_iso,
+                        }
+                    ]
+                    if current_zone
+                    else []
+                ),
+
+                "confirmed_transit_count":
+                    0,
+
+                "last_transit":
+                    None,
+            }
+
+            continue
+
+        entry = state[vessel_id]
+
+        previous_missing_runs = safe_int(
+            entry.get("missing_runs"),
+            0,
+        )
+
+        old_zone = entry.get(
+            "last_zone"
+        )
+
+        was_confirmed_present = bool(
+            entry.get(
+                "confirmed_present",
+                False,
+            )
+        )
+
+        was_confirmed_disappeared = bool(
+            entry.get(
+                "confirmed_disappeared",
+                False,
+            )
+        )
+
+        entry["name"] = (
+            vessel.get("name")
+            or entry.get("name")
+        )
+
+        entry["ship_category"] = (
+            vessel.get("ship_category")
+            or entry.get("ship_category")
+        )
+
+        entry["energy_role"] = (
+            vessel.get("energy_role")
+            or entry.get("energy_role")
+        )
+
+        entry["oil_related"] = (
+            vessel.get(
+                "oil_related",
+                entry.get(
+                    "oil_related",
+                    False,
+                ),
+            )
+        )
+
+        entry["crude_related"] = (
+            vessel.get(
+                "crude_related",
+                entry.get(
+                    "crude_related",
+                    False,
+                ),
+            )
+        )
+
+        entry["product_related"] = (
+            vessel.get(
+                "product_related",
+                entry.get(
+                    "product_related",
+                    False,
+                ),
+            )
+        )
+
+        entry["tanker_size"] = (
+            vessel.get("tanker_size")
+            or entry.get("tanker_size")
+        )
+
+        if vessel.get("dwt") is not None:
+            entry["dwt"] = vessel.get(
+                "dwt"
+            )
+
+        entry["last_seen"] = now_iso
+
+        entry["seen_runs"] = (
+            safe_int(
+                entry.get("seen_runs"),
+                0,
+            )
+            + 1
+        )
+
+        if previous_missing_runs == 0:
+
+            entry[
+                "consecutive_seen_runs"
+            ] = (
+                safe_int(
+                    entry.get(
+                        "consecutive_seen_runs"
+                    ),
+                    0,
+                )
+                + 1
+            )
+
+        else:
+
+            # Reappeared after temporary absence.
+            entry[
+                "consecutive_seen_runs"
+            ] = 1
+
+        entry["missing_runs"] = 0
+
+        if (
+            not was_confirmed_present
+            and entry[
+                "consecutive_seen_runs"
+            ] >= NEW_CONFIRMATION_RUNS
+        ):
+
+            entry[
+                "confirmed_present"
+            ] = True
+
+            entry[
+                "confirmed_disappeared"
+            ] = False
+
+            confirmed_new.append(
+                compact_vessel(vessel)
+            )
+
+        elif was_confirmed_disappeared:
+
+            # A vessel previously considered disappeared
+            # has returned. Treat it as reappeared, not new.
+            entry[
+                "confirmed_present"
+            ] = True
+
+            entry[
+                "confirmed_disappeared"
+            ] = False
+
+        # Zone change is trusted only when vessel was
+        # present in the immediately preceding snapshot.
+        consecutive_observation = (
+            previous_missing_runs == 0
+        )
+
+        if (
+            consecutive_observation
+            and old_zone
+            and current_zone
+            and old_zone != current_zone
+        ):
+
+            old_position = (
+                entry.get(
+                    "last_position",
+                    {},
+                )
+            )
+
+            current_position = (
+                vessel.get(
+                    "position",
+                    {},
+                )
+            )
+
+            distance = haversine_km(
+                old_position.get(
+                    "latitude"
+                ),
+                old_position.get(
+                    "longitude"
+                ),
+                current_position.get(
+                    "latitude"
+                ),
+                current_position.get(
+                    "longitude"
+                ),
+            )
+
+            change = {
+                "vessel_id":
+                    vessel_id,
+
+                "name":
+                    vessel.get("name"),
+
+                "ship_category":
+                    vessel.get(
+                        "ship_category"
+                    ),
+
+                "energy_role":
+                    vessel.get(
+                        "energy_role"
+                    ),
+
+                "oil_related":
+                    vessel.get(
+                        "oil_related",
+                        False,
+                    ),
+
+                "crude_related":
+                    vessel.get(
                         "crude_related",
                         False,
                     ),
 
                 "tanker_size":
-                    new.get(
+                    vessel.get(
                         "tanker_size"
                     ),
 
                 "dwt":
-                    new.get("dwt"),
+                    vessel.get("dwt"),
 
                 "from_region":
                     old_zone,
 
                 "to_region":
-                    new_zone,
+                    current_zone,
 
                 "distance_since_previous_km":
                     distance,
 
-                "current_speed":
-                    new
+                "speed":
+                    vessel
                     .get(
                         "navigation",
                         {},
                     )
                     .get("speed"),
 
-                "current_course":
-                    new
+                "course":
+                    vessel
                     .get(
                         "navigation",
                         {},
@@ -1076,234 +1422,589 @@ def compare_snapshots(
                     .get("course"),
 
                 "destination":
-                    new
+                    vessel
                     .get(
                         "navigation",
                         {},
                     )
                     .get("destination"),
 
-                "previous_observation":
-                    old.get(
-                        "last_observation"
-                    ),
+                "observed_at":
+                    now_iso,
+            }
 
-                "current_observation":
-                    new.get(
-                        "last_observation"
-                    ),
+            zone_changes.append(
+                change
+            )
+
+            if vessel.get(
+                "oil_related"
+            ):
+
+                oil_zone_changes.append(
+                    change
+                )
+
+                if vessel.get(
+                    "tanker_size"
+                ) in LARGE_TANKER_CLASSES:
+
+                    large_zone_changes.append(
+                        change
+                    )
+
+                if vessel.get(
+                    "tanker_size"
+                ) in VERY_LARGE_CLASSES:
+
+                    vlcc_zone_changes.append(
+                        change
+                    )
+
+            history = entry.get(
+                "zone_history",
+                [],
+            )
+
+            if not isinstance(
+                history,
+                list,
+            ):
+                history = []
+
+            history.append({
+                "zone":
+                    current_zone,
+
+                "observed_at":
+                    now_iso,
             })
 
-    oil_changes = [
-        item
-        for item in zone_changes
-        if item.get("oil_related")
-    ]
+            history = history[
+                -MAX_ZONE_HISTORY:
+            ]
 
-    large_changes = [
-        item
-        for item in oil_changes
-        if item.get("tanker_size")
-        in LARGE_TANKER_CLASSES
-    ]
-
-    very_large_changes = [
-        item
-        for item in oil_changes
-        if item.get("tanker_size")
-        in VERY_LARGE_CLASSES
-    ]
-
-    return {
-        "comparison_available": True,
-
-        "previous_generated_at":
-            previous_dataset
-            .get("meta", {})
-            .get("generated_at"),
-
-        "previous_version":
-            previous_dataset
-            .get("meta", {})
-            .get("version"),
-
-        "previous_vessel_count":
-            len(previous_vessels),
-
-        "current_vessel_count":
-            len(current_vessels),
-
-        "common_vessel_count":
-            len(common_ids),
-
-        "new_vessel_count":
-            len(new_ids),
-
-        "disappeared_vessel_count":
-            len(disappeared_ids),
-
-        "zone_change_count":
-            len(zone_changes),
-
-        "oil_tanker_zone_change_count":
-            len(oil_changes),
-
-        "large_tanker_zone_change_count":
-            len(large_changes),
-
-        "vlcc_ulcc_zone_change_count":
-            len(very_large_changes),
-
-        "new_vessels":
-            new_vessels,
-
-        "disappeared_vessels":
-            disappeared_vessels,
-
-        "zone_changes":
-            zone_changes,
-
-        "oil_tanker_zone_changes":
-            oil_changes,
-
-        "large_tanker_zone_changes":
-            large_changes,
-
-        "vlcc_ulcc_zone_changes":
-            very_large_changes,
-    }
-
-
-# ============================================================
-# MOVEMENT SIGNALS
-# ============================================================
-
-def build_movement_signals(
-    comparison: Dict[str, Any],
-) -> Dict[str, Any]:
-
-    if not comparison.get(
-        "comparison_available"
-    ):
-
-        return {
-            "available": False,
-            "signals": [],
-        }
-
-    oil_changes = comparison.get(
-        "oil_tanker_zone_changes",
-        [],
-    )
-
-    signals = []
-
-    transition_counts: Dict[str, int] = {}
-
-    for item in oil_changes:
-
-        key = (
-            f"{item.get('from_region')}"
-            " -> "
-            f"{item.get('to_region')}"
-        )
-
-        transition_counts[key] = (
-            transition_counts.get(
-                key,
-                0,
+            entry["zone_history"] = (
+                history
             )
-            + 1
-        )
 
-    for transition, count in sorted(
-        transition_counts.items()
-    ):
+            # ----------------------------------------------
+            # CONFIRMED THREE-ZONE TRANSIT
+            # ----------------------------------------------
 
-        signals.append({
-            "type":
-                "TANKER_ZONE_TRANSITION",
+            zones = [
+                item.get("zone")
+                for item in history
+                if item.get("zone")
+            ]
 
-            "transition":
-                transition,
+            if len(zones) >= 3:
 
-            "count":
-                count,
-        })
+                last_three = zones[-3:]
 
-    vlcc_changes = comparison.get(
-        "vlcc_ulcc_zone_changes",
-        [],
-    )
+                outbound_pattern = [
+                    "persian_gulf",
+                    "strait",
+                    "gulf_of_oman",
+                ]
 
-    if vlcc_changes:
+                inbound_pattern = [
+                    "gulf_of_oman",
+                    "strait",
+                    "persian_gulf",
+                ]
 
-        signals.append({
-            "type":
-                "VLCC_ULCC_ZONE_MOVEMENT",
+                transit_direction = None
 
-            "count":
-                len(vlcc_changes),
+                if (
+                    last_three
+                    == outbound_pattern
+                ):
+                    transit_direction = (
+                        "OUTBOUND"
+                    )
 
-            "vessels": [
-                {
-                    "name":
-                        item.get("name"),
+                elif (
+                    last_three
+                    == inbound_pattern
+                ):
+                    transit_direction = (
+                        "INBOUND"
+                    )
 
+                if transit_direction:
+
+                    transit = {
+                        "vessel_id":
+                            vessel_id,
+
+                        "name":
+                            vessel.get(
+                                "name"
+                            ),
+
+                        "ship_category":
+                            vessel.get(
+                                "ship_category"
+                            ),
+
+                        "energy_role":
+                            vessel.get(
+                                "energy_role"
+                            ),
+
+                        "tanker_size":
+                            vessel.get(
+                                "tanker_size"
+                            ),
+
+                        "dwt":
+                            vessel.get(
+                                "dwt"
+                            ),
+
+                        "direction":
+                            transit_direction,
+
+                        "path":
+                            last_three,
+
+                        "confirmed_at":
+                            now_iso,
+
+                        "method":
+                            (
+                                "three-zone "
+                                "consecutive AIS path"
+                            ),
+                    }
+
+                    confirmed_transits.append(
+                        transit
+                    )
+
+                    entry[
+                        "confirmed_transit_count"
+                    ] = (
+                        safe_int(
+                            entry.get(
+                                "confirmed_transit_count"
+                            ),
+                            0,
+                        )
+                        + 1
+                    )
+
+                    entry[
+                        "last_transit"
+                    ] = transit
+
+            # ----------------------------------------------
+            # DIRECT PG <-> GoO JUMP
+            # ----------------------------------------------
+
+            direct_pair = {
+                old_zone,
+                current_zone,
+            }
+
+            if direct_pair == {
+                "persian_gulf",
+                "gulf_of_oman",
+            }:
+
+                possible_direct_transits.append({
                     "vessel_id":
-                        item.get(
-                            "vessel_id"
+                        vessel_id,
+
+                    "name":
+                        vessel.get("name"),
+
+                    "ship_category":
+                        vessel.get(
+                            "ship_category"
                         ),
 
-                    "size":
-                        item.get(
+                    "energy_role":
+                        vessel.get(
+                            "energy_role"
+                        ),
+
+                    "tanker_size":
+                        vessel.get(
                             "tanker_size"
                         ),
 
-                    "from":
-                        item.get(
-                            "from_region"
-                        ),
-
-                    "to":
-                        item.get(
-                            "to_region"
-                        ),
-
                     "dwt":
-                        item.get("dwt"),
+                        vessel.get("dwt"),
+
+                    "from_region":
+                        old_zone,
+
+                    "to_region":
+                        current_zone,
+
+                    "observed_at":
+                        now_iso,
+
+                    "classification":
+                        "POSSIBLE_SKIPPED_STRAIT_TRANSIT",
+
+                    "confirmed":
+                        False,
+                })
+
+        # Add first zone if old upgraded state lacked history.
+        elif (
+            current_zone
+            and not entry.get(
+                "zone_history"
+            )
+        ):
+
+            entry["zone_history"] = [
+                {
+                    "zone":
+                        current_zone,
+                    "observed_at":
+                        now_iso,
                 }
-                for item in vlcc_changes
-            ],
-        })
+            ]
+
+        entry["last_zone"] = (
+            current_zone
+            or old_zone
+        )
+
+        entry["last_position"] = {
+            "latitude":
+                vessel
+                .get("position", {})
+                .get("latitude"),
+
+            "longitude":
+                vessel
+                .get("position", {})
+                .get("longitude"),
+        }
+
+    # --------------------------------------------------------
+    # VESSELS NOT OBSERVED NOW
+    # --------------------------------------------------------
+
+    current_ids = set(
+        current_map.keys()
+    )
+
+    for vessel_id in list(
+        state.keys()
+    ):
+
+        if vessel_id in current_ids:
+            continue
+
+        entry = state[vessel_id]
+
+        previous_missing = safe_int(
+            entry.get("missing_runs"),
+            0,
+        )
+
+        entry["missing_runs"] = (
+            previous_missing + 1
+        )
+
+        entry[
+            "consecutive_seen_runs"
+        ] = 0
+
+        if previous_missing == 0:
+
+            raw_missing.append({
+                "vessel_id":
+                    vessel_id,
+
+                "name":
+                    entry.get("name"),
+
+                "ship_category":
+                    entry.get(
+                        "ship_category"
+                    ),
+
+                "energy_role":
+                    entry.get(
+                        "energy_role"
+                    ),
+
+                "tanker_size":
+                    entry.get(
+                        "tanker_size"
+                    ),
+
+                "dwt":
+                    entry.get("dwt"),
+
+                "last_zone":
+                    entry.get(
+                        "last_zone"
+                    ),
+
+                "status":
+                    "TEMPORARILY_MISSING",
+            })
+
+        if (
+            entry.get(
+                "confirmed_present",
+                False,
+            )
+            and not entry.get(
+                "confirmed_disappeared",
+                False,
+            )
+            and entry[
+                "missing_runs"
+            ] >= MISSING_CONFIRMATION_RUNS
+        ):
+
+            entry[
+                "confirmed_disappeared"
+            ] = True
+
+            entry[
+                "confirmed_present"
+            ] = False
+
+            confirmed_disappeared.append({
+                "vessel_id":
+                    vessel_id,
+
+                "name":
+                    entry.get("name"),
+
+                "ship_category":
+                    entry.get(
+                        "ship_category"
+                    ),
+
+                "energy_role":
+                    entry.get(
+                        "energy_role"
+                    ),
+
+                "tanker_size":
+                    entry.get(
+                        "tanker_size"
+                    ),
+
+                "dwt":
+                    entry.get("dwt"),
+
+                "last_zone":
+                    entry.get(
+                        "last_zone"
+                    ),
+
+                "last_seen":
+                    entry.get(
+                        "last_seen"
+                    ),
+
+                "missing_runs":
+                    entry.get(
+                        "missing_runs"
+                    ),
+            })
+
+    # --------------------------------------------------------
+    # PRUNE VERY OLD MISSING STATE
+    # --------------------------------------------------------
+
+    pruned_ids = []
+
+    for vessel_id in list(
+        state.keys()
+    ):
+
+        entry = state[vessel_id]
+
+        if (
+            safe_int(
+                entry.get(
+                    "missing_runs"
+                ),
+                0,
+            )
+            > MAX_MISSING_RUNS_TO_KEEP
+        ):
+
+            pruned_ids.append(
+                vessel_id
+            )
+
+            del state[vessel_id]
+
+    # --------------------------------------------------------
+    # SUMMARY
+    # --------------------------------------------------------
+
+    persistent_confirmed_present = sum(
+        1
+        for entry in state.values()
+        if entry.get(
+            "confirmed_present"
+        )
+    )
+
+    persistent_temporarily_missing = sum(
+        1
+        for entry in state.values()
+        if (
+            safe_int(
+                entry.get(
+                    "missing_runs"
+                ),
+                0,
+            ) > 0
+            and not entry.get(
+                "confirmed_disappeared",
+                False,
+            )
+        )
+    )
+
+    persistent_confirmed_disappeared = sum(
+        1
+        for entry in state.values()
+        if entry.get(
+            "confirmed_disappeared"
+        )
+    )
 
     return {
-        "available": True,
+        "state":
+            state,
 
-        "interpretation": (
-            "Zone changes are observed AIS "
-            "transitions between consecutive "
-            "snapshots. They are not automatically "
-            "equivalent to confirmed full Hormuz "
-            "crossings."
-        ),
+        "summary": {
+            "current_observed_vessels":
+                len(current_map),
 
-        "signals":
-            signals,
+            "persistent_state_vessels":
+                len(state),
+
+            "confirmed_present_vessels":
+                persistent_confirmed_present,
+
+            "temporarily_missing_vessels":
+                persistent_temporarily_missing,
+
+            "confirmed_disappeared_vessels":
+                persistent_confirmed_disappeared,
+
+            "raw_appeared_this_run":
+                len(raw_appeared),
+
+            "raw_missing_this_run":
+                len(raw_missing),
+
+            "confirmed_new_this_run":
+                len(confirmed_new),
+
+            "confirmed_disappeared_this_run":
+                len(
+                    confirmed_disappeared
+                ),
+
+            "zone_changes_this_run":
+                len(zone_changes),
+
+            "oil_tanker_zone_changes_this_run":
+                len(oil_zone_changes),
+
+            "large_tanker_zone_changes_this_run":
+                len(large_zone_changes),
+
+            "vlcc_ulcc_zone_changes_this_run":
+                len(vlcc_zone_changes),
+
+            "confirmed_transits_this_run":
+                len(confirmed_transits),
+
+            "possible_direct_transits_this_run":
+                len(
+                    possible_direct_transits
+                ),
+
+            "pruned_state_records":
+                len(pruned_ids),
+        },
+
+        "events": {
+            "raw_appeared":
+                raw_appeared,
+
+            "raw_missing":
+                raw_missing,
+
+            "confirmed_new":
+                confirmed_new,
+
+            "confirmed_disappeared":
+                confirmed_disappeared,
+
+            "zone_changes":
+                zone_changes,
+
+            "oil_tanker_zone_changes":
+                oil_zone_changes,
+
+            "large_tanker_zone_changes":
+                large_zone_changes,
+
+            "vlcc_ulcc_zone_changes":
+                vlcc_zone_changes,
+
+            "confirmed_hormuz_transits":
+                confirmed_transits,
+
+            "possible_direct_transits":
+                possible_direct_transits,
+        },
     }
 
 
 # ============================================================
-# HISTORY
+# SNAPSHOT HISTORY
 # ============================================================
 
-def build_history_entry(
+def build_history(
+    previous_dataset: Optional[Dict[str, Any]],
     generated_at: datetime,
     analysis: Dict[str, Any],
-    comparison: Dict[str, Any],
-) -> Dict[str, Any]:
+    tracking_summary: Dict[str, Any],
+) -> List[Dict[str, Any]]:
 
-    return {
+    history = []
+
+    if previous_dataset:
+
+        old_history = (
+            previous_dataset.get(
+                "snapshot_history",
+                [],
+            )
+        )
+
+        if isinstance(
+            old_history,
+            list,
+        ):
+            history.extend(
+                old_history
+            )
+
+    history.append({
         "generated_at":
             generated_at.isoformat(),
 
@@ -1342,119 +2043,26 @@ def build_history_entry(
                 "vlcc_ulcc_by_zone"
             ),
 
-        "new_vessel_count":
-            comparison.get(
-                "new_vessel_count"
+        "confirmed_new_this_run":
+            tracking_summary.get(
+                "confirmed_new_this_run"
             ),
 
-        "disappeared_vessel_count":
-            comparison.get(
-                "disappeared_vessel_count"
+        "confirmed_disappeared_this_run":
+            tracking_summary.get(
+                "confirmed_disappeared_this_run"
             ),
 
-        "oil_tanker_zone_change_count":
-            comparison.get(
-                "oil_tanker_zone_change_count"
+        "oil_tanker_zone_changes_this_run":
+            tracking_summary.get(
+                "oil_tanker_zone_changes_this_run"
             ),
 
-        "vlcc_ulcc_zone_change_count":
-            comparison.get(
-                "vlcc_ulcc_zone_change_count"
+        "confirmed_transits_this_run":
+            tracking_summary.get(
+                "confirmed_transits_this_run"
             ),
-    }
-
-
-def build_history(
-    previous_dataset: Optional[
-        Dict[str, Any]
-    ],
-    new_entry: Dict[str, Any],
-) -> List[Dict[str, Any]]:
-
-    history = []
-
-    if previous_dataset:
-
-        old_history = (
-            previous_dataset.get(
-                "snapshot_history",
-                [],
-            )
-        )
-
-        if isinstance(
-            old_history,
-            list,
-        ):
-            history.extend(
-                old_history
-            )
-
-        # v1.0 had no history.
-        # Preserve its summary as the first
-        # historical snapshot when possible.
-        if (
-            not old_history
-            and previous_dataset
-            .get("meta", {})
-            .get("generated_at")
-        ):
-
-            old_analysis = (
-                previous_dataset.get(
-                    "analysis",
-                    {},
-                )
-            )
-
-            history.append({
-                "generated_at":
-                    previous_dataset
-                    .get("meta", {})
-                    .get("generated_at"),
-
-                "total_vessels":
-                    old_analysis.get(
-                        "total_vessels"
-                    ),
-
-                "oil_related_vessels":
-                    old_analysis.get(
-                        "oil_related_vessels"
-                    ),
-
-                "crude_related_vessels":
-                    old_analysis.get(
-                        "crude_related_vessels"
-                    ),
-
-                "large_oil_tankers":
-                    old_analysis.get(
-                        "large_oil_tankers"
-                    ),
-
-                "vlcc_ulcc_count":
-                    old_analysis.get(
-                        "vlcc_ulcc_count"
-                    ),
-
-                "oil_tankers_by_zone":
-                    old_analysis.get(
-                        "oil_tankers_by_zone"
-                    ),
-
-                "vlcc_ulcc_by_zone":
-                    old_analysis.get(
-                        "vlcc_ulcc_by_zone"
-                    ),
-
-                "legacy_snapshot":
-                    True,
-            })
-
-    history.append(
-        new_entry
-    )
+    })
 
     return history[
         -MAX_HISTORY_SNAPSHOTS:
@@ -1468,6 +2076,7 @@ def build_history(
 def evaluate_quality(
     vessels: List[Dict[str, Any]],
     analysis: Dict[str, Any],
+    tracking_summary: Dict[str, Any],
 ) -> Dict[str, Any]:
 
     if not vessels:
@@ -1500,8 +2109,7 @@ def evaluate_quality(
         score -= 15
 
         issues.append(
-            "Stable vessel identifier "
-            "coverage below 95%."
+            "Stable vessel identifier coverage below 95%."
         )
 
     oil_count = analysis.get(
@@ -1513,6 +2121,8 @@ def evaluate_quality(
         "known_oil_tanker_dwt_count",
         0,
     )
+
+    dwt_pct = None
 
     if oil_count:
 
@@ -1527,8 +2137,7 @@ def evaluate_quality(
             score -= 10
 
             issues.append(
-                "Oil tanker DWT coverage "
-                "below 80%."
+                "Oil tanker DWT coverage below 80%."
             )
 
     zone_known = sum(
@@ -1552,6 +2161,44 @@ def evaluate_quality(
 
         issues.append(
             "Some vessels lack zone data."
+        )
+
+    raw_missing = tracking_summary.get(
+        "raw_missing_this_run",
+        0,
+    )
+
+    raw_appeared = tracking_summary.get(
+        "raw_appeared_this_run",
+        0,
+    )
+
+    churn_ratio = (
+        (
+            raw_missing
+            + raw_appeared
+        )
+        / total
+        * 100
+        if total
+        else 0
+    )
+
+    if churn_ratio >= 30:
+
+        score -= 10
+
+        issues.append(
+            "High snapshot churn detected; "
+            "persistent confirmation logic is required."
+        )
+
+    elif churn_ratio >= 15:
+
+        score -= 5
+
+        issues.append(
+            "Moderate snapshot churn detected."
         )
 
     if score >= 85:
@@ -1582,10 +2229,19 @@ def evaluate_quality(
         "zone_coverage_pct":
             round(zone_pct, 2),
 
+        "oil_tanker_dwt_coverage_pct": (
+            round(dwt_pct, 2)
+            if dwt_pct is not None
+            else None
+        ),
+
+        "snapshot_churn_pct":
+            round(churn_ratio, 2),
+
         "interpretation": (
-            "Quality measures usability of "
-            "the AIS vessel observation layer. "
-            "It does not measure physical "
+            "Quality measures usability of the AIS "
+            "vessel observation and persistent tracking "
+            "layer. It does not measure physical "
             "oil-flow accuracy."
         ),
     }
@@ -1600,7 +2256,7 @@ def build_dataset() -> Dict[str, Any]:
     generated_at = utc_now()
 
     print(
-        "Hormuz Vessel Monitor v1.1"
+        "Hormuz Vessel Monitor v1.2"
     )
 
     print(
@@ -1626,6 +2282,17 @@ def build_dataset() -> Dict[str, Any]:
             "Previous snapshot: NONE"
         )
 
+    previous_state = (
+        bootstrap_previous_state(
+            previous_dataset
+        )
+    )
+
+    print(
+        "Previous persistent state:",
+        len(previous_state),
+    )
+
     print(
         f"Fetching {SHIPS_ENDPOINT}"
     )
@@ -1650,33 +2317,27 @@ def build_dataset() -> Dict[str, Any]:
         vessels
     )
 
-    comparison = compare_snapshots(
-        previous_dataset,
+    tracking = update_persistent_state(
+        previous_state,
         vessels,
+        generated_at,
     )
 
-    movement_signals = (
-        build_movement_signals(
-            comparison
-        )
+    tracking_summary = (
+        tracking["summary"]
     )
 
     quality = evaluate_quality(
         vessels,
         analysis,
-    )
-
-    history_entry = (
-        build_history_entry(
-            generated_at,
-            analysis,
-            comparison,
-        )
+        tracking_summary,
     )
 
     history = build_history(
         previous_dataset,
-        history_entry,
+        generated_at,
+        analysis,
+        tracking_summary,
     )
 
     return {
@@ -1694,7 +2355,7 @@ def build_dataset() -> Dict[str, Any]:
                 "energy-data",
 
             "mode":
-                "VESSEL_CHANGE_MONITOR",
+                "PERSISTENT_VESSEL_TRACKING",
         },
 
         "methodology": {
@@ -1704,39 +2365,67 @@ def build_dataset() -> Dict[str, Any]:
             "physical_flow_calculated":
                 False,
 
+            "new_confirmation_runs":
+                NEW_CONFIRMATION_RUNS,
+
+            "missing_confirmation_runs":
+                MISSING_CONFIRMATION_RUNS,
+
+            "max_missing_runs_to_keep":
+                MAX_MISSING_RUNS_TO_KEEP,
+
+            "confirmed_transit_patterns": [
+                [
+                    "persian_gulf",
+                    "strait",
+                    "gulf_of_oman",
+                ],
+                [
+                    "gulf_of_oman",
+                    "strait",
+                    "persian_gulf",
+                ],
+            ],
+
             "principles": [
                 (
-                    "Individual vessel observations "
-                    "come from public AIS-derived data."
+                    "A vessel appearing in one AIS snapshot "
+                    "is not automatically classified as new."
                 ),
                 (
-                    "Current snapshot is compared "
-                    "with the previous repository "
-                    "snapshot before overwrite."
+                    "A vessel missing from one AIS snapshot "
+                    "is treated as temporarily missing."
                 ),
                 (
-                    "Zone transitions describe "
-                    "observed AIS movement between "
-                    "snapshots."
+                    "NEW requires repeated observation."
                 ),
                 (
-                    "A zone transition is not "
-                    "automatically treated as a "
-                    "confirmed full Hormuz crossing."
+                    "DISAPPEARED requires repeated absence."
                 ),
                 (
-                    "AIS absence is not evidence "
-                    "of physical vessel absence."
+                    "Zone changes require consecutive "
+                    "observations of the same vessel."
                 ),
                 (
-                    "AIS suppression, GPS jamming, "
-                    "dark transit and coverage gaps "
-                    "may affect observations."
+                    "Confirmed Hormuz transit requires an "
+                    "observed three-zone path through the strait."
                 ),
                 (
-                    "DWT and vessel counts are "
-                    "logistics indicators, not direct "
-                    "physical oil throughput."
+                    "Direct Persian Gulf to Gulf of Oman jumps "
+                    "are possible skipped-zone transits, "
+                    "not confirmed transits."
+                ),
+                (
+                    "AIS absence is not evidence of physical "
+                    "vessel absence."
+                ),
+                (
+                    "AIS suppression, GPS jamming, dark transit "
+                    "and coverage gaps may affect observations."
+                ),
+                (
+                    "DWT and vessel counts are logistics "
+                    "indicators, not direct physical oil throughput."
                 ),
             ],
         },
@@ -1752,7 +2441,7 @@ def build_dataset() -> Dict[str, Any]:
                 SHIPS_ENDPOINT,
 
             "measurement_role":
-                "Vessel-level live AIS observation",
+                "Persistent vessel-level AIS observation",
 
             "physical_flow_source":
                 False,
@@ -1761,11 +2450,16 @@ def build_dataset() -> Dict[str, Any]:
         "analysis":
             analysis,
 
-        "snapshot_comparison":
-            comparison,
+        "persistent_tracking": {
+            "summary":
+                tracking_summary,
 
-        "movement_signals":
-            movement_signals,
+            "events":
+                tracking["events"],
+        },
+
+        "persistent_vessel_state":
+            tracking["state"],
 
         "snapshot_history":
             history,
@@ -1810,16 +2504,14 @@ def build_dataset() -> Dict[str, Any]:
                 False,
 
             "reason": (
-                "Run-to-run vessel movement must "
-                "first be observed over multiple "
-                "snapshots before Logistics Stress "
-                "scoring is calibrated."
+                "Persistent tracking is now enabled, "
+                "but several sequential runs are required "
+                "to validate confirmed transit detection."
             ),
 
             "next_step": (
-                "Collect multiple snapshots and "
-                "evaluate tanker and VLCC/ULCC "
-                "zone transitions."
+                "Collect sequential snapshots and validate "
+                "confirmed Hormuz transit events."
             ),
         },
     }
@@ -1838,9 +2530,16 @@ def print_summary(
         {},
     )
 
-    comparison = dataset.get(
-        "snapshot_comparison",
-        {},
+    tracking = (
+        dataset
+        .get(
+            "persistent_tracking",
+            {},
+        )
+        .get(
+            "summary",
+            {},
+        )
     )
 
     quality = dataset.get(
@@ -1894,168 +2593,82 @@ def print_summary(
 
     print()
     print(
-        "OIL TANKERS BY ZONE"
+        "PERSISTENT TRACKING"
     )
 
     print(
         "========================================"
     )
 
-    for zone, count in (
-        analysis
-        .get(
-            "oil_tankers_by_zone",
-            {},
-        )
-        .items()
-    ):
+    for key in [
+        "current_observed_vessels",
+        "persistent_state_vessels",
+        "confirmed_present_vessels",
+        "temporarily_missing_vessels",
+        "confirmed_disappeared_vessels",
+        "raw_appeared_this_run",
+        "raw_missing_this_run",
+        "confirmed_new_this_run",
+        "confirmed_disappeared_this_run",
+        "zone_changes_this_run",
+        "oil_tanker_zone_changes_this_run",
+        "large_tanker_zone_changes_this_run",
+        "vlcc_ulcc_zone_changes_this_run",
+        "confirmed_transits_this_run",
+        "possible_direct_transits_this_run",
+    ]:
 
         print(
-            f"{zone}: {count}"
+            f"{key}:",
+            tracking.get(key),
         )
 
     print()
     print(
-        "VLCC / ULCC BY ZONE"
+        "CONFIRMED HORMUZ TRANSITS"
     )
 
     print(
         "========================================"
     )
 
-    for zone, count in (
-        analysis
+    transits = (
+        dataset
         .get(
-            "vlcc_ulcc_by_zone",
+            "persistent_tracking",
             {},
         )
-        .items()
-    ):
-
-        print(
-            f"{zone}: {count}"
+        .get(
+            "events",
+            {},
         )
-
-    print()
-    print(
-        "SNAPSHOT COMPARISON"
-    )
-
-    print(
-        "========================================"
-    )
-
-    print(
-        "Available:",
-        comparison.get(
-            "comparison_available"
-        ),
-    )
-
-    if comparison.get(
-        "comparison_available"
-    ):
-
-        print(
-            "Previous snapshot:",
-            comparison.get(
-                "previous_generated_at"
-            ),
-        )
-
-        print(
-            "Common vessels:",
-            comparison.get(
-                "common_vessel_count"
-            ),
-        )
-
-        print(
-            "New vessels:",
-            comparison.get(
-                "new_vessel_count"
-            ),
-        )
-
-        print(
-            "Disappeared vessels:",
-            comparison.get(
-                "disappeared_vessel_count"
-            ),
-        )
-
-        print(
-            "All zone changes:",
-            comparison.get(
-                "zone_change_count"
-            ),
-        )
-
-        print(
-            "Oil tanker zone changes:",
-            comparison.get(
-                "oil_tanker_zone_change_count"
-            ),
-        )
-
-        print(
-            "Large tanker zone changes:",
-            comparison.get(
-                "large_tanker_zone_change_count"
-            ),
-        )
-
-        print(
-            "VLCC / ULCC zone changes:",
-            comparison.get(
-                "vlcc_ulcc_zone_change_count"
-            ),
-        )
-
-        print()
-        print(
-            "OIL TANKER MOVEMENTS"
-        )
-
-        print(
-            "========================================"
-        )
-
-        changes = comparison.get(
-            "oil_tanker_zone_changes",
+        .get(
+            "confirmed_hormuz_transits",
             [],
         )
+    )
 
-        if not changes:
+    if not transits:
 
-            print(
-                "No tanker zone change "
-                "detected."
-            )
+        print(
+            "No confirmed transit in this run."
+        )
 
-        for item in changes[:30]:
+    for transit in transits:
 
-            print(
-                item.get("name"),
-                "|",
-                item.get(
-                    "tanker_size"
-                ),
-                "|",
-                item.get(
-                    "from_region"
-                ),
-                "->",
-                item.get(
-                    "to_region"
-                ),
-                "| DWT:",
-                item.get("dwt"),
-                "| km:",
-                item.get(
-                    "distance_since_previous_km"
-                ),
-            )
+        print(
+            transit.get("name"),
+            "|",
+            transit.get(
+                "tanker_size"
+            ),
+            "|",
+            transit.get(
+                "direction"
+            ),
+            "| DWT:",
+            transit.get("dwt"),
+        )
 
     print()
     print(
@@ -2074,6 +2687,14 @@ def print_summary(
     print(
         "Status:",
         quality.get("status"),
+    )
+
+    print(
+        "Snapshot churn:",
+        quality.get(
+            "snapshot_churn_pct"
+        ),
+        "%",
     )
 
 
