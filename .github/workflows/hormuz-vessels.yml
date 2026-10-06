@@ -1,0 +1,250 @@
+name: Hormuz Vessel Monitor
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-hormuz-vessels:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run Hormuz vessel collector
+        run: |
+          python fetch_hormuz_vessels.py
+
+      - name: Validate vessel output
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("hormuz-vessels.json")
+
+          if not path.exists():
+              raise SystemExit(
+                  "ERROR: hormuz-vessels.json was not created."
+              )
+
+          data = json.loads(
+              path.read_text(encoding="utf-8")
+          )
+
+          meta = data.get("meta", {})
+          analysis = data.get("analysis", {})
+          quality = data.get("data_quality", {})
+          vessels = data.get("vessels", [])
+
+          print("======================================")
+          print("HORMUZ VESSEL MONITOR")
+          print("======================================")
+
+          print(
+              "Version:",
+              meta.get("version")
+          )
+
+          print(
+              "Generated:",
+              meta.get("generated_at")
+          )
+
+          print(
+              "Total vessels:",
+              analysis.get("total_vessels")
+          )
+
+          print(
+              "Oil-related vessels:",
+              analysis.get("oil_related_vessels")
+          )
+
+          print(
+              "Crude-related vessels:",
+              analysis.get("crude_related_vessels")
+          )
+
+          print(
+              "Product-related vessels:",
+              analysis.get("product_related_vessels")
+          )
+
+          print(
+              "Large oil tankers:",
+              analysis.get("large_oil_tankers")
+          )
+
+          print(
+              "VLCC / ULCC:",
+              analysis.get("vlcc_ulcc_count")
+          )
+
+          print(
+              "Vessel rows:",
+              len(vessels)
+          )
+
+          print(
+              "Data quality:",
+              quality.get("status"),
+              quality.get("score")
+          )
+
+          print(
+              "Identifier coverage:",
+              quality.get(
+                  "identifier_coverage_pct"
+              )
+          )
+
+          if not isinstance(vessels, list):
+              raise SystemExit(
+                  "ERROR: vessels is not a list."
+              )
+
+          if analysis.get("total_vessels") != len(vessels):
+              raise SystemExit(
+                  "ERROR: vessel count mismatch."
+              )
+
+          if len(vessels) == 0:
+              raise SystemExit(
+                  "ERROR: API returned zero vessel rows."
+              )
+
+          print()
+          print("TANKER SIZE COUNTS")
+
+          for size, count in (
+              analysis
+              .get("tanker_size_counts", {})
+              .items()
+          ):
+              print(
+                  f"  {size}: {count}"
+              )
+
+          print()
+          print("LARGE TANKER OBSERVATIONS")
+
+          large = analysis.get(
+              "large_tanker_observations",
+              []
+          )
+
+          if not large:
+              print(
+                  "  No large oil tanker "
+                  "identified in current snapshot."
+              )
+
+          for vessel in large[:20]:
+
+              print(
+                  "  ",
+                  vessel.get("vessel_id"),
+                  "|",
+                  vessel.get("ship_category"),
+                  "| DWT:",
+                  vessel.get("dwt"),
+                  "|",
+                  vessel.get("tanker_size"),
+                  "| direction:",
+                  vessel.get("direction"),
+                  "| region:",
+                  vessel.get("region"),
+              )
+
+          print()
+          print(
+              "Validation completed successfully."
+          )
+          PY
+
+      - name: Write GitHub Actions summary
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          data = json.loads(
+              Path("hormuz-vessels.json")
+              .read_text(encoding="utf-8")
+          )
+
+          meta = data.get("meta", {})
+          analysis = data.get("analysis", {})
+          quality = data.get("data_quality", {})
+
+          summary_path = os.environ.get(
+              "GITHUB_STEP_SUMMARY"
+          )
+
+          if not summary_path:
+              raise SystemExit(0)
+
+          lines = [
+              "# Hormuz Vessel Monitor",
+              "",
+              f"**Version:** {meta.get('version')}",
+              "",
+              f"**Generated:** {meta.get('generated_at')}",
+              "",
+              "## Vessel snapshot",
+              "",
+              f"- Total vessels: **{analysis.get('total_vessels')}**",
+              f"- Oil-related vessels: **{analysis.get('oil_related_vessels')}**",
+              f"- Crude-related vessels: **{analysis.get('crude_related_vessels')}**",
+              f"- Product-related vessels: **{analysis.get('product_related_vessels')}**",
+              f"- Large oil tankers: **{analysis.get('large_oil_tankers')}**",
+              f"- VLCC / ULCC: **{analysis.get('vlcc_ulcc_count')}**",
+              "",
+              "## Data quality",
+              "",
+              f"- Status: **{quality.get('status')}**",
+              f"- Score: **{quality.get('score')}**",
+              f"- Identifier coverage: **{quality.get('identifier_coverage_pct')}%**",
+              "",
+              "## Important",
+              "",
+              "AIS vessel observations are not direct physical oil-flow measurements.",
+              "",
+              "No Hormuz Risk, Flow or OMPI model has been modified.",
+          ]
+
+          with open(
+              summary_path,
+              "a",
+              encoding="utf-8"
+          ) as handle:
+              handle.write(
+                  "\n".join(lines)
+              )
+              handle.write("\n")
+          PY
+
+      - name: Commit updated vessel snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add hormuz-vessels.json
+
+          if git diff --cached --quiet; then
+            echo "No vessel data changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Update Hormuz vessel snapshot"
+          git push
