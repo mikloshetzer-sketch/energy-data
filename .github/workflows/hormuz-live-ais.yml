@@ -1,0 +1,208 @@
+name: Hormuz Live AIS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  hormuz-live-ais:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run Hormuz Live AIS collector
+        run: |
+          python fetch_hormuz_live_ais.py
+
+      - name: Validate output
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("hormuz-live-ais.json")
+
+          if not path.exists():
+              raise SystemExit(
+                  "ERROR: hormuz-live-ais.json was not created"
+              )
+
+          with path.open(
+              "r",
+              encoding="utf-8"
+          ) as f:
+              data = json.load(f)
+
+          print("=== HORMUZ LIVE AIS VALIDATION ===")
+
+          meta = data.get("meta", {})
+          status = data.get("source_status", {})
+          summary = data.get("summary", {})
+
+          print(
+              "Collector:",
+              meta.get("collector")
+          )
+
+          print(
+              "Version:",
+              meta.get("version")
+          )
+
+          print(
+              "Generated:",
+              meta.get("generated_at")
+          )
+
+          print(
+              "Source status:",
+              status.get("status")
+          )
+
+          print(
+              "Confidence:",
+              status.get("confidence")
+          )
+
+          print(
+              "Endpoints:",
+              status.get("endpoints_successful"),
+              "/",
+              status.get("endpoints_total")
+          )
+
+          if summary.get("available"):
+
+              print()
+              print("=== LIVE DATA ===")
+
+              print(
+                  "Last poll:",
+                  summary.get("last_poll")
+              )
+
+              print(
+                  "Total ships:",
+                  summary.get("total_ships")
+              )
+
+              print(
+                  "In strait:",
+                  summary.get("in_strait")
+              )
+
+              crossings = summary.get(
+                  "crossings",
+                  {}
+              )
+
+              print(
+                  "Inbound:",
+                  crossings.get("inbound")
+              )
+
+              print(
+                  "Outbound:",
+                  crossings.get("outbound")
+              )
+
+              print(
+                  "Total crossings:",
+                  crossings.get("total")
+              )
+
+              oil = summary.get(
+                  "estimated_oil_export",
+                  {}
+              )
+
+              print(
+                  "Estimated oil export:",
+                  oil.get("barrels")
+              )
+
+              print(
+                  "Estimated crude:",
+                  oil.get("crude_barrels")
+              )
+
+          else:
+
+              print()
+              print(
+                  "WARNING: summary endpoint "
+                  "did not return usable data."
+              )
+
+          print()
+          print(
+              "Existing Hormuz model outputs "
+              "were not modified."
+          )
+          PY
+
+      - name: Show endpoint diagnostics
+        if: always()
+        run: |
+          if [ -f hormuz-live-ais.json ]; then
+            python - <<'PY'
+          import json
+
+          with open(
+              "hormuz-live-ais.json",
+              "r",
+              encoding="utf-8"
+          ) as f:
+              data = json.load(f)
+
+          print("=== ENDPOINT DIAGNOSTICS ===")
+
+          for name, result in data.get(
+              "endpoint_results",
+              {}
+          ).items():
+
+              print()
+              print(name)
+              print(
+                  "  status:",
+                  result.get("status")
+              )
+              print(
+                  "  endpoint:",
+                  result.get("endpoint")
+              )
+
+              if result.get("error"):
+                  print(
+                      "  error:",
+                      result.get("error")
+                  )
+          PY
+          else
+            echo "No output file available."
+          fi
+
+      - name: Commit updated live AIS data
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add hormuz-live-ais.json
+
+          if git diff --cached --quiet; then
+            echo "No live AIS data changes to commit."
+          else
+            git commit -m "Update Hormuz live AIS data"
+            git push
+          fi
