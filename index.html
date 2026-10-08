@@ -103,6 +103,28 @@
       .latest-chip{margin-top:12px}.panel-head{display:block}.panel-side-note{margin-top:8px;max-width:none;text-align:left}
       .chart-wrap,.chart-wrap.large{height:350px}
     }
+
+    /* Hormuz OSINT module */
+    .hormuz-section{margin-top:16px;padding:22px;background:#fff;border:1px solid var(--border);border-left:7px solid #1678b3;border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hormuz-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+    .hormuz-head h3{margin:0;color:var(--navy);font-size:24px}.hormuz-head p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.6}
+    .hormuz-state{border-radius:999px;background:#eef3f7;padding:8px 12px;color:#34566b;font-size:11px;font-weight:800}
+    .hormuz-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+    .hormuz-kpi{background:#f6f9fc;border:1px solid #d8e5ed;border-radius:12px;padding:14px;min-width:0}
+    .hormuz-kpi-label{color:#688092;font-size:11px;font-weight:800;line-height:1.45}.hormuz-kpi-value{color:#154c70;font-size:27px;font-weight:900;margin:8px 0 4px;overflow-wrap:anywhere}
+    .hormuz-kpi-note{color:#688092;font-size:10px;line-height:1.5}
+    .hormuz-info{margin-top:12px;background:#fff8ed;border:1px solid #f0d8b4;color:#87540c;border-radius:10px;padding:12px;font-size:12px;line-height:1.55}
+    .hormuz-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 12px}
+    .hormuz-toolbar h4{margin:0;color:var(--navy);font-size:18px}.hormuz-periods{display:flex;gap:6px;flex-wrap:wrap}
+    .hormuz-periods button{cursor:pointer;border:1px solid #c6d9e5;background:#fff;color:#245774;border-radius:8px;padding:8px 11px;font-weight:800;font-size:11px}
+    .hormuz-periods button.active{background:#176b9f;color:white;border-color:#176b9f}
+    .hormuz-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .hormuz-chart-card{border:1px solid #d8e5ed;border-radius:12px;padding:14px;min-width:0}
+    .hormuz-chart-card h5{margin:0 0 10px;font-size:13px;color:#154c70}.hormuz-chart-area{position:relative;height:260px}
+    .hormuz-sources{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}.hormuz-source{font-size:11px;background:#edf4f8;padding:8px 10px;border-radius:8px;color:#32566c}
+    .hormuz-footer{margin-top:12px;color:#698091;font-size:11px;line-height:1.6}
+    @media(max-width:1120px){.hormuz-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:760px){.hormuz-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.hormuz-charts{grid-template-columns:1fr}.hormuz-section{padding:15px}}
   </style>
 </head>
 <body>
@@ -179,6 +201,34 @@
       <div class="panel-head"><h3 class="panel-title">Brent ár napi alakulása<span>Daily Brent price trend</span></h3><div class="panel-side-note">Az utolsó 90 rendelkezésre álló adatpont.</div></div>
       <div class="chart-wrap"><canvas id="brentChart"></canvas></div>
     </article>
+  </section>
+
+
+  <section class="hormuz-section" id="hormuz-monitor" aria-label="Hormuzi-szoros OSINT monitor">
+    <div class="hormuz-head">
+      <div><div class="kicker">Maritime OSINT · Hormuz Strait</div><h3>Hormuzi-szoros – biztonság és hajóforgalom</h3>
+        <p>Integrált megfigyelés: Security Risk · PortWatch AIS · Live AIS · Vessel Monitor. A történeti grafikonok tényleges mentett adatokból készülnek.</p></div>
+      <span class="hormuz-state" id="hormuzStatus" role="status">Adatok betöltése...</span>
+    </div>
+    <div class="hormuz-metrics">
+      <div class="hormuz-kpi"><div class="hormuz-kpi-label">Biztonsági kockázat / Security</div><div class="hormuz-kpi-value" id="hSecurity">–</div><div class="hormuz-kpi-note" id="hSecurityNote">0–100 index</div></div>
+      <div class="hormuz-kpi"><div class="hormuz-kpi-label">AIS-forgalmi zavar · 7 nap</div><div class="hormuz-kpi-value" id="hAis">–</div><div class="hormuz-kpi-note">Megfigyelt AIS-forgalom; nem fizikai olajkiesés</div></div>
+      <div class="hormuz-kpi"><div class="hormuz-kpi-label">Átkelések · 24 óra</div><div class="hormuz-kpi-value" id="hCrossings">–</div><div class="hormuz-kpi-note" id="hCrossingsNote">Live AIS</div></div>
+      <div class="hormuz-kpi"><div class="hormuz-kpi-label">Olajhoz kapcsolódó tankerek</div><div class="hormuz-kpi-value" id="hTankers">–</div><div class="hormuz-kpi-note" id="hTankersNote">Megfigyelt hajók</div></div>
+      <div class="hormuz-kpi"><div class="hormuz-kpi-label">Integrált kockázati index</div><div class="hormuz-kpi-value" id="hComposite">–</div><div class="hormuz-kpi-note" id="hCompositeNote">Hitelesítés alatt</div></div>
+    </div>
+    <div class="hormuz-info" id="hormuzCaution">Az AIS-forgalom csökkenése nem azonos a tényleges olajszállítás csökkenésével. A teljes integrált kockázati pontszám csak hitelesített komponensekkel jelenhet meg.</div>
+    <div class="hormuz-toolbar"><h4>Történeti megfigyelések</h4><div class="hormuz-periods" role="group" aria-label="Időszak kiválasztása">
+      <button type="button" data-hperiod="1">24 óra</button><button type="button" data-hperiod="7" class="active">7 nap</button><button type="button" data-hperiod="30">30 nap</button><button type="button" data-hperiod="90">90 nap</button>
+    </div></div>
+    <div class="hormuz-charts">
+      <div class="hormuz-chart-card"><h5>Biztonsági kockázat (0–100)</h5><div class="hormuz-chart-area"><canvas id="hSecurityChart"></canvas></div></div>
+      <div class="hormuz-chart-card"><h5>Átkelések és megfigyelt tankerek (darab)</h5><div class="hormuz-chart-area"><canvas id="hTrafficChart"></canvas></div></div>
+      <div class="hormuz-chart-card"><h5>AIS-megfigyelt forgalmi zavar (0–100)</h5><div class="hormuz-chart-area"><canvas id="hAisChart"></canvas></div></div>
+      <div class="hormuz-chart-card"><h5>Hajókövetés adatminősége és változékonysága (%)</h5><div class="hormuz-chart-area"><canvas id="hQualityChart"></canvas></div></div>
+    </div>
+    <div class="hormuz-sources" id="hormuzSources"><span class="hormuz-source">Forrásállapotok betöltése...</span></div>
+    <div class="hormuz-footer" id="hormuzUpdated">Adatok: energy-data / hormuz-risk-composite.json · history/hormuz/composite-history.json</div>
   </section>
 
   <section class="mini-grid">
@@ -303,6 +353,73 @@
     makeMiniChart("miniMEChart",marketLabels,meImpact,"rgba(217,74,58,1)");
     makeMiniChart("miniSpreadChart",labels,spreadValues,"rgba(11,155,106,1)");
   }
+
+
+  // Hormuz module is independent: its loading errors do not affect existing charts.
+  const HORMUZ_ROOT="https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/";
+  const hormuzCharts={};
+  let hormuzHistory=[];
+  let hormuzPeriod=7;
+  const hText=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+  const hNum=(value,digits=0)=>typeof value==="number"&&Number.isFinite(value)?value.toLocaleString("hu-HU",{maximumFractionDigits:digits,minimumFractionDigits:digits}):"–";
+  const hDate=(value)=>{const d=new Date(value);return Number.isNaN(d.getTime())?"ismeretlen":d.toLocaleString("hu-HU",{timeZone:"UTC",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"})+" UTC";};
+  const hMetric=(v)=>typeof v==="number"&&Number.isFinite(v)?v:null;
+  function renderHormuzHistory(){
+    const end=Date.now(),cutoff=end-hormuzPeriod*86400000;
+    const rows=hormuzHistory.filter(r=>{const t=Date.parse(r.timestamp_utc);return Number.isFinite(t)&&t>=cutoff&&t<=end+300000;}).sort((a,b)=>Date.parse(a.timestamp_utc)-Date.parse(b.timestamp_utc));
+    const labels=rows.map(r=>{const d=new Date(r.timestamp_utc);return d.toLocaleString("hu-HU",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",timeZone:"UTC"});});
+    const configurations=[
+      ["hSecurityChart",[{label:"Security Risk",key:"security_score",color:"#d97706"}],100],
+      ["hTrafficChart",[{label:"Átkelések / 24h",key:"crossings_24h",color:"#2c91cf"},{label:"Olajtankerek",key:"oil_related_vessels",color:"#0b9b6a"}],null],
+      ["hAisChart",[{label:"AIS-zavar / 7 nap",key:"ais_disruption_7d",color:"#d94a3a"}],100],
+      ["hQualityChart",[{label:"Adatminőség",key:"vessel_data_quality_score",color:"#0b9b6a"},{label:"Snapshot churn",key:"snapshot_churn_pct",color:"#7d58bf"}],100]
+    ];
+    configurations.forEach(([id,series,max])=>{
+      const canvas=document.getElementById(id);if(!canvas)return;
+      if(hormuzCharts[id])hormuzCharts[id].destroy();
+      hormuzCharts[id]=new Chart(canvas,{type:"line",data:{labels,datasets:series.map(s=>({label:s.label,data:rows.map(r=>hMetric(r[s.key])),borderColor:s.color,backgroundColor:s.color,borderWidth:2,pointRadius:rows.length<=24?3:0,spanGaps:false,tension:.2}))},options:{responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"bottom",labels:{font:{size:10}}},tooltip:{callbacks:{title:items=>items.length?rows[items[0].dataIndex].timestamp_utc:""}}},scales:{x:{ticks:{maxTicksLimit:7,maxRotation:0}},y:{beginAtZero:true,...(max!==null?{suggestedMax:max}:{})}}}});
+    });
+    const latest=rows.at(-1);
+    const suffix=rows.length===0?"Még nincs rekord a kiválasztott időszakban.":`${rows.length} mentett rekord a kiválasztott időszakban.`;
+    hText("hormuzUpdated",`${suffix} Legutóbbi megfigyelés: ${latest?hDate(latest.timestamp_utc):"–"}. Időpontok: UTC. Forrás: energy-data GitHub history.`);
+  }
+  async function initHormuz(){
+    document.querySelectorAll("[data-hperiod]").forEach(button=>button.addEventListener("click",()=>{hormuzPeriod=Number(button.dataset.hperiod);document.querySelectorAll("[data-hperiod]").forEach(b=>b.classList.toggle("active",b===button));renderHormuzHistory();}));
+    const [currentResult,historyResult]=await Promise.allSettled([
+      loadJson(HORMUZ_ROOT+"hormuz-risk-composite.json"),
+      loadJson(HORMUZ_ROOT+"history/hormuz/composite-history.json")
+    ]);
+    if(currentResult.status==="fulfilled"){
+      const data=currentResult.value;
+      const security=data.layers?.security||{},physical=data.layers?.physical_flow||{},logistics=data.layers?.logistics||{},live=logistics.live_ais||{},vessels=logistics.vessels||{},composite=data.composite||{};
+      hText("hSecurity",hNum(security.score,2));
+      hText("hSecurityNote",`${security.level||"N/A"} · ${security.confidence||"ismeretlen"} megbízhatóság`);
+      hText("hAis",hNum(physical.portwatch_observation?.ais_disruption_7d,2));
+      hText("hCrossings",hNum(live.crossings_24h?.total));
+      hText("hCrossingsNote",`Be: ${hNum(live.crossings_24h?.inbound)} · Ki: ${hNum(live.crossings_24h?.outbound)}`);
+      hText("hTankers",hNum(vessels.analysis?.oil_related_vessels));
+      hText("hTankersNote",`VLCC/ULCC: ${hNum(vessels.analysis?.vlcc_ulcc_count)}`);
+      hText("hComposite",composite.validated===true?hNum(composite.validated_score,2):"N/A");
+      hText("hCompositeNote",composite.validated===true?"Hitelesített összesített index":"Előzetes modell · nem hitelesített");
+      hText("hormuzStatus",`${composite.validated===true?"VALIDÁLT":"ELŐZETES"} · ${hDate(data.meta?.generated_at)}`);
+      const sources=data.input_status||{};
+      const sourceNames={security:"Security",portwatch:"PortWatch",live_ais:"Live AIS",vessels:"Vessel Monitor"};
+      const box=document.getElementById("hormuzSources");box.replaceChildren();
+      Object.entries(sourceNames).forEach(([key,label])=>{const span=document.createElement("span");span.className="hormuz-source";span.textContent=`${label}: ${sources[key]?.status||"N/A"} · ${hDate(sources[key]?.generated_at)}`;box.appendChild(span);});
+      if(physical.validated!==true)hText("hormuzCaution","Figyelem: a PortWatch AIS-forgalmi zavar nem azonos a tényleges fizikai olajforgalom kiesésével. A fizikai forgalmi és a logisztikai pontszám még nincs hitelesítve; az összesített index ezért nem publikálható végleges kockázatként.");
+    }else{
+      hText("hormuzStatus","Aktuális adat nem elérhető");
+      console.warn("Hormuz composite load failed:",currentResult.reason);
+    }
+    if(historyResult.status==="fulfilled"&&Array.isArray(historyResult.value)){
+      hormuzHistory=historyResult.value;
+    }else{
+      console.warn("Hormuz history load failed:",historyResult.status==="rejected"?historyResult.reason:"Unexpected history format");
+      hText("hormuzUpdated","A történeti adatok jelenleg nem érhetők el. Az aktuális adatok ettől függetlenül megjelenhetnek.");
+    }
+    renderHormuzHistory();
+  }
+  initHormuz().catch(err=>{console.error("Hormuz module error:",err);hText("hormuzStatus","Hormuz betöltési hiba");});
 
   init().catch(error=>{
     console.error(error);
