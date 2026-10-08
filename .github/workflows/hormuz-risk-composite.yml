@@ -1,0 +1,321 @@
+
+name: Hormuz Integrated Risk - Manual
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hormuz-risk-composite-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-hormuz-composite:
+    name: Build Hormuz Integrated Risk
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Repository letöltése
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2. Python környezet
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 3. Bemeneti fájlok ellenőrzése
+      - name: Check input JSON files
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          files = [
+              "hormuz-risk.json",
+              "hormuz-flow.json",
+              "hormuz-live-ais.json",
+              "hormuz-vessels.json",
+          ]
+
+          print("=== HORMUZ INPUT VALIDATION ===")
+
+          for filename in files:
+              path = Path(filename)
+
+              if not path.is_file():
+                  raise SystemExit(
+                      f"ERROR: Missing input: {filename}"
+                  )
+
+              with path.open("r", encoding="utf-8") as f:
+                  data = json.load(f)
+
+              if not isinstance(data, dict):
+                  raise SystemExit(
+                      f"ERROR: Invalid JSON root: {filename}"
+                  )
+
+              print(f"OK: {filename}")
+
+          print("All four input files are available.")
+          PY
+
+      # 4. Integrációs motor futtatása
+      - name: Run Hormuz integration engine
+        run: |
+          python build_hormuz_risk.py
+
+      # 5. Kimeneti JSON ellenőrzése
+      - name: Validate composite output
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("hormuz-risk-composite.json")
+
+          if not path.is_file():
+              raise SystemExit(
+                  "ERROR: Composite JSON was not generated."
+              )
+
+          with path.open("r", encoding="utf-8") as f:
+              data = json.load(f)
+
+          meta = data.get("meta", {})
+          sources = data.get("input_status", {})
+          layers = data.get("layers", {})
+          composite = data.get("composite", {})
+          publication = data.get(
+              "publication_guidance", {}
+          )
+
+          required_sources = [
+              "security",
+              "portwatch",
+              "live_ais",
+              "vessels",
+          ]
+
+          for name in required_sources:
+              if name not in sources:
+                  raise SystemExit(
+                      f"ERROR: Missing source status: {name}"
+                  )
+
+          required_layers = [
+              "security",
+              "physical_flow",
+              "logistics",
+          ]
+
+          for name in required_layers:
+              if name not in layers:
+                  raise SystemExit(
+                      f"ERROR: Missing layer: {name}"
+                  )
+
+          if composite.get("validated") is not False:
+              raise SystemExit(
+                  "ERROR: Composite validation flag incorrect."
+              )
+
+          if composite.get("validated_score") is not None:
+              raise SystemExit(
+                  "ERROR: Unvalidated final score detected."
+              )
+
+          if publication.get(
+              "final_composite_publishable"
+          ) is not False:
+              raise SystemExit(
+                  "ERROR: Unvalidated composite marked publishable."
+              )
+
+          physical = layers.get("physical_flow", {})
+
+          if physical.get("validated") is not False:
+              raise SystemExit(
+                  "ERROR: Physical flow incorrectly validated."
+              )
+
+          print("=== COMPOSITE VALIDATION ===")
+          print("Model:", meta.get("model"))
+          print("Version:", meta.get("version"))
+          print("Generated:", meta.get("generated_at"))
+          print("Status:", composite.get("status"))
+          print(
+              "Validated coverage:",
+              composite.get("validated_weight_coverage")
+          )
+
+          print()
+          print("=== INPUT STATUS ===")
+
+          for name, info in sources.items():
+              print(
+                  name,
+                  "|",
+                  info.get("status"),
+                  "| age hours:",
+                  info.get("age_hours")
+              )
+
+          print()
+          print("=== SECURITY ===")
+
+          security = layers.get("security", {})
+
+          print("Score:", security.get("score"))
+          print("Level:", security.get("level"))
+          print(
+              "Confidence:",
+              security.get("confidence")
+          )
+
+          print()
+          print("=== PHYSICAL FLOW ===")
+          print("Validated:", physical.get("validated"))
+          print("Score:", physical.get("score"))
+
+          print()
+          print("=== LOGISTICS ===")
+
+          logistics = layers.get("logistics", {})
+
+          print("Status:", logistics.get("status"))
+          print(
+              "Observed sources:",
+              logistics.get("observed_sources")
+          )
+
+          print()
+          print("Composite JSON validation successful.")
+          PY
+
+      # 6. GitHub Actions összefoglaló
+      - name: Create workflow summary
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          data = json.loads(
+              Path(
+                  "hormuz-risk-composite.json"
+              ).read_text(encoding="utf-8")
+          )
+
+          meta = data.get("meta", {})
+          sources = data.get("input_status", {})
+          layers = data.get("layers", {})
+          composite = data.get("composite", {})
+
+          security = layers.get("security", {})
+          physical = layers.get("physical_flow", {})
+          logistics = layers.get("logistics", {})
+
+          lines = [
+              "# Hormuz Integrated Risk",
+              "",
+              f"**Version:** {meta.get('version')}",
+              f"**Generated:** {meta.get('generated_at')}",
+              f"**Status:** {composite.get('status')}",
+              "",
+              "## Input freshness",
+              "",
+              "| Source | Status | Age (hours) |",
+              "|---|---|---:|",
+          ]
+
+          for name, info in sources.items():
+              lines.append(
+                  f"| {name} | {info.get('status')} "
+                  f"| {info.get('age_hours')} |"
+              )
+
+          lines.extend([
+              "",
+              "## Risk layers",
+              "",
+              "| Layer | Weight | Score | Status |",
+              "|---|---:|---:|---|",
+              (
+                  f"| Security | 40% | "
+                  f"{security.get('score')} | "
+                  f"{security.get('status')} |"
+              ),
+              (
+                  f"| Physical Flow | 35% | "
+                  f"{physical.get('score')} | "
+                  f"{physical.get('status')} |"
+              ),
+              (
+                  f"| Logistics | 25% | "
+                  f"{logistics.get('score')} | "
+                  f"{logistics.get('status')} |"
+              ),
+              "",
+              "## Composite validation",
+              "",
+              (
+                  f"- Validated: "
+                  f"**{composite.get('validated')}**"
+              ),
+              (
+                  f"- Validated weight coverage: "
+                  f"**{composite.get('validated_weight_coverage')}**"
+              ),
+              (
+                  f"- Missing components: "
+                  f"**{', '.join(composite.get('missing_components', []))}**"
+              ),
+              "",
+              "> AIS traffic disruption is not equivalent "
+              "to physical oil-flow disruption.",
+              "",
+              "> The composite remains provisional until "
+              "the required layers are independently validated.",
+          ])
+
+          with open(
+              os.environ["GITHUB_STEP_SUMMARY"],
+              "a",
+              encoding="utf-8"
+          ) as f:
+              f.write("\n".join(lines) + "\n")
+          PY
+
+      # 7. Kimenet mentése futási artifactként
+      - name: Upload composite artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hormuz-risk-composite
+          path: hormuz-risk-composite.json
+          if-no-files-found: error
+          retention-days: 30
+
+      # 8. Eredmény mentése a repositoryba
+      - name: Commit composite JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add hormuz-risk-composite.json
+
+          if git diff --cached --quiet; then
+            echo "No composite changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Update Hormuz integrated risk composite"
+
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
