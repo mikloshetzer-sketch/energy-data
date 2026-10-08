@@ -2059,6 +2059,30 @@
       }
     }
 
+  
+    /* Hormuz OSINT integration — isolated styles */
+    .hz-panel{margin-top:15px;padding:22px;background:#fff;border:1px solid var(--line);border-top:5px solid var(--teal);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
+    .hz-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;flex-wrap:wrap}
+    .hz-head h2{margin:0;color:var(--navy);font-size:23px}
+    .hz-muted{color:var(--muted);font-size:11px;line-height:1.6}
+    .hz-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px;margin-top:18px}
+    .hz-kpi{background:#f7fafc;border:1px solid var(--line);border-radius:12px;padding:15px;min-width:0}
+    .hz-label{font-size:10px;color:var(--muted);font-weight:800}
+    .hz-number{font-size:27px;color:var(--navy);font-weight:900;margin:8px 0 5px;overflow-wrap:anywhere}
+    .hz-small{font-size:10px;color:var(--muted);line-height:1.45}
+    .hz-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:15px}
+    .hz-chart{border:1px solid var(--line);border-radius:12px;padding:15px;min-width:0}
+    .hz-chart h3{font-size:14px;color:var(--navy);margin:0 0 12px}
+    .hz-canvas{height:230px;position:relative}
+    .hz-tools{display:flex;gap:7px;flex-wrap:wrap}
+    .hz-period{padding:8px 12px;border:1px solid var(--line);background:white;border-radius:30px;color:var(--navy);font-weight:800;cursor:pointer}
+    .hz-period.active{background:var(--blue);color:white;border-color:var(--blue)}
+    .hz-notice{margin-top:14px;background:#fff8e8;border-left:4px solid var(--orange);padding:12px 14px;border-radius:8px;font-size:11px;line-height:1.6;color:#69512b}
+    .hz-sources{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .hz-source{font-size:10px;border:1px solid var(--line);padding:7px 10px;border-radius:8px;background:#f7fafc}
+    @media(max-width:1050px){.hz-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:680px){.hz-kpis,.hz-charts{grid-template-columns:1fr}}
+
   </style>
 </head>
 
@@ -3227,6 +3251,40 @@
         </div>
       </article>
 
+    </section>
+
+
+    <!-- Hormuz OSINT: independent observational monitor, not the strategic chokepoint score -->
+    <section class="hz-panel" id="hormuz-osint">
+      <div class="hz-head">
+        <div>
+          <p class="section-kicker">HORMUZ OSINT / AIS MONITOR</p>
+          <h2>Hormuzi-szoros – biztonság és hajóforgalom</h2>
+          <div class="hz-muted">Valós adatforrások · különálló a stratégiai szoroskockázati modelltől</div>
+        </div>
+        <div class="hz-tools" aria-label="Történeti időszak">
+          <button type="button" class="hz-period" data-days="1">24 óra</button>
+          <button type="button" class="hz-period active" data-days="7">7 nap</button>
+          <button type="button" class="hz-period" data-days="30">30 nap</button>
+          <button type="button" class="hz-period" data-days="90">90 nap</button>
+        </div>
+      </div>
+      <div id="hz-status" class="hz-muted" style="margin-top:9px">Hormuz-adatok betöltése…</div>
+      <div class="hz-kpis">
+        <div class="hz-kpi"><div class="hz-label">Security Risk / 100</div><div class="hz-number" id="hz-security">–</div><div class="hz-small" id="hz-security-sub">Biztonsági események</div></div>
+        <div class="hz-kpi"><div class="hz-label">AIS-megfigyelés szerinti forgalmi zavar</div><div class="hz-number" id="hz-ais">–</div><div class="hz-small" id="hz-ais-sub">7 napos PortWatch-mutató</div></div>
+        <div class="hz-kpi"><div class="hz-label">Átkelések / 24 óra</div><div class="hz-number" id="hz-crossings">–</div><div class="hz-small" id="hz-crossings-sub">Live AIS</div></div>
+        <div class="hz-kpi"><div class="hz-label">Olajhoz kapcsolódó hajók</div><div class="hz-number" id="hz-tankers">–</div><div class="hz-small" id="hz-tankers-sub">Vessel monitor</div></div>
+        <div class="hz-kpi"><div class="hz-label">Hitelesített összesített index</div><div class="hz-number" id="hz-composite">–</div><div class="hz-small" id="hz-composite-sub">Módszertani validáció szükséges</div></div>
+      </div>
+      <div class="hz-charts">
+        <div class="hz-chart"><h3>Biztonsági kockázat – történeti trend</h3><div class="hz-canvas"><canvas id="hz-chart-security"></canvas></div></div>
+        <div class="hz-chart"><h3>24 órás AIS-átkelések</h3><div class="hz-canvas"><canvas id="hz-chart-crossings"></canvas></div></div>
+        <div class="hz-chart"><h3>AIS-forgalmi zavar (7 napos mutató)</h3><div class="hz-canvas"><canvas id="hz-chart-disruption"></canvas></div></div>
+        <div class="hz-chart"><h3>Megfigyelt olajhoz kapcsolódó hajók</h3><div class="hz-canvas"><canvas id="hz-chart-vessels"></canvas></div></div>
+      </div>
+      <div class="hz-notice"><strong>Módszertani korlát:</strong> az AIS-megfigyelés szerinti forgalomcsökkenés nem azonos a tényleges fizikai olajszállítás visszaesésével. A 40% Security, 35% Physical Flow és 25% Logistics súlyozású összesített index csak mindhárom komponens validálása után publikálható. A történeti pontok mentési időpontokat jelölnek, nem feltétlenül új forrásmegfigyeléseket.</div>
+      <div class="hz-sources" id="hz-sources"></div>
     </section>
 
     <section class="mini-grid">
@@ -6885,8 +6943,96 @@
     });
   </script>
 
+
+  <script>
+  /* Independent Hormuz loader: errors never interrupt the existing energy dashboard. */
+  (() => {
+    const ROOT = "https://raw.githubusercontent.com/mikloshetzer-sketch/energy-data/main/";
+    const el = id => document.getElementById(id);
+    const n = (v, decimals=0) => typeof v === "number" && Number.isFinite(v) ? v.toLocaleString("hu-HU",{maximumFractionDigits:decimals,minimumFractionDigits:decimals}) : "–";
+    const get = (o, path) => path.reduce((v,k)=>v?.[k],o);
+    const plots = {};
+    let history = [];
+    let period = 7;
+    async function load(name){
+      const res = await fetch(ROOT+name+"?v="+Date.now(),{cache:"no-store"});
+      if(!res.ok) throw new Error(name+" HTTP "+res.status);
+      return res.json();
+    }
+    function renderHistory(){
+      const cutoff=Date.now()-period*86400000;
+      const rows=history.filter(x=>{const t=Date.parse(x.timestamp_utc);return Number.isFinite(t)&&t>=cutoff;}).sort((a,b)=>Date.parse(a.timestamp_utc)-Date.parse(b.timestamp_utc));
+      const defs=[
+        ["hz-chart-security","security_score","Security Risk","#c83c32"],
+        ["hz-chart-crossings","crossings_24h","Átkelések","#258bc7"],
+        ["hz-chart-disruption","ais_disruption_7d","AIS-zavar (%)","#d97706"],
+        ["hz-chart-vessels","oil_related_vessels","Olajhoz kapcsolódó hajók","#07875f"]
+      ];
+      for(const [id,key,label,color] of defs){
+        const node=el(id);if(!node||typeof Chart==="undefined")continue;
+        if(plots[id])plots[id].destroy();
+        plots[id]=new Chart(node,{
+          type:"line",
+          data:{labels:rows.map(r=>new Date(r.timestamp_utc).toLocaleString("hu-HU",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",timeZone:"UTC"})),
+            datasets:[{label,data:rows.map(r=>typeof r[key]==="number"?r[key]:null),borderColor:color,backgroundColor:color+"16",fill:true,tension:.22,pointRadius:rows.length>40?0:3,spanGaps:false}]},
+          options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>items[0]?.label+" UTC"}}},scales:{x:{ticks:{maxTicksLimit:8}},y:{beginAtZero:false}}}
+        });
+      }
+      const last=rows.at(-1);
+      const status=el("hz-status");
+      if(status)status.textContent=`Történeti pontok a kiválasztott időszakban: ${rows.length} · ${rows.length<2?"Trendértékeléshez még kevés adat áll rendelkezésre.":"Időpontok UTC szerint."}`;
+    }
+    async function start(){
+      const [currentResult,historyResult]=await Promise.allSettled([
+        load("hormuz-risk-composite.json"),
+        load("history/hormuz/composite-history.json")
+      ]);
+      const current=currentResult.status==="fulfilled"?currentResult.value:null;
+      const h=historyResult.status==="fulfilled"?historyResult.value:null;
+      history=Array.isArray(h)?h:[];
+      if(!current){
+        el("hz-status").textContent="Az aktuális Hormuz-adatok nem érhetők el. "+(history.length?"A történeti adatok megjelennek.":"A history sem tölthető be.");
+      }else{
+        const s=get(current,["layers","security"])||{};
+        const p=get(current,["layers","physical_flow","portwatch_observation"])||{};
+        const a=get(current,["layers","logistics","live_ais"])||{};
+        const v=get(current,["layers","logistics","vessels","analysis"])||{};
+        const c=current.composite||{};
+        el("hz-security").textContent=n(s.score,2);
+        el("hz-security-sub").textContent=`${s.level||"–"} · ${n(s.events_7d)} esemény / 7 nap`;
+        el("hz-ais").textContent=n(p.ais_disruption_7d,2)+"%";
+        el("hz-ais-sub").textContent=`PortWatch megfigyelés: ${p.latest_observation||"–"}`;
+        el("hz-crossings").textContent=n(get(a,["crossings_24h","total"]));
+        el("hz-crossings-sub").textContent=`Be: ${n(get(a,["crossings_24h","inbound"]))} · Ki: ${n(get(a,["crossings_24h","outbound"]))}`;
+        el("hz-tankers").textContent=n(v.oil_related_vessels);
+        el("hz-tankers-sub").textContent=`VLCC/ULCC: ${n(v.vlcc_ulcc_count)} · adatminőség: ${get(current,["layers","logistics","vessels","data_quality","status"])||"–"}`;
+        el("hz-composite").textContent=c.validated===true?n(c.validated_score,2):"N/A";
+        el("hz-composite-sub").textContent=c.validated===true?(c.validated_level||"Hitelesített"):"PROVISIONAL · nincs validált összpontszám";
+        const when=Date.parse(get(current,["meta","generated_at"]));
+        el("hz-sources").innerHTML="";
+        const date=document.createElement("span");date.className="hz-source";date.textContent="Modell frissítése: "+(Number.isFinite(when)?new Date(when).toLocaleString("hu-HU",{timeZone:"UTC"})+" UTC":"ismeretlen");
+        el("hz-sources").appendChild(date);
+        for(const [name,key] of [["Security","security"],["PortWatch","portwatch"],["Live AIS","live_ais"],["Vessels","vessels"]]){
+          const data=current.input_status?.[key]||{};
+          const badge=document.createElement("span");badge.className="hz-source";
+          badge.textContent=name+": "+(data.status||"N/A")+" · "+(typeof data.age_hours==="number"?n(data.age_hours,1)+" óra":"kor ismeretlen");
+          el("hz-sources").appendChild(badge);
+        }
+      }
+      document.querySelectorAll(".hz-period").forEach(b=>b.addEventListener("click",()=>{
+        period=Number(b.dataset.days);
+        document.querySelectorAll(".hz-period").forEach(x=>x.classList.toggle("active",x===b));
+        renderHistory();
+      }));
+      renderHistory();
+    }
+    start().catch(err=>{console.warn("Hormuz OSINT:",err);el("hz-status").textContent="Hormuz monitor betöltési hiba: "+err.message;});
+  })();
+  </script>
+
 </body>
 </html>
+
 
 
 
