@@ -1,10 +1,17 @@
+
 name: Hormuz Live AIS
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"
 
 permissions:
   contents: write
+
+concurrency:
+  group: hormuz-live-ais-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   hormuz-live-ais:
@@ -13,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -27,6 +36,7 @@ jobs:
         run: |
           python - <<'PY'
           import json
+          from datetime import datetime, timezone
           from pathlib import Path
 
           path = Path("hormuz-live-ais.json")
@@ -36,43 +46,18 @@ jobs:
                   "ERROR: hormuz-live-ais.json was not created"
               )
 
-          with path.open(
-              "r",
-              encoding="utf-8"
-          ) as f:
+          with path.open("r", encoding="utf-8") as f:
               data = json.load(f)
-
-          print("=== HORMUZ LIVE AIS VALIDATION ===")
 
           meta = data.get("meta", {})
           status = data.get("source_status", {})
           summary = data.get("summary", {})
 
-          print(
-              "Collector:",
-              meta.get("collector")
-          )
-
-          print(
-              "Version:",
-              meta.get("version")
-          )
-
-          print(
-              "Generated:",
-              meta.get("generated_at")
-          )
-
-          print(
-              "Source status:",
-              status.get("status")
-          )
-
-          print(
-              "Confidence:",
-              status.get("confidence")
-          )
-
+          print("=== HORMUZ LIVE AIS VALIDATION ===")
+          print("Collector:", meta.get("collector"))
+          print("Version:", meta.get("version"))
+          print("Generated:", meta.get("generated_at"))
+          print("Source:", status.get("status"))
           print(
               "Endpoints:",
               status.get("endpoints_successful"),
@@ -80,120 +65,99 @@ jobs:
               status.get("endpoints_total")
           )
 
-          if summary.get("available"):
+          generated = meta.get("generated_at")
+          if not generated:
+              raise SystemExit("ERROR: Missing generated_at")
 
-              print()
-              print("=== LIVE DATA ===")
-
-              print(
-                  "Last poll:",
-                  summary.get("last_poll")
+          try:
+              timestamp = datetime.fromisoformat(
+                  generated.replace("Z", "+00:00")
+              )
+              if timestamp.tzinfo is None:
+                  raise ValueError("Timezone missing")
+              age = (
+                  datetime.now(timezone.utc)
+                  - timestamp.astimezone(timezone.utc)
+              ).total_seconds() / 60
+          except (ValueError, TypeError) as exc:
+              raise SystemExit(
+                  f"ERROR: Invalid generated_at: {exc}"
               )
 
-              print(
-                  "Total ships:",
-                  summary.get("total_ships")
+          if age > 60 or age < -5:
+              raise SystemExit(
+                  f"ERROR: Collector output timestamp invalid: {age:.1f} min"
               )
 
-              print(
-                  "In strait:",
-                  summary.get("in_strait")
+          if status.get("status") != "AVAILABLE":
+              raise SystemExit(
+                  "ERROR: Live AIS source unavailable"
               )
 
-              crossings = summary.get(
-                  "crossings",
-                  {}
+          successful = status.get("endpoints_successful", 0)
+          if successful < 3:
+              raise SystemExit(
+                  "ERROR: Fewer than 3 endpoints succeeded"
               )
 
-              print(
-                  "Inbound:",
-                  crossings.get("inbound")
+          if not summary.get("available"):
+              raise SystemExit(
+                  "ERROR: Live AIS summary unavailable"
               )
 
-              print(
-                  "Outbound:",
-                  crossings.get("outbound")
-              )
+          crossings = summary.get("crossings", {})
+          print("Last poll:", summary.get("last_poll"))
+          print("Total ships:", summary.get("total_ships"))
+          print("In strait:", summary.get("in_strait"))
+          print("Inbound:", crossings.get("inbound"))
+          print("Outbound:", crossings.get("outbound"))
+          print("Crossings:", crossings.get("total"))
 
-              print(
-                  "Total crossings:",
-                  crossings.get("total")
-              )
+          print("Validation successful.")
+          PY
 
-              oil = summary.get(
-                  "estimated_oil_export",
-                  {}
-              )
+      - name: Write GitHub Actions summary
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
 
-              print(
-                  "Estimated oil export:",
-                  oil.get("barrels")
-              )
+          with open("hormuz-live-ais.json", encoding="utf-8") as f:
+              data = json.load(f)
 
-              print(
-                  "Estimated crude:",
-                  oil.get("crude_barrels")
-              )
+          meta = data.get("meta", {})
+          summary = data.get("summary", {})
+          crossings = summary.get("crossings", {})
+          analysis = data.get("live_ais_analysis", {})
+          stats = analysis.get("crossing_statistics", {})
+          trend = stats.get("trend", {})
 
-          else:
-
-              print()
-              print(
-                  "WARNING: summary endpoint "
-                  "did not return usable data."
-              )
-
+          print("## Hormuz Live AIS")
+          print()
+          print(f"- Generated: {meta.get('generated_at')}")
+          print(f"- Ships: {summary.get('total_ships')}")
+          print(f"- In strait: {summary.get('in_strait')}")
+          print(f"- Inbound (24h): {crossings.get('inbound')}")
+          print(f"- Outbound (24h): {crossings.get('outbound')}")
+          print(f"- Crossings (24h): {crossings.get('total')}")
+          print()
+          print("### Traffic trends")
           print()
           print(
-              "Existing Hormuz model outputs "
-              "were not modified."
+              "- 7d vs 30d crossings: "
+              f"{trend.get('total_crossings_7d_vs_30d_pct')}%"
+          )
+          print(
+              "- 7d vs 30d outbound: "
+              f"{trend.get('outbound_7d_vs_30d_pct')}%"
+          )
+          print()
+          print(
+              "AIS-derived estimates are not "
+              "direct physical oil-flow measurements."
           )
           PY
 
-      - name: Show endpoint diagnostics
-        if: always()
-        run: |
-          if [ -f hormuz-live-ais.json ]; then
-            python - <<'PY'
-          import json
-
-          with open(
-              "hormuz-live-ais.json",
-              "r",
-              encoding="utf-8"
-          ) as f:
-              data = json.load(f)
-
-          print("=== ENDPOINT DIAGNOSTICS ===")
-
-          for name, result in data.get(
-              "endpoint_results",
-              {}
-          ).items():
-
-              print()
-              print(name)
-              print(
-                  "  status:",
-                  result.get("status")
-              )
-              print(
-                  "  endpoint:",
-                  result.get("endpoint")
-              )
-
-              if result.get("error"):
-                  print(
-                      "  error:",
-                      result.get("error")
-                  )
-          PY
-          else
-            echo "No output file available."
-          fi
-
       - name: Commit updated live AIS data
-        if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -202,7 +166,10 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "No live AIS data changes to commit."
-          else
-            git commit -m "Update Hormuz live AIS data"
-            git push
+            exit 0
           fi
+
+          git commit -m "Update Hormuz live AIS data"
+
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
