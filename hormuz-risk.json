@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-10-08T15:39:03.405340+00:00",
+    "generated_at": "2026-10-08T21:21:46.961085+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,10 +39,10 @@
   },
   "regional_security": {
     "available": true,
-    "score": 54.6,
+    "score": 64.0,
     "risk_level": "MEDIUM",
     "confidence": "MEDIUM",
-    "updated": "2026-10-08 13:33 UTC",
+    "updated": "2026-10-08 19:59 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
@@ -63,14 +63,14 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 49.68,
+      "score": 54.12,
       "level": "ELEVATED",
       "confidence": "HIGH",
-      "event_signal": 48.81,
-      "regional_context_score": 54.6,
-      "security_events_7d": 7,
-      "direct_hormuz_security_events_7d": 3,
-      "maritime_attack_events_7d": 6,
+      "event_signal": 52.37,
+      "regional_context_score": 64.0,
+      "security_events_7d": 8,
+      "direct_hormuz_security_events_7d": 4,
+      "maritime_attack_events_7d": 7,
       "closure_threat_events_7d": 1
     },
     "flow": {
@@ -93,7 +93,7 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 7,
+  "security_event_count_7d": 8,
   "flow_signal_count_7d": 3,
   "top_security_events": [
     {
@@ -123,6 +123,37 @@
       "temporal_weight": 1.0,
       "security_event_type": "MARITIME_ATTACK",
       "security_score": 64.88,
+      "relevance_level": "CRITICAL",
+      "flow_positive_signal": false,
+      "flow_negative_signal": false
+    },
+    {
+      "event_id": "2026-10-08-e5bd2962b48d",
+      "date": "2026-10-08",
+      "title": "Attack risks rise for tankers as Iran vows to block more Hormuz routes - Reuters",
+      "source": "Reuters (via Google News)",
+      "source_url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOU2tXTF9qRnZpZjVabUdpX3Q5UVBCR18tb2JrR3dJUVVacUhyUURRQ05uZ2dKOVBMbHJLQmRmejB3TjhPSGpxUnFZOEdJNFJ0Q2k1aXNVQTZNVFYwV21YdUhmd2g0MnZqZm9ycGVfM21VLURfY1ZzOENSTUpxVTcxRmdpeS1ka1JhUU4tczc5RGpycmx5NWt6NjRJLThhc0VlRFRTS0p0X0N5bHFwbl9PaDQyZ25xdw",
+      "category": "military",
+      "location": "Iran",
+      "confidence": 0.55,
+      "age_days": 0,
+      "direct_hormuz": true,
+      "maritime": true,
+      "physical_attack": false,
+      "generic_attack": true,
+      "maritime_security": false,
+      "closure_threat": false,
+      "energy": false,
+      "energy_infrastructure": false,
+      "regional_maritime": false,
+      "regional_actor": true,
+      "aviation": false,
+      "distance_km": 697.9,
+      "geographic_relevance": 0.0,
+      "textual_relevance": 0.8,
+      "temporal_weight": 1.0,
+      "security_event_type": "MARITIME_ATTACK",
+      "security_score": 62.28,
       "relevance_level": "CRITICAL",
       "flow_positive_signal": false,
       "flow_negative_signal": false
