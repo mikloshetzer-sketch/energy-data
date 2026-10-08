@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-10-08T06:23:12.604601+00:00",
+    "generated_at": "2026-10-08T15:39:03.405340+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,17 +39,17 @@
   },
   "regional_security": {
     "available": true,
-    "score": 51.9,
+    "score": 54.6,
     "risk_level": "MEDIUM",
     "confidence": "MEDIUM",
-    "updated": "2026-10-08 06:08 UTC",
+    "updated": "2026-10-08 13:33 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
   "historical_context": {
     "available": true,
     "generated_at": "2026-09-21T08:05:59Z",
-    "age_days": 16,
+    "age_days": 17,
     "freshness": "STALE",
     "event_count": 258,
     "role": "historical_context_only"
@@ -63,14 +63,14 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 49.61,
+      "score": 49.68,
       "level": "ELEVATED",
       "confidence": "HIGH",
-      "event_signal": 49.21,
-      "regional_context_score": 51.9,
-      "security_events_7d": 6,
+      "event_signal": 48.81,
+      "regional_context_score": 54.6,
+      "security_events_7d": 7,
       "direct_hormuz_security_events_7d": 3,
-      "maritime_attack_events_7d": 5,
+      "maritime_attack_events_7d": 6,
       "closure_threat_events_7d": 1
     },
     "flow": {
@@ -93,7 +93,7 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 6,
+  "security_event_count_7d": 7,
   "flow_signal_count_7d": 3,
   "top_security_events": [
     {
@@ -190,9 +190,40 @@
       "flow_negative_signal": true
     },
     {
-      "event_id": "2026-10-08-16ff50492dd6",
+      "event_id": "2026-10-08-2f53429fbaf6",
       "date": "2026-10-08",
-      "title": "Oil rises as Middle East supply concerns persist amid shipping attacks - Reuters",
+      "title": "Tanker hit by multiple projectiles in Gulf off Qatar, maritime agency says",
+      "source": "BBC",
+      "source_url": "https://www.bbc.co.uk/news/articles/cqlydk7796wdo?at_medium=RSS&at_campaign=rss",
+      "category": "other",
+      "location": "Qatar",
+      "confidence": 0.55,
+      "age_days": 0,
+      "direct_hormuz": false,
+      "maritime": true,
+      "physical_attack": false,
+      "generic_attack": true,
+      "maritime_security": false,
+      "closure_threat": false,
+      "energy": true,
+      "energy_infrastructure": false,
+      "regional_maritime": false,
+      "regional_actor": false,
+      "aviation": false,
+      "distance_km": 523.9,
+      "geographic_relevance": 0.3,
+      "textual_relevance": 0.45,
+      "temporal_weight": 1.0,
+      "security_event_type": "MARITIME_ATTACK",
+      "security_score": 37.63,
+      "relevance_level": "MEDIUM",
+      "flow_positive_signal": false,
+      "flow_negative_signal": false
+    },
+    {
+      "event_id": "2026-10-08-722bc79b7522",
+      "date": "2026-10-08",
+      "title": "Oil jumps as Middle East supply concerns persist amid shipping attacks - Reuters",
       "source": "Reuters (via Google News)",
       "source_url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxOZlloTmR5SkZfME9kcjlVcENtQzFrdmc2cnJfTWthWWJYcFIwZFFGNUs5Y2Y2TkR0MjE2STZ3WXktSXJRRmRiXzZYTnQ4clNNZlNQempZRzFPTERYUXpFM1d0SUJoUzFyN3FLRTg0d3UtckZWbWpWM01DNVJIUEdBTTkyd0dFaDgwX0llWXBtMXV1dVROdXUwVUF6VG9Ca3BReDdJTzNhT0d3RjcwUVF5TS12N1ZWNzJXdlRz",
       "category": "military",
