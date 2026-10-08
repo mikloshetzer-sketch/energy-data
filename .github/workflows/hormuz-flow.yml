@@ -1,236 +1,257 @@
+
 name: Hormuz Flow Data
 
 on:
-  # Egyelőre kizárólag kézzel indítható.
-  # Ha a rendszer stabil, később ide kerül a schedule.
   workflow_dispatch:
+  schedule:
+    - cron: "43 5 * * *"
 
 permissions:
   contents: write
+
+concurrency:
+  group: hormuz-flow-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   fetch-hormuz-flow:
     runs-on: ubuntu-latest
 
     steps:
-      # ------------------------------------------------------
-      # 1. Repository letöltése
-      # ------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      # ------------------------------------------------------
-      # 2. Python környezet
-      # ------------------------------------------------------
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      # ------------------------------------------------------
-      # 3. Python verzió
-      # ------------------------------------------------------
       - name: Show Python version
         run: python --version
 
-      # ------------------------------------------------------
-      # 4. Hormuz Flow Collector futtatása
-      # ------------------------------------------------------
       - name: Fetch Hormuz flow data
-        run: python fetch_hormuz_flow.py
-
-      # ------------------------------------------------------
-      # 5. Ellenőrizzük, hogy létrejött-e a JSON
-      # ------------------------------------------------------
-      - name: Validate output file
         run: |
-          if [ ! -f hormuz-flow.json ]; then
-            echo "ERROR: hormuz-flow.json was not generated."
-            exit 1
-          fi
+          python fetch_hormuz_flow.py
 
-          echo "hormuz-flow.json successfully generated."
-
-      # ------------------------------------------------------
-      # 6. JSON szintaktikai és tartalmi ellenőrzése
-      # ------------------------------------------------------
-      - name: Validate JSON
+      - name: Validate Hormuz Flow output
         run: |
           python - <<'PY'
           import json
+          from datetime import datetime, timezone
           from pathlib import Path
 
           path = Path("hormuz-flow.json")
 
+          if not path.exists():
+              raise SystemExit(
+                  "ERROR: hormuz-flow.json was not generated."
+              )
+
           with path.open("r", encoding="utf-8") as f:
               data = json.load(f)
-
-          print("JSON validation: OK")
 
           meta = data.get("meta", {})
           latest = data.get("latest_observation", {})
           freshness = data.get("freshness", {})
           quality = data.get("data_quality", {})
-          statistics = data.get("statistics", {})
-          stats_7d = statistics.get("7d", {})
-          diagnostics = data.get("diagnostics", {})
+          reference = data.get("reference_periods", {})
+          recent = data.get("recent_windows", {})
+          disruption = data.get("ais_observed_disruption", {})
 
-          print()
+          print("=== HORMUZ PORTWATCH FLOW ===")
           print("Collector:", meta.get("collector"))
           print("Version:", meta.get("version"))
+          print("Generated:", meta.get("generated_at"))
 
-          print()
+          generated = meta.get("generated_at")
+
+          if not generated:
+              raise SystemExit(
+                  "ERROR: Missing generated_at."
+              )
+
+          try:
+              timestamp = datetime.fromisoformat(
+                  generated.replace("Z", "+00:00")
+              )
+
+              if timestamp.tzinfo is None:
+                  raise ValueError("Missing timezone")
+
+              age_minutes = (
+                  datetime.now(timezone.utc)
+                  - timestamp.astimezone(timezone.utc)
+              ).total_seconds() / 60
+
+          except (ValueError, TypeError) as exc:
+              raise SystemExit(
+                  f"ERROR: Invalid generated_at: {exc}"
+              )
+
+          if age_minutes > 60 or age_minutes < -5:
+              raise SystemExit(
+                  f"ERROR: Collector output is not fresh: "
+                  f"{age_minutes:.1f} minutes"
+              )
+
+          if not latest.get("date"):
+              raise SystemExit(
+                  "ERROR: Latest observation date missing."
+              )
+
+          baseline = reference.get("structural_baseline", {})
+          baseline_tankers = (
+              baseline.get("n_tanker", {}).get("average")
+          )
+
+          if not isinstance(baseline_tankers, (int, float)):
+              raise SystemExit(
+                  "ERROR: Structural tanker baseline missing."
+              )
+
+          if baseline_tankers <= 0:
+              raise SystemExit(
+                  "ERROR: Invalid structural baseline."
+              )
+
+          if not recent.get("7d"):
+              raise SystemExit(
+                  "ERROR: Recent 7d window missing."
+              )
+
+          if not recent.get("30d"):
+              raise SystemExit(
+                  "ERROR: Recent 30d window missing."
+              )
+
+          if disruption.get("final_flow_risk") is not False:
+              raise SystemExit(
+                  "ERROR: AIS disruption incorrectly marked "
+                  "as final physical flow risk."
+              )
+
+          seven_day = disruption.get("seven_day", {})
+          disruption_score = seven_day.get("disruption_score")
+
+          if not isinstance(disruption_score, (int, float)):
+              raise SystemExit(
+                  "ERROR: AIS observation score missing."
+              )
+
+          if not 0 <= disruption_score <= 100:
+              raise SystemExit(
+                  "ERROR: AIS disruption outside 0-100."
+              )
+
           print("Latest observation:", latest.get("date"))
           print("Freshness:", freshness.get("status"))
-          print("Age days:", freshness.get("age_days"))
-
-          print()
-          print("Latest total vessels:", latest.get("n_total"))
-          print("Latest tankers:", latest.get("n_tanker"))
-          print("Latest cargo:", latest.get("n_cargo"))
-
-          print()
+          print("Observation age:", freshness.get("age_days"))
+          print("Baseline tankers/day:", baseline_tankers)
           print(
-              "7d average tankers:",
-              stats_7d.get("n_tanker", {}).get("average")
+              "Recent 7d tankers/day:",
+              recent["7d"].get("n_tanker", {}).get("average")
           )
-
           print(
-              "7d average total:",
-              stats_7d.get("n_total", {}).get("average")
+              "AIS observed disruption:",
+              disruption_score
           )
-
-          print()
           print(
               "Data quality:",
               quality.get("level"),
               quality.get("score")
           )
 
-          print(
-              "Normalized observations:",
-              diagnostics.get("normalized_observations")
-          )
+          if freshness.get("status") in (
+              "STALE",
+              "VERY_STALE"
+          ):
+              print(
+                  "WARNING: PortWatch observations are delayed."
+              )
 
-          print()
-          print("Available PortWatch fields:")
-
-          for field in diagnostics.get("available_fields", []):
-              print(" -", field)
+          print("Validation successful.")
           PY
 
-      # ------------------------------------------------------
-      # 7. Rövid összefoglaló a GitHub Actions Summary oldalra
-      # ------------------------------------------------------
-      - name: Create workflow summary
+      - name: Write GitHub Actions summary
         run: |
-          python - <<'PY'
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
           import json
-          import os
-          from pathlib import Path
 
-          data = json.loads(
-              Path("hormuz-flow.json").read_text(encoding="utf-8")
-          )
+          with open("hormuz-flow.json", encoding="utf-8") as f:
+              data = json.load(f)
 
+          meta = data.get("meta", {})
           latest = data.get("latest_observation", {})
           freshness = data.get("freshness", {})
           quality = data.get("data_quality", {})
-          stats = data.get("statistics", {})
-          stats_7d = stats.get("7d", {})
-          trend = data.get("trend", {})
+          reference = data.get("reference_periods", {})
+          recent = data.get("recent_windows", {})
+          disruption = data.get("ais_observed_disruption", {})
 
-          summary_path = os.environ["GITHUB_STEP_SUMMARY"]
+          baseline = reference.get("structural_baseline", {})
+          seven = recent.get("7d", {})
+          thirty = recent.get("30d", {})
 
-          with open(summary_path, "a", encoding="utf-8") as f:
-              f.write("# Hormuz Flow Data\n\n")
-
-              f.write("## Latest PortWatch observation\n\n")
-              f.write(
-                  f"- Date: **{latest.get('date')}**\n"
-              )
-              f.write(
-                  f"- Freshness: **{freshness.get('status')}**\n"
-              )
-              f.write(
-                  f"- Age: **{freshness.get('age_days')} days**\n"
-              )
-              f.write(
-                  f"- Total vessels: **{latest.get('n_total')}**\n"
-              )
-              f.write(
-                  f"- Tankers: **{latest.get('n_tanker')}**\n"
-              )
-              f.write(
-                  f"- Cargo vessels: **{latest.get('n_cargo')}**\n\n"
-              )
-
-              f.write("## 7-day averages\n\n")
-              f.write(
-                  f"- Tankers: **"
-                  f"{stats_7d.get('n_tanker', {}).get('average')}**\n"
-              )
-              f.write(
-                  f"- Total vessels: **"
-                  f"{stats_7d.get('n_total', {}).get('average')}**\n\n"
-              )
-
-              f.write("## Trend\n\n")
-              f.write(
-                  f"- Tanker 7d vs 30d: **"
-                  f"{trend.get('tanker_7d_vs_30d_pct')}%**\n"
-              )
-              f.write(
-                  f"- Tanker 7d vs 90d: **"
-                  f"{trend.get('tanker_7d_vs_90d_pct')}%**\n"
-              )
-              f.write(
-                  f"- Total 7d vs 30d: **"
-                  f"{trend.get('total_7d_vs_30d_pct')}%**\n"
-              )
-              f.write(
-                  f"- Total 7d vs 90d: **"
-                  f"{trend.get('total_7d_vs_90d_pct')}%**\n\n"
-              )
-
-              f.write("## Data quality\n\n")
-              f.write(
-                  f"- Level: **{quality.get('level')}**\n"
-              )
-              f.write(
-                  f"- Score: **{quality.get('score')}/100**\n"
-              )
-
-              issues = quality.get("issues", [])
-
-              if issues:
-                  f.write("\n### Issues\n\n")
-
-                  for issue in issues:
-                      f.write(f"- {issue}\n")
-
-              f.write(
-                  "\n> PortWatch vessel traffic is treated as a "
-                  "traffic/flow proxy, not as direct physical oil "
-                  "throughput in million barrels per day.\n"
-              )
+          print("## Hormuz PortWatch Flow")
+          print()
+          print(f"- Generated: {meta.get('generated_at')}")
+          print(f"- Version: {meta.get('version')}")
+          print(f"- Latest observation: {latest.get('date')}")
+          print(f"- Freshness: {freshness.get('status')}")
+          print(f"- Observation age: {freshness.get('age_days')} days")
+          print()
+          print("### AIS-observed tanker traffic")
+          print()
+          print(
+              "- Structural baseline: "
+              f"{baseline.get('n_tanker', {}).get('average')} / day"
+          )
+          print(
+              "- Recent 7d: "
+              f"{seven.get('n_tanker', {}).get('average')} / day"
+          )
+          print(
+              "- Recent 30d: "
+              f"{thirty.get('n_tanker', {}).get('average')} / day"
+          )
+          print()
+          print("### AIS-observed disruption")
+          print()
+          print(
+              "- 7d score: "
+              f"{disruption.get('seven_day', {}).get('disruption_score')}"
+          )
+          print(
+              "- 30d score: "
+              f"{disruption.get('thirty_day', {}).get('disruption_score')}"
+          )
+          print()
+          print(
+              f"- Data quality: {quality.get('level')} "
+              f"({quality.get('score')})"
+          )
+          print()
+          print(
+              "**Important:** AIS-observed traffic disruption "
+              "is not equivalent to physical oil-flow disruption."
+          )
           PY
 
-      # ------------------------------------------------------
-      # 8. Teljes JSON megjelenítése a logban
-      # ------------------------------------------------------
-      - name: Show Hormuz flow output
+      - name: Commit updated Hormuz Flow data
         run: |
-          echo "======================================"
-          echo " HORMUZ FLOW DATA OUTPUT"
-          echo "======================================"
-          cat hormuz-flow.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      # ------------------------------------------------------
-      # 9. Generált JSON visszamentése a repóba
-      # ------------------------------------------------------
-      - name: Commit generated Hormuz flow data
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: update Hormuz flow data"
-          file_pattern: "hormuz-flow.json"
+          git add hormuz-flow.json
+
+          if git diff --cached --quiet; then
+            echo "No PortWatch data changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Update Hormuz PortWatch flow data"
+
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
