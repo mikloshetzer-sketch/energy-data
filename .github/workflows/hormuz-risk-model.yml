@@ -1,109 +1,219 @@
+
 name: Hormuz Risk Model
 
 on:
-  # Egyelőre csak kézi futtatás.
-  # Ha a modell stabil, később ide kerül a schedule / cron.
   workflow_dispatch:
+  schedule:
+    - cron: "17 */2 * * *"
 
 permissions:
   contents: write
+
+concurrency:
+  group: hormuz-security-risk-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build-hormuz-risk:
     runs-on: ubuntu-latest
 
     steps:
-      # ------------------------------------------------------
-      # 1. Repository letöltése
-      # ------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      # ------------------------------------------------------
-      # 2. Python környezet
-      # ------------------------------------------------------
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      # ------------------------------------------------------
-      # 3. Python verzió ellenőrzése
-      # ------------------------------------------------------
       - name: Show Python version
         run: python --version
 
-      # ------------------------------------------------------
-      # 4. Hormuz Risk Model futtatása
-      # ------------------------------------------------------
       - name: Run Hormuz Risk Model
-        run: python hormuz_risk_model.py
-
-      # ------------------------------------------------------
-      # 5. Ellenőrizzük, hogy létrejött-e a JSON
-      # ------------------------------------------------------
-      - name: Validate output file
         run: |
-          if [ ! -f hormuz-risk.json ]; then
-            echo "ERROR: hormuz-risk.json was not generated."
-            exit 1
-          fi
+          python hormuz_risk_model.py
 
-          echo "hormuz-risk.json successfully generated."
-
-      # ------------------------------------------------------
-      # 6. JSON szintaktikai ellenőrzése
-      # ------------------------------------------------------
-      - name: Validate JSON
+      - name: Validate Hormuz Risk output
         run: |
           python - <<'PY'
           import json
+          from datetime import datetime, timezone
           from pathlib import Path
 
           path = Path("hormuz-risk.json")
 
+          if not path.exists():
+              raise SystemExit(
+                  "ERROR: hormuz-risk.json was not generated."
+              )
+
           with path.open("r", encoding="utf-8") as f:
               data = json.load(f)
 
-          print("JSON validation: OK")
-          print("Model:", data.get("meta", {}).get("model"))
-          print("Version:", data.get("meta", {}).get("version"))
-
+          meta = data.get("meta", {})
           security = data.get("layers", {}).get("security", {})
+          quality = data.get("data_quality", {})
 
-          print("Security score:", security.get("score"))
+          print("=== HORMUZ SECURITY RISK ===")
+          print("Model:", meta.get("model"))
+          print("Version:", meta.get("version"))
+          print("Generated:", meta.get("generated_at"))
+
+          generated = meta.get("generated_at")
+          if not generated:
+              raise SystemExit(
+                  "ERROR: Missing generated_at."
+              )
+
+          try:
+              timestamp = datetime.fromisoformat(
+                  generated.replace("Z", "+00:00")
+              )
+
+              if timestamp.tzinfo is None:
+                  raise ValueError("Missing timezone")
+
+              age_minutes = (
+                  datetime.now(timezone.utc)
+                  - timestamp.astimezone(timezone.utc)
+              ).total_seconds() / 60
+
+          except (ValueError, TypeError) as exc:
+              raise SystemExit(
+                  f"ERROR: Invalid generated_at: {exc}"
+              )
+
+          if age_minutes > 60 or age_minutes < -5:
+              raise SystemExit(
+                  f"ERROR: Stale or invalid output: "
+                  f"{age_minutes:.1f} minutes"
+              )
+
+          if security.get("status") != "ACTIVE":
+              raise SystemExit(
+                  "ERROR: Security layer is not ACTIVE."
+              )
+
+          score = security.get("score")
+
+          if not isinstance(score, (int, float)):
+              raise SystemExit(
+                  "ERROR: Security score is missing."
+              )
+
+          if not 0 <= score <= 100:
+              raise SystemExit(
+                  "ERROR: Security score outside 0-100."
+              )
+
+          print("Security score:", score)
           print("Security level:", security.get("level"))
-          print("Security confidence:", security.get("confidence"))
-
           print(
-              "Relevant events 7d:",
-              data.get("relevant_event_count_7d")
+              "Security confidence:",
+              security.get("confidence")
           )
 
-          quality = data.get("data_quality", {})
+          print(
+              "Security events 7d:",
+              data.get("security_event_count_7d")
+          )
+
+          print(
+              "Flow news signals:",
+              data.get("flow_signal_count_7d")
+          )
 
           print(
               "Data quality:",
               quality.get("level"),
               quality.get("score")
           )
+
+          sources = data.get("sources", {})
+
+          for name, source in sources.items():
+              print(
+                  "Source:",
+                  name,
+                  "success:",
+                  source.get("success")
+              )
+
+          events_source = sources.get("events", {})
+
+          if events_source.get("success") is not True:
+              raise SystemExit(
+                  "ERROR: Primary security event source failed."
+              )
+
+          print("Validation successful.")
           PY
 
-      # ------------------------------------------------------
-      # 7. Eredmény megjelenítése a workflow logban
-      # ------------------------------------------------------
-      - name: Show Hormuz Risk output
+      - name: Write GitHub Actions summary
         run: |
-          echo "======================================"
-          echo " HORMUZ RISK MODEL OUTPUT"
-          echo "======================================"
-          cat hormuz-risk.json
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
 
-      # ------------------------------------------------------
-      # 8. A generált JSON mentése a repóba
-      # ------------------------------------------------------
-      - name: Commit generated Hormuz risk data
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: update Hormuz risk model data"
-          file_pattern: "hormuz-risk.json"
+          with open("hormuz-risk.json", encoding="utf-8") as f:
+              data = json.load(f)
+
+          meta = data.get("meta", {})
+          security = data.get("layers", {}).get("security", {})
+          quality = data.get("data_quality", {})
+
+          print("## Hormuz Security Risk")
+          print()
+          print(f"- Generated: {meta.get('generated_at')}")
+          print(f"- Version: {meta.get('version')}")
+          print(f"- Score: {security.get('score')}")
+          print(f"- Level: {security.get('level')}")
+          print(f"- Confidence: {security.get('confidence')}")
+          print()
+          print("### Security events")
+          print()
+          print(
+              "- Security events (7d): "
+              f"{data.get('security_event_count_7d')}"
+          )
+          print(
+              "- Direct Hormuz events (7d): "
+              f"{security.get('direct_hormuz_security_events_7d')}"
+          )
+          print(
+              "- Maritime attacks (7d): "
+              f"{security.get('maritime_attack_events_7d')}"
+          )
+          print(
+              "- Closure threats (7d): "
+              f"{security.get('closure_threat_events_7d')}"
+          )
+          print()
+          print(
+              f"- Data quality: {quality.get('level')} "
+              f"({quality.get('score')})"
+          )
+          print()
+          print(
+              "Security risk is separate from physical "
+              "oil-flow disruption."
+          )
+          PY
+
+      - name: Commit updated Hormuz security data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add hormuz-risk.json
+
+          if git diff --cached --quiet; then
+            echo "No security data changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Update Hormuz security risk data"
+
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
