@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-10-09T02:12:24.031172+00:00",
+    "generated_at": "2026-10-09T09:08:25.136344+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,17 +39,17 @@
   },
   "regional_security": {
     "available": true,
-    "score": 57.0,
+    "score": 59.5,
     "risk_level": "MEDIUM",
     "confidence": "MEDIUM",
-    "updated": "2026-10-09 00:24 UTC",
+    "updated": "2026-10-09 09:07 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
   "historical_context": {
     "available": true,
     "generated_at": "2026-09-21T08:05:59Z",
-    "age_days": 17,
+    "age_days": 18,
     "freshness": "STALE",
     "event_count": 258,
     "role": "historical_context_only"
@@ -63,15 +63,15 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 50.19,
+      "score": 51.27,
       "level": "ELEVATED",
       "confidence": "HIGH",
-      "event_signal": 48.99,
-      "regional_context_score": 57.0,
-      "security_events_7d": 8,
-      "direct_hormuz_security_events_7d": 5,
+      "event_signal": 49.82,
+      "regional_context_score": 59.5,
+      "security_events_7d": 7,
+      "direct_hormuz_security_events_7d": 4,
       "maritime_attack_events_7d": 6,
-      "closure_threat_events_7d": 2
+      "closure_threat_events_7d": 1
     },
     "flow": {
       "weight": 0.35,
@@ -93,7 +93,7 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 8,
+  "security_event_count_7d": 7,
   "flow_signal_count_7d": 2,
   "top_security_events": [
     {
@@ -278,37 +278,6 @@
       "temporal_weight": 1.0,
       "security_event_type": "MARITIME_ATTACK",
       "security_score": 33.73,
-      "relevance_level": "MEDIUM",
-      "flow_positive_signal": false,
-      "flow_negative_signal": false
-    },
-    {
-      "event_id": "2026-10-04-fee4d0c79836",
-      "date": "2026-10-04",
-      "title": "Iran says Strait of Hormuz will not reopen until conditions are met - Reuters",
-      "source": "Reuters (via Google News)",
-      "source_url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNUEhSM2E2MkI0TDU0LXVLZl9GLWY5d3FoTU1PdS1ON0xUV1NNQ3FnUlZGRFhOYkVHTVp5RDFaN3pxZ1pVeVNJdTdhemxsNkdRaHJBTWNtRDEwWjg2cnlKb3F5VmpEN25tTHNmV2hLTnFkc1IxSEhLVGplNTJJSnBXMDFmOUN1V3NpRmxoVnJkcmRxd1hmbzBRTHZjd05rWlhUbDBfQmFCZWRkS0pHUTJNa041QlRtSkd5YUE",
-      "category": "other",
-      "location": "Iran",
-      "confidence": 0.55,
-      "age_days": 5,
-      "direct_hormuz": true,
-      "maritime": false,
-      "physical_attack": false,
-      "generic_attack": false,
-      "maritime_security": false,
-      "closure_threat": true,
-      "energy": false,
-      "energy_infrastructure": false,
-      "regional_maritime": false,
-      "regional_actor": true,
-      "aviation": false,
-      "distance_km": 697.9,
-      "geographic_relevance": 0.0,
-      "textual_relevance": 0.7,
-      "temporal_weight": 0.75,
-      "security_event_type": "HORMUZ_CLOSURE_THREAT",
-      "security_score": 30.65,
       "relevance_level": "MEDIUM",
       "flow_positive_signal": false,
       "flow_negative_signal": false
