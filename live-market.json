@@ -1,8 +1,8 @@
 {
   "meta": {
-    "updated": "2026-10-10 12:23 UTC",
+    "updated": "2026-10-10 17:27 UTC",
     "source_mode": "live",
-    "generated_at": "2026-10-10T12:23:42.398771Z",
+    "generated_at": "2026-10-10T17:27:24.860925Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
@@ -38,12 +38,12 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 48.7,
-    "middle_east_conflict_impact": 67.0,
+    "global_trade_risk_index": 48.8,
+    "middle_east_conflict_impact": 67.1,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -1.0,
-      "middle_east_conflict_impact_change": -2.0,
+      "global_trade_risk_index_change": -0.9,
+      "middle_east_conflict_impact_change": -1.9,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
@@ -76,43 +76,43 @@
     ],
     "me_components": {
       "structural_score": 73.0,
-      "osint_signal_score": 56.9,
-      "osint_raw_total_risk": 142.3,
+      "osint_signal_score": 57.2,
+      "osint_raw_total_risk": 143.06,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 146,
+      "osint_total_events": 148,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 27.96
+          "risk": 25.81
         },
         {
           "name": "Israel",
-          "risk": 19.0
+          "risk": 20.3
         },
         {
           "name": "Yemen",
-          "risk": 18.75
+          "risk": 17.75
         },
         {
           "name": "Gaza Strip",
-          "risk": 15.8
+          "risk": 17.15
         },
         {
           "name": "Riyadh",
-          "risk": 15.7
+          "risk": 15.4
         }
       ],
-      "osint_updated": "2026-10-10 05:55 UTC",
+      "osint_updated": "2026-10-10 12:35 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.98,
+      "osint_age_hours": 0.91,
       "osint_used_in_blend": true,
-      "conflict_signal_score": 18.4,
-      "conflict_signal_raw_index": -0.92,
+      "conflict_signal_score": 13.2,
+      "conflict_signal_raw_index": -0.66,
       "conflict_signal_assessment": "mild escalation",
-      "conflict_signal_trajectory": "escalating",
-      "conflict_signal_outlook": "Rising tension, but not yet at peak intensity.",
+      "conflict_signal_trajectory": "uncertain",
+      "conflict_signal_outlook": "Short-term direction remains uncertain.",
       "conflict_signal_article_count": 50,
       "conflict_signal_updated": null,
       "conflict_signal_available": true,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-09-21T08:05:59Z",
-        "source_age_hours": 454.79,
+        "source_age_hours": 461.39,
         "source_event_count": 258,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-10-10 06:53 UTC",
+      "updated": "2026-10-10 13:29 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
