@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-10-11T05:50:31.352048+00:00",
+    "generated_at": "2026-10-11T12:54:10.124714+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,17 +39,17 @@
   },
   "regional_security": {
     "available": true,
-    "score": 52.4,
+    "score": 58.9,
     "risk_level": "MEDIUM",
     "confidence": "MEDIUM",
-    "updated": "2026-10-11 05:50 UTC",
+    "updated": "2026-10-11 12:53 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
   "historical_context": {
     "available": true,
     "generated_at": "2026-09-21T08:05:59Z",
-    "age_days": 19,
+    "age_days": 20,
     "freshness": "STALE",
     "event_count": 258,
     "role": "historical_context_only"
@@ -63,22 +63,22 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 45.8,
+      "score": 45.71,
       "level": "ELEVATED",
       "confidence": "HIGH",
-      "event_signal": 44.63,
-      "regional_context_score": 52.4,
+      "event_signal": 43.38,
+      "regional_context_score": 58.9,
       "security_events_7d": 8,
-      "direct_hormuz_security_events_7d": 4,
-      "maritime_attack_events_7d": 6,
-      "closure_threat_events_7d": 2
+      "direct_hormuz_security_events_7d": 3,
+      "maritime_attack_events_7d": 5,
+      "closure_threat_events_7d": 3
     },
     "flow": {
       "weight": 0.35,
       "status": "NOT_YET_IMPLEMENTED",
       "score": null,
       "note": "Physical throughput requires a dedicated flow data source. News text is retained only as a supporting signal.",
-      "supporting_news_signals": 2
+      "supporting_news_signals": 3
     },
     "logistics": {
       "weight": 0.25,
@@ -94,7 +94,7 @@
     "method": "security 40% + flow 35% + logistics 25%"
   },
   "security_event_count_7d": 8,
-  "flow_signal_count_7d": 2,
+  "flow_signal_count_7d": 3,
   "top_security_events": [
     {
       "event_id": "2026-10-08-e5bd2962b48d",
@@ -123,37 +123,6 @@
       "temporal_weight": 0.9,
       "security_event_type": "MARITIME_ATTACK",
       "security_score": 56.05,
-      "relevance_level": "HIGH",
-      "flow_positive_signal": false,
-      "flow_negative_signal": false
-    },
-    {
-      "event_id": "2026-10-07-a447a3c162b7",
-      "date": "2026-10-07",
-      "title": "Oman evacuates injured crew from attacked tanker in Strait of Hormuz - Al Jazeera",
-      "source": "Al Jazeera (via Google News)",
-      "source_url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOZWtvNFJvczBTblE5eGRWUzBIUTlINnREWXQ2TWVXR3dzQ05uLUdVZ2JEUDRSZjFhc3FzYlF6cU5LVWR3OWN4X3ZKRGM0ZUdSNjQ1UnBFQzdGYmowQ3laQlc5aEZpV0pIeTFMTlppQUVmejFXb0M1akxpSTVvcGJaQTNSRTNGUmZNWl9Yd2FCVTB2TDRMdlB6U0g3Tk41TW5sOGJwbFZTb2hHZGNqR3fSAbMBQVVfeXFMT2FKTm9vN2pFbG1rLUZPdnVZNFloUVNuU0ZxZFJPZzBPMjA4T3lWVEJEX3QzZXd3RjVlY09SUXBVX0JMRndvNl82VkpnOWhDVzAyWjktSzhuc003bi01MXBEWTFqZjBXamlNTXpXRGZDOHlPSnNpbUdCVzlfRVFWTTg4bVl0TDg3Rzg2czZTdldZRWVnc2NqY1NqZnlBSC1tNm94ZUFRWDVOUVk5c291dkhKS2s",
-      "category": "military",
-      "location": "Oman",
-      "confidence": 0.55,
-      "age_days": 4,
-      "direct_hormuz": true,
-      "maritime": true,
-      "physical_attack": false,
-      "generic_attack": true,
-      "maritime_security": false,
-      "closure_threat": false,
-      "energy": false,
-      "energy_infrastructure": false,
-      "regional_maritime": false,
-      "regional_actor": true,
-      "aviation": false,
-      "distance_km": 566.3,
-      "geographic_relevance": 0.3,
-      "textual_relevance": 0.8,
-      "temporal_weight": 0.75,
-      "security_event_type": "MARITIME_ATTACK",
-      "security_score": 48.66,
       "relevance_level": "HIGH",
       "flow_positive_signal": false,
       "flow_negative_signal": false
@@ -219,6 +188,37 @@
       "relevance_level": "HIGH",
       "flow_positive_signal": false,
       "flow_negative_signal": false
+    },
+    {
+      "event_id": "2026-10-11-30bfcf1588b0",
+      "date": "2026-10-11",
+      "title": "US bombs cargo vessel in Gulf of Oman ‘trying to run Iran blockade’ - Al Jazeera",
+      "source": "Al Jazeera (via Google News)",
+      "source_url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPUUk2UURLSzN3ZHZva05KbEktc1JBeXZnbHhjWWl5bm9LOGJGRnJ5MzUxSWkzbjVEZFd2YmUyVWc3NGd1czdLMWxkblFLNmpMdXJqWHota21BWEpoQVQxRGRFRzByS2tjaVJyVzMzWjdMY1NudmIwaHZIWFF2QnpDTWNuOWxFeTdBT3BLcWt0bDJtbWhjTlc2dEpoNEdfZlNhUEpPLU5GVE5YVkFIeEp3YVBZeGNVNzhf0gG-AUFVX3lxTE5pRGxvWktjYWdfcVpZbzNQZDlNdUdMdTlrZE9HMldvQVRUV0hfZjIzUHBua2Jydzgxck4zSVZJTnJJbEVHZlhqSzFLTXR1bnRabWsxY0VSQWZfUkRWM0dXa0tLbTdUY0RqSEdOUy1QTjFaaEp6UFVKQkYxM3QzVWRhRHdRek44dExIdURvYWlrOXZHb0VJREI4OWVpSnhJQ1NBaTI1ZlNSNnVCZ05adVpDczEyZm5CRTVJc1YxNGc",
+      "category": "military",
+      "location": "Iran",
+      "confidence": 0.55,
+      "age_days": 0,
+      "direct_hormuz": false,
+      "maritime": true,
+      "physical_attack": false,
+      "generic_attack": false,
+      "maritime_security": false,
+      "closure_threat": true,
+      "energy": false,
+      "energy_infrastructure": false,
+      "regional_maritime": true,
+      "regional_actor": true,
+      "aviation": false,
+      "distance_km": 697.9,
+      "geographic_relevance": 0.0,
+      "textual_relevance": 0.8,
+      "temporal_weight": 1.0,
+      "security_event_type": "MARITIME_DISRUPTION_THREAT",
+      "security_score": 40.48,
+      "relevance_level": "HIGH",
+      "flow_positive_signal": false,
+      "flow_negative_signal": true
     },
     {
       "event_id": "2026-10-08-2f53429fbaf6",
@@ -346,6 +346,15 @@
     }
   ],
   "supporting_flow_news": [
+    {
+      "date": "2026-10-11",
+      "title": "US bombs cargo vessel in Gulf of Oman ‘trying to run Iran blockade’ - Al Jazeera",
+      "source": "Al Jazeera (via Google News)",
+      "source_url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPUUk2UURLSzN3ZHZva05KbEktc1JBeXZnbHhjWWl5bm9LOGJGRnJ5MzUxSWkzbjVEZFd2YmUyVWc3NGd1czdLMWxkblFLNmpMdXJqWHota21BWEpoQVQxRGRFRzByS2tjaVJyVzMzWjdMY1NudmIwaHZIWFF2QnpDTWNuOWxFeTdBT3BLcWt0bDJtbWhjTlc2dEpoNEdfZlNhUEpPLU5GVE5YVkFIeEp3YVBZeGNVNzhf0gG-AUFVX3lxTE5pRGxvWktjYWdfcVpZbzNQZDlNdUdMdTlrZE9HMldvQVRUV0hfZjIzUHBua2Jydzgxck4zSVZJTnJJbEVHZlhqSzFLTXR1bnRabWsxY0VSQWZfUkRWM0dXa0tLbTdUY0RqSEdOUy1QTjFaaEp6UFVKQkYxM3QzVWRhRHdRek44dExIdURvYWlrOXZHb0VJREI4OWVpSnhJQ1NBaTI1ZlNSNnVCZ05adVpDczEyZm5CRTVJc1YxNGc",
+      "positive_flow_signal": false,
+      "negative_flow_signal": true,
+      "security_event_type": "MARITIME_DISRUPTION_THREAT"
+    },
     {
       "date": "2026-10-07",
       "title": "Iranian official says 'illegal routes' in Strait of Hormuz to soon be blocked - Reuters",
