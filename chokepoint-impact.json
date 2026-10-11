@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-10-10 22:22 UTC",
+    "updated": "2026-10-11 01:45 UTC",
     "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -43,43 +43,43 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 48.0,
+  "global_trade_risk_index": 48.4,
   "middle_east_conflict_impact": {
     "label": "high",
-    "score": 66.3,
+    "score": 67.1,
     "components": {
       "structural_score": 69.5,
-      "osint_signal_score": 61.0,
-      "osint_raw_total_risk": 152.51,
+      "osint_signal_score": 63.1,
+      "osint_raw_total_risk": 157.81,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 147,
+      "osint_total_events": 149,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 25.21
-        },
-        {
-          "name": "Yemen",
-          "risk": 20.95
-        },
-        {
-          "name": "Israel",
-          "risk": 20.75
+          "risk": 25.61
         },
         {
           "name": "Gaza Strip",
-          "risk": 19.9
+          "risk": 25.2
+        },
+        {
+          "name": "Yemen",
+          "risk": 21.15
+        },
+        {
+          "name": "Israel",
+          "risk": 20.5
         },
         {
           "name": "Riyadh",
-          "risk": 18.4
+          "risk": 15.4
         }
       ],
-      "osint_updated": "2026-10-10 18:38 UTC",
+      "osint_updated": "2026-10-10 23:35 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 3.74,
+      "osint_age_hours": 2.17,
       "osint_used_in_blend": true,
       "conflict_signal_score": 13.2,
       "conflict_signal_raw_index": -0.66,
@@ -109,33 +109,33 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-09-21T08:05:59Z",
-        "source_age_hours": 470.28,
+        "source_age_hours": 473.65,
         "source_event_count": 258,
         "used_in_model": false
       }
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": -1.7,
-    "middle_east_conflict_impact_change": -2.7,
-    "direction_global": "down",
-    "direction_middle_east": "down"
+    "global_trade_risk_index_change": 0.4,
+    "middle_east_conflict_impact_change": 0.8,
+    "direction_global": "up",
+    "direction_middle_east": "up"
   },
   "tracked_zone_counts": {
     "hormuz": 0,
     "suez": 0,
     "bab_el_mandeb": 0,
-    "bosporus": 2
+    "bosporus": 3
   },
   "top_risks": [
     {
       "name": "Hormuzi-szoros",
-      "estimated_impact": 0.2383,
+      "estimated_impact": 0.2384,
       "status": "severe"
     },
     {
       "name": "Bab el-Mandeb",
-      "estimated_impact": 0.1008,
+      "estimated_impact": 0.1009,
       "status": "medium"
     },
     {
@@ -145,12 +145,12 @@
     },
     {
       "name": "Szuezi térség",
-      "estimated_impact": 0.0776,
+      "estimated_impact": 0.0778,
       "status": "medium"
     },
     {
       "name": "Boszporusz",
-      "estimated_impact": 0.0136,
+      "estimated_impact": 0.014,
       "status": "low"
     }
   ],
@@ -163,18 +163,18 @@
       "energy_share": 0.272,
       "combined_weight": 0.2384,
       "substitution_penalty": 0.95,
-      "disruption_level": 0.9153,
+      "disruption_level": 0.9158,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.2383,
+      "estimated_impact": 0.2384,
       "status": "severe",
       "notes": "Kiemelten fontos olaj- és energiatranzit pont.",
       "local_security": {
         "score": 0.0,
         "premium": 0.0,
         "max_premium": 0.06,
-        "base_dynamic_disruption": 0.9153,
+        "base_dynamic_disruption": 0.9158,
         "weighted_event_sum": 0.0,
         "relevant_event_count": 0,
         "lookback_days": 30
@@ -188,18 +188,18 @@
       "energy_share": 0.116,
       "combined_weight": 0.1112,
       "substitution_penalty": 0.82,
-      "disruption_level": 0.8461,
+      "disruption_level": 0.847,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.1008,
+      "estimated_impact": 0.1009,
       "status": "medium",
       "notes": "Vörös-tengeri és Szuez felé irányuló forgalom kulcspontja.",
       "local_security": {
         "score": 0.0,
         "premium": 0.0,
         "max_premium": 0.06,
-        "base_dynamic_disruption": 0.8461,
+        "base_dynamic_disruption": 0.847,
         "weighted_event_sum": 0.0,
         "relevant_event_count": 0,
         "lookback_days": 30
@@ -213,7 +213,7 @@
       "energy_share": 0.299,
       "combined_weight": 0.2813,
       "substitution_penalty": 0.88,
-      "disruption_level": 0.3838,
+      "disruption_level": 0.3839,
       "regional_adjustment": 1.0,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 1.0,
@@ -229,11 +229,11 @@
       "energy_share": 0.11,
       "combined_weight": 0.113,
       "substitution_penalty": 0.78,
-      "disruption_level": 0.7329,
+      "disruption_level": 0.7341,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 0.95,
-      "estimated_impact": 0.0776,
+      "estimated_impact": 0.0778,
       "status": "medium",
       "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
     },
@@ -245,11 +245,11 @@
       "energy_share": 0.044,
       "combined_weight": 0.0428,
       "substitution_penalty": 0.72,
-      "disruption_level": 0.4271,
+      "disruption_level": 0.4273,
       "regional_adjustment": 1.0,
-      "ais_count_signal": 2,
-      "ais_signal_multiplier": 1.03,
-      "estimated_impact": 0.0136,
+      "ais_count_signal": 3,
+      "ais_signal_multiplier": 1.06,
+      "estimated_impact": 0.014,
       "status": "low",
       "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
     },
@@ -261,7 +261,7 @@
       "energy_share": 0.06,
       "combined_weight": 0.066,
       "substitution_penalty": 0.55,
-      "disruption_level": 0.2146,
+      "disruption_level": 0.2151,
       "regional_adjustment": 1.0,
       "ais_count_signal": 0,
       "ais_signal_multiplier": 1.0,
