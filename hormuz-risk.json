@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-10-13T16:01:53.228140+00:00",
+    "generated_at": "2026-10-13T21:17:46.886933+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,17 +39,17 @@
   },
   "regional_security": {
     "available": true,
-    "score": 66.8,
+    "score": 67.8,
     "risk_level": "MEDIUM",
     "confidence": "MEDIUM",
-    "updated": "2026-10-13 16:01 UTC",
+    "updated": "2026-10-13 21:16 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
   "historical_context": {
     "available": true,
     "generated_at": "2026-10-11T17:50:56Z",
-    "age_days": 1,
+    "age_days": 2,
     "freshness": "RECENT",
     "event_count": 273,
     "role": "historical_context_only"
@@ -63,14 +63,14 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 35.65,
+      "score": 35.96,
       "level": "GUARDED",
       "confidence": "HIGH",
-      "event_signal": 30.15,
-      "regional_context_score": 66.8,
-      "security_events_7d": 4,
+      "event_signal": 30.34,
+      "regional_context_score": 67.8,
+      "security_events_7d": 3,
       "direct_hormuz_security_events_7d": 0,
-      "maritime_attack_events_7d": 2,
+      "maritime_attack_events_7d": 1,
       "closure_threat_events_7d": 2
     },
     "flow": {
@@ -93,7 +93,7 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 4,
+  "security_event_count_7d": 3,
   "flow_signal_count_7d": 2,
   "top_security_events": [
     {
@@ -126,37 +126,6 @@
       "relevance_level": "MEDIUM",
       "flow_positive_signal": false,
       "flow_negative_signal": true
-    },
-    {
-      "event_id": "2026-10-08-2f53429fbaf6",
-      "date": "2026-10-08",
-      "title": "Tanker hit by multiple projectiles in Gulf off Qatar, maritime agency says",
-      "source": "BBC",
-      "source_url": "https://www.bbc.co.uk/news/articles/cqlydk7796wdo?at_medium=RSS&at_campaign=rss",
-      "category": "other",
-      "location": "Qatar",
-      "confidence": 0.55,
-      "age_days": 5,
-      "direct_hormuz": false,
-      "maritime": true,
-      "physical_attack": false,
-      "generic_attack": true,
-      "maritime_security": false,
-      "closure_threat": false,
-      "energy": true,
-      "energy_infrastructure": false,
-      "regional_maritime": false,
-      "regional_actor": false,
-      "aviation": false,
-      "distance_km": 523.9,
-      "geographic_relevance": 0.3,
-      "textual_relevance": 0.45,
-      "temporal_weight": 0.75,
-      "security_event_type": "MARITIME_ATTACK",
-      "security_score": 28.22,
-      "relevance_level": "MEDIUM",
-      "flow_positive_signal": false,
-      "flow_negative_signal": false
     },
     {
       "event_id": "2026-10-11-1feef108e20c",
