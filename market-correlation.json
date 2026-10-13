@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-10-13 07:48 UTC",
+    "updated": "2026-10-13 11:57 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -10,36 +10,36 @@
   "latest": {
     "leader": "hormuz_impact",
     "leader_label": "Hormuz",
-    "leader_correlation": 0.343,
-    "leader_weighted_strength": 0.515,
+    "leader_correlation": 0.336,
+    "leader_weighted_strength": 0.504,
     "ranked": [
       {
         "key": "hormuz_impact",
         "label": "Hormuz",
-        "correlation": 0.343,
+        "correlation": 0.336,
         "strategic_weight": 1.5,
-        "weighted_strength": 0.515
+        "weighted_strength": 0.504
       },
       {
         "key": "bab_el_mandeb_impact",
         "label": "Bab el-Mandeb",
-        "correlation": 0.339,
+        "correlation": 0.323,
         "strategic_weight": 1.3,
-        "weighted_strength": 0.441
+        "weighted_strength": 0.42
       },
       {
         "key": "suez_impact",
         "label": "Suez",
-        "correlation": 0.159,
+        "correlation": 0.133,
         "strategic_weight": 1.1,
-        "weighted_strength": 0.175
+        "weighted_strength": 0.146
       },
       {
         "key": "bosporus_impact",
         "label": "Bosporus",
-        "correlation": 0.132,
+        "correlation": 0.039,
         "strategic_weight": 0.7,
-        "weighted_strength": 0.092
+        "weighted_strength": 0.027
       }
     ]
   },
@@ -63,7 +63,7 @@
     "bab_el_mandeb_impact": {
       "label": "Bab el-Mandeb",
       "lag_days": 0,
-      "correlation": 0.615,
+      "correlation": 0.614,
       "strategic_weight": 1.3,
       "weighted_strength": 0.799,
       "signal": "synchronous"
@@ -81,7 +81,7 @@
     "key": "bab_el_mandeb_impact",
     "label": "Bab el-Mandeb",
     "lag_days": 0,
-    "correlation": 0.615,
+    "correlation": 0.614,
     "weighted_strength": 0.799,
     "signal": "synchronous",
     "text": "Bab el-Mandeb moves broadly in sync with Brent"
@@ -1818,10 +1818,10 @@
     },
     {
       "date": "2026-10-13",
-      "brent_vs_hormuz_impact": 0.343,
-      "brent_vs_suez_impact": 0.159,
-      "brent_vs_bab_el_mandeb_impact": 0.339,
-      "brent_vs_bosporus_impact": 0.132
+      "brent_vs_hormuz_impact": 0.336,
+      "brent_vs_suez_impact": 0.133,
+      "brent_vs_bab_el_mandeb_impact": 0.323,
+      "brent_vs_bosporus_impact": 0.039
     }
   ]
 }
