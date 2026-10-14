@@ -1,0 +1,427 @@
+{
+  "meta": {
+    "model": "Hormuz Integrated Risk",
+    "version": "3.1-provisional",
+    "generated_at": "2026-10-14T13:58:32.642999+00:00",
+    "repository": "energy-data",
+    "mode": "PROVISIONAL"
+  },
+  "methodology": {
+    "security_weight": 0.4,
+    "physical_flow_weight": 0.35,
+    "logistics_weight": 0.25,
+    "physical_flow_requirement": "Independent physical oil-flow measurements are required.",
+    "ais_limitations": "AIS observation loss cannot be converted directly into physical throughput loss."
+  },
+  "input_status": {
+    "security": {
+      "file": "hormuz-risk.json",
+      "available": true,
+      "status": "FRESH",
+      "generated_at": "2026-10-14T13:45:23.145843+00:00",
+      "age_hours": 0.22,
+      "max_age_hours": 6,
+      "error": null
+    },
+    "portwatch": {
+      "file": "hormuz-flow.json",
+      "available": true,
+      "status": "FRESH",
+      "generated_at": "2026-10-14T10:36:56.830495+00:00",
+      "age_hours": 3.36,
+      "max_age_hours": 48,
+      "error": null
+    },
+    "live_ais": {
+      "file": "hormuz-live-ais.json",
+      "available": true,
+      "status": "FRESH",
+      "generated_at": "2026-10-14T13:24:36.946680+00:00",
+      "age_hours": 0.57,
+      "max_age_hours": 2,
+      "error": null
+    },
+    "vessels": {
+      "file": "hormuz-vessels.json",
+      "available": true,
+      "status": "STALE",
+      "generated_at": "2026-10-14T10:46:50.328902+00:00",
+      "age_hours": 3.2,
+      "max_age_hours": 2,
+      "error": null
+    }
+  },
+  "layers": {
+    "security": {
+      "weight": 0.4,
+      "status": "AVAILABLE",
+      "score": 37.05,
+      "level": "GUARDED",
+      "confidence": "HIGH",
+      "events_7d": 4,
+      "direct_hormuz_events_7d": 0,
+      "maritime_attacks_7d": 2,
+      "closure_threats_7d": 2,
+      "source_fresh": true,
+      "usable_for_model": true
+    },
+    "physical_flow": {
+      "weight": 0.35,
+      "status": "VALIDATION_REQUIRED",
+      "score": null,
+      "validated": false,
+      "portwatch_observation": {
+        "status": "FRESH",
+        "indicator": "AIS_OBSERVED_DISRUPTION",
+        "latest_observation": "2026-10-04",
+        "observation_age_days": 10,
+        "observation_freshness": "AGING",
+        "structural_baseline_tankers_per_day": 48.18,
+        "current_7d_tankers_per_day": 0.86,
+        "current_30d_tankers_per_day": 1.03,
+        "ais_disruption_7d": 98.22,
+        "ais_disruption_30d": 97.86,
+        "physical_flow_disruption": null,
+        "physical_flow_validated": false,
+        "warning": "AIS-observed tanker traffic is not equivalent to actual oil throughput. Missing AIS observations must not be interpreted as zero physical traffic."
+      }
+    },
+    "logistics": {
+      "weight": 0.25,
+      "status": "PARTIAL_OBSERVATIONS",
+      "score": null,
+      "score_validated": false,
+      "live_ais_available": true,
+      "vessel_tracking_available": false,
+      "observed_sources": 1,
+      "expected_sources": 2,
+      "assessment": "Logistics observations are available, but no calibrated logistics stress score has been established.",
+      "live_ais": {
+        "status": "FRESH",
+        "source_status": "AVAILABLE",
+        "last_poll": "2026-10-14T13:00:54+00:00",
+        "ships_total": 1357,
+        "ships_in_strait": 30,
+        "crossings_24h": {
+          "inbound": 11,
+          "outbound": 8,
+          "total": 19
+        },
+        "crossing_statistics": {
+          "7d": {
+            "requested_days": 7,
+            "observed_days": 7,
+            "start_day": "2026-10-07",
+            "end_day": "2026-10-13",
+            "inbound_avg": 10,
+            "outbound_avg": 9.86,
+            "total_crossings_avg": 19.86,
+            "in_strait_avg": 70.71,
+            "inbound_total": 70,
+            "outbound_total": 69,
+            "total_crossings": 139
+          },
+          "14d": {
+            "requested_days": 14,
+            "observed_days": 14,
+            "start_day": "2026-09-30",
+            "end_day": "2026-10-13",
+            "inbound_avg": 9.14,
+            "outbound_avg": 10.43,
+            "total_crossings_avg": 19.57,
+            "in_strait_avg": 67.29,
+            "inbound_total": 128,
+            "outbound_total": 146,
+            "total_crossings": 274
+          },
+          "30d": {
+            "requested_days": 30,
+            "observed_days": 30,
+            "start_day": "2026-09-14",
+            "end_day": "2026-10-13",
+            "inbound_avg": 8.3,
+            "outbound_avg": 10.33,
+            "total_crossings_avg": 18.63,
+            "in_strait_avg": 67.97,
+            "inbound_total": 249,
+            "outbound_total": 310,
+            "total_crossings": 559
+          },
+          "trend": {
+            "outbound_7d_vs_30d_pct": -4.55,
+            "total_crossings_7d_vs_30d_pct": 6.6
+          }
+        },
+        "oil_export_proxy": {
+          "7d": {
+            "requested_days": 7,
+            "expected_complete_days": 7,
+            "observed_oil_days": 3,
+            "missing_day_count": 4,
+            "missing_days": [
+              "2026-10-07",
+              "2026-10-08",
+              "2026-10-10",
+              "2026-10-12"
+            ],
+            "completeness_pct": 42.86,
+            "observed_day_average_barrels": 2331741.67,
+            "observed_day_average_crude_barrels": 2079345.0,
+            "observed_day_average_petrochem_barrels": 252396.67,
+            "observed_total_barrels": 6995225.0,
+            "observed_crude_barrels": 6238035.0,
+            "observed_petrochem_barrels": 757190.0,
+            "observed_crude_ships": 4,
+            "observed_petrochem_ships": 3,
+            "missing_days_treated_as_zero": false,
+            "physical_flow_measurement": false
+          },
+          "30d": {
+            "requested_days": 30,
+            "expected_complete_days": 30,
+            "observed_oil_days": 19,
+            "missing_day_count": 11,
+            "missing_days": [
+              "2026-09-14",
+              "2026-09-23",
+              "2026-09-25",
+              "2026-09-26",
+              "2026-09-29",
+              "2026-10-02",
+              "2026-10-04",
+              "2026-10-07",
+              "2026-10-08",
+              "2026-10-10",
+              "2026-10-12"
+            ],
+            "completeness_pct": 63.33,
+            "observed_day_average_barrels": 1185438.0,
+            "observed_day_average_crude_barrels": 763097.63,
+            "observed_day_average_petrochem_barrels": 422340.37,
+            "observed_total_barrels": 22523322.0,
+            "observed_crude_barrels": 14498855.0,
+            "observed_petrochem_barrels": 8024467.0,
+            "observed_crude_ships": 11,
+            "observed_petrochem_ships": 31,
+            "missing_days_treated_as_zero": false,
+            "physical_flow_measurement": false
+          },
+          "trend": {
+            "observed_day_average_7d_vs_30d_pct": 96.7
+          },
+          "status": "PARTIAL_OBSERVATION",
+          "warning": "AIS-derived tanker/DWT estimate. Missing days are not assumed to mean zero physical oil flow.",
+          "physical_flow_measurement": false
+        },
+        "data_quality": {
+          "score": 80,
+          "status": "MODERATE",
+          "issues": [
+            "Oil-export proxy has missing days.",
+            "Oil-export proxy completeness is below 75%."
+          ],
+          "interpretation": "Quality describes usability of the live AIS observation layer, not accuracy of physical oil throughput."
+        },
+        "usable_for_logistics": true,
+        "warning": "Crossing statistics and oil export estimates are AIS-derived indicators."
+      },
+      "vessels": {
+        "status": "STALE",
+        "analysis": {
+          "total_vessels": 1411,
+          "identified_vessels": 1411,
+          "oil_related_vessels": 158,
+          "crude_related_vessels": 74,
+          "product_related_vessels": 83,
+          "large_oil_tankers": 66,
+          "vlcc_ulcc_count": 34,
+          "known_oil_tanker_dwt_count": 157,
+          "total_observed_oil_tanker_dwt": 17749990.0,
+          "all_vessels_by_zone": {
+            "gulf_of_oman": 281,
+            "persian_gulf": 1099,
+            "strait": 31
+          },
+          "oil_tankers_by_zone": {
+            "gulf_of_oman": 83,
+            "persian_gulf": 65,
+            "strait": 10
+          },
+          "crude_tankers_by_zone": {
+            "gulf_of_oman": 49,
+            "persian_gulf": 20,
+            "strait": 5
+          },
+          "vlcc_ulcc_by_zone": {
+            "gulf_of_oman": 25,
+            "persian_gulf": 7,
+            "strait": 2
+          },
+          "all_vessels_by_micro_zone": {
+            "hormuz_core": 23,
+            "hormuz_east": 13,
+            "hormuz_west": 47
+          },
+          "oil_tankers_by_micro_zone": {
+            "hormuz_core": 8,
+            "hormuz_east": 7,
+            "hormuz_west": 5
+          },
+          "crude_tankers_by_micro_zone": {
+            "hormuz_core": 6,
+            "hormuz_east": 2,
+            "hormuz_west": 2
+          },
+          "vlcc_ulcc_by_micro_zone": {
+            "hormuz_core": 2,
+            "hormuz_east": 1
+          },
+          "tanker_size_counts": {
+            "AFRAMAX": 18,
+            "HANDYMAX_MR": 34,
+            "PANAMAX_LR1": 17,
+            "SMALL": 40,
+            "SUEZMAX": 14,
+            "ULCC": 1,
+            "UNKNOWN": 1,
+            "VLCC": 33
+          },
+          "ship_category_counts": {
+            "Accommodation Ship": 3,
+            "Anchor Handling Vessel": 9,
+            "Asphalt/Bitumen Tanker": 7,
+            "Barge": 1,
+            "Barge Carrier": 2,
+            "Bulk Carrier": 92,
+            "Bunkering Tanker": 2,
+            "Cable Layer": 1,
+            "Cargo": 35,
+            "Chemical Tanker": 6,
+            "Container Ship": 36,
+            "Crane Barge": 1,
+            "Crane Ship": 3,
+            "Crew Boat": 14,
+            "Crude Oil Tanker": 74,
+            "Cutter Suction Dredger": 1,
+            "Deck Cargo Ship": 16,
+            "Diving Support Vessel": 5,
+            "Drilling Jack Up": 9,
+            "Fire Fighting Vessel": 10,
+            "Fishery Patrol Vessel": 1,
+            "Fishing": 316,
+            "Floating Crane": 1,
+            "Floating Storage/Production": 3,
+            "General Cargo": 45,
+            "HSC": 2,
+            "Heavy Lift Vessel": 1,
+            "Heavy Load Carrier": 11,
+            "Hopper Dredger": 4,
+            "LNG Tanker": 8,
+            "LPG Tanker": 6,
+            "LPG/Chemical Tanker": 1,
+            "Landing Craft": 40,
+            "Limestone Carrier": 1,
+            "Mooring Vessel": 1,
+            "Motor Hopper": 1,
+            "Multi Purpose Offshore Vessel": 163,
+            "Navigation Aid": 51,
+            "Offshore Construction Vessel": 2,
+            "Offshore Supply Ship": 12,
+            "Oil Products Tanker": 28,
+            "Oil/Chemical Tanker": 48,
+            "Passenger": 3,
+            "Passenger Ship": 3,
+            "Pipe Layer": 2,
+            "Pipelay Crane Vessel": 5,
+            "Pollution Control Vessel": 2,
+            "Pusher Tug": 2,
+            "Reefer": 1,
+            "Research/Survey Vessel": 4,
+            "Ro-Ro Cargo": 3,
+            "Ro-Ro/Container Carrier": 2,
+            "Ro-Ro/Passenger Ship": 1,
+            "Service Vessel": 44,
+            "Standby Safety Vessel": 1,
+            "Suction Dredger": 3,
+            "Supply Vessel": 1,
+            "Tanker": 1,
+            "Towing Vessel": 3,
+            "Trailing Suction Hopper Dredger": 1,
+            "Tug": 51,
+            "Tug/Supply Vessel": 3,
+            "Unknown": 123,
+            "Utility Vessel": 6,
+            "Vehicles Carrier": 3,
+            "Water Tanker": 1,
+            "Well Stimulation Vessel": 1,
+            "Work Pontoon": 1,
+            "Work Vessel": 7,
+            "Yacht": 60
+          }
+        },
+        "tracking_summary": {
+          "current_observed_vessels": 1411,
+          "persistent_state_vessels": 3254,
+          "confirmed_present_vessels": 1193,
+          "temporarily_missing_vessels": 478,
+          "confirmed_disappeared_vessels": 1365,
+          "raw_appeared_this_run": 219,
+          "raw_missing_this_run": 2042,
+          "confirmed_new_this_run": 203,
+          "confirmed_disappeared_this_run": 310,
+          "zone_changes_this_run": 6,
+          "oil_tanker_zone_changes_this_run": 2,
+          "large_tanker_zone_changes_this_run": 0,
+          "vlcc_ulcc_zone_changes_this_run": 0,
+          "micro_zone_changes_this_run": 3,
+          "oil_tanker_micro_zone_changes_this_run": 1,
+          "large_tanker_micro_zone_changes_this_run": 0,
+          "vlcc_ulcc_micro_zone_changes_this_run": 0,
+          "confirmed_transits_this_run": 0,
+          "confirmed_micro_transits_this_run": 0,
+          "possible_direct_transits_this_run": 0,
+          "possible_micro_skipped_core_transits_this_run": 1,
+          "pruned_state_records": 199
+        },
+        "data_quality": {
+          "score": 80,
+          "status": "MODERATE",
+          "issues": [
+            "High snapshot churn detected; persistent confirmation logic is required.",
+            "Very high snapshot churn; movement interpretation requires extra caution."
+          ],
+          "snapshot_churn_pct": 65.48,
+          "interpretation": "AIS tracking usability, not physical oil-flow accuracy."
+        },
+        "usable_for_logistics": false,
+        "warning": "Vessel counts, positions and persistent identities may be affected by AIS coverage and identity churn. Confirmed transits require explicit geofence sequence validation."
+      }
+    }
+  },
+  "composite": {
+    "status": "PROVISIONAL_INCOMPLETE",
+    "validated_score": null,
+    "validated_level": null,
+    "validated": false,
+    "weights": {
+      "security": 0.4,
+      "physical_flow": 0.35,
+      "logistics": 0.25
+    },
+    "validated_weight_coverage": 0.4,
+    "missing_components": [
+      "physical_flow",
+      "logistics_score"
+    ],
+    "security_score": 37.05,
+    "physical_flow_score": null,
+    "logistics_score": null,
+    "reason": "A final weighted risk score cannot be published without validated physical oil-flow disruption and calibrated logistics stress."
+  },
+  "publication_guidance": {
+    "security_score_publishable": true,
+    "ais_indicators_publishable": true,
+    "final_composite_publishable": false,
+    "required_label": "PROVISIONAL - NOT A VALIDATED PHYSICAL OIL-FLOW RISK SCORE"
+  }
+}
