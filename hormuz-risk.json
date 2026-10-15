@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-10-15T04:43:39.929773+00:00",
+    "generated_at": "2026-10-15T11:33:16.600282+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,10 +39,10 @@
   },
   "regional_security": {
     "available": true,
-    "score": 63.8,
+    "score": 66.3,
     "risk_level": "MEDIUM",
     "confidence": "MEDIUM",
-    "updated": "2026-10-15 04:42 UTC",
+    "updated": "2026-10-15 11:32 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
@@ -63,14 +63,14 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 38.05,
+      "score": 39.93,
       "level": "GUARDED",
       "confidence": "HIGH",
-      "event_signal": 33.5,
-      "regional_context_score": 63.8,
-      "security_events_7d": 4,
+      "event_signal": 35.27,
+      "regional_context_score": 66.3,
+      "security_events_7d": 3,
       "direct_hormuz_security_events_7d": 0,
-      "maritime_attack_events_7d": 3,
+      "maritime_attack_events_7d": 2,
       "closure_threat_events_7d": 1
     },
     "flow": {
@@ -93,7 +93,7 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 4,
+  "security_event_count_7d": 3,
   "flow_signal_count_7d": 1,
   "top_security_events": [
     {
@@ -188,37 +188,6 @@
       "relevance_level": "MEDIUM",
       "flow_positive_signal": false,
       "flow_negative_signal": true
-    },
-    {
-      "event_id": "2026-10-08-c2eef3ab20fa",
-      "date": "2026-10-08",
-      "title": "Tanker hit by multiple projectiles off north coast of Qatar, UKMTO says - Al Jazeera",
-      "source": "Al Jazeera (via Google News)",
-      "source_url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQT3VxTFV6d2VnbXJoTGFqaGM5Vm1vRm41RHVyd2ExMUpKZ0pIN2wwSmplNUNsTWJWd1FsU1pzTndjLXF1VHNKOVhyMjc5R2psbmFsT3pTT1hENnllczNfd2F4LV9yM3B5aDNBaE9jTVd6MzlEU2I1Y29pTTY5dUN3ZjZ1Qm82R3A0enMzR1hkOXpSaTBBZkFVbFNmTHNxcVBJVU93UmZOam9lcDQwc25FcdIBtgFBVV95cUxPSWhORDRtcl9kQk0wOVdlcXJBSkxycGZnVHRRY2lta0xwZFNBQ3o2Z0pGWk1SVDUybW1PTllhdVV4eXlFWkhoT3ZneTRmSU5IcjRJSUg0QTZzeVhRUE12Y3NSYTVTWnBfcUctTnJyN3k5Z2lreEMzOEY2YU9zWWktaEFVNUN2aml0UUljMHdCWmFOZjQyUl9SMkZHUktyX1IzUTRPSzVFN3ZULUZBOU8zY3RqR3Fidw",
-      "category": "other",
-      "location": "Qatar",
-      "confidence": 0.55,
-      "age_days": 7,
-      "direct_hormuz": false,
-      "maritime": true,
-      "physical_attack": false,
-      "generic_attack": true,
-      "maritime_security": false,
-      "closure_threat": false,
-      "energy": false,
-      "energy_infrastructure": false,
-      "regional_maritime": false,
-      "regional_actor": false,
-      "aviation": false,
-      "distance_km": 523.9,
-      "geographic_relevance": 0.3,
-      "textual_relevance": 0.4,
-      "temporal_weight": 0.75,
-      "security_event_type": "MARITIME_ATTACK",
-      "security_score": 25.3,
-      "relevance_level": "MEDIUM",
-      "flow_positive_signal": false,
-      "flow_negative_signal": false
     }
   ],
   "supporting_flow_news": [
