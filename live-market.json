@@ -1,27 +1,27 @@
 {
   "meta": {
-    "updated": "2026-10-15 12:50 UTC",
+    "updated": "2026-10-15 17:44 UTC",
     "source_mode": "live",
-    "generated_at": "2026-10-15T12:50:24.184038Z",
+    "generated_at": "2026-10-15T17:44:23.043581Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
     "fallback_used": false
   },
   "prices": {
-    "market_brent": 104.28,
-    "market_wti": 93.82,
+    "market_brent": 105.85,
+    "market_wti": 96.58,
     "spot_brent": 125.44,
     "spot_wti": 96.24,
-    "live_brent": 104.28,
-    "live_wti": 93.82,
+    "live_brent": 105.85,
+    "live_wti": 96.58,
     "live_source": "yahoo_futures",
     "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-10-15T12:40:22Z",
-    "market_timestamp_wti": "2026-10-15T12:40:23Z",
+    "market_timestamp_brent": "2026-10-15T17:34:20Z",
+    "market_timestamp_wti": "2026-10-15T17:34:21Z",
     "brent_fallback_used": false,
     "wti_fallback_used": false,
     "currency": "USD",
@@ -38,11 +38,11 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 50.0,
+    "global_trade_risk_index": 49.7,
     "middle_east_conflict_impact": 69.7,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -1.6,
+      "global_trade_risk_index_change": -1.9,
       "middle_east_conflict_impact_change": -3.5,
       "direction_global": "down",
       "direction_middle_east": "down"
@@ -50,12 +50,12 @@
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2511,
+        "estimated_impact": 0.2512,
         "status": "severe"
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.1062,
+        "estimated_impact": 0.101,
         "status": "medium"
       },
       {
@@ -65,54 +65,54 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0819,
+        "estimated_impact": 0.0779,
         "status": "medium"
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0132,
+        "estimated_impact": 0.0125,
         "status": "low"
       }
     ],
     "me_components": {
-      "structural_score": 73.2,
-      "osint_signal_score": 63.8,
-      "osint_raw_total_risk": 159.45,
+      "structural_score": 71.7,
+      "osint_signal_score": 66.3,
+      "osint_raw_total_risk": 165.85,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 125,
+      "osint_total_events": 129,
       "osint_top_locations": [
         {
-          "name": "Saudi Arabia",
-          "risk": 35.75
-        },
-        {
           "name": "Iran",
-          "risk": 35.3
+          "risk": 37.65
         },
         {
-          "name": "Yemen",
-          "risk": 27.15
+          "name": "Saudi Arabia",
+          "risk": 37.0
         },
         {
           "name": "Riyadh",
-          "risk": 26.85
+          "risk": 24.75
+        },
+        {
+          "name": "Yemen",
+          "risk": 23.15
         },
         {
           "name": "Israel",
-          "risk": 10.45
+          "risk": 14.85
         }
       ],
-      "osint_updated": "2026-10-15 04:42 UTC",
+      "osint_updated": "2026-10-15 11:32 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 5.01,
+      "osint_age_hours": 3.26,
       "osint_used_in_blend": true,
-      "conflict_signal_score": 15.2,
-      "conflict_signal_raw_index": -0.76,
-      "conflict_signal_assessment": "mild escalation",
-      "conflict_signal_trajectory": "stabilizing",
-      "conflict_signal_outlook": "Tension remains present, but escalation pressure may be easing.",
+      "conflict_signal_score": 22.0,
+      "conflict_signal_raw_index": -1.1,
+      "conflict_signal_assessment": "moderate escalation",
+      "conflict_signal_trajectory": "uncertain",
+      "conflict_signal_outlook": "Short-term direction remains uncertain.",
       "conflict_signal_article_count": 50,
       "conflict_signal_updated": null,
       "conflict_signal_available": true,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-10-11T17:50:56Z",
-        "source_age_hours": 87.86,
+        "source_age_hours": 92.95,
         "source_event_count": 273,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-10-15 09:42 UTC",
+      "updated": "2026-10-15 14:47 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
