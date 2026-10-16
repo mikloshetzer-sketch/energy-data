@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-10-15T21:25:26.790661+00:00",
+    "generated_at": "2026-10-16T00:26:11.331789+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,10 +39,10 @@
   },
   "regional_security": {
     "available": true,
-    "score": 65.6,
+    "score": 65.0,
     "risk_level": "MEDIUM",
     "confidence": "MEDIUM",
-    "updated": "2026-10-15 17:03 UTC",
+    "updated": "2026-10-16 00:25 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
@@ -63,22 +63,22 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 39.82,
+      "score": 38.16,
       "level": "GUARDED",
       "confidence": "HIGH",
-      "event_signal": 35.27,
-      "regional_context_score": 65.6,
-      "security_events_7d": 3,
+      "event_signal": 33.42,
+      "regional_context_score": 65.0,
+      "security_events_7d": 2,
       "direct_hormuz_security_events_7d": 0,
       "maritime_attack_events_7d": 2,
-      "closure_threat_events_7d": 1
+      "closure_threat_events_7d": 0
     },
     "flow": {
       "weight": 0.35,
       "status": "NOT_YET_IMPLEMENTED",
       "score": null,
       "note": "Physical throughput requires a dedicated flow data source. News text is retained only as a supporting signal.",
-      "supporting_news_signals": 1
+      "supporting_news_signals": 0
     },
     "logistics": {
       "weight": 0.25,
@@ -93,8 +93,8 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 3,
-  "flow_signal_count_7d": 1,
+  "security_event_count_7d": 2,
+  "flow_signal_count_7d": 0,
   "top_security_events": [
     {
       "event_id": "2026-10-14-4c0762518751",
@@ -105,7 +105,7 @@
       "category": "military",
       "location": "Iran",
       "confidence": 0.55,
-      "age_days": 1,
+      "age_days": 2,
       "direct_hormuz": false,
       "maritime": true,
       "physical_attack": false,
@@ -120,9 +120,9 @@
       "distance_km": 697.9,
       "geographic_relevance": 0.0,
       "textual_relevance": 0.5,
-      "temporal_weight": 1.0,
+      "temporal_weight": 0.9,
       "security_event_type": "MARITIME_ATTACK",
-      "security_score": 38.92,
+      "security_score": 35.03,
       "relevance_level": "MEDIUM",
       "flow_positive_signal": false,
       "flow_negative_signal": false
@@ -136,7 +136,7 @@
       "category": "military",
       "location": "Iran",
       "confidence": 0.55,
-      "age_days": 1,
+      "age_days": 2,
       "direct_hormuz": false,
       "maritime": true,
       "physical_attack": false,
@@ -151,55 +151,14 @@
       "distance_km": 697.9,
       "geographic_relevance": 0.0,
       "textual_relevance": 0.45,
-      "temporal_weight": 1.0,
+      "temporal_weight": 0.9,
       "security_event_type": "MARITIME_ATTACK",
-      "security_score": 35.03,
+      "security_score": 31.53,
       "relevance_level": "MEDIUM",
       "flow_positive_signal": false,
       "flow_negative_signal": false
-    },
-    {
-      "event_id": "2026-10-11-30bfcf1588b0",
-      "date": "2026-10-11",
-      "title": "US bombs cargo vessel in Gulf of Oman ‘trying to run Iran blockade’ - Al Jazeera",
-      "source": "Al Jazeera (via Google News)",
-      "source_url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPUUk2UURLSzN3ZHZva05KbEktc1JBeXZnbHhjWWl5bm9LOGJGRnJ5MzUxSWkzbjVEZFd2YmUyVWc3NGd1czdLMWxkblFLNmpMdXJqWHota21BWEpoQVQxRGRFRzByS2tjaVJyVzMzWjdMY1NudmIwaHZIWFF2QnpDTWNuOWxFeTdBT3BLcWt0bDJtbWhjTlc2dEpoNEdfZlNhUEpPLU5GVE5YVkFIeEp3YVBZeGNVNzhf0gG-AUFVX3lxTE5pRGxvWktjYWdfcVpZbzNQZDlNdUdMdTlrZE9HMldvQVRUV0hfZjIzUHBua2Jydzgxck4zSVZJTnJJbEVHZlhqSzFLTXR1bnRabWsxY0VSQWZfUkRWM0dXa0tLbTdUY0RqSEdOUy1QTjFaaEp6UFVKQkYxM3QzVWRhRHdRek44dExIdURvYWlrOXZHb0VJREI4OWVpSnhJQ1NBaTI1ZlNSNnVCZ05adVpDczEyZm5CRTVJc1YxNGc",
-      "category": "military",
-      "location": "Iran",
-      "confidence": 0.55,
-      "age_days": 4,
-      "direct_hormuz": false,
-      "maritime": true,
-      "physical_attack": false,
-      "generic_attack": false,
-      "maritime_security": false,
-      "closure_threat": true,
-      "energy": false,
-      "energy_infrastructure": false,
-      "regional_maritime": true,
-      "regional_actor": true,
-      "aviation": false,
-      "distance_km": 697.9,
-      "geographic_relevance": 0.0,
-      "textual_relevance": 0.8,
-      "temporal_weight": 0.75,
-      "security_event_type": "MARITIME_DISRUPTION_THREAT",
-      "security_score": 30.36,
-      "relevance_level": "MEDIUM",
-      "flow_positive_signal": false,
-      "flow_negative_signal": true
     }
   ],
-  "supporting_flow_news": [
-    {
-      "date": "2026-10-11",
-      "title": "US bombs cargo vessel in Gulf of Oman ‘trying to run Iran blockade’ - Al Jazeera",
-      "source": "Al Jazeera (via Google News)",
-      "source_url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPUUk2UURLSzN3ZHZva05KbEktc1JBeXZnbHhjWWl5bm9LOGJGRnJ5MzUxSWkzbjVEZFd2YmUyVWc3NGd1czdLMWxkblFLNmpMdXJqWHota21BWEpoQVQxRGRFRzByS2tjaVJyVzMzWjdMY1NudmIwaHZIWFF2QnpDTWNuOWxFeTdBT3BLcWt0bDJtbWhjTlc2dEpoNEdfZlNhUEpPLU5GVE5YVkFIeEp3YVBZeGNVNzhf0gG-AUFVX3lxTE5pRGxvWktjYWdfcVpZbzNQZDlNdUdMdTlrZE9HMldvQVRUV0hfZjIzUHBua2Jydzgxck4zSVZJTnJJbEVHZlhqSzFLTXR1bnRabWsxY0VSQWZfUkRWM0dXa0tLbTdUY0RqSEdOUy1QTjFaaEp6UFVKQkYxM3QzVWRhRHdRek44dExIdURvYWlrOXZHb0VJREI4OWVpSnhJQ1NBaTI1ZlNSNnVCZ05adVpDczEyZm5CRTVJc1YxNGc",
-      "positive_flow_signal": false,
-      "negative_flow_signal": true,
-      "security_event_type": "MARITIME_DISRUPTION_THREAT"
-    }
-  ],
+  "supporting_flow_news": [],
   "non_security_flow_events": []
 }
