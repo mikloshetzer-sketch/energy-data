@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-10-17T15:39:40.128207+00:00",
+    "generated_at": "2026-10-17T18:32:07.158625+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,17 +39,17 @@
   },
   "regional_security": {
     "available": true,
-    "score": 62.3,
+    "score": 61.5,
     "risk_level": "MEDIUM",
     "confidence": "MEDIUM",
-    "updated": "2026-10-17 12:13 UTC",
+    "updated": "2026-10-17 15:40 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
   "historical_context": {
     "available": true,
     "generated_at": "2026-10-11T17:50:56Z",
-    "age_days": 5,
+    "age_days": 6,
     "freshness": "AGING",
     "event_count": 273,
     "role": "historical_context_only"
@@ -63,14 +63,14 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 34.25,
-      "level": "GUARDED",
+      "score": 43.29,
+      "level": "ELEVATED",
       "confidence": "HIGH",
-      "event_signal": 29.3,
-      "regional_context_score": 62.3,
-      "security_events_7d": 3,
-      "direct_hormuz_security_events_7d": 0,
-      "maritime_attack_events_7d": 2,
+      "event_signal": 40.08,
+      "regional_context_score": 61.5,
+      "security_events_7d": 4,
+      "direct_hormuz_security_events_7d": 1,
+      "maritime_attack_events_7d": 3,
       "closure_threat_events_7d": 0
     },
     "flow": {
@@ -93,9 +93,40 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 3,
+  "security_event_count_7d": 4,
   "flow_signal_count_7d": 0,
   "top_security_events": [
+    {
+      "event_id": "2026-10-17-5359d6fba876",
+      "date": "2026-10-17",
+      "title": "Iran's Guards say two tankers hit mines in Strait of Hormuz - Reuters",
+      "source": "Reuters (via Google News)",
+      "source_url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNZWFxZjNZNnY5cVR3VDhKUnNnV1JOcG1vOVB5dEZGdWRybEtqdE9YRWgwY0ZVSXZ0bHYzTWRpX2duSkxpTENtY0s0WW5jMzFUZlZIME16d0FpUXluV2ZGbFJ3alNZaDh0VVVSVFhOMWVIbEZTNVgyTVdwaXNLNXRrMjE4SjZvQXZtblNUNVVHSjFIUmlIaU41TGRHYmIzOUxoa25BODFKaG1FZw",
+      "category": "other",
+      "location": "Iran",
+      "confidence": 0.55,
+      "age_days": 0,
+      "direct_hormuz": true,
+      "maritime": true,
+      "physical_attack": false,
+      "generic_attack": true,
+      "maritime_security": false,
+      "closure_threat": false,
+      "energy": false,
+      "energy_infrastructure": false,
+      "regional_maritime": false,
+      "regional_actor": true,
+      "aviation": false,
+      "distance_km": 697.9,
+      "geographic_relevance": 0.0,
+      "textual_relevance": 0.8,
+      "temporal_weight": 1.0,
+      "security_event_type": "MARITIME_ATTACK",
+      "security_score": 62.28,
+      "relevance_level": "CRITICAL",
+      "flow_positive_signal": false,
+      "flow_negative_signal": false
+    },
     {
       "event_id": "2026-10-14-4c0762518751",
       "date": "2026-10-14",
