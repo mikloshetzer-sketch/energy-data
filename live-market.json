@@ -1,8 +1,8 @@
 {
   "meta": {
-    "updated": "2026-10-17 04:56 UTC",
+    "updated": "2026-10-17 09:15 UTC",
     "source_mode": "live",
-    "generated_at": "2026-10-17T04:56:44.803285Z",
+    "generated_at": "2026-10-17T09:15:05.480497Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
@@ -10,11 +10,11 @@
   },
   "prices": {
     "market_brent": 109.95,
-    "market_wti": 99.04,
+    "market_wti": 99.02,
     "spot_brent": 126.55,
     "spot_wti": 101.91,
     "live_brent": 109.95,
-    "live_wti": 99.04,
+    "live_wti": 99.02,
     "live_source": "mixed_or_spot_fallback",
     "market_source": "OilPriceAPI",
     "spot_source": "EIA via oil-data.json",
@@ -38,12 +38,12 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 48.7,
-    "middle_east_conflict_impact": 67.6,
+    "global_trade_risk_index": 49.5,
+    "middle_east_conflict_impact": 68.6,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -2.4,
-      "middle_east_conflict_impact_change": -4.7,
+      "global_trade_risk_index_change": -1.6,
+      "middle_east_conflict_impact_change": -3.7,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
@@ -55,7 +55,7 @@
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.1008,
+        "estimated_impact": 0.1061,
         "status": "medium"
       },
       {
@@ -65,17 +65,17 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0776,
+        "estimated_impact": 0.0817,
         "status": "medium"
       },
       {
         "name": "Boszporusz",
-        "estimated_impact": 0.0125,
+        "estimated_impact": 0.0132,
         "status": "low"
       }
     ],
     "me_components": {
-      "structural_score": 71.5,
+      "structural_score": 73.1,
       "osint_signal_score": 61.0,
       "osint_raw_total_risk": 152.4,
       "osint_risk_level": "MEDIUM",
@@ -106,7 +106,7 @@
       "osint_updated": "2026-10-17 00:30 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.71,
+      "osint_age_hours": 6.31,
       "osint_used_in_blend": true,
       "conflict_signal_score": 16.0,
       "conflict_signal_raw_index": -0.8,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-10-11T17:50:56Z",
-        "source_age_hours": 127.36,
+        "source_age_hours": 132.96,
         "source_event_count": 273,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-10-17 01:12 UTC",
+      "updated": "2026-10-17 06:48 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
