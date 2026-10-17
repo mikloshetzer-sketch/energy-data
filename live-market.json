@@ -1,8 +1,8 @@
 {
   "meta": {
-    "updated": "2026-10-17 13:09 UTC",
+    "updated": "2026-10-17 16:38 UTC",
     "source_mode": "live",
-    "generated_at": "2026-10-17T13:09:41.723789Z",
+    "generated_at": "2026-10-17T16:38:08.740775Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
@@ -10,20 +10,20 @@
   },
   "prices": {
     "market_brent": 109.95,
-    "market_wti": 99.02,
+    "market_wti": 101.91,
     "spot_brent": 126.55,
     "spot_wti": 101.91,
     "live_brent": 109.95,
-    "live_wti": 99.02,
+    "live_wti": 101.91,
     "live_source": "mixed_or_spot_fallback",
     "market_source": "OilPriceAPI",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
     "market_timestamp_brent": "2026-10-16T20:55:00Z",
-    "market_timestamp_wti": "2026-10-16T20:55:00Z",
+    "market_timestamp_wti": null,
     "brent_fallback_used": true,
-    "wti_fallback_used": false,
+    "wti_fallback_used": true,
     "currency": "USD",
     "unit": "USD/barrel"
   },
@@ -33,24 +33,24 @@
       "error": null
     },
     "wti": {
-      "status": "market_futures",
-      "error": null
+      "status": "eia_spot_fallback",
+      "error": "401 Client Error: Unauthorized for url: https://query1.finance.yahoo.com/v8/finance/chart/CL=F?interval=5m&range=1d"
     }
   },
   "risk": {
     "global_trade_risk_index": 49.7,
-    "middle_east_conflict_impact": 68.9,
+    "middle_east_conflict_impact": 69.0,
     "middle_east_conflict_label": "high",
     "daily_change": {
       "global_trade_risk_index_change": -1.4,
-      "middle_east_conflict_impact_change": -3.4,
+      "middle_east_conflict_impact_change": -3.3,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2508,
+        "estimated_impact": 0.2509,
         "status": "severe"
       },
       {
@@ -76,37 +76,37 @@
     ],
     "me_components": {
       "structural_score": 73.1,
-      "osint_signal_score": 62.0,
-      "osint_raw_total_risk": 155.1,
+      "osint_signal_score": 62.3,
+      "osint_raw_total_risk": 155.75,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 144,
+      "osint_total_events": 147,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 37.05
+          "risk": 34.35
         },
         {
           "name": "Yemen",
-          "risk": 31.7
+          "risk": 33.8
         },
         {
           "name": "Saudi Arabia",
-          "risk": 18.15
+          "risk": 20.5
         },
         {
           "name": "West Bank",
-          "risk": 14.25
+          "risk": 13.15
         },
         {
           "name": "Israel",
-          "risk": 12.6
+          "risk": 12.55
         }
       ],
-      "osint_updated": "2026-10-17 06:59 UTC",
+      "osint_updated": "2026-10-17 12:13 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 4.53,
+      "osint_age_hours": 3.15,
       "osint_used_in_blend": true,
       "conflict_signal_score": 17.6,
       "conflict_signal_raw_index": -0.88,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-10-11T17:50:56Z",
-        "source_age_hours": 137.67,
+        "source_age_hours": 141.52,
         "source_event_count": 273,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-10-17 11:30 UTC",
+      "updated": "2026-10-17 15:21 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
