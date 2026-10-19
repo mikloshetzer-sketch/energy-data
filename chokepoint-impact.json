@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-10-18 22:56 UTC",
+    "updated": "2026-10-19 01:00 UTC",
     "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
     "uses_tanker_signal": true,
     "uses_me_security_signal": true,
@@ -15,7 +15,7 @@
     "conflict_end_matrix_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/conflict-end-matrix/main/docs/latest_summary.json",
     "strike_history_input_source": "https://raw.githubusercontent.com/mikloshetzer-sketch/me-security-monitor/main/data/strike_history.json",
     "stale_input_flags": {
-      "all_tracked_zone_counts_zero": true,
+      "all_tracked_zone_counts_zero": false,
       "me_security_signal_stale": false,
       "conflict_end_matrix_signal_stale": true,
       "strike_history_stale": true
@@ -43,12 +43,12 @@
     },
     "conflict_end_matrix_interpretation": "more_negative_conflict_index_means_higher_risk"
   },
-  "global_trade_risk_index": 49.8,
+  "global_trade_risk_index": 49.1,
   "middle_east_conflict_impact": {
     "label": "high",
-    "score": 69.3,
+    "score": 68.3,
     "components": {
-      "structural_score": 73.2,
+      "structural_score": 71.6,
       "osint_signal_score": 62.8,
       "osint_raw_total_risk": 156.9,
       "osint_risk_level": "MEDIUM",
@@ -79,7 +79,7 @@
       "osint_updated": "2026-10-18 22:27 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.49,
+      "osint_age_hours": 2.55,
       "osint_used_in_blend": true,
       "conflict_signal_score": 18.8,
       "conflict_signal_raw_index": -0.94,
@@ -109,20 +109,20 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-10-11T17:50:56Z",
-        "source_age_hours": 173.09,
+        "source_age_hours": 175.15,
         "source_event_count": 273,
         "used_in_model": false
       }
     }
   },
   "daily_change": {
-    "global_trade_risk_index_change": 0.6,
-    "middle_east_conflict_impact_change": 0.8,
-    "direction_global": "up",
-    "direction_middle_east": "up"
+    "global_trade_risk_index_change": -0.7,
+    "middle_east_conflict_impact_change": -1.0,
+    "direction_global": "down",
+    "direction_middle_east": "down"
   },
   "tracked_zone_counts": {
-    "hormuz": 0,
+    "hormuz": 1,
     "suez": 0,
     "bab_el_mandeb": 0,
     "bosporus": 0
@@ -135,7 +135,7 @@
     },
     {
       "name": "Bab el-Mandeb",
-      "estimated_impact": 0.1062,
+      "estimated_impact": 0.1009,
       "status": "medium"
     },
     {
@@ -145,12 +145,12 @@
     },
     {
       "name": "Szuezi térség",
-      "estimated_impact": 0.0818,
+      "estimated_impact": 0.0777,
       "status": "medium"
     },
     {
       "name": "Boszporusz",
-      "estimated_impact": 0.0132,
+      "estimated_impact": 0.0125,
       "status": "low"
     }
   ],
@@ -165,7 +165,7 @@
       "substitution_penalty": 0.95,
       "disruption_level": 0.9157,
       "regional_adjustment": 1.1,
-      "ais_count_signal": 0,
+      "ais_count_signal": 1,
       "ais_signal_multiplier": 1.0,
       "estimated_impact": 0.2509,
       "status": "severe",
@@ -191,8 +191,8 @@
       "disruption_level": 0.8468,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
-      "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.1062,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.1009,
       "status": "medium",
       "notes": "Vörös-tengeri és Szuez felé irányuló forgalom kulcspontja.",
       "local_security": {
@@ -232,8 +232,8 @@
       "disruption_level": 0.7339,
       "regional_adjustment": 1.1,
       "ais_count_signal": 0,
-      "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.0818,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.0777,
       "status": "medium",
       "notes": "A globális kereskedelem egyik fő tengelye, kerülhető, de jelentős költséggel."
     },
@@ -248,8 +248,8 @@
       "disruption_level": 0.4273,
       "regional_adjustment": 1.0,
       "ais_count_signal": 0,
-      "ais_signal_multiplier": 1.0,
-      "estimated_impact": 0.0132,
+      "ais_signal_multiplier": 0.95,
+      "estimated_impact": 0.0125,
       "status": "low",
       "notes": "Erős regionális jelentőség, különösen a Fekete-tenger irányában."
     },
