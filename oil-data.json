@@ -1,7 +1,7 @@
 {
   "market": {
-    "brent": "106.29 USD/hordó",
-    "wti": "95.98 USD/hordó",
+    "brent": "111.61 USD/hordó",
+    "wti": "101.04 USD/hordó",
     "inventory": "7.4 millió hordó",
     "supply": "111.5 millió hordó/nap",
     "brent_30d_trend": "+44.18%",
@@ -221,7 +221,7 @@
     "level": "stable",
     "label": "Korlátozott hatás",
     "direction": "semleges",
-    "text": "A havi termelési pálya alapján a globális kínálat jelenleg viszonylag stabil, így a mostani helyzet inkább kockázatként, mint azonnali termelési kiesésként jelenik meg."
+    "text": "A jelenlegi globális termelési szint alapján a piac egyelőre rendelkezik bizonyos kínálati pufferekkel, ezért a helyzet rövid távon inkább sérülékenységet, mint közvetlen visszaesést jelez."
   },
   "regional_dependency": {
     "europe": {
@@ -267,7 +267,7 @@
     "asia": {
       "level": "high",
       "label": "Magas hatás",
-      "score": 8.0,
+      "score": 8.1,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
@@ -276,7 +276,7 @@
     }
   },
   "meta": {
-    "updated": "2026-10-16 11:29 UTC",
+    "updated": "2026-10-20 11:43 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
@@ -286,14 +286,14 @@
     "type": "geopolitical"
   },
   "energy_risk": {
-    "score": 41.7,
+    "score": 47.7,
     "level": "high",
     "label": "Magas",
     "components": {
       "geopolitical": 18.7,
-      "price_level": 17.0,
+      "price_level": 20.0,
       "price_momentum": 3.0,
-      "market_stress": 3.0,
+      "market_stress": 6.0,
       "supply_pressure": 0.0
     },
     "triggers": [
@@ -302,13 +302,13 @@
     "method": "Összetett index: geopolitika 40%, árszint 20%, ármozgás 20%, piaci stressz 10%, készlet és kínálat 10%."
   },
   "market_stress": {
-    "score": 39.0,
-    "level": "watch",
-    "label": "Mérsékelten feszült",
-    "note": "A piac érzékenyebb a szokásosnál, de a mért adatok még nem mutatnak szélsőséges reakciót.",
+    "score": 41.0,
+    "level": "tense",
+    "label": "Feszült",
+    "note": "A rendelkezésre álló mutatók fokozott piaci érzékenységet és érdemi feszültséget jeleznek.",
     "components": {
       "volatility": 4.0,
-      "price_level": 18.0,
+      "price_level": 20.0,
       "geopolitical": 5.0,
       "supply_buffer": 0.0,
       "brent_wti_spread": 12.0
@@ -332,13 +332,13 @@
       ]
     },
     "observed_values": {
-      "brent": 106.29,
-      "wti": 95.98,
+      "brent": 111.61,
+      "wti": 101.04,
       "brent_1d_change": 0.612179996819841,
       "brent_7d_change": 0.8286192335272027,
       "wti_1d_change": 1.0410469958358093,
       "wti_7d_change": 6.012691147404558,
-      "brent_wti_spread": 10.31,
+      "brent_wti_spread": 10.57,
       "inventory_million_barrels": 7.4,
       "global_supply_mbd": 111.4912152,
       "geopolitical_level": "moderate"
