@@ -2,7 +2,7 @@
   "meta": {
     "collector": "Hormuz Flow Data Collector",
     "version": "1.3-ais-observed-disruption",
-    "generated_at": "2026-10-20T10:25:17.209230+00:00",
+    "generated_at": "2026-10-21T10:35:27.365499+00:00",
     "automatic": true,
     "repository": "energy-data",
     "mode": "AIS_FLOW_OBSERVATION"
@@ -28,36 +28,35 @@
     "measurement_role": "AIS-observed vessel traffic proxy"
   },
   "latest_observation": {
-    "date": "2026-10-11",
-    "timestamp": "2026-10-11T00:00:00+00:00",
+    "date": "2026-10-18",
+    "timestamp": "2026-10-18T00:00:00+00:00",
     "year": 2026,
     "month": 10,
     "year_month": "2026-10",
     "period": "POST_WAR",
-    "n_total": 2,
-    "n_tanker": 1,
-    "n_cargo": 1,
-    "capacity_total": 77388.0,
-    "capacity_tanker": 4636.0,
+    "n_total": 4,
+    "n_tanker": 2,
+    "n_cargo": 2,
+    "capacity_total": 125163.0,
+    "capacity_tanker": 19163.0,
     "quality_flags": {
       "tanker_capacity_valid": true,
       "tanker_capacity_issue": null
     },
     "freshness": {
-      "status": "AGING",
-      "age_days": 9
+      "status": "FRESH",
+      "age_days": 3
     }
   },
   "freshness": {
-    "status": "AGING",
-    "age_days": 9
+    "status": "FRESH",
+    "age_days": 3
   },
   "data_quality": {
-    "score": 65,
-    "level": "MODERATE",
+    "score": 95,
+    "level": "GOOD",
     "issues": [
-      "Latest PortWatch observation is aging",
-      "3 of 30 recent days have invalid tanker-capacity values"
+      "2 of 30 recent days have invalid tanker-capacity values"
     ]
   },
   "reference_periods": {
@@ -91,7 +90,7 @@
       },
       "capacity_total": {
         "observations": 365,
-        "average": 3218242.75,
+        "average": 3218242.74,
         "median": 3222202.0,
         "min": 1085133.0,
         "max": 6268750.0
@@ -163,129 +162,129 @@
       "days": 7,
       "n_total": {
         "observations": 7,
-        "average": 4.14,
-        "median": 4.0,
-        "min": 2.0,
-        "max": 8.0
+        "average": 3.71,
+        "median": 3.0,
+        "min": 0.0,
+        "max": 7.0
       },
       "n_tanker": {
         "observations": 7,
         "average": 0.57,
-        "median": 1.0,
+        "median": 0.0,
         "min": 0.0,
-        "max": 1.0
+        "max": 2.0
       },
       "n_cargo": {
         "observations": 7,
-        "average": 3.57,
-        "median": 4.0,
-        "min": 1.0,
+        "average": 3.14,
+        "median": 3.0,
+        "min": 0.0,
         "max": 7.0
       },
       "capacity_total": {
         "observations": 7,
-        "average": 132830.71,
-        "median": 77388.0,
-        "min": 41992.0,
-        "max": 439887.0
+        "average": 80081.71,
+        "median": 87360.0,
+        "min": 0.0,
+        "max": 214117.0
       },
       "capacity_tanker_valid_only": {
-        "observations": 7,
-        "average": 24188.43,
-        "median": 4636.0,
+        "observations": 6,
+        "average": 14613.83,
+        "median": 0.0,
         "min": 0.0,
-        "max": 119052.0
+        "max": 68520.0
       },
       "capacity_quality": {
-        "valid_days": 7,
-        "invalid_days": 0,
-        "valid_pct": 100.0
+        "valid_days": 6,
+        "invalid_days": 1,
+        "valid_pct": 85.71
       }
     },
     "30d": {
       "days": 30,
       "n_total": {
         "observations": 30,
-        "average": 3.4,
-        "median": 3.0,
+        "average": 3.43,
+        "median": 3.5,
         "min": 0.0,
         "max": 8.0
       },
       "n_tanker": {
         "observations": 30,
-        "average": 0.83,
+        "average": 0.8,
         "median": 1.0,
         "min": 0.0,
         "max": 4.0
       },
       "n_cargo": {
         "observations": 30,
-        "average": 2.57,
+        "average": 2.63,
         "median": 2.0,
         "min": 0.0,
         "max": 7.0
       },
       "capacity_total": {
         "observations": 30,
-        "average": 80948.07,
-        "median": 70828.5,
+        "average": 83875.2,
+        "median": 72413.0,
         "min": 0.0,
         "max": 439887.0
       },
       "capacity_tanker_valid_only": {
-        "observations": 27,
-        "average": 15658.26,
-        "median": 3149.0,
+        "observations": 28,
+        "average": 17816.57,
+        "median": 1574.5,
         "min": 0.0,
         "max": 119052.0
       },
       "capacity_quality": {
-        "valid_days": 27,
-        "invalid_days": 3,
-        "valid_pct": 90.0
+        "valid_days": 28,
+        "invalid_days": 2,
+        "valid_pct": 93.33
       }
     },
     "90d": {
       "days": 90,
       "n_total": {
         "observations": 90,
-        "average": 4.24,
+        "average": 4.1,
         "median": 4.0,
         "min": 0.0,
         "max": 10.0
       },
       "n_tanker": {
         "observations": 90,
-        "average": 1.37,
+        "average": 1.23,
         "median": 1.0,
         "min": 0.0,
-        "max": 5.0
+        "max": 4.0
       },
       "n_cargo": {
         "observations": 90,
-        "average": 2.88,
+        "average": 2.87,
         "median": 3.0,
         "min": 0.0,
         "max": 8.0
       },
       "capacity_total": {
         "observations": 90,
-        "average": 89990.24,
-        "median": 70168.0,
+        "average": 90451.3,
+        "median": 70556.0,
         "min": 0.0,
         "max": 470124.0
       },
       "capacity_tanker_valid_only": {
-        "observations": 74,
-        "average": 25135.92,
-        "median": 4880.0,
+        "observations": 76,
+        "average": 24016.68,
+        "median": 4771.0,
         "min": 0.0,
         "max": 282046.0
       },
       "capacity_quality": {
-        "valid_days": 74,
-        "invalid_days": 16,
-        "valid_pct": 82.22
+        "valid_days": 76,
+        "invalid_days": 14,
+        "valid_pct": 84.44
       }
     }
   },
@@ -302,15 +301,15 @@
     "structural_baseline_tankers_per_day": 48.18,
     "prewar_control_tankers_per_day": 43.74,
     "current_7d_tankers_per_day": 0.57,
-    "current_30d_tankers_per_day": 0.83,
+    "current_30d_tankers_per_day": 0.8,
     "seven_day": {
       "ratio": 0.0118,
       "disruption_score": 98.82,
       "level": "SEVERE"
     },
     "thirty_day": {
-      "ratio": 0.0172,
-      "disruption_score": 98.28,
+      "ratio": 0.0166,
+      "disruption_score": 98.34,
       "level": "SEVERE"
     },
     "baseline_control_check": {
@@ -323,44 +322,44 @@
   "monthly_diagnostics": [
     {
       "month": "2024-08",
-      "days": 29,
+      "days": 22,
       "n_total": {
-        "observations": 29,
-        "average": 92.55,
-        "median": 90.0,
+        "observations": 22,
+        "average": 92.91,
+        "median": 92.0,
         "min": 60.0,
         "max": 131.0
       },
       "n_tanker": {
-        "observations": 29,
-        "average": 54.76,
-        "median": 54.0,
+        "observations": 22,
+        "average": 54.64,
+        "median": 51.0,
         "min": 35.0,
         "max": 81.0
       },
       "n_cargo": {
-        "observations": 29,
-        "average": 37.79,
-        "median": 41.0,
+        "observations": 22,
+        "average": 38.27,
+        "median": 41.5,
         "min": 19.0,
         "max": 54.0
       },
       "capacity_total": {
-        "observations": 29,
-        "average": 3601442.1,
-        "median": 3432563.0,
+        "observations": 22,
+        "average": 3611396.45,
+        "median": 3414103.5,
         "min": 2166093.0,
         "max": 5752137.0
       },
       "capacity_tanker_valid_only": {
-        "observations": 29,
-        "average": 2601345.45,
-        "median": 2608703.0,
+        "observations": 22,
+        "average": 2605618.05,
+        "median": 2631006.5,
         "min": 956008.0,
         "max": 4301436.0
       },
       "capacity_quality": {
-        "valid_days": 29,
+        "valid_days": 22,
         "invalid_days": 0,
         "valid_pct": 100.0
       }
@@ -435,7 +434,7 @@
       },
       "capacity_total": {
         "observations": 31,
-        "average": 3287058.68,
+        "average": 3287058.61,
         "median": 3360522.0,
         "min": 1469117.0,
         "max": 5178889.0
@@ -743,7 +742,7 @@
       },
       "capacity_total": {
         "observations": 31,
-        "average": 3762261.77,
+        "average": 3762261.74,
         "median": 3802000.0,
         "min": 2226951.0,
         "max": 5240454.0
@@ -919,7 +918,7 @@
       },
       "capacity_total": {
         "observations": 30,
-        "average": 3163027.23,
+        "average": 3163027.2,
         "median": 3136129.0,
         "min": 1766235.0,
         "max": 5198166.0
@@ -1051,7 +1050,7 @@
       },
       "capacity_total": {
         "observations": 31,
-        "average": 2244235.16,
+        "average": 2244235.13,
         "median": 2183289.0,
         "min": 1341392.0,
         "max": 3946406.0
@@ -1467,46 +1466,46 @@
     },
     {
       "month": "2026-10",
-      "days": 11,
+      "days": 18,
       "n_total": {
-        "observations": 11,
-        "average": 3.55,
-        "median": 4.0,
+        "observations": 18,
+        "average": 3.61,
+        "median": 3.5,
         "min": 0.0,
         "max": 8.0
       },
       "n_tanker": {
-        "observations": 11,
-        "average": 0.36,
+        "observations": 18,
+        "average": 0.44,
         "median": 0.0,
         "min": 0.0,
-        "max": 1.0
+        "max": 2.0
       },
       "n_cargo": {
-        "observations": 11,
-        "average": 3.18,
-        "median": 4.0,
+        "observations": 18,
+        "average": 3.17,
+        "median": 3.0,
         "min": 0.0,
         "max": 7.0
       },
       "capacity_total": {
-        "observations": 11,
-        "average": 119075.0,
-        "median": 81884.0,
+        "observations": 18,
+        "average": 103910.94,
+        "median": 82599.5,
         "min": 0.0,
         "max": 439887.0
       },
       "capacity_tanker_valid_only": {
-        "observations": 11,
-        "average": 15392.64,
+        "observations": 17,
+        "average": 15117.76,
         "median": 0.0,
         "min": 0.0,
         "max": 119052.0
       },
       "capacity_quality": {
-        "valid_days": 11,
-        "invalid_days": 0,
-        "valid_pct": 100.0
+        "valid_days": 17,
+        "invalid_days": 1,
+        "valid_pct": 94.44
       }
     }
   ],
@@ -1536,10 +1535,129 @@
       "portname",
       "year"
     ],
-    "oldest_observation": "2024-08-03",
-    "newest_observation": "2026-10-11"
+    "oldest_observation": "2024-08-10",
+    "newest_observation": "2026-10-18"
   },
   "history": [
+    {
+      "date": "2026-10-18",
+      "timestamp": "2026-10-18T00:00:00+00:00",
+      "year": 2026,
+      "month": 10,
+      "year_month": "2026-10",
+      "period": "POST_WAR",
+      "n_total": 4,
+      "n_tanker": 2,
+      "n_cargo": 2,
+      "capacity_total": 125163.0,
+      "capacity_tanker": 19163.0,
+      "quality_flags": {
+        "tanker_capacity_valid": true,
+        "tanker_capacity_issue": null
+      }
+    },
+    {
+      "date": "2026-10-17",
+      "timestamp": "2026-10-17T00:00:00+00:00",
+      "year": 2026,
+      "month": 10,
+      "year_month": "2026-10",
+      "period": "POST_WAR",
+      "n_total": 0,
+      "n_tanker": 0,
+      "n_cargo": 0,
+      "capacity_total": 0.0,
+      "capacity_tanker": 0.0,
+      "quality_flags": {
+        "tanker_capacity_valid": true,
+        "tanker_capacity_issue": null
+      }
+    },
+    {
+      "date": "2026-10-16",
+      "timestamp": "2026-10-16T00:00:00+00:00",
+      "year": 2026,
+      "month": 10,
+      "year_month": "2026-10",
+      "period": "POST_WAR",
+      "n_total": 7,
+      "n_tanker": 1,
+      "n_cargo": 6,
+      "capacity_total": 87360.0,
+      "capacity_tanker": 68520.0,
+      "quality_flags": {
+        "tanker_capacity_valid": true,
+        "tanker_capacity_issue": null
+      }
+    },
+    {
+      "date": "2026-10-15",
+      "timestamp": "2026-10-15T00:00:00+00:00",
+      "year": 2026,
+      "month": 10,
+      "year_month": "2026-10",
+      "period": "POST_WAR",
+      "n_total": 2,
+      "n_tanker": 1,
+      "n_cargo": 1,
+      "capacity_total": 10315.0,
+      "capacity_tanker": 0.0,
+      "quality_flags": {
+        "tanker_capacity_valid": false,
+        "tanker_capacity_issue": "positive_tanker_count_but_zero_or_missing_capacity"
+      }
+    },
+    {
+      "date": "2026-10-14",
+      "timestamp": "2026-10-14T00:00:00+00:00",
+      "year": 2026,
+      "month": 10,
+      "year_month": "2026-10",
+      "period": "POST_WAR",
+      "n_total": 3,
+      "n_tanker": 0,
+      "n_cargo": 3,
+      "capacity_total": 17757.0,
+      "capacity_tanker": 0.0,
+      "quality_flags": {
+        "tanker_capacity_valid": true,
+        "tanker_capacity_issue": null
+      }
+    },
+    {
+      "date": "2026-10-13",
+      "timestamp": "2026-10-13T00:00:00+00:00",
+      "year": 2026,
+      "month": 10,
+      "year_month": "2026-10",
+      "period": "POST_WAR",
+      "n_total": 7,
+      "n_tanker": 0,
+      "n_cargo": 7,
+      "capacity_total": 105860.0,
+      "capacity_tanker": 0.0,
+      "quality_flags": {
+        "tanker_capacity_valid": true,
+        "tanker_capacity_issue": null
+      }
+    },
+    {
+      "date": "2026-10-12",
+      "timestamp": "2026-10-12T00:00:00+00:00",
+      "year": 2026,
+      "month": 10,
+      "year_month": "2026-10",
+      "period": "POST_WAR",
+      "n_total": 3,
+      "n_tanker": 0,
+      "n_cargo": 3,
+      "capacity_total": 214117.0,
+      "capacity_tanker": 0.0,
+      "quality_flags": {
+        "tanker_capacity_valid": true,
+        "tanker_capacity_issue": null
+      }
+    },
     {
       "date": "2026-10-11",
       "timestamp": "2026-10-11T00:00:00+00:00",
@@ -6531,7 +6649,7 @@
       "n_total": 46,
       "n_tanker": 26,
       "n_cargo": 20,
-      "capacity_total": 1375594.0,
+      "capacity_total": 1375593.0,
       "capacity_tanker": 858100.0,
       "quality_flags": {
         "tanker_capacity_valid": true,
@@ -8401,7 +8519,7 @@
       "n_total": 86,
       "n_tanker": 39,
       "n_cargo": 47,
-      "capacity_total": 3180896.0,
+      "capacity_total": 3180895.0,
       "capacity_tanker": 2091423.0,
       "quality_flags": {
         "tanker_capacity_valid": true,
@@ -10067,7 +10185,7 @@
       "n_total": 82,
       "n_tanker": 44,
       "n_cargo": 38,
-      "capacity_total": 3530128.0,
+      "capacity_total": 3530127.0,
       "capacity_tanker": 2607278.0,
       "quality_flags": {
         "tanker_capacity_valid": true,
@@ -13994,7 +14112,7 @@
       "n_total": 112,
       "n_tanker": 57,
       "n_cargo": 55,
-      "capacity_total": 3958163.0,
+      "capacity_total": 3958162.0,
       "capacity_tanker": 2622493.0,
       "quality_flags": {
         "tanker_capacity_valid": true,
@@ -14079,7 +14197,7 @@
       "n_total": 97,
       "n_tanker": 58,
       "n_cargo": 39,
-      "capacity_total": 3996781.0,
+      "capacity_total": 3996780.0,
       "capacity_tanker": 2949049.0,
       "quality_flags": {
         "tanker_capacity_valid": true,
@@ -15016,125 +15134,6 @@
       "n_cargo": 44,
       "capacity_total": 4761786.0,
       "capacity_tanker": 3371308.0,
-      "quality_flags": {
-        "tanker_capacity_valid": true,
-        "tanker_capacity_issue": null
-      }
-    },
-    {
-      "date": "2024-08-09",
-      "timestamp": "2024-08-09T00:00:00+00:00",
-      "year": 2024,
-      "month": 8,
-      "year_month": "2024-08",
-      "period": "PRE_WAR",
-      "n_total": 92,
-      "n_tanker": 55,
-      "n_cargo": 37,
-      "capacity_total": 4036003.0,
-      "capacity_tanker": 3024404.0,
-      "quality_flags": {
-        "tanker_capacity_valid": true,
-        "tanker_capacity_issue": null
-      }
-    },
-    {
-      "date": "2024-08-08",
-      "timestamp": "2024-08-08T00:00:00+00:00",
-      "year": 2024,
-      "month": 8,
-      "year_month": "2024-08",
-      "period": "PRE_WAR",
-      "n_total": 89,
-      "n_tanker": 61,
-      "n_cargo": 28,
-      "capacity_total": 3773799.0,
-      "capacity_tanker": 2700370.0,
-      "quality_flags": {
-        "tanker_capacity_valid": true,
-        "tanker_capacity_issue": null
-      }
-    },
-    {
-      "date": "2024-08-07",
-      "timestamp": "2024-08-07T00:00:00+00:00",
-      "year": 2024,
-      "month": 8,
-      "year_month": "2024-08",
-      "period": "PRE_WAR",
-      "n_total": 75,
-      "n_tanker": 46,
-      "n_cargo": 29,
-      "capacity_total": 3082670.0,
-      "capacity_tanker": 2453290.0,
-      "quality_flags": {
-        "tanker_capacity_valid": true,
-        "tanker_capacity_issue": null
-      }
-    },
-    {
-      "date": "2024-08-06",
-      "timestamp": "2024-08-06T00:00:00+00:00",
-      "year": 2024,
-      "month": 8,
-      "year_month": "2024-08",
-      "period": "PRE_WAR",
-      "n_total": 88,
-      "n_tanker": 56,
-      "n_cargo": 32,
-      "capacity_total": 3375829.0,
-      "capacity_tanker": 2603612.0,
-      "quality_flags": {
-        "tanker_capacity_valid": true,
-        "tanker_capacity_issue": null
-      }
-    },
-    {
-      "date": "2024-08-05",
-      "timestamp": "2024-08-05T00:00:00+00:00",
-      "year": 2024,
-      "month": 8,
-      "year_month": "2024-08",
-      "period": "PRE_WAR",
-      "n_total": 90,
-      "n_tanker": 48,
-      "n_cargo": 42,
-      "capacity_total": 3781939.0,
-      "capacity_tanker": 2317004.0,
-      "quality_flags": {
-        "tanker_capacity_valid": true,
-        "tanker_capacity_issue": null
-      }
-    },
-    {
-      "date": "2024-08-04",
-      "timestamp": "2024-08-04T00:00:00+00:00",
-      "year": 2024,
-      "month": 8,
-      "year_month": "2024-08",
-      "period": "PRE_WAR",
-      "n_total": 100,
-      "n_tanker": 58,
-      "n_cargo": 42,
-      "capacity_total": 2760912.0,
-      "capacity_tanker": 1824423.0,
-      "quality_flags": {
-        "tanker_capacity_valid": true,
-        "tanker_capacity_issue": null
-      }
-    },
-    {
-      "date": "2024-08-03",
-      "timestamp": "2024-08-03T00:00:00+00:00",
-      "year": 2024,
-      "month": 8,
-      "year_month": "2024-08",
-      "period": "PRE_WAR",
-      "n_total": 106,
-      "n_tanker": 62,
-      "n_cargo": 44,
-      "capacity_total": 4179947.0,
-      "capacity_tanker": 3192318.0,
       "quality_flags": {
         "tanker_capacity_valid": true,
         "tanker_capacity_issue": null
