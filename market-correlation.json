@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-10-22 01:36 UTC",
+    "updated": "2026-10-22 01:38 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -8,38 +8,38 @@
     "min_leader_correlation": 0.2
   },
   "latest": {
-    "leader": "bab_el_mandeb_impact",
-    "leader_label": "Bab el-Mandeb",
-    "leader_correlation": -0.589,
-    "leader_weighted_strength": 0.766,
+    "leader": "hormuz_impact",
+    "leader_label": "Hormuz",
+    "leader_correlation": 0.385,
+    "leader_weighted_strength": 0.578,
     "ranked": [
       {
-        "key": "bab_el_mandeb_impact",
-        "label": "Bab el-Mandeb",
-        "correlation": -0.589,
-        "strategic_weight": 1.3,
-        "weighted_strength": 0.766
-      },
-      {
-        "key": "suez_impact",
-        "label": "Suez",
-        "correlation": -0.605,
-        "strategic_weight": 1.1,
-        "weighted_strength": 0.665
+        "key": "hormuz_impact",
+        "label": "Hormuz",
+        "correlation": 0.385,
+        "strategic_weight": 1.5,
+        "weighted_strength": 0.578
       },
       {
         "key": "bosporus_impact",
         "label": "Bosporus",
-        "correlation": -0.555,
+        "correlation": -0.162,
         "strategic_weight": 0.7,
-        "weighted_strength": 0.389
+        "weighted_strength": 0.113
       },
       {
-        "key": "hormuz_impact",
-        "label": "Hormuz",
-        "correlation": 0.149,
-        "strategic_weight": 1.5,
-        "weighted_strength": 0.223
+        "key": "bab_el_mandeb_impact",
+        "label": "Bab el-Mandeb",
+        "correlation": -0.046,
+        "strategic_weight": 1.3,
+        "weighted_strength": 0.06
+      },
+      {
+        "key": "suez_impact",
+        "label": "Suez",
+        "correlation": 0.004,
+        "strategic_weight": 1.1,
+        "weighted_strength": 0.004
       }
     ]
   },
@@ -47,44 +47,44 @@
     "hormuz_impact": {
       "label": "Hormuz",
       "lag_days": 0,
-      "correlation": 0.334,
+      "correlation": 0.339,
       "strategic_weight": 1.5,
-      "weighted_strength": 0.501,
+      "weighted_strength": 0.508,
       "signal": "synchronous"
     },
     "suez_impact": {
       "label": "Suez",
       "lag_days": 3,
-      "correlation": 0.31,
+      "correlation": 0.299,
       "strategic_weight": 1.1,
-      "weighted_strength": 0.341,
+      "weighted_strength": 0.328,
       "signal": "lagging"
     },
     "bab_el_mandeb_impact": {
       "label": "Bab el-Mandeb",
-      "lag_days": 1,
-      "correlation": 0.574,
+      "lag_days": 2,
+      "correlation": 0.566,
       "strategic_weight": 1.3,
-      "weighted_strength": 0.747,
+      "weighted_strength": 0.736,
       "signal": "lagging"
     },
     "bosporus_impact": {
       "label": "Bosporus",
       "lag_days": 0,
-      "correlation": -0.113,
+      "correlation": -0.12,
       "strategic_weight": 0.7,
-      "weighted_strength": 0.079,
+      "weighted_strength": 0.084,
       "signal": "weak"
     }
   },
   "leader_summary": {
     "key": "bab_el_mandeb_impact",
     "label": "Bab el-Mandeb",
-    "lag_days": 1,
-    "correlation": 0.574,
-    "weighted_strength": 0.747,
+    "lag_days": 2,
+    "correlation": 0.566,
+    "weighted_strength": 0.736,
     "signal": "lagging",
-    "text": "Bab el-Mandeb lags Brent by 1 day(s)"
+    "text": "Bab el-Mandeb lags Brent by 2 day(s)"
   },
   "rows": [
     {
@@ -1874,10 +1874,17 @@
     },
     {
       "date": "2026-10-21",
-      "brent_vs_hormuz_impact": 0.149,
-      "brent_vs_suez_impact": -0.605,
-      "brent_vs_bab_el_mandeb_impact": -0.589,
-      "brent_vs_bosporus_impact": -0.555
+      "brent_vs_hormuz_impact": 0.196,
+      "brent_vs_suez_impact": -0.527,
+      "brent_vs_bab_el_mandeb_impact": -0.518,
+      "brent_vs_bosporus_impact": -0.499
+    },
+    {
+      "date": "2026-10-22",
+      "brent_vs_hormuz_impact": 0.385,
+      "brent_vs_suez_impact": 0.004,
+      "brent_vs_bab_el_mandeb_impact": -0.046,
+      "brent_vs_bosporus_impact": -0.162
     }
   ]
 }
