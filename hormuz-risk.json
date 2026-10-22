@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-10-22T04:51:49.853276+00:00",
+    "generated_at": "2026-10-22T11:56:52.392659+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,10 +39,10 @@
   },
   "regional_security": {
     "available": true,
-    "score": 34.7,
+    "score": 41.0,
     "risk_level": "LOW",
     "confidence": "MEDIUM",
-    "updated": "2026-10-22 04:50 UTC",
+    "updated": "2026-10-22 11:55 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
@@ -55,24 +55,22 @@
     "role": "historical_context_only"
   },
   "data_quality": {
-    "score": 85,
+    "score": 100,
     "level": "GOOD",
-    "issues": [
-      "No live Hormuz-specific security events detected"
-    ]
+    "issues": []
   },
   "layers": {
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 12.14,
-      "level": "LOW",
-      "confidence": "LOW",
-      "event_signal": null,
-      "regional_context_score": 34.7,
-      "security_events_7d": 0,
+      "score": 35.93,
+      "level": "GUARDED",
+      "confidence": "HIGH",
+      "event_signal": 35.03,
+      "regional_context_score": 41.0,
+      "security_events_7d": 1,
       "direct_hormuz_security_events_7d": 0,
-      "maritime_attack_events_7d": 0,
+      "maritime_attack_events_7d": 1,
       "closure_threat_events_7d": 0
     },
     "flow": {
@@ -95,9 +93,41 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 0,
+  "security_event_count_7d": 1,
   "flow_signal_count_7d": 0,
-  "top_security_events": [],
+  "top_security_events": [
+    {
+      "event_id": "2026-10-22-3c930c71a2f9",
+      "date": "2026-10-22",
+      "title": "Iran's IRGC Navy says seven vessels hit, warns US of wider response - Reuters",
+      "source": "Reuters (via Google News)",
+      "source_url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNcjlJZ1lSN1BZWFJWdDlKUWh3LWRselVrNHpobGthcDVzdnZ6bjJfM1dZcTJONUtTdURHc0ZaQkk0cUhzTlp0NVZocWlTNEhIWTB4TkN6VVZPMHdfN2ZsYXVmY2NISEN6dnRERW01T2dXbXNsb2dMNHl1UFdiTW1LVzJsZU1KYThwVDZ5OHdvYzZQMEZ6djduOERMNEI4YVVVTDFqVHBNZlpOcmJiNnppOVNJVjVzbUU",
+      "category": "other",
+      "location": "Iran",
+      "confidence": 0.55,
+      "age_days": 0,
+      "direct_hormuz": false,
+      "maritime": true,
+      "physical_attack": false,
+      "generic_attack": true,
+      "maritime_security": false,
+      "closure_threat": false,
+      "energy": false,
+      "energy_infrastructure": false,
+      "regional_maritime": false,
+      "regional_actor": true,
+      "aviation": false,
+      "distance_km": 697.9,
+      "geographic_relevance": 0.0,
+      "textual_relevance": 0.45,
+      "temporal_weight": 1.0,
+      "security_event_type": "MARITIME_ATTACK",
+      "security_score": 35.03,
+      "relevance_level": "MEDIUM",
+      "flow_positive_signal": false,
+      "flow_negative_signal": false
+    }
+  ],
   "supporting_flow_news": [],
   "non_security_flow_events": []
 }
