@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-10-25T16:25:20.921531+00:00",
+    "generated_at": "2026-10-25T20:53:25.249672+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,17 +39,17 @@
   },
   "regional_security": {
     "available": true,
-    "score": 48.6,
+    "score": 51.1,
     "risk_level": "MEDIUM",
     "confidence": "MEDIUM",
-    "updated": "2026-10-25 16:24 UTC",
+    "updated": "2026-10-25 20:53 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
   "historical_context": {
     "available": true,
     "generated_at": "2026-10-11T17:50:56Z",
-    "age_days": 13,
+    "age_days": 14,
     "freshness": "STALE",
     "event_count": 273,
     "role": "historical_context_only"
@@ -63,14 +63,14 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 37.03,
+      "score": 37.33,
       "level": "GUARDED",
       "confidence": "HIGH",
-      "event_signal": 34.99,
-      "regional_context_score": 48.6,
-      "security_events_7d": 3,
+      "event_signal": 34.9,
+      "regional_context_score": 51.1,
+      "security_events_7d": 4,
       "direct_hormuz_security_events_7d": 0,
-      "maritime_attack_events_7d": 3,
+      "maritime_attack_events_7d": 4,
       "closure_threat_events_7d": 0
     },
     "flow": {
@@ -93,7 +93,7 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 3,
+  "security_event_count_7d": 4,
   "flow_signal_count_7d": 0,
   "top_security_events": [
     {
@@ -154,6 +154,37 @@
       "temporal_weight": 1.0,
       "security_event_type": "MARITIME_ATTACK",
       "security_score": 35.03,
+      "relevance_level": "MEDIUM",
+      "flow_positive_signal": false,
+      "flow_negative_signal": false
+    },
+    {
+      "event_id": "2026-10-23-cb2e74b898d7",
+      "date": "2026-10-23",
+      "title": "Romania blames Russia for drone that sinks cargo ship; 1 killed, 3 missing - Reuters",
+      "source": "Reuters (via Google News)",
+      "source_url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPOF9iZ3FoTHAycU5fWGxKNWNiYnpvRXlwUWJ2ZVFtQU9IUmF4UWJTU1AwTEFRT21vNWRDNzRjWTgtY0F6Vkp0RkdxeG9xM1A0X1RRX19Eb0RqVG9tbTBNeWFRaXZ2SzEtUUFEc2VjZlZPaUxtR3JGTUNEN3VRdWtRMEdTM21OSTVSQWNJN3FaOWpBNHdld3IyZS1sbVA1a2wxLVJXRm01ejhKWXZzQU5B",
+      "category": "military",
+      "location": "Oman",
+      "confidence": 0.55,
+      "age_days": 2,
+      "direct_hormuz": false,
+      "maritime": true,
+      "physical_attack": false,
+      "generic_attack": true,
+      "maritime_security": false,
+      "closure_threat": false,
+      "energy": false,
+      "energy_infrastructure": false,
+      "regional_maritime": false,
+      "regional_actor": true,
+      "aviation": false,
+      "distance_km": 566.3,
+      "geographic_relevance": 0.3,
+      "textual_relevance": 0.45,
+      "temporal_weight": 0.9,
+      "security_event_type": "MARITIME_ATTACK",
+      "security_score": 33.86,
       "relevance_level": "MEDIUM",
       "flow_positive_signal": false,
       "flow_negative_signal": false
