@@ -1,8 +1,8 @@
 {
   "meta": {
-    "updated": "2026-10-24 21:51 UTC",
+    "updated": "2026-10-25 00:17 UTC",
     "source_mode": "live",
-    "generated_at": "2026-10-24T21:51:20.041214Z",
+    "generated_at": "2026-10-25T00:17:05.752445Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
@@ -10,11 +10,11 @@
   },
   "prices": {
     "market_brent": 117.38,
-    "market_wti": 103.27,
+    "market_wti": 103.44,
     "spot_brent": 115.22,
     "spot_wti": 107.89,
     "live_brent": 117.38,
-    "live_wti": 103.27,
+    "live_wti": 103.44,
     "live_source": "mixed_or_spot_fallback",
     "market_source": "OilPriceAPI",
     "spot_source": "EIA via oil-data.json",
@@ -38,12 +38,12 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 46.8,
-    "middle_east_conflict_impact": 63.4,
+    "global_trade_risk_index": 46.7,
+    "middle_east_conflict_impact": 63.2,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": 0.4,
-      "middle_east_conflict_impact_change": 1.6,
+      "global_trade_risk_index_change": 0.3,
+      "middle_east_conflict_impact_change": 1.4,
       "direction_global": "up",
       "direction_middle_east": "up"
     },
@@ -55,7 +55,7 @@
       },
       {
         "name": "Bab el-Mandeb",
-        "estimated_impact": 0.1002,
+        "estimated_impact": 0.1003,
         "status": "medium"
       },
       {
@@ -65,7 +65,7 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0892,
+        "estimated_impact": 0.086,
         "status": "medium"
       },
       {
@@ -75,12 +75,12 @@
       }
     ],
     "me_components": {
-      "structural_score": 71.2,
-      "osint_signal_score": 50.3,
-      "osint_raw_total_risk": 125.84,
+      "structural_score": 70.6,
+      "osint_signal_score": 50.9,
+      "osint_raw_total_risk": 127.14,
       "osint_risk_level": "MEDIUM",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 111,
+      "osint_total_events": 112,
       "osint_top_locations": [
         {
           "name": "Saudi Arabia",
@@ -88,25 +88,25 @@
         },
         {
           "name": "Iran",
-          "risk": 21.63
-        },
-        {
-          "name": "Yemen",
-          "risk": 18.1
-        },
-        {
-          "name": "Israel",
-          "risk": 17.6
+          "risk": 23.23
         },
         {
           "name": "Jordan",
-          "risk": 17.3
+          "risk": 20.3
+        },
+        {
+          "name": "Israel",
+          "risk": 17.1
+        },
+        {
+          "name": "Yemen",
+          "risk": 16.0
         }
       ],
-      "osint_updated": "2026-10-24 18:49 UTC",
+      "osint_updated": "2026-10-24 22:30 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 1.74,
+      "osint_age_hours": 0.54,
       "osint_used_in_blend": true,
       "conflict_signal_score": 30.4,
       "conflict_signal_raw_index": -1.52,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-10-11T17:50:56Z",
-        "source_age_hours": 314.7,
+        "source_age_hours": 317.19,
         "source_event_count": 273,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-10-24 20:33 UTC",
+      "updated": "2026-10-24 23:02 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
