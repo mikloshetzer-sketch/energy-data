@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Brent Outlook v2.1 generator.
+Brent Outlook v2.1.1 generator.
 
 Purpose
 -------
@@ -19,7 +19,7 @@ Default inputs
 - live-market.json OR docs/data/live-market.json
 - market-history.json OR docs/data/market-history.json
 - docs/data/inventory_stress.json (optional)
-- docs/data/global_oil_supply_demand.json (optional)
+- docs/data/supply_demand_balance.json (optional; legacy global_oil_supply_demand.json supported)
 - chokepoint-impact.json OR docs/data/chokepoint-impact.json (optional)
 - docs/data/market-confirmation.json (optional)
 
@@ -44,7 +44,7 @@ from pathlib import Path
 from typing import Any, Iterable, Optional, Sequence
 
 
-MODEL_VERSION = "2.1"
+MODEL_VERSION = "2.1.1"
 HORIZON_DAYS = 30
 
 FUNDAMENTAL_MAX_SHIFT = 0.05
@@ -1150,13 +1150,13 @@ def build_outlook(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Generate Brent Outlook v2.1 JSON files."
+        description="Generate Brent Outlook v2.1.1 JSON files."
     )
     parser.add_argument("--ompi", help="Path to ompi.json")
     parser.add_argument("--live-market", help="Path to live-market.json")
     parser.add_argument("--market-history", help="Path to market-history.json")
     parser.add_argument("--inventory", help="Optional path to inventory_stress.json")
-    parser.add_argument("--supply-demand", help="Optional path to global_oil_supply_demand.json")
+    parser.add_argument("--supply-demand", help="Optional path to supply_demand_balance.json (or legacy global_oil_supply_demand.json)")
     parser.add_argument("--chokepoint-impact", help="Optional path to chokepoint-impact.json")
     parser.add_argument("--market-confirmation", help="Optional path to market-confirmation.json")
     parser.add_argument(
@@ -1217,7 +1217,7 @@ def main() -> int:
             ),
             "supply_demand_balance": (
                 args.supply_demand,
-                (root / "docs/data/global_oil_supply_demand.json", root / "data/global_oil_supply_demand.json", root / "global_oil_supply_demand.json"),
+                (root / "docs/data/supply_demand_balance.json", root / "data/supply_demand_balance.json", root / "supply_demand_balance.json", root / "docs/data/global_oil_supply_demand.json", root / "data/global_oil_supply_demand.json", root / "global_oil_supply_demand.json"),
             ),
             "chokepoint": (
                 args.chokepoint_impact,
@@ -1299,6 +1299,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
-
-
