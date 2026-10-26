@@ -1,172 +1,193 @@
 {
   "meta": {
     "model": "Hormuz API Identity Diagnostic",
-    "version": "1.0",
-    "generated_at": "2026-10-26T20:47:22.190298+00:00",
-    "mode": "SCHEMA_ONLY_NO_RAW_RECORDS"
+    "version": "1.1-identity-stability",
+    "generated_at": "2026-10-26T20:57:04.895370+00:00",
+    "mode": "AGGREGATES_ONLY"
   },
   "source": {
     "endpoint": "https://hormuz.data-tracking.net/api/ships",
     "response_wrapper": "list",
-    "vessel_records": 4148
+    "vessel_records": 4222
   },
   "fields": {
     "course": {
-      "present_records": 4148,
-      "nonempty_records": 3544,
+      "present_records": 4222,
+      "nonempty_records": 3610,
       "types": {
-        "float": 3544,
-        "NoneType": 604
+        "float": 3610,
+        "NoneType": 612
       }
     },
     "destination": {
-      "present_records": 4148,
-      "nonempty_records": 3723,
+      "present_records": 4222,
+      "nonempty_records": 3797,
       "types": {
-        "str": 3723,
+        "str": 3797,
         "NoneType": 425
       }
     },
     "draught": {
-      "present_records": 4148,
+      "present_records": 4222,
       "nonempty_records": 0,
       "types": {
-        "NoneType": 4148
+        "NoneType": 4222
       }
     },
     "dwt": {
-      "present_records": 4148,
-      "nonempty_records": 2287,
+      "present_records": 4222,
+      "nonempty_records": 2358,
       "types": {
-        "float": 2287,
-        "NoneType": 1861
+        "float": 2358,
+        "NoneType": 1864
       }
     },
     "fixes": {
-      "present_records": 4148,
-      "nonempty_records": 4148,
+      "present_records": 4222,
+      "nonempty_records": 4222,
       "types": {
-        "int": 4148
+        "int": 4222
       }
     },
     "flag": {
-      "present_records": 4148,
-      "nonempty_records": 4148,
+      "present_records": 4222,
+      "nonempty_records": 4222,
       "types": {
-        "str": 4148
+        "str": 4222
       }
     },
     "hdg": {
-      "present_records": 4148,
-      "nonempty_records": 2127,
+      "present_records": 4222,
+      "nonempty_records": 2131,
       "types": {
-        "NoneType": 2021,
-        "int": 2127
+        "NoneType": 2091,
+        "int": 2131
       }
     },
     "latitude": {
-      "present_records": 4148,
-      "nonempty_records": 4148,
+      "present_records": 4222,
+      "nonempty_records": 4222,
       "types": {
-        "float": 4148
+        "float": 4222
       }
     },
     "length": {
-      "present_records": 4148,
-      "nonempty_records": 4146,
+      "present_records": 4222,
+      "nonempty_records": 4220,
       "types": {
-        "float": 4146,
+        "float": 4220,
         "NoneType": 2
       }
     },
     "longitude": {
-      "present_records": 4148,
-      "nonempty_records": 4148,
+      "present_records": 4222,
+      "nonempty_records": 4222,
       "types": {
-        "float": 4148
+        "float": 4222
       }
     },
     "mmsi": {
-      "present_records": 4148,
-      "nonempty_records": 4148,
+      "present_records": 4222,
+      "nonempty_records": 4222,
       "types": {
-        "str": 4148
+        "str": 4222
       }
     },
     "name": {
-      "present_records": 4148,
-      "nonempty_records": 4148,
+      "present_records": 4222,
+      "nonempty_records": 4222,
       "types": {
-        "str": 4148
+        "str": 4222
       }
     },
     "ship_category": {
-      "present_records": 4148,
-      "nonempty_records": 4148,
+      "present_records": 4222,
+      "nonempty_records": 4222,
       "types": {
-        "str": 4148
+        "str": 4222
       }
     },
     "speed": {
-      "present_records": 4148,
-      "nonempty_records": 3928,
+      "present_records": 4222,
+      "nonempty_records": 4002,
       "types": {
-        "float": 3928,
+        "float": 4002,
         "NoneType": 220
       }
     },
     "still": {
-      "present_records": 4148,
-      "nonempty_records": 4148,
+      "present_records": 4222,
+      "nonempty_records": 4222,
       "types": {
-        "bool": 4148
+        "bool": 4222
       }
     },
     "timestamp": {
-      "present_records": 4148,
-      "nonempty_records": 4148,
+      "present_records": 4222,
+      "nonempty_records": 4222,
       "types": {
-        "str": 4148
+        "str": 4222
       }
     },
     "width": {
-      "present_records": 4148,
-      "nonempty_records": 4146,
+      "present_records": 4222,
+      "nonempty_records": 4220,
       "types": {
-        "float": 4146,
+        "float": 4220,
         "NoneType": 2
       }
     },
     "zone": {
-      "present_records": 4148,
-      "nonempty_records": 4148,
+      "present_records": 4222,
+      "nonempty_records": 4222,
       "types": {
-        "str": 4148
+        "str": 4222
       }
     }
   },
   "identity_field_candidates": {
     "mmsi": {
-      "present_records": 4148,
-      "nonempty_records": 4148,
+      "present_records": 4222,
+      "nonempty_records": 4222,
       "value_lengths": {
-        "7": 2245,
-        "6": 1434,
-        "8": 439,
+        "3": 1,
         "4": 22,
         "5": 7,
-        "3": 1
+        "6": 1488,
+        "7": 2256,
+        "8": 448
       }
     }
+  },
+  "identity_uniqueness": {
+    "nonempty_mmsi_records": 4222,
+    "distinct_source_mmsi_values": 4222,
+    "duplicate_mmsi_values": 0,
+    "records_with_duplicate_mmsi": 0,
+    "duplicate_ids_with_name_conflicts": 0,
+    "duplicate_ids_with_category_conflicts": 0,
+    "standard_9_digit_mmsi_records": 0
+  },
+  "cross_run_stability": {
+    "prior_private_state_available": false,
+    "matched_unambiguous_source_ids": 0,
+    "name_changed": 0,
+    "category_changed": 0,
+    "repeated_or_nonincreasing_observation_timestamp": 0,
+    "comparable_motion_pairs": 0,
+    "motion_above_100_kmh": 0,
+    "interpretation": "Identity stability signals, not proof of real-world vessel identity."
   },
   "privacy": {
     "raw_vessel_records_exported": false,
     "identifiers_exported": false,
-    "coordinates_exported": false
+    "coordinates_exported": false,
+    "private_state_exported": false
   },
   "assessment": {
     "api_identity_availability_verified": true,
     "identifier_values_validated": false,
-    "note": "Schema and nonempty-field coverage only; no individual vessel identifiers or locations retained."
+    "source_ids_proven_stable": false,
+    "note": "Cross-run stability requires a privately persisted state; absent state means first-run baseline only."
   }
 }
