@@ -4,7 +4,7 @@
 
 """
 Hormuz Risk Integration Engine
-Version: 3.1-provisional
+Version: 3.2-observation-quality
 
 Inputs:
     hormuz-risk.json
@@ -23,10 +23,10 @@ of physical oil throughput.
 import json
 import math
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date, time, timedelta
 from pathlib import Path
 
-VERSION = "3.1-provisional"
+VERSION = "3.2-observation-quality"
 OUTPUT = "hormuz-risk-composite.json"
 
 INPUTS = {
@@ -130,6 +130,78 @@ def find_generated_at(data):
     return None
 
 
+
+def observation_time(name, data):
+    """Return actual observation timestamp, not the file publication timestamp."""
+    if name == "live_ais":
+        value = get_nested(data, "summary", "last_poll")
+        return parse_datetime(value)
+    if name == "portwatch":
+        value = get_nested(data, "latest_observation", "date")
+        if isinstance(value, str):
+            try:
+                # Date-only observation covers its UTC day, not midnight alone.
+                day = date.fromisoformat(value[:10])
+                return datetime.combine(day, time.max, tzinfo=timezone.utc)
+            except ValueError:
+                return None
+    if name == "vessels":
+        for keys in (("source", "last_poll"), ("source", "last_observation"),
+                     ("source", "observed_at"), ("observation", "timestamp")):
+            candidate = parse_datetime(get_nested(data, *keys))
+            if candidate:
+                return candidate
+    return None
+
+
+def bounded_score(value):
+    number = safe_number(value)
+    return number if number is not None and 0 <= number <= 100 else None
+
+
+def percent_change(new, baseline):
+    current, old = safe_number(new), safe_number(baseline)
+    if current is None or old is None or old <= 0:
+        return None
+    return (current / old - 1.0) * 100.0
+
+
+def calculate_logistics_indicator(live, vessels):
+    """Uncalibrated AIS observation indicator, NOT validated logistics risk."""
+    if not live["usable_for_logistics"]:
+        return {"score": None, "status": "UNAVAILABLE", "components": {},
+                "reason": "Live AIS observations are missing, stale or invalid."}
+    stats = live.get("crossing_statistics") or {}
+    seven = stats.get("7d") or {}
+    thirty = stats.get("30d") or {}
+    if safe_number(seven.get("observed_days")) is None or safe_number(thirty.get("observed_days")) is None:
+        return {"score": None, "status": "INSUFFICIENT_HISTORY", "components": {},
+                "reason": "Historical day coverage is not reported."}
+    if seven["observed_days"] < 5 or thirty["observed_days"] < 20:
+        return {"score": None, "status": "INSUFFICIENT_HISTORY", "components": {},
+                "reason": "At least 5/7 and 20/30 observed days are required."}
+    change = percent_change(seven.get("total_crossings_avg"), thirty.get("total_crossings_avg"))
+    if change is None:
+        return {"score": None, "status": "INVALID_BASELINE", "components": {},
+                "reason": "Crossing baseline is unavailable or zero."}
+    # An unusually low observed crossing count is a *signal*, not proof of a blockade.
+    # Positive changes are neutral rather than treated as verified improvement.
+    traffic_stress = max(0.0, min(100.0, -change * 2.0))
+    quality = bounded_score(get_nested(live, "data_quality", "score"))
+    if quality is None:
+        return {"score": None, "status": "UNKNOWN_DATA_QUALITY", "components": {},
+                "reason": "AIS data quality score is missing."}
+    # Reliability is kept separate from the stress score, to avoid equating missing data with congestion.
+    return {"score": round(traffic_stress, 2), "status": "EXPERIMENTAL_UNCALIBRATED",
+            "validated": False, "publish_as_validated_risk": False,
+            "components": {"crossings_7d_avg": seven.get("total_crossings_avg"),
+                           "crossings_30d_avg": thirty.get("total_crossings_avg"),
+                           "change_7d_vs_30d_pct": round(change, 2),
+                           "live_ais_quality_score": quality,
+                           "vessel_source_available": vessels["usable_for_logistics"]},
+            "method": "max(0, min(100, -2 * crossing_change_pct)); descriptive, not calibrated",
+            "reason": "An observed AIS crossing deviation; not measured oil flow or calibrated logistics risk."}
+
 def inspect_input(name, filename):
     path = Path(filename)
 
@@ -141,6 +213,9 @@ def inspect_input(name, filename):
         "age_hours": None,
         "max_age_hours": MAX_AGE_HOURS[name],
         "error": None,
+        "observation_at": None,
+        "observation_age_hours": None,
+        "observation_status": "UNKNOWN",
     }
 
     if not path.is_file():
@@ -156,6 +231,17 @@ def inspect_input(name, filename):
         return None, result
 
     result["available"] = True
+    observed = observation_time(name, data)
+    if observed is not None:
+        obs_age = (now_utc() - observed).total_seconds() / 3600
+        result["observation_at"] = observed.isoformat()
+        result["observation_age_hours"] = round(obs_age, 2)
+        result["observation_status"] = (
+            "INVALID_TIMESTAMP" if obs_age < -0.1 else
+            "FRESH" if obs_age <= MAX_AGE_HOURS[name] else "STALE"
+        )
+    elif name == "live_ais":
+        result["observation_status"] = "UNKNOWN_FRESHNESS"
 
     generated = find_generated_at(data)
     result["generated_at"] = generated
@@ -181,6 +267,8 @@ def inspect_input(name, filename):
     else:
         result["status"] = "STALE"
 
+    if name == "live_ais" and result["status"] == "FRESH" and result["observation_status"] != "FRESH":
+        result["status"] = "STALE_OBSERVATION" if result["observation_status"] == "STALE" else "UNKNOWN_OBSERVATION_FRESHNESS"
     return data, result
 
 
@@ -403,11 +491,14 @@ def build_logistics(live, vessels):
     else:
         status = "INSUFFICIENT_DATA"
 
+    indicator = calculate_logistics_indicator(live, vessels)
+
     return {
         "weight": WEIGHTS["logistics"],
         "status": status,
         "score": None,
         "score_validated": False,
+        "experimental_indicator": indicator,
         "live_ais_available": live_usable,
         "vessel_tracking_available": vessel_usable,
         "observed_sources": available_count,
@@ -552,6 +643,7 @@ def main():
                 "Independent physical oil-flow "
                 "measurements are required."
             ),
+            "logistics_indicator_status": "EXPERIMENTAL_UNCALIBRATED_NOT_COMPOSITE_ELIGIBLE",
             "ais_limitations": (
                 "AIS observation loss cannot "
                 "be converted directly into "
@@ -582,6 +674,7 @@ def main():
                 "usable_for_model"
             ],
             "ais_indicators_publishable": True,
+            "experimental_logistics_indicator_publishable_with_warning": True,
             "final_composite_publishable": False,
             "required_label": (
                 "PROVISIONAL - NOT A VALIDATED "
