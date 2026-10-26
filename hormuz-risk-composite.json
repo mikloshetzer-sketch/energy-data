@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Integrated Risk",
     "version": "3.1-provisional",
-    "generated_at": "2026-10-26T08:03:45.755549+00:00",
+    "generated_at": "2026-10-26T09:59:13.291888+00:00",
     "repository": "energy-data",
     "mode": "PROVISIONAL"
   },
@@ -19,7 +19,7 @@
       "available": true,
       "status": "FRESH",
       "generated_at": "2026-10-26T07:50:03.906698+00:00",
-      "age_hours": 0.23,
+      "age_hours": 2.15,
       "max_age_hours": 6,
       "error": null
     },
@@ -28,25 +28,25 @@
       "available": true,
       "status": "FRESH",
       "generated_at": "2026-10-25T10:08:44.540168+00:00",
-      "age_hours": 21.92,
+      "age_hours": 23.84,
       "max_age_hours": 48,
       "error": null
     },
     "live_ais": {
       "file": "hormuz-live-ais.json",
       "available": true,
-      "status": "FRESH",
+      "status": "STALE",
       "generated_at": "2026-10-26T06:53:06.241101+00:00",
-      "age_hours": 1.18,
+      "age_hours": 3.1,
       "max_age_hours": 2,
       "error": null
     },
     "vessels": {
       "file": "hormuz-vessels.json",
       "available": true,
-      "status": "FRESH",
+      "status": "STALE",
       "generated_at": "2026-10-26T06:31:57.322710+00:00",
-      "age_hours": 1.53,
+      "age_hours": 3.45,
       "max_age_hours": 2,
       "error": null
     }
@@ -88,16 +88,16 @@
     },
     "logistics": {
       "weight": 0.25,
-      "status": "OBSERVATIONS_AVAILABLE",
+      "status": "INSUFFICIENT_DATA",
       "score": null,
       "score_validated": false,
-      "live_ais_available": true,
-      "vessel_tracking_available": true,
-      "observed_sources": 2,
+      "live_ais_available": false,
+      "vessel_tracking_available": false,
+      "observed_sources": 0,
       "expected_sources": 2,
       "assessment": "Logistics observations are available, but no calibrated logistics stress score has been established.",
       "live_ais": {
-        "status": "FRESH",
+        "status": "STALE",
         "source_status": "AVAILABLE",
         "last_poll": "2026-10-26T06:31:22+00:00",
         "ships_total": 3890,
@@ -218,11 +218,11 @@
           ],
           "interpretation": "Quality describes usability of the live AIS observation layer, not accuracy of physical oil throughput."
         },
-        "usable_for_logistics": true,
+        "usable_for_logistics": false,
         "warning": "Crossing statistics and oil export estimates are AIS-derived indicators."
       },
       "vessels": {
-        "status": "FRESH",
+        "status": "STALE",
         "analysis": {
           "total_vessels": 4028,
           "identified_vessels": 4028,
@@ -397,7 +397,7 @@
           "snapshot_churn_pct": 37.05,
           "interpretation": "AIS tracking usability, not physical oil-flow accuracy."
         },
-        "usable_for_logistics": true,
+        "usable_for_logistics": false,
         "warning": "Vessel counts, positions and persistent identities may be affected by AIS coverage and identity churn. Confirmed transits require explicit geofence sequence validation."
       }
     }
