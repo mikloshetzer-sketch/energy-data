@@ -42,7 +42,7 @@ import statistics
 import sys
 
 from collections import defaultdict
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.error import HTTPError, URLError
@@ -55,7 +55,7 @@ from urllib.request import Request, urlopen
 # ============================================================
 
 MODEL_NAME = "Hormuz Flow Data Collector"
-MODEL_VERSION = "1.3-ais-observed-disruption"
+MODEL_VERSION = "1.4-calendar-freshness"
 
 OUTPUT_FILE = Path("hormuz-flow.json")
 
@@ -260,7 +260,7 @@ def fetch_json(
         url,
         headers={
             "User-Agent": (
-                "energy-data-hormuz-flow/1.3"
+                "energy-data-hormuz-flow/1.4"
             ),
             "Accept": "application/json",
         },
@@ -918,22 +918,53 @@ def build_reference_periods(
 # RECENT WINDOWS
 # ============================================================
 
-def build_recent_windows(
-    observations: List[Dict[str, Any]],
-) -> Dict[str, Any]:
+def calendar_window(observations: List[Dict[str, Any]], days: int, end_date: date) -> Dict[str, Any]:
+    """A fixed calendar interval; missing days are never treated as zero traffic."""
+    start_date = end_date - timedelta(days=days - 1)
+    selected = select_period(observations, start_date, end_date)
+    observed_dates = {row["date"] for row in selected}
+    missing = [(start_date + timedelta(days=i)).isoformat()
+               for i in range(days)
+               if (start_date + timedelta(days=i)).isoformat() not in observed_dates]
+    stats = build_period_stats(selected)
+    stats.update({
+        "start_date": start_date.isoformat(),
+        "end_date": end_date.isoformat(),
+        "expected_days": days,
+        "observed_days": len(observed_dates),
+        "missing_days": len(missing),
+        "missing_dates": missing,
+        "coverage_pct": round(100 * len(observed_dates) / days, 2),
+        "window_type": "CALENDAR_DAYS",
+        "reference": "LATEST_OBSERVATION" if end_date == date.fromisoformat(observations[0]["date"]) else "RUN_DATE",
+    })
+    return stats
 
+
+def build_recent_windows(observations: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Legacy keys remain, but now represent calendar windows, not row counts."""
+    latest_date = date.fromisoformat(observations[0]["date"])
+    return {f"{days}d": calendar_window(observations, days, latest_date)
+            for days in (7, 30, 90)}
+
+
+def build_current_calendar_windows(observations: List[Dict[str, Any]], run_date: date) -> Dict[str, Any]:
+    return {f"{days}d": calendar_window(observations, days, run_date)
+            for days in (7, 30, 90)}
+
+
+def build_source_diagnostics(observations: List[Dict[str, Any]], generated_at: datetime) -> Dict[str, Any]:
+    latest = date.fromisoformat(observations[0]["date"])
+    age = (generated_at.date() - latest).days
     return {
-        "7d": build_period_stats(
-            observations[:7]
-        ),
-
-        "30d": build_period_stats(
-            observations[:30]
-        ),
-
-        "90d": build_period_stats(
-            observations[:90]
-        ),
+        "request_succeeded": True,
+        "requested_at": generated_at.isoformat(),
+        "latest_observation_date": latest.isoformat(),
+        "observation_lag_calendar_days": max(0, age),
+        "status": "SOURCE_CURRENT" if age <= FRESH_MAX_DAYS else "SOURCE_DELAYED",
+        "interpretation": "A successful API request does not imply recent source observations.",
+        "latest_7d_coverage_pct": calendar_window(observations, 7, latest)["coverage_pct"],
+        "current_7d_coverage_pct": calendar_window(observations, 7, generated_at.date())["coverage_pct"],
     }
 
 
@@ -1075,6 +1106,13 @@ def build_ais_observed_disruption(
     score_7d = seven_day.get(
         "disruption_score"
     )
+    seven_coverage = recent.get("7d", {}).get("coverage_pct", 0)
+    thirty_coverage = recent.get("30d", {}).get("coverage_pct", 0)
+    enough_coverage = seven_coverage >= 70 and thirty_coverage >= 70
+    if not enough_coverage:
+        seven_day = {"ratio": None, "disruption_score": None}
+        thirty_day = {"ratio": None, "disruption_score": None}
+        score_7d = None
 
     return {
         "indicator_name": (
@@ -1082,8 +1120,11 @@ def build_ais_observed_disruption(
         ),
 
         "status": (
-            "VALIDATION_REQUIRED"
+            "VALIDATION_REQUIRED" if enough_coverage else "INSUFFICIENT_CALENDAR_COVERAGE"
         ),
+        "coverage_7d_pct": seven_coverage,
+        "coverage_30d_pct": thirty_coverage,
+        "based_on_latest_observation_not_run_date": True,
 
         "role": (
             "AIS traffic observation layer only"
@@ -1451,6 +1492,8 @@ def build_flow_dataset() -> Dict[str, Any]:
     recent = build_recent_windows(
         observations
     )
+    current_windows = build_current_calendar_windows(observations, generated_at.date())
+    source_diagnostics = build_source_diagnostics(observations, generated_at)
 
     ais_disruption = (
         build_ais_observed_disruption(
@@ -1472,6 +1515,18 @@ def build_flow_dataset() -> Dict[str, Any]:
             references,
         )
     )
+    if source_diagnostics["status"] == "SOURCE_DELAYED":
+        data_quality["issues"].append(
+            "API request succeeded but latest PortWatch observation is delayed"
+        )
+    if current_windows["7d"]["coverage_pct"] < 70:
+        data_quality["issues"].append(
+            "Current 7-calendar-day window has insufficient observations"
+        )
+    if recent["7d"]["coverage_pct"] < 70 or recent["30d"]["coverage_pct"] < 70:
+        data_quality["issues"].append(
+            "Observation-anchored calendar windows have insufficient coverage"
+        )
 
     return {
         "meta": {
@@ -1506,6 +1561,9 @@ def build_flow_dataset() -> Dict[str, Any]:
             "final_flow_risk_calculated": (
                 False
             ),
+            "recent_windows_reference": "LATEST_OBSERVATION_DATE",
+            "current_calendar_windows_reference": "RUN_DATE",
+            "missing_calendar_days_are_not_zero_traffic": True,
 
             "principles": [
                 (
@@ -1569,6 +1627,8 @@ def build_flow_dataset() -> Dict[str, Any]:
         "reference_periods": references,
 
         "recent_windows": recent,
+        "current_calendar_windows": current_windows,
+        "source_diagnostics": source_diagnostics,
 
         "ais_observed_disruption": (
             ais_disruption
@@ -1596,6 +1656,7 @@ def build_flow_dataset() -> Dict[str, Any]:
             "newest_observation": (
                 observations[0]["date"]
             ),
+            "source_status": source_diagnostics["status"],
         },
 
         "history": observations,
@@ -1654,7 +1715,7 @@ def main() -> int:
 
         print()
         print(
-            "Hormuz Flow Collector v1.3"
+            "Hormuz Flow Collector v1.4"
         )
 
         print(
@@ -1677,6 +1738,9 @@ def main() -> int:
             "Age days:",
             freshness.get("age_days"),
         )
+        print("Source status:", result["source_diagnostics"]["status"])
+        print("Current 7d coverage:", result["current_calendar_windows"]["7d"]["coverage_pct"], "%")
+        print("Latest-observation 7d coverage:", result["recent_windows"]["7d"]["coverage_pct"], "%")
 
         print()
         print(
