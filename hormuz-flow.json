@@ -2,7 +2,7 @@
   "meta": {
     "collector": "Hormuz Flow Data Collector",
     "version": "1.3-ais-observed-disruption",
-    "generated_at": "2026-10-25T10:08:44.540168+00:00",
+    "generated_at": "2026-10-26T11:32:49.374966+00:00",
     "automatic": true,
     "repository": "energy-data",
     "mode": "AIS_FLOW_OBSERVATION"
@@ -44,18 +44,19 @@
       "tanker_capacity_issue": null
     },
     "freshness": {
-      "status": "RECENT",
-      "age_days": 7
+      "status": "AGING",
+      "age_days": 8
     }
   },
   "freshness": {
-    "status": "RECENT",
-    "age_days": 7
+    "status": "AGING",
+    "age_days": 8
   },
   "data_quality": {
-    "score": 85,
-    "level": "GOOD",
+    "score": 65,
+    "level": "MODERATE",
     "issues": [
+      "Latest PortWatch observation is aging",
       "2 of 30 recent days have invalid tanker-capacity values"
     ]
   },
