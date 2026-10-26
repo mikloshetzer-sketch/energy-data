@@ -1,4 +1,68 @@
-h = math.sin((lat2-lat1)/2)**2 + math.cos(lat1)*math.cos(lat2)*math.sin((lon2-lon1)/2)**2
+#!/usr/bin/env python3
+"""Hormuz API schema and source-specific identity stability diagnostics.
+
+No raw vessel IDs, names, coordinates or individual positions are published.
+The private comparison state is retained only within the GitHub Actions run
+unless explicitly persisted by the operator. Do not commit private state.
+"""
+from __future__ import annotations
+import hashlib
+import json
+import math
+import os
+from collections import Counter, defaultdict
+from datetime import datetime, timezone
+from pathlib import Path
+from urllib.request import Request, urlopen
+
+URL = 'https://hormuz.data-tracking.net/api/ships'
+OUT = Path('hormuz-api-identity-diagnostic.json')
+STATE = Path(os.environ.get('HORMUZ_IDENTITY_STATE', '/tmp/hormuz-identity-state.json'))
+VERSION = '1.1-identity-stability'
+
+
+def fetch():
+    req = Request(URL, headers={'User-Agent': 'energy-data-schema-audit/1.1', 'Accept': 'application/json'})
+    with urlopen(req, timeout=45) as response:
+        data = json.load(response)
+    if isinstance(data, list):
+        return data, 'list'
+    if isinstance(data, dict):
+        for key in ('ships', 'vessels', 'data', 'results'):
+            if isinstance(data.get(key), list):
+                return data[key], 'dict'
+    raise ValueError('No vessel list in API response')
+
+
+def nonempty(value):
+    return value is not None and str(value).strip() != ''
+
+
+def numeric(value):
+    try:
+        result = float(value)
+        return result if math.isfinite(result) else None
+    except (ValueError, TypeError):
+        return None
+
+
+def timestamp(value):
+    if not nonempty(value):
+        return None
+    try:
+        dt = datetime.fromisoformat(str(value).replace('Z', '+00:00'))
+        if dt.tzinfo is None:
+            return None
+        return dt.astimezone(timezone.utc)
+    except (ValueError, TypeError):
+        return None
+
+
+def km_distance(a, b):
+    if not all(numeric(x) is not None for x in (a.get('lat'), a.get('lon'), b.get('lat'), b.get('lon'))):
+        return None
+    lat1, lon1, lat2, lon2 = map(math.radians, (float(a['lat']), float(a['lon']), float(b['lat']), float(b['lon'])))
+    h = math.sin((lat2-lat1)/2)**2 + math.cos(lat1)*math.cos(lat2)*math.sin((lon2-lon1)/2)**2
     return 6371.0088 * 2 * math.asin(min(1, math.sqrt(h)))
 
 
@@ -114,3 +178,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
