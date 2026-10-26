@@ -1,0 +1,79 @@
+name: Hormuz Vessel Cross-Validation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "57 7 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hormuz-vessel-cross-validation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate-vessels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run vessel cross-validation
+        run: python validate_hormuz_vessels.py
+
+      - name: Check descriptive output schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('hormuz-vessel-cross-validation.json')
+          if not path.is_file():
+              raise SystemExit('ERROR: Missing vessel validation JSON')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          if data.get('meta', {}).get('version') != '1.0-vessel-evidence-audit':
+              raise SystemExit('ERROR: Unexpected vessel validation version')
+          assessment = data.get('assessment') or {}
+          if assessment.get('status') != 'VESSEL_EVIDENCE_ONLY':
+              raise SystemExit('ERROR: Unexpected assessment status')
+          if assessment.get('physical_oil_flow_validated') is not False:
+              raise SystemExit('ERROR: Physical oil flow must remain unvalidated')
+          if assessment.get('ready_for_composite') is not False:
+              raise SystemExit('ERROR: Composite integration must remain disabled')
+          if assessment.get('risk_score') is not None:
+              raise SystemExit('ERROR: Risk score must not be published')
+          if assessment.get('validated_oil_barrels_per_day') is not None:
+              raise SystemExit('ERROR: Validated oil throughput must not be asserted')
+          print('Vessel evidence audit schema OK; no physical-flow score published.')
+          PY
+
+      - name: Publish vessel cross-validation JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add hormuz-vessel-cross-validation.json
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+          git commit -m "data: update Hormuz vessel cross-validation"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              echo "Vessel cross-validation JSON published."
+              exit 0
+            fi
+            echo "Push attempt ${attempt} failed; retrying..."
+            sleep 5
+          done
+          echo "Unable to publish vessel cross-validation JSON after retries." >&2
+          exit 1
