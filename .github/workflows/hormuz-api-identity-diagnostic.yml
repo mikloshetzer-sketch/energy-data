@@ -13,6 +13,10 @@ concurrency:
 jobs:
   diagnose-api:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      HORMUZ_IDENTITY_STATE: ${{ runner.temp }}/hormuz-identity-state.json
 
     steps:
       - name: Checkout repository
@@ -25,27 +29,50 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Run Hormuz API diagnostic
+      - name: First observation - establish private baseline
         run: python diagnose_hormuz_api.py
 
-      - name: Validate diagnostic results
+      - name: Validate first observation
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
 
-          p = Path('hormuz-api-identity-diagnostic.json')
-
-          if not p.is_file():
-              raise SystemExit('Missing diagnostic JSON')
-
-          d = json.loads(p.read_text(encoding='utf-8'))
+          d = json.loads(
+              Path('hormuz-api-identity-diagnostic.json')
+              .read_text(encoding='utf-8')
+          )
 
           assert d['meta']['version'] == '1.1-identity-stability'
           assert d['source']['vessel_records'] > 0
+          assert d['cross_run_stability']['prior_private_state_available'] is False
+
+          print('First observation OK')
+          PY
+
+      - name: Wait 15 minutes
+        run: sleep 900
+
+      - name: Second observation - compare identifiers
+        run: python diagnose_hormuz_api.py
+
+      - name: Validate second observation
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          d = json.loads(
+              Path('hormuz-api-identity-diagnostic.json')
+              .read_text(encoding='utf-8')
+          )
+
+          assert d['meta']['version'] == '1.1-identity-stability'
+          assert d['source']['vessel_records'] > 0
+          assert d['cross_run_stability']['prior_private_state_available'] is True
 
           assert 'identity_uniqueness' in d
-          assert 'cross_run_stability' in d
+          assert 'matched_unambiguous_source_ids' in d['cross_run_stability']
 
           assert d['privacy'] == {
               'raw_vessel_records_exported': False,
@@ -57,8 +84,17 @@ jobs:
           assert d['assessment']['identifier_values_validated'] is False
           assert d['assessment']['source_ids_proven_stable'] is False
 
-          print('Hormuz API identity diagnostic validation OK')
+          print('Identity stability diagnostic OK')
+          print(
+              'Matched source IDs:',
+              d['cross_run_stability']['matched_unambiguous_source_ids']
+          )
           PY
+
+      - name: Remove temporary private state
+        if: always()
+        shell: bash
+        run: rm -f -- "$HORMUZ_IDENTITY_STATE"
 
       - name: Publish diagnostic JSON
         shell: bash
@@ -68,14 +104,14 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-          git add hormuz-api-identity-diagnostic.json
+          git add -- hormuz-api-identity-diagnostic.json
 
           if git diff --cached --quiet; then
             echo 'No changes to publish.'
             exit 0
           fi
 
-          git commit -m 'diagnostics: validate Hormuz API identities'
+          git commit -m 'diagnostics: compare Hormuz source IDs'
 
           for attempt in 1 2 3; do
             if git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}"; then
