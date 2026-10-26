@@ -4,7 +4,7 @@
 
 """
 Hormuz Risk Integration Engine
-Version: 3.2-observation-quality
+Version: 3.3-portwatch-calendar-quality
 
 Inputs:
     hormuz-risk.json
@@ -26,7 +26,7 @@ import sys
 from datetime import datetime, timezone, date, time, timedelta
 from pathlib import Path
 
-VERSION = "3.2-observation-quality"
+VERSION = "3.3-portwatch-calendar-quality"
 OUTPUT = "hormuz-risk-composite.json"
 
 INPUTS = {
@@ -320,63 +320,73 @@ def analyze_security(data, source):
 
 
 def analyze_portwatch(data, source):
+    """Separate historical PortWatch traffic from current-calendar evidence."""
     data = data or {}
-
-    disruption = data.get(
-        "ais_observed_disruption",
-        {}
-    )
-
-    seven = disruption.get("seven_day", {})
-    thirty = disruption.get("thirty_day", {})
-
-    seven_score = safe_number(
-        seven.get("disruption_score")
-    )
-
-    thirty_score = safe_number(
-        thirty.get("disruption_score")
-    )
-
+    disruption = data.get("ais_observed_disruption") or {}
+    seven = disruption.get("seven_day") or {}
+    thirty = disruption.get("thirty_day") or {}
+    current = data.get("current_calendar_windows") or {}
+    historical = data.get("recent_windows") or {}
+    diagnostic = data.get("source_diagnostics") or {}
+    latest = get_nested(data, "latest_observation", "date")
+    lag = diagnostic.get("observation_lag_calendar_days")
+    if not isinstance(lag, (int, float)) or isinstance(lag, bool):
+        lag = get_nested(data, "freshness", "age_days")
+    if isinstance(lag, bool) or not isinstance(lag, (int, float)):
+        lag = None
+    elif lag < 0:
+        lag = None
+    current_7d = current.get("7d") or {}
+    current_30d = current.get("30d") or {}
+    historical_7d = historical.get("7d") or {}
+    historical_30d = historical.get("30d") or {}
+    def coverage(window):
+        value = safe_number(window.get("coverage_pct"))
+        return round(value, 2) if value is not None and 0 <= value <= 100 else None
+    c7 = coverage(current_7d)
+    c30 = coverage(current_30d)
+    delayed = (diagnostic.get("status") == "SOURCE_DELAYED" or
+               (lag is not None and lag > 3) or
+               source.get("observation_status") == "STALE")
+    # A historical AIS indicator must never be presented as a current physical-flow score.
+    current_usable = (not delayed and c7 is not None and c7 >= 70 and
+                      source.get("observation_status") == "FRESH")
     return {
         "status": source["status"],
         "indicator": "AIS_OBSERVED_DISRUPTION",
-        "latest_observation": get_nested(
-            data,
-            "latest_observation",
-            "date",
-        ),
-        "observation_age_days": get_nested(
-            data,
-            "freshness",
-            "age_days",
-        ),
-        "observation_freshness": get_nested(
-            data,
-            "freshness",
-            "status",
-        ),
-        "structural_baseline_tankers_per_day":
-            disruption.get(
-                "structural_baseline_tankers_per_day"
-            ),
-        "current_7d_tankers_per_day":
-            disruption.get(
-                "current_7d_tankers_per_day"
-            ),
-        "current_30d_tankers_per_day":
-            disruption.get(
-                "current_30d_tankers_per_day"
-            ),
-        "ais_disruption_7d": seven_score,
-        "ais_disruption_30d": thirty_score,
+        "latest_observation": latest,
+        "observation_age_days": lag,
+        "observation_freshness": get_nested(data, "freshness", "status"),
+        "source_diagnostics": diagnostic,
+        "source_delayed": delayed,
+        "source_observation_status": source.get("observation_status"),
+        "current_observation_usable": current_usable,
+        "historical_only": not current_usable,
+        "calendar_coverage": {
+            "current_7d_pct": c7,
+            "current_30d_pct": c30,
+            "current_7d_missing_days": current_7d.get("missing_days"),
+            "current_30d_missing_days": current_30d.get("missing_days"),
+            "current_7d_missing_dates": current_7d.get("missing_dates", []),
+            "current_30d_missing_dates": current_30d.get("missing_dates", []),
+            "historical_7d_pct": coverage(historical_7d),
+            "historical_30d_pct": coverage(historical_30d),
+        },
+        "current_calendar_windows": current,
+        "historical_observation_windows": historical,
+        "structural_baseline_tankers_per_day": disruption.get("structural_baseline_tankers_per_day"),
+        "current_7d_tankers_per_day": disruption.get("current_7d_tankers_per_day"),
+        "current_30d_tankers_per_day": disruption.get("current_30d_tankers_per_day"),
+        "ais_disruption_7d": safe_number(seven.get("disruption_score")),
+        "ais_disruption_30d": safe_number(thirty.get("disruption_score")),
+        "ais_disruption_reference": "LATEST_OBSERVATION_HISTORICAL",
         "physical_flow_disruption": None,
         "physical_flow_validated": False,
         "warning": (
-            "AIS-observed tanker traffic is not "
-            "equivalent to actual oil throughput. "
-            "Missing AIS observations must not be "
-            "interpreted as zero physical traffic."
+            "PortWatch AIS disruption refers to the historical observation window ending "
+            f"{latest or 'on an unknown date'}, not necessarily to the current calendar week. "
+            "Missing AIS days are unknown, never zero traffic. AIS tanker counts do not "
+            "measure physical oil throughput."
         ),
     }
 
@@ -644,6 +654,7 @@ def main():
                 "measurements are required."
             ),
             "logistics_indicator_status": "EXPERIMENTAL_UNCALIBRATED_NOT_COMPOSITE_ELIGIBLE",
+            "portwatch_calendar_quality": "Current-calendar coverage and historical observation windows are separately assessed.",
             "ais_limitations": (
                 "AIS observation loss cannot "
                 "be converted directly into "
@@ -674,6 +685,8 @@ def main():
                 "usable_for_model"
             ],
             "ais_indicators_publishable": True,
+            "portwatch_current_indicator_publishable": portwatch["current_observation_usable"],
+            "portwatch_historical_indicator_publishable_with_date": bool(portwatch["latest_observation"]),
             "experimental_logistics_indicator_publishable_with_warning": True,
             "final_composite_publishable": False,
             "required_label": (
