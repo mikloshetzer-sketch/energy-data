@@ -1,4 +1,3 @@
-
 name: Hormuz Live AIS
 
 on:
@@ -16,7 +15,6 @@ concurrency:
 jobs:
   hormuz-live-ais:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,147 +27,120 @@ jobs:
           python-version: "3.12"
 
       - name: Run Hormuz Live AIS collector
-        run: |
-          python fetch_hormuz_live_ais.py
+        run: python fetch_hormuz_live_ais.py
 
-      - name: Validate output
+      - name: Validate observation and output
+        id: validate
+        shell: bash
         run: |
           python - <<'PY'
           import json
+          import os
           from datetime import datetime, timezone
           from pathlib import Path
 
-          path = Path("hormuz-live-ais.json")
+          path = Path('hormuz-live-ais.json')
+          if not path.is_file():
+              raise SystemExit('ERROR: hormuz-live-ais.json missing')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          meta = data.get('meta') or {}
+          source = data.get('source_status') or {}
+          summary = data.get('summary') or {}
+          analysis = data.get('live_ais_analysis') or {}
 
-          if not path.exists():
-              raise SystemExit(
-                  "ERROR: hormuz-live-ais.json was not created"
-              )
+          def parse_utc(value, label):
+              if not isinstance(value, str) or not value.strip():
+                  raise ValueError(f'{label} missing')
+              dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
+              if dt.tzinfo is None:
+                  raise ValueError(f'{label} lacks timezone')
+              return dt.astimezone(timezone.utc)
 
-          with path.open("r", encoding="utf-8") as f:
-              data = json.load(f)
-
-          meta = data.get("meta", {})
-          status = data.get("source_status", {})
-          summary = data.get("summary", {})
-
-          print("=== HORMUZ LIVE AIS VALIDATION ===")
-          print("Collector:", meta.get("collector"))
-          print("Version:", meta.get("version"))
-          print("Generated:", meta.get("generated_at"))
-          print("Source:", status.get("status"))
-          print(
-              "Endpoints:",
-              status.get("endpoints_successful"),
-              "/",
-              status.get("endpoints_total")
-          )
-
-          generated = meta.get("generated_at")
-          if not generated:
-              raise SystemExit("ERROR: Missing generated_at")
-
+          now = datetime.now(timezone.utc)
           try:
-              timestamp = datetime.fromisoformat(
-                  generated.replace("Z", "+00:00")
-              )
-              if timestamp.tzinfo is None:
-                  raise ValueError("Timezone missing")
-              age = (
-                  datetime.now(timezone.utc)
-                  - timestamp.astimezone(timezone.utc)
-              ).total_seconds() / 60
+              generated = parse_utc(meta.get('generated_at'), 'generated_at')
+              observed = parse_utc(summary.get('last_poll'), 'summary.last_poll')
           except (ValueError, TypeError) as exc:
-              raise SystemExit(
-                  f"ERROR: Invalid generated_at: {exc}"
-              )
+              raise SystemExit(f'ERROR: Invalid timestamp: {exc}')
 
-          if age > 60 or age < -5:
-              raise SystemExit(
-                  f"ERROR: Collector output timestamp invalid: {age:.1f} min"
-              )
+          generated_age = (now - generated).total_seconds() / 60
+          observed_age = (now - observed).total_seconds() / 60
+          if not -5 <= generated_age <= 60:
+              raise SystemExit(f'ERROR: Generated file timestamp out of bounds: {generated_age:.1f} minutes')
+          if observed_age < -5:
+              raise SystemExit(f'ERROR: AIS observation is in the future: {observed_age:.1f} minutes')
+          if source.get('status') != 'AVAILABLE':
+              raise SystemExit('ERROR: Live AIS source unavailable')
+          if (source.get('endpoints_successful') or 0) < 3:
+              raise SystemExit('ERROR: Fewer than three API endpoints succeeded')
+          if summary.get('available') is not True:
+              raise SystemExit('ERROR: AIS summary unavailable')
 
-          if status.get("status") != "AVAILABLE":
-              raise SystemExit(
-                  "ERROR: Live AIS source unavailable"
-              )
+          # Freshness refers to the source's actual observation, not the file write time.
+          observation_status = 'FRESH' if observed_age <= 120 else 'STALE'
+          proxy = analysis.get('oil_export_proxy') or {}
+          quality = analysis.get('data_quality') or {}
+          print('=== HORMUZ LIVE AIS VALIDATION ===')
+          print('Collector:', meta.get('collector'))
+          print('Version:', meta.get('version'))
+          print('Source:', source.get('status'))
+          print('Endpoints:', source.get('endpoints_successful'), '/', source.get('endpoints_total'))
+          print('Generated:', generated.isoformat())
+          print('Last actual observation:', observed.isoformat())
+          print(f'Generated age: {generated_age:.1f} min')
+          print(f'Observation age: {observed_age:.1f} min')
+          print('Observation status:', observation_status)
+          print('Data quality:', quality.get('status'), quality.get('score'))
+          print('Oil export proxy:', proxy.get('status'))
+          if observation_status == 'STALE':
+              print('::warning title=Stale AIS observation::The API responded, but the latest actual AIS observation is over 120 minutes old. Composite Risk must treat this input as stale.')
+          if proxy.get('status') == 'PARTIAL_OBSERVATION':
+              print('::warning title=Incomplete oil-export proxy::Oil-export observations are incomplete and must not be treated as physical flow.')
 
-          successful = status.get("endpoints_successful", 0)
-          if successful < 3:
-              raise SystemExit(
-                  "ERROR: Fewer than 3 endpoints succeeded"
-              )
-
-          if not summary.get("available"):
-              raise SystemExit(
-                  "ERROR: Live AIS summary unavailable"
-              )
-
-          crossings = summary.get("crossings", {})
-          print("Last poll:", summary.get("last_poll"))
-          print("Total ships:", summary.get("total_ships"))
-          print("In strait:", summary.get("in_strait"))
-          print("Inbound:", crossings.get("inbound"))
-          print("Outbound:", crossings.get("outbound"))
-          print("Crossings:", crossings.get("total"))
-
-          print("Validation successful.")
+          # Preserve valid source responses even when their underlying observations are stale.
+          # Staleness is a warning, not a reason to hide the data or mark the job green without notice.
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write(f'observation_status={observation_status}\n')
+              output.write(f'observation_age_minutes={observed_age:.1f}\n')
+              output.write(f'last_poll={observed.isoformat()}\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary_file:
+              summary_file.write('## Hormuz Live AIS – source freshness\n\n')
+              summary_file.write(f'- Source API: **{source.get("status")}**\n')
+              summary_file.write(f'- Successful endpoints: **{source.get("endpoints_successful")}/{source.get("endpoints_total")}**\n')
+              summary_file.write(f'- Generated at (UTC): `{generated.isoformat()}`\n')
+              summary_file.write(f'- Last observation (UTC): `{observed.isoformat()}`\n')
+              summary_file.write(f'- Observation age: **{observed_age:.1f} minutes**\n')
+              summary_file.write(f'- Observation freshness: **{observation_status}** (maximum 120 min)\n')
+              summary_file.write(f'- AIS data quality: **{quality.get("status")} ({quality.get("score")})**\n')
+              summary_file.write(f'- Oil-export proxy: **{proxy.get("status")}**\n\n')
+              summary_file.write('**Note:** AIS-derived estimates are not direct measurements of physical oil flow.\n')
           PY
 
-      - name: Write GitHub Actions summary
+      - name: Commit updated live AIS data with retry
+        shell: bash
         run: |
-          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
-          import json
-
-          with open("hormuz-live-ais.json", encoding="utf-8") as f:
-              data = json.load(f)
-
-          meta = data.get("meta", {})
-          summary = data.get("summary", {})
-          crossings = summary.get("crossings", {})
-          analysis = data.get("live_ais_analysis", {})
-          stats = analysis.get("crossing_statistics", {})
-          trend = stats.get("trend", {})
-
-          print("## Hormuz Live AIS")
-          print()
-          print(f"- Generated: {meta.get('generated_at')}")
-          print(f"- Ships: {summary.get('total_ships')}")
-          print(f"- In strait: {summary.get('in_strait')}")
-          print(f"- Inbound (24h): {crossings.get('inbound')}")
-          print(f"- Outbound (24h): {crossings.get('outbound')}")
-          print(f"- Crossings (24h): {crossings.get('total')}")
-          print()
-          print("### Traffic trends")
-          print()
-          print(
-              "- 7d vs 30d crossings: "
-              f"{trend.get('total_crossings_7d_vs_30d_pct')}%"
-          )
-          print(
-              "- 7d vs 30d outbound: "
-              f"{trend.get('outbound_7d_vs_30d_pct')}%"
-          )
-          print()
-          print(
-              "AIS-derived estimates are not "
-              "direct physical oil-flow measurements."
-          )
-          PY
-
-      - name: Commit updated live AIS data
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add hormuz-live-ais.json
-
           if git diff --cached --quiet; then
-            echo "No live AIS data changes to commit."
+            echo 'No live AIS data changes to commit.'
             exit 0
           fi
-
-          git commit -m "Update Hormuz live AIS data"
-
-          git pull --rebase origin "${GITHUB_REF_NAME}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git commit -m 'Update Hormuz live AIS data'
+          branch="${GITHUB_REF_NAME}"
+          for attempt in 1 2 3 4 5; do
+            echo "Publish attempt ${attempt}/5"
+            if ! git pull --rebase origin "$branch"; then
+              echo '::error::Rebase failed; possible conflicting changes to the AIS JSON file.'
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin "HEAD:$branch"; then
+              echo 'Live AIS data published successfully.'
+              exit 0
+            fi
+            sleep $((attempt * 3))
+          done
+          echo '::error::Could not publish live AIS data after five attempts.'
+          exit 1
