@@ -1,0 +1,72 @@
+name: Hormuz Flow Validation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 7 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hormuz-flow-validation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate-flow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate source observations
+        run: python validate_hormuz_flow.py
+
+      - name: Check descriptive output schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('hormuz-flow-validation.json')
+          if not path.is_file():
+              raise SystemExit('Missing hormuz-flow-validation.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          assert data.get('meta', {}).get('version') == '1.0-observation-comparison'
+          assert data.get('assessment', {}).get('physical_flow_validated') is False
+          assert data.get('assessment', {}).get('ready_for_composite_risk') is False
+          assert data.get('assessment', {}).get('flow_disruption_score') is None
+          for window in ('7d', '30d', '90d'):
+              assert window in data.get('windows', {}), f'Missing {window} window'
+          print('Validation schema OK; no physical-flow score published.')
+          PY
+
+      - name: Publish validation JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add hormuz-flow-validation.json
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+          git commit -m "data: update Hormuz flow validation"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              echo "Validation JSON published."
+              exit 0
+            fi
+            echo "Push attempt ${attempt} failed; retrying..."
+            sleep 5
+          done
+          echo "Unable to publish validation JSON after retries." >&2
+          exit 1
