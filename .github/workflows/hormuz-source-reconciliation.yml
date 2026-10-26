@@ -1,0 +1,77 @@
+name: Hormuz Source Reconciliation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "37 7 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hormuz-source-reconciliation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  reconcile-sources:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run source reconciliation
+        run: python reconcile_hormuz_sources.py
+
+      - name: Validate descriptive output
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('hormuz-source-reconciliation.json')
+          if not path.is_file():
+              raise SystemExit('Missing reconciliation JSON')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          if data.get('meta', {}).get('version') != '1.0-source-definitions':
+              raise SystemExit('Unexpected reconciliation version')
+          assessment = data.get('assessment') or {}
+          if assessment.get('status') != 'DEFINITIONS_NOT_YET_RECONCILED':
+              raise SystemExit('Unexpected assessment status')
+          if assessment.get('composite_integration_allowed') is not False:
+              raise SystemExit('Composite integration must remain disabled')
+          if assessment.get('verified_physical_oil_flow_mbd') is not None:
+              raise SystemExit('Physical flow must not be asserted')
+          if assessment.get('flow_risk_score') is not None:
+              raise SystemExit('No flow risk score should be published')
+          print('Reconciliation schema OK; source definitions remain unvalidated.')
+          PY
+
+      - name: Publish reconciliation JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add hormuz-source-reconciliation.json
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+          git commit -m "data: update Hormuz source reconciliation"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              echo "Reconciliation JSON published."
+              exit 0
+            fi
+            echo "Push attempt ${attempt} failed; retrying..."
+            sleep 5
+          done
+          echo "Unable to publish reconciliation JSON after retries." >&2
+          exit 1
