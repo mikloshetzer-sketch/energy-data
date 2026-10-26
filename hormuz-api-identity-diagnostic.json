@@ -1,0 +1,172 @@
+{
+  "meta": {
+    "model": "Hormuz API Identity Diagnostic",
+    "version": "1.0",
+    "generated_at": "2026-10-26T20:39:35.215603+00:00",
+    "mode": "SCHEMA_ONLY_NO_RAW_RECORDS"
+  },
+  "source": {
+    "endpoint": "https://hormuz.data-tracking.net/api/ships",
+    "response_wrapper": "list",
+    "vessel_records": 4148
+  },
+  "fields": {
+    "course": {
+      "present_records": 4148,
+      "nonempty_records": 3544,
+      "types": {
+        "float": 3544,
+        "NoneType": 604
+      }
+    },
+    "destination": {
+      "present_records": 4148,
+      "nonempty_records": 3723,
+      "types": {
+        "str": 3723,
+        "NoneType": 425
+      }
+    },
+    "draught": {
+      "present_records": 4148,
+      "nonempty_records": 0,
+      "types": {
+        "NoneType": 4148
+      }
+    },
+    "dwt": {
+      "present_records": 4148,
+      "nonempty_records": 2287,
+      "types": {
+        "float": 2287,
+        "NoneType": 1861
+      }
+    },
+    "fixes": {
+      "present_records": 4148,
+      "nonempty_records": 4148,
+      "types": {
+        "int": 4148
+      }
+    },
+    "flag": {
+      "present_records": 4148,
+      "nonempty_records": 4148,
+      "types": {
+        "str": 4148
+      }
+    },
+    "hdg": {
+      "present_records": 4148,
+      "nonempty_records": 2127,
+      "types": {
+        "NoneType": 2021,
+        "int": 2127
+      }
+    },
+    "latitude": {
+      "present_records": 4148,
+      "nonempty_records": 4148,
+      "types": {
+        "float": 4148
+      }
+    },
+    "length": {
+      "present_records": 4148,
+      "nonempty_records": 4146,
+      "types": {
+        "float": 4146,
+        "NoneType": 2
+      }
+    },
+    "longitude": {
+      "present_records": 4148,
+      "nonempty_records": 4148,
+      "types": {
+        "float": 4148
+      }
+    },
+    "mmsi": {
+      "present_records": 4148,
+      "nonempty_records": 4148,
+      "types": {
+        "str": 4148
+      }
+    },
+    "name": {
+      "present_records": 4148,
+      "nonempty_records": 4148,
+      "types": {
+        "str": 4148
+      }
+    },
+    "ship_category": {
+      "present_records": 4148,
+      "nonempty_records": 4148,
+      "types": {
+        "str": 4148
+      }
+    },
+    "speed": {
+      "present_records": 4148,
+      "nonempty_records": 3928,
+      "types": {
+        "float": 3928,
+        "NoneType": 220
+      }
+    },
+    "still": {
+      "present_records": 4148,
+      "nonempty_records": 4148,
+      "types": {
+        "bool": 4148
+      }
+    },
+    "timestamp": {
+      "present_records": 4148,
+      "nonempty_records": 4148,
+      "types": {
+        "str": 4148
+      }
+    },
+    "width": {
+      "present_records": 4148,
+      "nonempty_records": 4146,
+      "types": {
+        "float": 4146,
+        "NoneType": 2
+      }
+    },
+    "zone": {
+      "present_records": 4148,
+      "nonempty_records": 4148,
+      "types": {
+        "str": 4148
+      }
+    }
+  },
+  "identity_field_candidates": {
+    "mmsi": {
+      "present_records": 4148,
+      "nonempty_records": 4148,
+      "value_lengths": {
+        "7": 2245,
+        "6": 1434,
+        "8": 439,
+        "4": 22,
+        "5": 7,
+        "3": 1
+      }
+    }
+  },
+  "privacy": {
+    "raw_vessel_records_exported": false,
+    "identifiers_exported": false,
+    "coordinates_exported": false
+  },
+  "assessment": {
+    "api_identity_availability_verified": true,
+    "identifier_values_validated": false,
+    "note": "Schema and nonempty-field coverage only; no individual vessel identifiers or locations retained."
+  }
+}
