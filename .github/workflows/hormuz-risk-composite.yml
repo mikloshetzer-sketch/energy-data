@@ -1,4 +1,3 @@
-
 name: Hormuz Integrated Risk - Automatic and Manual
 
 on:
@@ -6,7 +5,6 @@ on:
 
   schedule:
     # Minden páros órában, UTC szerint, a 35. percben.
-    # A Security Risk workflow a 17. percben indul.
     - cron: "35 */2 * * *"
 
 permissions:
@@ -23,20 +21,17 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      # 1. Repository letöltése
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: true
 
-      # 2. Python környezet
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      # 3. Bemeneti fájlok ellenőrzése
       - name: Validate input JSON files
         run: |
           python - <<'PY'
@@ -50,8 +45,6 @@ jobs:
               "hormuz-vessels.json",
           ]
 
-          print("=== HORMUZ INPUT VALIDATION ===")
-
           for filename in files:
               path = Path(filename)
 
@@ -60,10 +53,7 @@ jobs:
                       f"ERROR: Missing file: {filename}"
                   )
 
-              with path.open(
-                  "r",
-                  encoding="utf-8"
-              ) as handle:
+              with path.open("r", encoding="utf-8") as handle:
                   data = json.load(handle)
 
               if not isinstance(data, dict):
@@ -76,12 +66,10 @@ jobs:
           print("All input files validated.")
           PY
 
-      # 4. Integrált modell futtatása
       - name: Run Hormuz integration engine
         run: |
           python build_hormuz_risk.py
 
-      # 5. Integrált eredmény ellenőrzése
       - name: Validate composite output
         run: |
           python - <<'PY'
@@ -95,10 +83,7 @@ jobs:
                   "ERROR: Composite output missing."
               )
 
-          with path.open(
-              "r",
-              encoding="utf-8"
-          ) as handle:
+          with path.open("r", encoding="utf-8") as handle:
               data = json.load(handle)
 
           required = [
@@ -129,9 +114,6 @@ jobs:
                       f"ERROR: Missing layer: {name}"
                   )
 
-          # A jelenlegi modell még nem teljesen
-          # hitelesített. Nem publikálhat végleges
-          # összesített pontszámot.
           if composite.get("validated") is not False:
               raise SystemExit(
                   "ERROR: Invalid composite validation."
@@ -150,31 +132,19 @@ jobs:
               )
 
           print("Composite validation successful.")
-          print(
-              "Generated:",
-              data["meta"].get("generated_at")
-          )
-          print(
-              "Status:",
-              composite.get("status")
-          )
-          print(
-              "Security score:",
-              layers["security"].get("score")
-          )
+          print("Status:", composite.get("status"))
           PY
 
-      # 6. Történeti adatok mentése
       - name: Save Hormuz history
         run: |
           python save_hormuz_history.py
 
-      # 7. History ellenőrzése
       - name: Validate history files
         run: |
           python - <<'PY'
           import csv
           import json
+          from datetime import datetime
           from pathlib import Path
 
           root = Path("history/hormuz")
@@ -188,20 +158,13 @@ jobs:
                       f"ERROR: Missing history: {path}"
                   )
 
-          with json_file.open(
-              "r",
-              encoding="utf-8"
-          ) as handle:
+          with json_file.open("r", encoding="utf-8") as handle:
               records = json.load(handle)
 
           with csv_file.open(
-              "r",
-              encoding="utf-8",
-              newline=""
+              "r", encoding="utf-8", newline=""
           ) as handle:
-              csv_records = list(
-                  csv.DictReader(handle)
-              )
+              csv_records = list(csv.DictReader(handle))
 
           if not isinstance(records, list):
               raise SystemExit(
@@ -240,12 +203,42 @@ jobs:
           print("=== HISTORY VALIDATION ===")
           print("History records:", len(records))
           print("Snapshots:", len(snapshots))
-          print("CSV:", csv_file)
-          print("JSON:", json_file)
+
+          times = sorted(
+              datetime.fromisoformat(
+                  item["timestamp_utc"].replace(
+                      "Z", "+00:00"
+                  )
+              )
+              for item in records
+              if item.get("timestamp_utc")
+          )
+
+          gaps = [
+              (b - a).total_seconds() / 3600
+              for a, b in zip(times, times[1:])
+          ]
+
+          if gaps:
+              print(
+                  "Maximum history gap (hours):",
+                  round(max(gaps), 2)
+              )
+
+              print(
+                  "History gaps over 3 hours:",
+                  sum(g > 3 for g in gaps)
+              )
+
+              if gaps[-1] > 3:
+                  print(
+                      "::warning::Last history interval "
+                      "exceeded 3 hours"
+                  )
+
           print("History validation successful.")
           PY
 
-      # 8. GitHub Actions összefoglaló
       - name: Create workflow summary
         run: |
           python - <<'PY'
@@ -323,7 +316,6 @@ jobs:
               handle.write("\n".join(lines) + "\n")
           PY
 
-      # 9. Artifact mentése
       - name: Upload composite and history artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -334,16 +326,15 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      # 10. Eredmények mentése a repositoryba
       - name: Commit composite and history
         shell: bash
         run: |
           set -euo pipefail
 
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Csak a saját kimeneti fájlokat mentjük.
           git add \
             hormuz-risk-composite.json \
             history/hormuz/
@@ -355,10 +346,31 @@ jobs:
 
           git commit -m "Update Hormuz risk and historical data"
 
-          # A többi collector közben is frissíthet.
-          # Ezért az aktuális távoli állapotra építünk.
-          git pull --rebase origin "${GITHUB_REF_NAME}"
+          # Retry publication when another collector pushes.
+          published=false
 
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          for attempt in 1 2 3 4 5; do
+            echo "Publish attempt ${attempt}/5"
+
+            git fetch origin "${GITHUB_REF_NAME}"
+
+            if ! git rebase "origin/${GITHUB_REF_NAME}"; then
+              git rebase --abort || true
+              echo "::error::Rebase conflict while publishing Hormuz history"
+              exit 1
+            fi
+
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              published=true
+              break
+            fi
+
+            sleep $((attempt * 5))
+          done
+
+          if [ "${published}" != "true" ]; then
+            echo "::error::History publication failed after five attempts"
+            exit 1
+          fi
 
           echo "Composite and history saved successfully."
