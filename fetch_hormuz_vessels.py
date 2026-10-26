@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
 
-VERSION="1.3-micro-geofence-persistent-tracking"
+VERSION="1.4-vessel-dedup-source-quality"
 BASE="https://hormuz.data-tracking.net"; ENDPOINT="/api/ships"; OUT=Path("hormuz-vessels.json")
 NEW_RUNS=2; MISSING_RUNS=2; MAX_MISSING=6; MAX_HIST=30
 OIL={"crude oil tanker","tanker","vlcc/ulcc","oil tanker","oil/chemical tanker","oil products tanker","product tanker","product/chemical tanker","product/chem tanker","chemical/oil products tanker","asphalt/bitumen tanker"}
@@ -133,13 +133,104 @@ def count(rows,key):return dict(sorted(Counter(v["position"].get(key) for v in r
 def analyze(vs):
     oil=[v for v in vs if v["oil_related"]];cr=[v for v in vs if v["crude_related"]];pr=[v for v in vs if v["product_related"]];large=[v for v in oil if (v["dwt"] or 0)>=100000];vl=[v for v in oil if v["tanker_size"] in("VLCC","ULCC")];known=[v for v in oil if v["dwt"] is not None]
     return {"total_vessels":len(vs),"identified_vessels":len(vs),"oil_related_vessels":len(oil),"crude_related_vessels":len(cr),"product_related_vessels":len(pr),"large_oil_tankers":len(large),"vlcc_ulcc_count":len(vl),"known_oil_tanker_dwt_count":len(known),"total_observed_oil_tanker_dwt":round(sum(v["dwt"] for v in known),2),"all_vessels_by_zone":count(vs,"region"),"oil_tankers_by_zone":count(oil,"region"),"crude_tankers_by_zone":count(cr,"region"),"vlcc_ulcc_by_zone":count(vl,"region"),"all_vessels_by_micro_zone":count(vs,"micro_zone"),"oil_tankers_by_micro_zone":count(oil,"micro_zone"),"crude_tankers_by_micro_zone":count(cr,"micro_zone"),"vlcc_ulcc_by_micro_zone":count(vl,"micro_zone"),"tanker_size_counts":dict(sorted(Counter(v["tanker_size"] for v in oil).items())),"ship_category_counts":dict(sorted(Counter(v["ship_category"] for v in vs).items()))}
+def deduplicate(vessels):
+    """Merge only reliable MMSI/IMO matches; preserve uncertain identities."""
+    def valid(value, kind):
+        s = text(value)
+        if not s or not s.isdigit():
+            return None
+        if kind == "mmsi":
+            return s if len(s) == 9 and s != "000000000" else None
+        return s if len(s) == 7 and s != "0000000" else None
+
+    parent = list(range(len(vessels)))
+    def root(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+    owners = {}
+    conflicts = 0
+    for idx, v in enumerate(vessels):
+        ids = [(kind, valid(v.get(kind), kind)) for kind in ("mmsi", "imo")]
+        for key in ids:
+            if key[1] is None:
+                continue
+            if key in owners:
+                other = root(owners[key])
+                this = root(idx)
+                if other != this:
+                    a, b = vessels[other], vessels[this]
+                    # Never merge when both records have different reliable IDs.
+                    mismatched = any(
+                        valid(a.get(k), k) and valid(b.get(k), k)
+                        and valid(a.get(k), k) != valid(b.get(k), k)
+                        for k in ("mmsi", "imo")
+                    )
+                    if mismatched:
+                        conflicts += 1
+                        continue
+                    parent[this] = other
+            else:
+                owners[key] = idx
+    groups = {}
+    for i, v in enumerate(vessels):
+        groups.setdefault(root(i), []).append(v)
+    def observed(v):
+        stamp = v.get("last_observation")
+        try:
+            dt = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+            return dt.timestamp() if dt.tzinfo else float("-inf")
+        except (ValueError, TypeError, AttributeError, OverflowError):
+            return float("-inf")
+    unique = []
+    for group in groups.values():
+        best = max(group, key=lambda v: (
+            observed(v),
+            sum(x is not None for x in v["position"].values()),
+            sum(x is not None for x in v["navigation"].values()),
+        ))
+        # Canonical identity: reliable MMSI, then IMO. Unverified names
+        # alone are not unique; coordinates prevent accidental conflation.
+        m = valid(best.get("mmsi"), "mmsi")
+        i = valid(best.get("imo"), "imo")
+        if m:
+            best["vessel_id"] = "MMSI:" + m
+        elif i:
+            best["vessel_id"] = "IMO:" + i
+        else:
+            pos = best["position"]
+            loc = f"{pos.get('latitude')}:{pos.get('longitude')}"
+            best["vessel_id"] = "UNVERIFIED:" + text(best.get("name")).upper() + ":" + loc
+        unique.append(best)
+    return unique, {
+        "raw_records": len(vessels),
+        "unique_records": len(unique),
+        "duplicates_removed": len(vessels) - len(unique),
+        "identity_conflicts": conflicts,
+        "unverified_identity_records": sum(
+            not valid(v.get("mmsi"), "mmsi")
+            and not valid(v.get("imo"), "imo") for v in unique
+        ),
+        "method": "Exact valid MMSI/IMO; ambiguous records retained",
+    }
+
 def main():
-    t=now();p=load_previous();vs=[normalize(r) for r in fetch()];a=analyze(vs);tr,state=track(vs,p,t);s=tr["summary"];hist=p.get("snapshot_history") if isinstance(p.get("snapshot_history"),list) else []
+    t=now();p=load_previous();raw=[normalize(r) for r in fetch()];vs,dedup=deduplicate(raw);a=analyze(vs);tr,state=track(vs,p,t);s=tr["summary"];hist=p.get("snapshot_history") if isinstance(p.get("snapshot_history"),list) else []
     hist.append({"generated_at":t,"total_vessels":a["total_vessels"],"oil_related_vessels":a["oil_related_vessels"],"crude_related_vessels":a["crude_related_vessels"],"large_oil_tankers":a["large_oil_tankers"],"vlcc_ulcc_count":a["vlcc_ulcc_count"],"oil_tankers_by_zone":a["oil_tankers_by_zone"],"vlcc_ulcc_by_zone":a["vlcc_ulcc_by_zone"],"oil_tankers_by_micro_zone":a["oil_tankers_by_micro_zone"],"vlcc_ulcc_by_micro_zone":a["vlcc_ulcc_by_micro_zone"],"oil_tanker_zone_changes_this_run":s["oil_tanker_zone_changes_this_run"],"oil_tanker_micro_zone_changes_this_run":s["oil_tanker_micro_zone_changes_this_run"],"confirmed_transits_this_run":s["confirmed_transits_this_run"],"confirmed_micro_transits_this_run":s["confirmed_micro_transits_this_run"]})
     churn=round(100*(s["raw_appeared_this_run"]+s["raw_missing_this_run"])/max(s["current_observed_vessels"]+s["raw_missing_this_run"],1),2);issues=[];score=100
+    previous_count=(p.get("analysis") or {}).get("total_vessels")
+    source_change_pct=None
+    if isinstance(previous_count,(int,float)) and previous_count>0:
+        source_change_pct=round(100*(len(vs)-previous_count)/previous_count,2)
+        if abs(source_change_pct)>=50:
+            score-=15;issues.append("Large observed vessel-count change; verify API coverage before interpreting traffic.")
+    if dedup["duplicates_removed"]:
+        issues.append(f"Removed {dedup['duplicates_removed']} duplicate API records.")
+    if dedup["identity_conflicts"]:
+        score-=10;issues.append("Conflicting vessel identifiers detected; ambiguous records retained.")
     if churn>=25:score-=10;issues.append("High snapshot churn detected; persistent confirmation logic is required.")
     if churn>=60:score-=10;issues.append("Very high snapshot churn; movement interpretation requires extra caution.")
-    data={"meta":{"collector":"Hormuz Vessel Monitor","version":VERSION,"generated_at":t,"repository":"energy-data","mode":"MICRO_GEOFENCE_PERSISTENT_VESSEL_TRACKING"},"methodology":{"final_flow_risk_calculated":False,"physical_flow_calculated":False,"new_confirmation_runs":NEW_RUNS,"missing_confirmation_runs":MISSING_RUNS,"max_missing_runs_to_keep":MAX_MISSING,"confirmed_transit_patterns":BROAD_PATTERNS,"confirmed_micro_transit_patterns":MICRO_PATTERNS,"micro_geofence":{"lat_min":LAT0,"lat_max":LAT1,"lon_min":LON0,"lon_max":LON1,"west_max_lon":WEST,"core_max_lon":CORE,"zones":["hormuz_west","hormuz_core","hormuz_east"],"role":"Analytical AIS corridor segmentation; not a legal or navigational boundary."},"principles":["Broad API zones are preserved for backward compatibility.","Micro-zones are calculated independently from coordinates.","NEW requires repeated observation.","DISAPPEARED means repeated AIS absence, not proven physical departure.","Confirmed micro transit requires WEST -> CORE -> EAST or reverse.","AIS absence is not evidence of physical vessel absence.","DWT and vessel counts are logistics indicators, not direct physical oil throughput."]},"source":{"name":"Hormuz API","base_url":BASE,"endpoint":ENDPOINT,"measurement_role":"Persistent vessel-level AIS observation","physical_flow_source":False},"analysis":a,"persistent_tracking":tr,"persistent_vessel_state":state,"snapshot_history":hist[-MAX_HIST:],"data_quality":{"score":score,"status":"HIGH" if score>=85 else "MODERATE","issues":issues,"snapshot_churn_pct":churn,"interpretation":"AIS tracking usability, not physical oil-flow accuracy."},"vessels":vs,"integration":{"integrated_into_hormuz_risk":False,"integrated_into_ompi":False,"ready_for_logistics_model":False,"next_step":"Validate tanker WEST/CORE/EAST transitions before Logistics Stress integration."}}
+    data={"meta":{"collector":"Hormuz Vessel Monitor","version":VERSION,"generated_at":t,"repository":"energy-data","mode":"MICRO_GEOFENCE_PERSISTENT_VESSEL_TRACKING"},"methodology":{"final_flow_risk_calculated":False,"physical_flow_calculated":False,"new_confirmation_runs":NEW_RUNS,"missing_confirmation_runs":MISSING_RUNS,"max_missing_runs_to_keep":MAX_MISSING,"confirmed_transit_patterns":BROAD_PATTERNS,"confirmed_micro_transit_patterns":MICRO_PATTERNS,"micro_geofence":{"lat_min":LAT0,"lat_max":LAT1,"lon_min":LON0,"lon_max":LON1,"west_max_lon":WEST,"core_max_lon":CORE,"zones":["hormuz_west","hormuz_core","hormuz_east"],"role":"Analytical AIS corridor segmentation; not a legal or navigational boundary."},"principles":["Broad API zones are preserved for backward compatibility.","Micro-zones are calculated independently from coordinates.","NEW requires repeated observation.","DISAPPEARED means repeated AIS absence, not proven physical departure.","Confirmed micro transit requires WEST -> CORE -> EAST or reverse.","AIS absence is not evidence of physical vessel absence.","DWT and vessel counts are logistics indicators, not direct physical oil throughput."]},"source":{"name":"Hormuz API","base_url":BASE,"endpoint":ENDPOINT,"measurement_role":"Persistent vessel-level AIS observation","physical_flow_source":False,"raw_records":dedup["raw_records"],"unique_records":dedup["unique_records"]},"analysis":a,"persistent_tracking":tr,"persistent_vessel_state":state,"snapshot_history":hist[-MAX_HIST:],"data_quality":{"score":score,"status":"HIGH" if score>=85 else "MODERATE","issues":issues,"snapshot_churn_pct":churn,"source_count_change_pct":source_change_pct,"deduplication":dedup,"interpretation":"AIS tracking usability, not physical oil-flow accuracy."},"vessels":vs,"integration":{"integrated_into_hormuz_risk":False,"integrated_into_ompi":False,"ready_for_logistics_model":False,"next_step":"Validate tanker WEST/CORE/EAST transitions before Logistics Stress integration."}}
     OUT.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8");print("Wrote",OUT)
 if __name__=="__main__":raise SystemExit(main())
-
