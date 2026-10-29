@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-10-29T19:39:49.500542+00:00",
+    "generated_at": "2026-10-29T23:57:54.958923+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,10 +39,10 @@
   },
   "regional_security": {
     "available": true,
-    "score": 47.3,
-    "risk_level": "LOW",
+    "score": 48.3,
+    "risk_level": "MEDIUM",
     "confidence": "MEDIUM",
-    "updated": "2026-10-29 13:04 UTC",
+    "updated": "2026-10-29 19:40 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
@@ -63,22 +63,22 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 31.2,
+      "score": 35.39,
       "level": "GUARDED",
       "confidence": "HIGH",
-      "event_signal": 28.36,
-      "regional_context_score": 47.3,
-      "security_events_7d": 3,
-      "direct_hormuz_security_events_7d": 0,
+      "event_signal": 33.12,
+      "regional_context_score": 48.3,
+      "security_events_7d": 4,
+      "direct_hormuz_security_events_7d": 1,
       "maritime_attack_events_7d": 1,
-      "closure_threat_events_7d": 0
+      "closure_threat_events_7d": 1
     },
     "flow": {
       "weight": 0.35,
       "status": "NOT_YET_IMPLEMENTED",
       "score": null,
       "note": "Physical throughput requires a dedicated flow data source. News text is retained only as a supporting signal.",
-      "supporting_news_signals": 0
+      "supporting_news_signals": 2
     },
     "logistics": {
       "weight": 0.25,
@@ -93,9 +93,40 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 3,
-  "flow_signal_count_7d": 0,
+  "security_event_count_7d": 4,
+  "flow_signal_count_7d": 2,
   "top_security_events": [
+    {
+      "event_id": "2026-10-29-97900bb3766f",
+      "date": "2026-10-29",
+      "title": "QatarEnergy secures 20-year US LNG supply from Woodside amid Hormuz blockade - Reuters",
+      "source": "Reuters (via Google News)",
+      "source_url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNZlJsZ1paSVVKMEhPR216c2tCUEhhd29KbWpVZ0xhSnl1c3huNXFEQkZGWEFrVm9DMDh5TUlnd0FjWGZORmNId2NUbWtnQUhfWUluWU5ZQXVfQWlWcG1VeXcxR0lhUWRDV3FkeWkxSGlOcTBfcEZaeFIzalJTWWl5X3ZsZFA1TGZiOFZ1dzByM0lzT0hNbXJ2bi1RYW1ROERYdFRkeUQyVV9OUEhaUGxLUUhicTZhYlUyZmd3WnBxMA",
+      "category": "other",
+      "location": "Qatar",
+      "confidence": 0.55,
+      "age_days": 0,
+      "direct_hormuz": true,
+      "maritime": false,
+      "physical_attack": false,
+      "generic_attack": false,
+      "maritime_security": false,
+      "closure_threat": true,
+      "energy": true,
+      "energy_infrastructure": false,
+      "regional_maritime": false,
+      "regional_actor": false,
+      "aviation": false,
+      "distance_km": 523.9,
+      "geographic_relevance": 0.3,
+      "textual_relevance": 0.7,
+      "temporal_weight": 1.0,
+      "security_event_type": "HORMUZ_CLOSURE_THREAT",
+      "security_score": 42.82,
+      "relevance_level": "HIGH",
+      "flow_positive_signal": false,
+      "flow_negative_signal": true
+    },
     {
       "event_id": "2026-10-27-2156d7828af8",
       "date": "2026-10-27",
@@ -190,6 +221,34 @@
       "flow_negative_signal": false
     }
   ],
-  "supporting_flow_news": [],
-  "non_security_flow_events": []
+  "supporting_flow_news": [
+    {
+      "date": "2026-10-29",
+      "title": "QatarEnergy secures 20-year US LNG supply from Woodside amid Hormuz blockade - Reuters",
+      "source": "Reuters (via Google News)",
+      "source_url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNZlJsZ1paSVVKMEhPR216c2tCUEhhd29KbWpVZ0xhSnl1c3huNXFEQkZGWEFrVm9DMDh5TUlnd0FjWGZORmNId2NUbWtnQUhfWUluWU5ZQXVfQWlWcG1VeXcxR0lhUWRDV3FkeWkxSGlOcTBfcEZaeFIzalJTWWl5X3ZsZFA1TGZiOFZ1dzByM0lzT0hNbXJ2bi1RYW1ROERYdFRkeUQyVV9OUEhaUGxLUUhicTZhYlUyZmd3WnBxMA",
+      "positive_flow_signal": false,
+      "negative_flow_signal": true,
+      "security_event_type": "HORMUZ_CLOSURE_THREAT"
+    },
+    {
+      "date": "2026-10-29",
+      "title": "EXCLUSIVE: QatarEnergy buys US, other LNG to hedge future Hormuz disruptions - Reuters",
+      "source": "Reuters (via Google News)",
+      "source_url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQT19OLUYzbVNkOXdLUFJnQWJpOHRJaDQ0Y3FyVWs5M1IyLTFIZmRsazhqakFvMlFPNnFTeEM1T0VTTnlHTjJyMjFsblVzMlduWlRNeFI0VjlZVXRwNUZGUTVFeWdTY0tLRzlaRWFKam9uU2lRREVFS0lTLXpQME9jR25LRjF5Z0lnZ2lqbV9ybjZfRlZldDRYXzB6UElVU08zVFduMzhCYjFTb25hWTBtNTA4dw",
+      "positive_flow_signal": false,
+      "negative_flow_signal": true,
+      "security_event_type": "NOT_SECURITY"
+    }
+  ],
+  "non_security_flow_events": [
+    {
+      "date": "2026-10-29",
+      "title": "EXCLUSIVE: QatarEnergy buys US, other LNG to hedge future Hormuz disruptions - Reuters",
+      "source": "Reuters (via Google News)",
+      "security_event_type": "NOT_SECURITY",
+      "positive_flow_signal": false,
+      "negative_flow_signal": true
+    }
+  ]
 }
