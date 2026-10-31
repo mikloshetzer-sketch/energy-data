@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Flow Validation",
     "version": "1.0-observation-comparison",
-    "generated_at": "2026-10-30T14:13:32.170179+00:00",
+    "generated_at": "2026-10-31T13:40:50.366567+00:00",
     "mode": "DESCRIPTIVE_ONLY"
   },
   "inputs": {
@@ -10,44 +10,45 @@
       "file": "hormuz-flow.json",
       "available": true,
       "error": null,
-      "generated_at": "2026-10-30T11:37:59.849631+00:00"
+      "generated_at": "2026-10-31T11:14:30.241144+00:00"
     },
     "live_ais": {
       "file": "hormuz-live-ais.json",
       "available": true,
       "error": null,
-      "generated_at": "2026-10-30T13:22:05.062786+00:00"
+      "generated_at": "2026-10-31T08:42:32.726520+00:00"
     },
     "vessels": {
       "file": "hormuz-vessels.json",
       "available": true,
       "error": null,
-      "generated_at": "2026-10-30T09:12:33.905132+00:00"
+      "generated_at": "2026-10-31T11:49:56.075112+00:00"
     }
   },
   "latest_observations": {
     "portwatch": "2026-10-25",
-    "live_ais_crossings": "2026-10-29",
-    "live_ais_oil_proxy": "2026-10-29"
+    "live_ais_crossings": "2026-10-30",
+    "live_ais_oil_proxy": "2026-10-30"
   },
   "source_lags_calendar_days": {
-    "portwatch": 5,
+    "portwatch": 6,
     "live_ais_crossings": 1,
     "live_ais_oil_proxy": 1
   },
   "windows": {
     "7d": {
-      "start_date": "2026-10-23",
-      "end_date": "2026-10-29",
+      "start_date": "2026-10-24",
+      "end_date": "2026-10-30",
       "expected_days": 7,
       "portwatch": {
-        "observed_days": 3,
-        "coverage_pct": 42.86,
+        "observed_days": 2,
+        "coverage_pct": 28.57,
         "missing_days": [
           "2026-10-26",
           "2026-10-27",
           "2026-10-28",
-          "2026-10-29"
+          "2026-10-29",
+          "2026-10-30"
         ],
         "average_tankers_per_observed_day": 1.0
       },
@@ -55,30 +56,18 @@
         "observed_days": 7,
         "coverage_pct": 100.0,
         "missing_days": [],
-        "average_both_directions_per_observed_day": 23.14
+        "average_both_directions_per_observed_day": 23.86
       },
       "live_ais_oil_proxy": {
-        "observed_days": 6,
-        "coverage_pct": 85.71,
-        "missing_days": [
-          "2026-10-23"
-        ],
-        "average_barrels_per_observed_day": 993617.17,
+        "observed_days": 7,
+        "coverage_pct": 100.0,
+        "missing_days": [],
+        "average_barrels_per_observed_day": 1000882.71,
         "physical_flow_measurement": false
       },
-      "overlap_days": 3,
-      "overlap_coverage_pct": 42.86,
+      "overlap_days": 2,
+      "overlap_coverage_pct": 28.57,
       "daily_side_by_side": [
-        {
-          "day": "2026-10-23",
-          "portwatch_all_vessels": 5,
-          "portwatch_tankers": 1,
-          "live_ais_inbound": 15,
-          "live_ais_outbound": 15,
-          "live_ais_crossings_both_directions": 30,
-          "live_ais_oil_proxy_barrels": null,
-          "comparison_validated": false
-        },
         {
           "day": "2026-10-24",
           "portwatch_all_vessels": 2,
@@ -104,31 +93,31 @@
       "comparison_warning": "PortWatch vessel counts, Live AIS crossings and AIS-derived barrels use different populations/definitions. Side-by-side observations are not a validated numerical comparison."
     },
     "30d": {
-      "start_date": "2026-09-30",
-      "end_date": "2026-10-29",
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-30",
       "expected_days": 30,
       "portwatch": {
-        "observed_days": 26,
-        "coverage_pct": 86.67,
+        "observed_days": 25,
+        "coverage_pct": 83.33,
         "missing_days": [
           "2026-10-26",
           "2026-10-27",
           "2026-10-28",
-          "2026-10-29"
+          "2026-10-29",
+          "2026-10-30"
         ],
-        "average_tankers_per_observed_day": 0.69
+        "average_tankers_per_observed_day": 0.56
       },
       "live_ais_crossings": {
         "observed_days": 30,
         "coverage_pct": 100.0,
         "missing_days": [],
-        "average_both_directions_per_observed_day": 23.27
+        "average_both_directions_per_observed_day": 24.0
       },
       "live_ais_oil_proxy": {
-        "observed_days": 23,
-        "coverage_pct": 76.67,
+        "observed_days": 24,
+        "coverage_pct": 80.0,
         "missing_days": [
-          "2026-09-30",
           "2026-10-04",
           "2026-10-07",
           "2026-10-08",
@@ -136,30 +125,20 @@
           "2026-10-21",
           "2026-10-23"
         ],
-        "average_barrels_per_observed_day": 1500491.39,
+        "average_barrels_per_observed_day": 1475714.5,
         "physical_flow_measurement": false
       },
-      "overlap_days": 26,
-      "overlap_coverage_pct": 86.67,
+      "overlap_days": 25,
+      "overlap_coverage_pct": 83.33,
       "daily_side_by_side": [
-        {
-          "day": "2026-09-30",
-          "portwatch_all_vessels": 4,
-          "portwatch_tankers": 4,
-          "live_ais_inbound": 2,
-          "live_ais_outbound": 6,
-          "live_ais_crossings_both_directions": 8,
-          "live_ais_oil_proxy_barrels": null,
-          "comparison_validated": false
-        },
         {
           "day": "2026-10-01",
           "portwatch_all_vessels": 0,
           "portwatch_tankers": 0,
-          "live_ais_inbound": 10,
-          "live_ais_outbound": 10,
-          "live_ais_crossings_both_directions": 20,
-          "live_ais_oil_proxy_barrels": 474027,
+          "live_ais_inbound": 9,
+          "live_ais_outbound": 6,
+          "live_ais_crossings_both_directions": 15,
+          "live_ais_oil_proxy_barrels": 335397,
           "comparison_validated": false
         },
         {
@@ -407,25 +386,25 @@
       "comparison_warning": "PortWatch vessel counts, Live AIS crossings and AIS-derived barrels use different populations/definitions. Side-by-side observations are not a validated numerical comparison."
     },
     "90d": {
-      "start_date": "2026-08-01",
-      "end_date": "2026-10-29",
+      "start_date": "2026-08-02",
+      "end_date": "2026-10-30",
       "expected_days": 90,
       "portwatch": {
-        "observed_days": 86,
-        "coverage_pct": 95.56,
+        "observed_days": 85,
+        "coverage_pct": 94.44,
         "missing_days": [
           "2026-10-26",
           "2026-10-27",
           "2026-10-28",
-          "2026-10-29"
+          "2026-10-29",
+          "2026-10-30"
         ],
-        "average_tankers_per_observed_day": 1.23
+        "average_tankers_per_observed_day": 1.21
       },
       "live_ais_crossings": {
         "observed_days": 30,
         "coverage_pct": 33.33,
         "missing_days": [
-          "2026-08-01",
           "2026-08-02",
           "2026-08-03",
           "2026-08-04",
@@ -484,15 +463,15 @@
           "2026-09-26",
           "2026-09-27",
           "2026-09-28",
-          "2026-09-29"
+          "2026-09-29",
+          "2026-09-30"
         ],
-        "average_both_directions_per_observed_day": 23.27
+        "average_both_directions_per_observed_day": 24.0
       },
       "live_ais_oil_proxy": {
-        "observed_days": 23,
-        "coverage_pct": 25.56,
+        "observed_days": 24,
+        "coverage_pct": 26.67,
         "missing_days": [
-          "2026-08-01",
           "2026-08-02",
           "2026-08-03",
           "2026-08-04",
@@ -560,30 +539,20 @@
           "2026-10-21",
           "2026-10-23"
         ],
-        "average_barrels_per_observed_day": 1500491.39,
+        "average_barrels_per_observed_day": 1475714.5,
         "physical_flow_measurement": false
       },
-      "overlap_days": 26,
-      "overlap_coverage_pct": 28.89,
+      "overlap_days": 25,
+      "overlap_coverage_pct": 27.78,
       "daily_side_by_side": [
-        {
-          "day": "2026-09-30",
-          "portwatch_all_vessels": 4,
-          "portwatch_tankers": 4,
-          "live_ais_inbound": 2,
-          "live_ais_outbound": 6,
-          "live_ais_crossings_both_directions": 8,
-          "live_ais_oil_proxy_barrels": null,
-          "comparison_validated": false
-        },
         {
           "day": "2026-10-01",
           "portwatch_all_vessels": 0,
           "portwatch_tankers": 0,
-          "live_ais_inbound": 10,
-          "live_ais_outbound": 10,
-          "live_ais_crossings_both_directions": 20,
-          "live_ais_oil_proxy_barrels": 474027,
+          "live_ais_inbound": 9,
+          "live_ais_outbound": 6,
+          "live_ais_crossings_both_directions": 15,
+          "live_ais_oil_proxy_barrels": 335397,
           "comparison_validated": false
         },
         {
