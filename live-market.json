@@ -1,8 +1,8 @@
 {
   "meta": {
-    "updated": "2026-10-31 11:11 UTC",
+    "updated": "2026-10-31 16:17 UTC",
     "source_mode": "live",
-    "generated_at": "2026-10-31T11:11:11.450136Z",
+    "generated_at": "2026-10-31T16:17:47.748250Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
@@ -39,11 +39,11 @@
   },
   "risk": {
     "global_trade_risk_index": 45.5,
-    "middle_east_conflict_impact": 60.0,
+    "middle_east_conflict_impact": 59.9,
     "middle_east_conflict_label": "high",
     "daily_change": {
       "global_trade_risk_index_change": -0.9,
-      "middle_east_conflict_impact_change": -1.9,
+      "middle_east_conflict_impact_change": -2.0,
       "direction_global": "down",
       "direction_middle_east": "down"
     },
@@ -76,19 +76,19 @@
     ],
     "me_components": {
       "structural_score": 72.5,
-      "osint_signal_score": 39.3,
-      "osint_raw_total_risk": 98.3,
+      "osint_signal_score": 39.0,
+      "osint_raw_total_risk": 97.43,
       "osint_risk_level": "LOW",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 115,
+      "osint_total_events": 111,
       "osint_top_locations": [
         {
           "name": "Israel",
-          "risk": 34.0
+          "risk": 32.7
         },
         {
           "name": "Iran",
-          "risk": 12.2
+          "risk": 12.39
         },
         {
           "name": "Saudi Arabia",
@@ -96,21 +96,21 @@
         },
         {
           "name": "Yemen",
-          "risk": 8.65
+          "risk": 9.15
         },
         {
           "name": "Syria",
-          "risk": 5.25
+          "risk": 4.95
         }
       ],
-      "osint_updated": "2026-10-31 05:45 UTC",
+      "osint_updated": "2026-10-31 12:34 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 1.09,
+      "osint_age_hours": 0.93,
       "osint_used_in_blend": true,
-      "conflict_signal_score": 24.0,
-      "conflict_signal_raw_index": -1.2,
-      "conflict_signal_assessment": "moderate escalation",
+      "conflict_signal_score": 13.2,
+      "conflict_signal_raw_index": -0.66,
+      "conflict_signal_assessment": "mild escalation",
       "conflict_signal_trajectory": "uncertain",
       "conflict_signal_outlook": "Short-term direction remains uncertain.",
       "conflict_signal_article_count": 50,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-10-11T17:50:56Z",
-        "source_age_hours": 469.0,
+        "source_age_hours": 475.65,
         "source_event_count": 273,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-10-31 06:50 UTC",
+      "updated": "2026-10-31 13:29 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
