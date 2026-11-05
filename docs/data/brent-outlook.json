@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-11-05T15:26:53Z",
+  "generated_at": "2026-11-05T18:51:12Z",
   "dataset": "brent_outlook",
   "horizon_days": 30,
   "current": {
-    "price_usd": 94.06,
+    "price_usd": 97.21,
     "date": "2026-11-05",
-    "timestamp": "2026-11-05T15:26:53Z"
+    "timestamp": "2026-11-05T18:51:12Z"
   },
   "outlook": {
-    "center_price_usd": 91.61,
-    "lower_price_usd": 75.12,
-    "upper_price_usd": 108.09,
+    "center_price_usd": 94.95,
+    "lower_price_usd": 77.86,
+    "upper_price_usd": 112.04,
     "direction": "BEARISH",
     "confidence": "LOW",
     "current_range_position": "NEAR_CENTER"
@@ -18,26 +18,26 @@
   "signals": {
     "ompi_score": 61.8,
     "fundamental_shift_pct": 1.18,
-    "momentum_shift_pct": -3.5,
+    "momentum_shift_pct": -3.23,
     "trend_shift_pct": -0.75,
-    "raw_total_center_shift_pct": -2.61,
-    "total_center_shift_pct": -2.61,
+    "raw_total_center_shift_pct": -2.33,
+    "total_center_shift_pct": -2.33,
     "volatility_band_pct": 18.0
   },
   "contributions_pct": {
     "ompi": 1.18,
-    "momentum": -3.5,
+    "momentum": -3.23,
     "trend": -0.75,
     "inventory": 0.0,
     "supply_demand_balance": 0.24,
-    "chokepoint": 0.22,
+    "chokepoint": 0.24,
     "market_confirmation": 0.0
   },
   "driver_ranking": [
     {
       "component": "Momentum",
       "key": "momentum",
-      "contribution_pct": -3.5,
+      "contribution_pct": -3.23,
       "direction": "BEARISH"
     },
     {
@@ -53,15 +53,15 @@
       "direction": "BEARISH"
     },
     {
-      "component": "Supply–Demand Balance",
-      "key": "supply_demand_balance",
+      "component": "Chokepoint",
+      "key": "chokepoint",
       "contribution_pct": 0.24,
       "direction": "BULLISH"
     },
     {
-      "component": "Chokepoint",
-      "key": "chokepoint",
-      "contribution_pct": 0.22,
+      "component": "Supply–Demand Balance",
+      "key": "supply_demand_balance",
+      "contribution_pct": 0.24,
       "direction": "BULLISH"
     },
     {
@@ -80,7 +80,7 @@
   "overlay_metrics": {
     "inventory_score": 50.0,
     "latest_balance_mbd": -0.47,
-    "chokepoint_score": 59.0,
+    "chokepoint_score": 59.6,
     "market_confirmation_score": null
   },
   "optional_inputs": {
@@ -110,14 +110,14 @@
     }
   },
   "market_metrics": {
-    "change_5d_pct": -20.04,
-    "change_20d_pct": -14.38,
-    "change_60d_pct": -2.31,
-    "weighted_momentum_pct": -12.17,
+    "change_5d_pct": -17.37,
+    "change_20d_pct": -11.51,
+    "change_60d_pct": 0.97,
+    "weighted_momentum_pct": -9.23,
     "momentum_data_coverage": 1.0,
-    "moving_average_20d": 111.0,
-    "moving_average_60d": 106.17,
-    "daily_realised_volatility_20d": 0.034297,
+    "moving_average_20d": 111.16,
+    "moving_average_60d": 106.22,
+    "daily_realised_volatility_20d": 0.035156,
     "trend_state": "MIXED_BEARISH"
   },
   "confidence_details": {
