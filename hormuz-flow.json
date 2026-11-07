@@ -2,7 +2,7 @@
   "meta": {
     "collector": "Hormuz Flow Data Collector",
     "version": "1.4-calendar-freshness",
-    "generated_at": "2026-10-31T11:14:30.241144+00:00",
+    "generated_at": "2026-11-07T11:55:35.376206+00:00",
     "automatic": true,
     "repository": "energy-data",
     "mode": "AIS_FLOW_OBSERVATION"
@@ -47,18 +47,19 @@
       "tanker_capacity_issue": "positive_tanker_count_but_zero_or_missing_capacity"
     },
     "freshness": {
-      "status": "RECENT",
-      "age_days": 6
+      "status": "AGING",
+      "age_days": 13
     }
   },
   "freshness": {
-    "status": "RECENT",
-    "age_days": 6
+    "status": "AGING",
+    "age_days": 13
   },
   "data_quality": {
-    "score": 85,
-    "level": "GOOD",
+    "score": 65,
+    "level": "MODERATE",
     "issues": [
+      "Latest PortWatch observation is aging",
       "5 of 30 recent days have invalid tanker-capacity values",
       "API request succeeded but latest PortWatch observation is delayed",
       "Current 7-calendar-day window has insufficient observations"
@@ -322,34 +323,34 @@
   },
   "current_calendar_windows": {
     "7d": {
-      "days": 1,
+      "days": 0,
       "n_total": {
-        "observations": 1,
-        "average": 2.0,
-        "median": 2.0,
-        "min": 2.0,
-        "max": 2.0
+        "observations": 0,
+        "average": null,
+        "median": null,
+        "min": null,
+        "max": null
       },
       "n_tanker": {
-        "observations": 1,
-        "average": 1.0,
-        "median": 1.0,
-        "min": 1.0,
-        "max": 1.0
+        "observations": 0,
+        "average": null,
+        "median": null,
+        "min": null,
+        "max": null
       },
       "n_cargo": {
-        "observations": 1,
-        "average": 1.0,
-        "median": 1.0,
-        "min": 1.0,
-        "max": 1.0
+        "observations": 0,
+        "average": null,
+        "median": null,
+        "min": null,
+        "max": null
       },
       "capacity_total": {
-        "observations": 1,
-        "average": 0.0,
-        "median": 0.0,
-        "min": 0.0,
-        "max": 0.0
+        "observations": 0,
+        "average": null,
+        "median": null,
+        "min": null,
+        "max": null
       },
       "capacity_tanker_valid_only": {
         "observations": 0,
@@ -360,154 +361,169 @@
       },
       "capacity_quality": {
         "valid_days": 0,
-        "invalid_days": 1,
-        "valid_pct": 0.0
+        "invalid_days": 0,
+        "valid_pct": null
       },
-      "start_date": "2026-10-25",
-      "end_date": "2026-10-31",
+      "start_date": "2026-11-01",
+      "end_date": "2026-11-07",
       "expected_days": 7,
-      "observed_days": 1,
-      "missing_days": 6,
+      "observed_days": 0,
+      "missing_days": 7,
       "missing_dates": [
-        "2026-10-26",
-        "2026-10-27",
-        "2026-10-28",
-        "2026-10-29",
-        "2026-10-30",
-        "2026-10-31"
+        "2026-11-01",
+        "2026-11-02",
+        "2026-11-03",
+        "2026-11-04",
+        "2026-11-05",
+        "2026-11-06",
+        "2026-11-07"
       ],
-      "coverage_pct": 14.29,
+      "coverage_pct": 0.0,
       "window_type": "CALENDAR_DAYS",
       "reference": "RUN_DATE"
     },
     "30d": {
-      "days": 24,
+      "days": 17,
       "n_total": {
-        "observations": 24,
-        "average": 3.67,
-        "median": 3.5,
+        "observations": 17,
+        "average": 3.41,
+        "median": 3.0,
         "min": 0.0,
-        "max": 8.0
+        "max": 7.0
       },
       "n_tanker": {
-        "observations": 24,
-        "average": 0.58,
+        "observations": 17,
+        "average": 0.65,
         "median": 1.0,
         "min": 0.0,
         "max": 2.0
       },
       "n_cargo": {
-        "observations": 24,
-        "average": 3.08,
+        "observations": 17,
+        "average": 2.76,
         "median": 3.0,
         "min": 0.0,
         "max": 7.0
       },
       "capacity_total": {
-        "observations": 24,
-        "average": 94733.96,
-        "median": 78706.5,
+        "observations": 17,
+        "average": 66681.82,
+        "median": 41992.0,
         "min": 0.0,
-        "max": 439887.0
+        "max": 214117.0
       },
       "capacity_tanker_valid_only": {
-        "observations": 19,
-        "average": 15793.58,
+        "observations": 12,
+        "average": 11282.92,
         "median": 0.0,
         "min": 0.0,
-        "max": 119052.0
+        "max": 68520.0
       },
       "capacity_quality": {
-        "valid_days": 19,
+        "valid_days": 12,
         "invalid_days": 5,
-        "valid_pct": 79.17
+        "valid_pct": 70.59
       },
-      "start_date": "2026-10-02",
-      "end_date": "2026-10-31",
+      "start_date": "2026-10-09",
+      "end_date": "2026-11-07",
       "expected_days": 30,
-      "observed_days": 24,
-      "missing_days": 6,
+      "observed_days": 17,
+      "missing_days": 13,
       "missing_dates": [
         "2026-10-26",
         "2026-10-27",
         "2026-10-28",
         "2026-10-29",
         "2026-10-30",
-        "2026-10-31"
+        "2026-10-31",
+        "2026-11-01",
+        "2026-11-02",
+        "2026-11-03",
+        "2026-11-04",
+        "2026-11-05",
+        "2026-11-06",
+        "2026-11-07"
       ],
-      "coverage_pct": 80.0,
+      "coverage_pct": 56.67,
       "window_type": "CALENDAR_DAYS",
       "reference": "RUN_DATE"
     },
     "90d": {
-      "days": 84,
+      "days": 77,
       "n_total": {
-        "observations": 84,
-        "average": 3.99,
+        "observations": 77,
+        "average": 3.84,
         "median": 4.0,
         "min": 0.0,
-        "max": 10.0
+        "max": 9.0
       },
       "n_tanker": {
-        "observations": 84,
-        "average": 1.23,
+        "observations": 77,
+        "average": 1.17,
         "median": 1.0,
         "min": 0.0,
         "max": 4.0
       },
       "n_cargo": {
-        "observations": 84,
-        "average": 2.76,
+        "observations": 77,
+        "average": 2.68,
         "median": 2.0,
         "min": 0.0,
-        "max": 8.0
+        "max": 7.0
       },
       "capacity_total": {
-        "observations": 84,
-        "average": 87073.05,
-        "median": 70168.0,
+        "observations": 77,
+        "average": 83809.55,
+        "median": 69956.0,
         "min": 0.0,
         "max": 439887.0
       },
       "capacity_tanker_valid_only": {
-        "observations": 67,
-        "average": 19401.01,
+        "observations": 60,
+        "average": 20238.93,
         "median": 4771.0,
         "min": 0.0,
         "max": 119052.0
       },
       "capacity_quality": {
-        "valid_days": 67,
+        "valid_days": 60,
         "invalid_days": 17,
-        "valid_pct": 79.76
+        "valid_pct": 77.92
       },
-      "start_date": "2026-08-03",
-      "end_date": "2026-10-31",
+      "start_date": "2026-08-10",
+      "end_date": "2026-11-07",
       "expected_days": 90,
-      "observed_days": 84,
-      "missing_days": 6,
+      "observed_days": 77,
+      "missing_days": 13,
       "missing_dates": [
         "2026-10-26",
         "2026-10-27",
         "2026-10-28",
         "2026-10-29",
         "2026-10-30",
-        "2026-10-31"
+        "2026-10-31",
+        "2026-11-01",
+        "2026-11-02",
+        "2026-11-03",
+        "2026-11-04",
+        "2026-11-05",
+        "2026-11-06",
+        "2026-11-07"
       ],
-      "coverage_pct": 93.33,
+      "coverage_pct": 85.56,
       "window_type": "CALENDAR_DAYS",
       "reference": "RUN_DATE"
     }
   },
   "source_diagnostics": {
     "request_succeeded": true,
-    "requested_at": "2026-10-31T11:14:30.241144+00:00",
+    "requested_at": "2026-11-07T11:55:35.376206+00:00",
     "latest_observation_date": "2026-10-25",
-    "observation_lag_calendar_days": 6,
+    "observation_lag_calendar_days": 13,
     "status": "SOURCE_DELAYED",
     "interpretation": "A successful API request does not imply recent source observations.",
     "latest_7d_coverage_pct": 100.0,
-    "current_7d_coverage_pct": 14.29
+    "current_7d_coverage_pct": 0.0
   },
   "ais_observed_disruption": {
     "indicator_name": "AIS_OBSERVED_DISRUPTION",
