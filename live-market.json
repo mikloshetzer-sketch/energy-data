@@ -1,8 +1,8 @@
 {
   "meta": {
-    "updated": "2026-11-07 20:10 UTC",
+    "updated": "2026-11-07 23:55 UTC",
     "source_mode": "live",
-    "generated_at": "2026-11-07T20:10:30.423688Z",
+    "generated_at": "2026-11-07T23:55:23.034424Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
@@ -38,19 +38,19 @@
     }
   },
   "risk": {
-    "global_trade_risk_index": 46.5,
-    "middle_east_conflict_impact": 61.5,
+    "global_trade_risk_index": 46.6,
+    "middle_east_conflict_impact": 61.8,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": 0.5,
-      "middle_east_conflict_impact_change": 1.1,
+      "global_trade_risk_index_change": 0.6,
+      "middle_east_conflict_impact_change": 1.4,
       "direction_global": "up",
       "direction_middle_east": "up"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2614,
+        "estimated_impact": 0.2615,
         "status": "severe"
       },
       {
@@ -65,7 +65,7 @@
       },
       {
         "name": "Szuezi térség",
-        "estimated_impact": 0.0804,
+        "estimated_impact": 0.0805,
         "status": "medium"
       },
       {
@@ -76,23 +76,23 @@
     ],
     "me_components": {
       "structural_score": 74.7,
-      "osint_signal_score": 39.6,
-      "osint_raw_total_risk": 99.06,
+      "osint_signal_score": 40.3,
+      "osint_raw_total_risk": 100.73,
       "osint_risk_level": "LOW",
       "osint_confidence": "MEDIUM",
       "osint_total_events": 100,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 50.07
+          "risk": 49.69
         },
         {
           "name": "Israel",
-          "risk": 12.6
+          "risk": 13.85
         },
         {
           "name": "Yemen",
-          "risk": 9.0
+          "risk": 8.7
         },
         {
           "name": "Gaza Strip",
@@ -103,10 +103,10 @@
           "risk": 4.8
         }
       ],
-      "osint_updated": "2026-11-07 16:28 UTC",
+      "osint_updated": "2026-11-07 21:53 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 2.14,
+      "osint_age_hours": 0.74,
       "osint_used_in_blend": true,
       "conflict_signal_score": 20.4,
       "conflict_signal_raw_index": -1.02,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": false,
         "source_updated": "2026-11-06T15:49:53Z",
-        "source_age_hours": 26.78,
+        "source_age_hours": 30.79,
         "source_event_count": 289,
         "used_in_model": true
       }
     },
     "risk_meta": {
-      "updated": "2026-11-07 18:36 UTC",
+      "updated": "2026-11-07 22:37 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
