@@ -1,7 +1,7 @@
 {
   "market": {
-    "brent": "98.32 USD/hordó",
-    "wti": "90.83 USD/hordó",
+    "brent": "94.22 USD/hordó",
+    "wti": "87.78 USD/hordó",
     "inventory": "691.9 millió hordó",
     "supply": "111.5 millió hordó/nap",
     "brent_30d_trend": "-16.28%",
@@ -247,7 +247,7 @@
     "europe": {
       "level": "low",
       "label": "Korlátozott hatás",
-      "score": 2.8,
+      "score": 2.6,
       "factor": 1.0,
       "icon": "🇪🇺",
       "dependency_label": "Közepes kitettség",
@@ -257,7 +257,7 @@
     "america": {
       "level": "low",
       "label": "Korlátozott hatás",
-      "score": 1.7,
+      "score": 1.6,
       "factor": 0.6,
       "icon": "🇺🇸",
       "dependency_label": "Alacsonyabb közvetlen kitettség",
@@ -267,7 +267,7 @@
     "asia": {
       "level": "low",
       "label": "Korlátozott hatás",
-      "score": 4.3,
+      "score": 4.0,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
@@ -276,7 +276,7 @@
     }
   },
   "meta": {
-    "updated": "2026-11-08 13:29 UTC",
+    "updated": "2026-11-09 16:28 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
@@ -300,13 +300,13 @@
     "method": "Összetett index: geopolitika 40%, árszint 20%, ármozgás 20%, piaci stressz 10%, készlet és kínálat 10%."
   },
   "market_stress": {
-    "score": 34.0,
+    "score": 32.0,
     "level": "watch",
     "label": "Mérsékelten feszült",
     "note": "A piac érzékenyebb a szokásosnál, de a mért adatok még nem mutatnak szélsőséges reakciót.",
     "components": {
       "volatility": 10.0,
-      "price_level": 16.0,
+      "price_level": 14.0,
       "geopolitical": 0.0,
       "supply_buffer": 0.0,
       "brent_wti_spread": 8.0
@@ -330,13 +330,13 @@
       ]
     },
     "observed_values": {
-      "brent": 98.32,
-      "wti": 90.83,
+      "brent": 94.22,
+      "wti": 87.78,
       "brent_1d_change": -0.3352267436446591,
       "brent_7d_change": -16.57833203429463,
       "wti_1d_change": -0.41974815110933605,
       "wti_7d_change": -9.18702150929639,
-      "brent_wti_spread": 7.49,
+      "brent_wti_spread": 6.44,
       "inventory_million_barrels": 691.9,
       "global_supply_mbd": 111.4912152,
       "geopolitical_level": "low"
