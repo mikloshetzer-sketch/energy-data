@@ -2,7 +2,7 @@
   "meta": {
     "collector": "Hormuz Flow Data Collector",
     "version": "1.4-calendar-freshness",
-    "generated_at": "2026-11-08T12:12:23.102993+00:00",
+    "generated_at": "2026-11-09T14:21:22.339159+00:00",
     "automatic": true,
     "repository": "energy-data",
     "mode": "AIS_FLOW_OBSERVATION"
@@ -47,18 +47,19 @@
       "tanker_capacity_issue": "positive_tanker_count_but_zero_or_missing_capacity"
     },
     "freshness": {
-      "status": "RECENT",
-      "age_days": 7
+      "status": "AGING",
+      "age_days": 8
     }
   },
   "freshness": {
-    "status": "RECENT",
-    "age_days": 7
+    "status": "AGING",
+    "age_days": 8
   },
   "data_quality": {
-    "score": 80,
-    "level": "MODERATE",
+    "score": 60,
+    "level": "LIMITED",
     "issues": [
+      "Latest PortWatch observation is aging",
       "8 of 30 recent days have invalid tanker-capacity values",
       "API request succeeded but latest PortWatch observation is delayed",
       "Current 7-calendar-day window has insufficient observations"
@@ -363,71 +364,71 @@
         "invalid_days": 0,
         "valid_pct": null
       },
-      "start_date": "2026-11-02",
-      "end_date": "2026-11-08",
+      "start_date": "2026-11-03",
+      "end_date": "2026-11-09",
       "expected_days": 7,
       "observed_days": 0,
       "missing_days": 7,
       "missing_dates": [
-        "2026-11-02",
         "2026-11-03",
         "2026-11-04",
         "2026-11-05",
         "2026-11-06",
         "2026-11-07",
-        "2026-11-08"
+        "2026-11-08",
+        "2026-11-09"
       ],
       "coverage_pct": 0.0,
       "window_type": "CALENDAR_DAYS",
       "reference": "RUN_DATE"
     },
     "30d": {
-      "days": 23,
+      "days": 22,
       "n_total": {
-        "observations": 23,
-        "average": 3.74,
+        "observations": 22,
+        "average": 3.73,
         "median": 3.0,
         "min": 0.0,
         "max": 8.0
       },
       "n_tanker": {
-        "observations": 23,
-        "average": 0.91,
+        "observations": 22,
+        "average": 0.95,
         "median": 1.0,
         "min": 0.0,
         "max": 4.0
       },
       "n_cargo": {
-        "observations": 23,
-        "average": 2.83,
+        "observations": 22,
+        "average": 2.77,
         "median": 3.0,
         "min": 0.0,
         "max": 7.0
       },
       "capacity_total": {
-        "observations": 23,
-        "average": 65975.39,
-        "median": 50421.0,
+        "observations": 22,
+        "average": 66682.41,
+        "median": 46406.5,
         "min": 0.0,
         "max": 214117.0
       },
       "capacity_tanker_valid_only": {
-        "observations": 15,
-        "average": 15656.4,
-        "median": 0.0,
+        "observations": 14,
+        "average": 16774.71,
+        "median": 2318.0,
         "min": 0.0,
         "max": 85882.0
       },
       "capacity_quality": {
-        "valid_days": 15,
+        "valid_days": 14,
         "invalid_days": 8,
-        "valid_pct": 65.22
+        "valid_pct": 63.64
       },
-      "start_date": "2026-10-10",
-      "end_date": "2026-11-08",
+      "start_date": "2026-10-11",
+      "end_date": "2026-11-09",
       "expected_days": 30,
-      "observed_days": 23,
-      "missing_days": 7,
+      "observed_days": 22,
+      "missing_days": 8,
       "missing_dates": [
         "2026-11-02",
         "2026-11-03",
@@ -435,59 +436,60 @@
         "2026-11-05",
         "2026-11-06",
         "2026-11-07",
-        "2026-11-08"
+        "2026-11-08",
+        "2026-11-09"
       ],
-      "coverage_pct": 76.67,
+      "coverage_pct": 73.33,
       "window_type": "CALENDAR_DAYS",
       "reference": "RUN_DATE"
     },
     "90d": {
-      "days": 83,
+      "days": 82,
       "n_total": {
-        "observations": 83,
-        "average": 3.89,
+        "observations": 82,
+        "average": 3.83,
         "median": 4.0,
         "min": 0.0,
-        "max": 9.0
+        "max": 8.0
       },
       "n_tanker": {
-        "observations": 83,
-        "average": 1.18,
+        "observations": 82,
+        "average": 1.17,
         "median": 1.0,
         "min": 0.0,
         "max": 4.0
       },
       "n_cargo": {
-        "observations": 83,
-        "average": 2.71,
+        "observations": 82,
+        "average": 2.66,
         "median": 2.0,
         "min": 0.0,
         "max": 7.0
       },
       "capacity_total": {
-        "observations": 83,
-        "average": 82110.07,
-        "median": 69956.0,
+        "observations": 82,
+        "average": 81893.41,
+        "median": 69865.5,
         "min": 0.0,
         "max": 439887.0
       },
       "capacity_tanker_valid_only": {
-        "observations": 63,
-        "average": 20671.57,
+        "observations": 62,
+        "average": 20987.77,
         "median": 4771.0,
         "min": 0.0,
         "max": 119052.0
       },
       "capacity_quality": {
-        "valid_days": 63,
+        "valid_days": 62,
         "invalid_days": 20,
-        "valid_pct": 75.9
+        "valid_pct": 75.61
       },
-      "start_date": "2026-08-11",
-      "end_date": "2026-11-08",
+      "start_date": "2026-08-12",
+      "end_date": "2026-11-09",
       "expected_days": 90,
-      "observed_days": 83,
-      "missing_days": 7,
+      "observed_days": 82,
+      "missing_days": 8,
       "missing_dates": [
         "2026-11-02",
         "2026-11-03",
@@ -495,18 +497,19 @@
         "2026-11-05",
         "2026-11-06",
         "2026-11-07",
-        "2026-11-08"
+        "2026-11-08",
+        "2026-11-09"
       ],
-      "coverage_pct": 92.22,
+      "coverage_pct": 91.11,
       "window_type": "CALENDAR_DAYS",
       "reference": "RUN_DATE"
     }
   },
   "source_diagnostics": {
     "request_succeeded": true,
-    "requested_at": "2026-11-08T12:12:23.102993+00:00",
+    "requested_at": "2026-11-09T14:21:22.339159+00:00",
     "latest_observation_date": "2026-11-01",
-    "observation_lag_calendar_days": 7,
+    "observation_lag_calendar_days": 8,
     "status": "SOURCE_DELAYED",
     "interpretation": "A successful API request does not imply recent source observations.",
     "latest_7d_coverage_pct": 100.0,
