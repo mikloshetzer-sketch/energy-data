@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-11-09T01:45:18.017238+00:00",
+    "generated_at": "2026-11-09T09:50:51.946105+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,10 +39,10 @@
   },
   "regional_security": {
     "available": true,
-    "score": 45.6,
+    "score": 41.8,
     "risk_level": "LOW",
     "confidence": "MEDIUM",
-    "updated": "2026-11-08 22:08 UTC",
+    "updated": "2026-11-09 01:45 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
@@ -63,14 +63,14 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 47.48,
+      "score": 46.48,
       "level": "ELEVATED",
       "confidence": "HIGH",
-      "event_signal": 47.81,
-      "regional_context_score": 45.6,
-      "security_events_7d": 4,
-      "direct_hormuz_security_events_7d": 2,
-      "maritime_attack_events_7d": 4,
+      "event_signal": 47.31,
+      "regional_context_score": 41.8,
+      "security_events_7d": 3,
+      "direct_hormuz_security_events_7d": 1,
+      "maritime_attack_events_7d": 3,
       "closure_threat_events_7d": 0
     },
     "flow": {
@@ -93,7 +93,7 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 4,
+  "security_event_count_7d": 3,
   "flow_signal_count_7d": 0,
   "top_security_events": [
     {
@@ -123,37 +123,6 @@
       "temporal_weight": 1.0,
       "security_event_type": "MARITIME_ATTACK",
       "security_score": 57.09,
-      "relevance_level": "HIGH",
-      "flow_positive_signal": false,
-      "flow_negative_signal": false
-    },
-    {
-      "event_id": "2026-11-05-9cfd2390fcc7",
-      "date": "2026-11-05",
-      "title": "Tankers hit in Hormuz as Iran keeps up pressure after US vote - Reuters",
-      "source": "Reuters (via Google News)",
-      "source_url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQS25WaGR6RHltaldweFlqblRLWTQwanRGbVY4Vm5YZXBVdUVacG5DSTU3SXd1N00zTDROTTlYaGlnQzZPQUlmeUNPRlExc01kSUUwTFkwQUpWTWlXZEtkdTZmQktpWXUwcGt6dVBHbjkyb25ISjB1N0tOaWNJRHBoNk9iSzBJMURrM2dlemVvVnU5aHplVko3aGlQc296enRpdDlLNWJDWGtLWDZZVWc",
-      "category": "political",
-      "location": "Iran",
-      "confidence": 0.55,
-      "age_days": 4,
-      "direct_hormuz": true,
-      "maritime": true,
-      "physical_attack": false,
-      "generic_attack": true,
-      "maritime_security": false,
-      "closure_threat": false,
-      "energy": false,
-      "energy_infrastructure": false,
-      "regional_maritime": false,
-      "regional_actor": true,
-      "aviation": false,
-      "distance_km": 697.9,
-      "geographic_relevance": 0.0,
-      "textual_relevance": 0.8,
-      "temporal_weight": 0.75,
-      "security_event_type": "MARITIME_ATTACK",
-      "security_score": 46.71,
       "relevance_level": "HIGH",
       "flow_positive_signal": false,
       "flow_negative_signal": false
