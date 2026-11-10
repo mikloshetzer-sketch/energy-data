@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-11-10 20:53 UTC",
+    "updated": "2026-11-10 23:34 UTC",
     "source_file": "market-history.json",
     "method": "rolling pearson correlation + weighted lead-lag scan",
     "window_days": 7,
@@ -10,36 +10,36 @@
   "latest": {
     "leader": "hormuz_impact",
     "leader_label": "Hormuz",
-    "leader_correlation": 0.679,
-    "leader_weighted_strength": 1.018,
+    "leader_correlation": 0.667,
+    "leader_weighted_strength": 1.001,
     "ranked": [
       {
         "key": "hormuz_impact",
         "label": "Hormuz",
-        "correlation": 0.679,
+        "correlation": 0.667,
         "strategic_weight": 1.5,
-        "weighted_strength": 1.018
+        "weighted_strength": 1.001
       },
       {
         "key": "suez_impact",
         "label": "Suez",
-        "correlation": -0.529,
+        "correlation": -0.749,
         "strategic_weight": 1.1,
-        "weighted_strength": 0.582
-      },
-      {
-        "key": "bab_el_mandeb_impact",
-        "label": "Bab el-Mandeb",
-        "correlation": 0.428,
-        "strategic_weight": 1.3,
-        "weighted_strength": 0.556
+        "weighted_strength": 0.824
       },
       {
         "key": "bosporus_impact",
         "label": "Bosporus",
-        "correlation": -0.426,
+        "correlation": -0.894,
         "strategic_weight": 0.7,
-        "weighted_strength": 0.298
+        "weighted_strength": 0.626
+      },
+      {
+        "key": "bab_el_mandeb_impact",
+        "label": "Bab el-Mandeb",
+        "correlation": 0.284,
+        "strategic_weight": 1.3,
+        "weighted_strength": 0.369
       }
     ]
   },
@@ -2014,10 +2014,10 @@
     },
     {
       "date": "2026-11-10",
-      "brent_vs_hormuz_impact": 0.679,
-      "brent_vs_suez_impact": -0.529,
-      "brent_vs_bab_el_mandeb_impact": 0.428,
-      "brent_vs_bosporus_impact": -0.426
+      "brent_vs_hormuz_impact": 0.667,
+      "brent_vs_suez_impact": -0.749,
+      "brent_vs_bab_el_mandeb_impact": 0.284,
+      "brent_vs_bosporus_impact": -0.894
     }
   ]
 }
