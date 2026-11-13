@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-11-13T17:45:56.264510+00:00",
+    "generated_at": "2026-11-13T23:36:32.004622+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,10 +39,10 @@
   },
   "regional_security": {
     "available": true,
-    "score": 43.6,
+    "score": 36.3,
     "risk_level": "LOW",
     "confidence": "MEDIUM",
-    "updated": "2026-11-13 09:33 UTC",
+    "updated": "2026-11-13 23:36 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
@@ -63,14 +63,14 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 49.01,
+      "score": 46.71,
       "level": "ELEVATED",
       "confidence": "HIGH",
-      "event_signal": 49.96,
-      "regional_context_score": 43.6,
-      "security_events_7d": 7,
+      "event_signal": 48.54,
+      "regional_context_score": 36.3,
+      "security_events_7d": 6,
       "direct_hormuz_security_events_7d": 2,
-      "maritime_attack_events_7d": 5,
+      "maritime_attack_events_7d": 4,
       "closure_threat_events_7d": 0
     },
     "flow": {
@@ -93,7 +93,7 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 7,
+  "security_event_count_7d": 6,
   "flow_signal_count_7d": 1,
   "top_security_events": [
     {
@@ -185,37 +185,6 @@
       "temporal_weight": 1.0,
       "security_event_type": "MARITIME_ATTACK",
       "security_score": 53.2,
-      "relevance_level": "HIGH",
-      "flow_positive_signal": false,
-      "flow_negative_signal": false
-    },
-    {
-      "event_id": "2026-11-10-25a87fd2b032",
-      "date": "2026-11-10",
-      "title": "UAE selling Saudi oil from supertanker attacked in Gulf - Reuters",
-      "source": "Reuters (via Google News)",
-      "source_url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOODVGNDIwb000V0k3WEJXNF9NTFRITHptR2M2WkdrVEhuM05ZQjNWcFVqNXhfdDFaQ2daNWNvOTB5cVR5a29aejhoTDFqZUtvTXJqaXd6eElFaXpQOHdBMEFSRy1DRWdTWm5tN3NHSjFWVlVTMXRlRzdjVHJjbWZ3QWJobFpBMHFLSUV1d2NzLU1tMF9LTkw3dWw3djdKYnlJUDJqYi13",
-      "category": "military",
-      "location": "Saudi Arabia",
-      "confidence": 0.55,
-      "age_days": 3,
-      "direct_hormuz": false,
-      "maritime": true,
-      "physical_attack": true,
-      "generic_attack": true,
-      "maritime_security": false,
-      "closure_threat": false,
-      "energy": true,
-      "energy_infrastructure": false,
-      "regional_maritime": false,
-      "regional_actor": true,
-      "aviation": false,
-      "distance_km": 1161.9,
-      "geographic_relevance": 0.0,
-      "textual_relevance": 0.65,
-      "temporal_weight": 0.9,
-      "security_event_type": "MARITIME_ATTACK",
-      "security_score": 45.54,
       "relevance_level": "HIGH",
       "flow_positive_signal": false,
       "flow_negative_signal": false
