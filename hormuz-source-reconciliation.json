@@ -2,7 +2,7 @@
   "meta": {
     "name": "Hormuz Source Reconciliation",
     "version": "1.0-source-definitions",
-    "generated_at": "2026-11-12T16:10:09.271988+00:00",
+    "generated_at": "2026-11-13T15:39:06.419321+00:00",
     "mode": "METHODOLOGY_AUDIT_ONLY"
   },
   "input_status": {
@@ -10,25 +10,25 @@
       "file": "hormuz-flow-validation.json",
       "available": true,
       "error": null,
-      "generated_at": "2026-11-12T15:59:56.541917+00:00"
+      "generated_at": "2026-11-13T15:26:45.534108+00:00"
     },
     "portwatch": {
       "file": "hormuz-flow.json",
       "available": true,
       "error": null,
-      "generated_at": "2026-11-12T13:59:06.684099+00:00"
+      "generated_at": "2026-11-13T13:26:22.555928+00:00"
     },
     "live_ais": {
       "file": "hormuz-live-ais.json",
       "available": true,
       "error": null,
-      "generated_at": "2026-11-12T12:17:50.893580+00:00"
+      "generated_at": "2026-11-13T08:33:26.575985+00:00"
     },
     "vessels": {
       "file": "hormuz-vessels.json",
       "available": true,
       "error": null,
-      "generated_at": "2026-11-12T08:30:26.895717+00:00"
+      "generated_at": "2026-11-13T11:17:50.329174+00:00"
     }
   },
   "source_definitions": {
@@ -44,7 +44,7 @@
     "live_ais": {
       "provider": "Hormuz API",
       "metric": "API-defined daily inbound/outbound all-vessel crossings",
-      "last_poll": "2026-11-12T12:01:20+00:00",
+      "last_poll": "2026-11-13T08:31:19+00:00",
       "geofence_equivalence_verified": false,
       "same_vessel_population_as_portwatch_verified": false
     },
@@ -62,30 +62,18 @@
     }
   },
   "overlap": {
-    "common_days_with_both_live_directions": 27,
+    "common_days_with_both_live_directions": 26,
     "portwatch_zero_live_positive_days": [
       "2026-10-17"
     ],
     "daily_diagnostics": [
       {
-        "date": "2026-10-13",
-        "portwatch_all_vessels": 7,
-        "portwatch_tankers": 0,
-        "live_ais_inbound_all_vessels": 8,
-        "live_ais_outbound_all_vessels": 9,
-        "live_ais_both_directions_all_vessels": 17,
-        "diagnostic_flags": [
-          "PORTWATCH_ZERO_TANKERS_LIVE_ALL_VESSELS_POSITIVE_NOT_COMPARABLE"
-        ],
-        "numerically_comparable": false
-      },
-      {
         "date": "2026-10-14",
         "portwatch_all_vessels": 3,
         "portwatch_tankers": 0,
-        "live_ais_inbound_all_vessels": 9,
-        "live_ais_outbound_all_vessels": 11,
-        "live_ais_both_directions_all_vessels": 20,
+        "live_ais_inbound_all_vessels": 8,
+        "live_ais_outbound_all_vessels": 8,
+        "live_ais_both_directions_all_vessels": 16,
         "diagnostic_flags": [
           "PORTWATCH_ZERO_TANKERS_LIVE_ALL_VESSELS_POSITIVE_NOT_COMPARABLE"
         ],
@@ -129,8 +117,8 @@
         "portwatch_all_vessels": 4,
         "portwatch_tankers": 2,
         "live_ais_inbound_all_vessels": 13,
-        "live_ais_outbound_all_vessels": 17,
-        "live_ais_both_directions_all_vessels": 30,
+        "live_ais_outbound_all_vessels": 18,
+        "live_ais_both_directions_all_vessels": 31,
         "diagnostic_flags": [],
         "numerically_comparable": false
       },
