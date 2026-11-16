@@ -1,18 +1,18 @@
 {
   "market": {
-    "brent": "93.94 USD/hordó",
-    "wti": "86.91 USD/hordó",
-    "inventory": "691.9 millió hordó",
+    "brent": "93.92 USD/hordó",
+    "wti": "87.13 USD/hordó",
+    "inventory": "694.0 millió hordó",
     "supply": "110.0 millió hordó/nap",
-    "brent_30d_trend": "-16.28%",
-    "brent_1d_change": "-0.34%",
-    "brent_7d_change": "-16.58%",
-    "wti_1d_change": "-0.42%",
-    "wti_7d_change": "-9.19%"
+    "brent_30d_trend": "-23.80%",
+    "brent_1d_change": "+2.20%",
+    "brent_7d_change": "-14.20%",
+    "wti_1d_change": "0.00%",
+    "wti_7d_change": "-10.43%"
   },
   "spot": {
-    "brent": "107.03 USD/hordó",
-    "wti": "99.64 USD/hordó"
+    "brent": "92.14 USD/hordó",
+    "wti": "89.62 USD/hordó"
   },
   "production": {
     "current": "110.0 millió hordó/nap",
@@ -221,7 +221,7 @@
     "level": "stable",
     "label": "Korlátozott hatás",
     "direction": "semleges",
-    "text": "A havi termelési pálya alapján a globális kínálat jelenleg viszonylag stabil, így a mostani helyzet inkább kockázatként, mint azonnali termelési kiesésként jelenik meg."
+    "text": "A jelenlegi globális termelési szint alapján a piac egyelőre rendelkezik bizonyos kínálati pufferekkel, ezért a helyzet rövid távon inkább sérülékenységet, mint közvetlen visszaesést jelez."
   },
   "regional_dependency": {
     "europe": {
@@ -247,7 +247,7 @@
     "europe": {
       "level": "low",
       "label": "Korlátozott hatás",
-      "score": 3.3,
+      "score": 5.0,
       "factor": 1.0,
       "icon": "🇪🇺",
       "dependency_label": "Közepes kitettség",
@@ -257,7 +257,7 @@
     "america": {
       "level": "low",
       "label": "Korlátozott hatás",
-      "score": 2.0,
+      "score": 3.0,
       "factor": 0.6,
       "icon": "🇺🇸",
       "dependency_label": "Alacsonyabb közvetlen kitettség",
@@ -267,7 +267,7 @@
     "asia": {
       "level": "moderate",
       "label": "Mérsékelt hatás",
-      "score": 5.1,
+      "score": 7.7,
       "factor": 1.55,
       "icon": "🌏",
       "dependency_label": "Nagyon magas kitettség",
@@ -276,7 +276,7 @@
     }
   },
   "meta": {
-    "updated": "2026-11-12 15:20 UTC",
+    "updated": "2026-11-16 15:52 UTC",
     "source": "EIA + Yahoo Finance + ME Security Monitor"
   },
   "risk": {
@@ -286,14 +286,14 @@
     "type": "geopolitical"
   },
   "energy_risk": {
-    "score": 39.9,
+    "score": 44.9,
     "level": "high",
     "label": "Magas",
     "components": {
       "geopolitical": 14.9,
       "price_level": 14.0,
-      "price_momentum": 8.0,
-      "market_stress": 3.0,
+      "price_momentum": 10.0,
+      "market_stress": 6.0,
       "supply_pressure": 0.0
     },
     "triggers": [
@@ -303,12 +303,12 @@
     "method": "Összetett index: geopolitika 40%, árszint 20%, ármozgás 20%, piaci stressz 10%, készlet és kínálat 10%."
   },
   "market_stress": {
-    "score": 37.0,
-    "level": "watch",
-    "label": "Mérsékelten feszült",
-    "note": "A piac érzékenyebb a szokásosnál, de a mért adatok még nem mutatnak szélsőséges reakciót.",
+    "score": 40.0,
+    "level": "tense",
+    "label": "Feszült",
+    "note": "A rendelkezésre álló mutatók fokozott piaci érzékenységet és érdemi feszültséget jeleznek.",
     "components": {
-      "volatility": 10.0,
+      "volatility": 13.0,
       "price_level": 14.0,
       "geopolitical": 5.0,
       "supply_buffer": 0.0,
@@ -333,14 +333,14 @@
       ]
     },
     "observed_values": {
-      "brent": 93.94,
-      "wti": 86.91,
-      "brent_1d_change": -0.3352267436446591,
-      "brent_7d_change": -16.57833203429463,
-      "wti_1d_change": -0.41974815110933605,
-      "wti_7d_change": -9.18702150929639,
-      "brent_wti_spread": 7.03,
-      "inventory_million_barrels": 691.9,
+      "brent": 93.92,
+      "wti": 87.13,
+      "brent_1d_change": 2.196095829636207,
+      "brent_7d_change": -14.200577334947386,
+      "wti_1d_change": 0.0,
+      "wti_7d_change": -10.43373975614631,
+      "brent_wti_spread": 6.79,
+      "inventory_million_barrels": 694.0,
       "global_supply_mbd": 110.0417754,
       "geopolitical_level": "moderate"
     }
