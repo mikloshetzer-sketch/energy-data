@@ -2,7 +2,7 @@
   "meta": {
     "collector": "Hormuz Live AIS Collector",
     "version": "1.1-live-analysis",
-    "generated_at": "2026-11-16T00:19:04.424286+00:00",
+    "generated_at": "2026-11-16T07:06:26.238335+00:00",
     "repository": "energy-data",
     "automatic": true,
     "mode": "LIVE_AIS_OBSERVATION"
@@ -36,39 +36,39 @@
   "summary": {
     "available": true,
     "period_hours": 24,
-    "last_poll": "2026-11-16T00:01:19+00:00",
-    "total_ships": 2952,
-    "persian_gulf_ships": 1981,
-    "gulf_of_oman_ships": 971,
-    "in_strait": 44,
+    "last_poll": "2026-11-16T07:01:25+00:00",
+    "total_ships": 3088,
+    "persian_gulf_ships": 2167,
+    "gulf_of_oman_ships": 921,
+    "in_strait": 48,
     "crossings": {
-      "inbound": 9,
-      "outbound": 11,
+      "inbound": 11,
+      "outbound": 9,
       "total": 20
     },
     "estimated_oil_export": {
-      "barrels": 83276.0,
+      "barrels": 0.0,
       "crude_barrels": 0.0,
-      "petrochem_barrels": 83276.0,
+      "petrochem_barrels": 0.0,
       "measurement_role": "AIS-derived oil export estimate",
       "physical_flow_measurement": false
     },
     "raw": {
-      "gulf_of_oman_ships": 971,
-      "in_strait": 44,
-      "inbound": 9,
-      "last_poll": "2026-11-16T00:01:19+00:00",
-      "oil_export_barrels": 83276,
+      "gulf_of_oman_ships": 921,
+      "in_strait": 48,
+      "inbound": 11,
+      "last_poll": "2026-11-16T07:01:25+00:00",
+      "oil_export_barrels": 0,
       "oil_export_crude_barrels": 0,
-      "oil_export_petrochem_barrels": 83276,
-      "outbound": 11,
+      "oil_export_petrochem_barrels": 0,
+      "outbound": 9,
       "outbound_iran": 3,
       "outbound_oman": 0,
-      "outbound_unidentified": 8,
+      "outbound_unidentified": 6,
       "period_hours": 24,
-      "persian_gulf_ships": 1981,
+      "persian_gulf_ships": 2167,
       "total_crossings": 20,
-      "total_ships": 2952
+      "total_ships": 3088
     }
   },
   "endpoint_results": {
@@ -111,23 +111,23 @@
     {
       "ship_category": "Container Ship",
       "direction": "in_strait",
-      "count": 2,
-      "total_dwt": 11644.0,
-      "avg_dwt": 5822.0
+      "count": 3,
+      "total_dwt": 96653.0,
+      "avg_dwt": 32218.0
     },
     {
-      "ship_category": "Tug",
-      "direction": "outbound",
+      "ship_category": "Bulk Carrier",
+      "direction": "in_strait",
       "count": 2,
-      "total_dwt": 446.0,
-      "avg_dwt": 223.0
+      "total_dwt": 136138.0,
+      "avg_dwt": 68069.0
     },
     {
-      "ship_category": "Anchor Handling Vessel",
-      "direction": "outbound",
-      "count": 1,
-      "total_dwt": 835.0,
-      "avg_dwt": 835.0
+      "ship_category": "Yacht",
+      "direction": "inbound",
+      "count": 2,
+      "total_dwt": null,
+      "avg_dwt": null
     },
     {
       "ship_category": "Asphalt/Bitumen Tanker",
@@ -137,18 +137,18 @@
       "avg_dwt": 6109.0
     },
     {
-      "ship_category": "Bulk Carrier",
-      "direction": "in_strait",
-      "count": 1,
-      "total_dwt": 53800.0,
-      "avg_dwt": 53800.0
-    },
-    {
       "ship_category": "Cargo",
       "direction": "outbound",
       "count": 1,
       "total_dwt": null,
       "avg_dwt": null
+    },
+    {
+      "ship_category": "Container Ship",
+      "direction": "inbound",
+      "count": 1,
+      "total_dwt": 7000.0,
+      "avg_dwt": 7000.0
     },
     {
       "ship_category": "Crude Oil Tanker",
@@ -215,10 +215,10 @@
     },
     {
       "ship_category": "Oil/Chemical Tanker",
-      "direction": "outbound",
+      "direction": "in_strait",
       "count": 1,
-      "total_dwt": 11959.0,
-      "avg_dwt": 11959.0
+      "total_dwt": 46719.0,
+      "avg_dwt": 46719.0
     },
     {
       "ship_category": "Service Vessel",
@@ -228,6 +228,13 @@
       "avg_dwt": null
     },
     {
+      "ship_category": "Tender",
+      "direction": "outbound",
+      "count": 1,
+      "total_dwt": 0.0,
+      "avg_dwt": 0.0
+    },
+    {
       "ship_category": "Tug",
       "direction": "inbound",
       "count": 1,
@@ -235,28 +242,28 @@
       "avg_dwt": 161.0
     },
     {
-      "ship_category": "Yacht",
-      "direction": "inbound",
+      "ship_category": "Tug",
+      "direction": "outbound",
       "count": 1,
-      "total_dwt": null,
-      "avg_dwt": null
+      "total_dwt": 304.0,
+      "avg_dwt": 304.0
     }
   ],
   "daily_crossings": [
     {
       "day": "2026-10-17",
       "direction": "in_strait",
-      "count": 118
+      "count": 111
     },
     {
       "day": "2026-10-17",
       "direction": "inbound",
-      "count": 6
+      "count": 5
     },
     {
       "day": "2026-10-17",
       "direction": "outbound",
-      "count": 14
+      "count": 9
     },
     {
       "day": "2026-10-18",
@@ -696,7 +703,17 @@
     {
       "day": "2026-11-16",
       "direction": "in_strait",
-      "count": 44
+      "count": 49
+    },
+    {
+      "day": "2026-11-16",
+      "direction": "inbound",
+      "count": 2
+    },
+    {
+      "day": "2026-11-16",
+      "direction": "outbound",
+      "count": 1
     }
   ],
   "daily_oil_export": {
@@ -704,14 +721,14 @@
       {
         "day": "2026-10-17",
         "crude": {
-          "ships": 3,
-          "barrels": 4670956
+          "ships": 2,
+          "barrels": 4176860
         },
         "petrochem": {
-          "ships": 3,
-          "barrels": 725889
+          "ships": 1,
+          "barrels": 75742
         },
-        "total_barrels": 5396845
+        "total_barrels": 4252602
       },
       {
         "day": "2026-10-18",
@@ -1002,7 +1019,7 @@
         "total_barrels": 83276
       }
     ],
-    "avg_bbl_per_day": 1029883,
+    "avg_bbl_per_day": 991741,
     "barrels_per_ton": 7.33,
     "cargo_load_factor": 0.95,
     "crude_categories": [
@@ -1056,17 +1073,17 @@
         "observed_days": 30,
         "start_day": "2026-10-17",
         "end_day": "2026-11-15",
-        "inbound_avg": 12.33,
-        "outbound_avg": 12.93,
-        "total_crossings_avg": 25.27,
-        "in_strait_avg": 100.83,
-        "inbound_total": 370,
-        "outbound_total": 388,
-        "total_crossings": 758
+        "inbound_avg": 12.3,
+        "outbound_avg": 12.77,
+        "total_crossings_avg": 25.07,
+        "in_strait_avg": 100.6,
+        "inbound_total": 369,
+        "outbound_total": 383,
+        "total_crossings": 752
       },
       "trend": {
-        "outbound_7d_vs_30d_pct": -19.33,
-        "total_crossings_7d_vs_30d_pct": -18.6
+        "outbound_7d_vs_30d_pct": -18.32,
+        "total_crossings_7d_vs_30d_pct": -17.95
       }
     },
     "oil_export_proxy": {
@@ -1103,19 +1120,19 @@
           "2026-11-10"
         ],
         "completeness_pct": 83.33,
-        "observed_day_average_barrels": 1235859.4,
-        "observed_day_average_crude_barrels": 801718.64,
-        "observed_day_average_petrochem_barrels": 434140.76,
-        "observed_total_barrels": 30896485.0,
-        "observed_crude_barrels": 20042966.0,
-        "observed_petrochem_barrels": 10853519.0,
-        "observed_crude_ships": 16,
-        "observed_petrochem_ships": 44,
+        "observed_day_average_barrels": 1190089.68,
+        "observed_day_average_crude_barrels": 781954.8,
+        "observed_day_average_petrochem_barrels": 408134.88,
+        "observed_total_barrels": 29752242.0,
+        "observed_crude_barrels": 19548870.0,
+        "observed_petrochem_barrels": 10203372.0,
+        "observed_crude_ships": 15,
+        "observed_petrochem_ships": 42,
         "missing_days_treated_as_zero": false,
         "physical_flow_measurement": false
       },
       "trend": {
-        "observed_day_average_7d_vs_30d_pct": -1.56
+        "observed_day_average_7d_vs_30d_pct": 2.23
       },
       "status": "PARTIAL_OBSERVATION",
       "warning": "AIS-derived tanker/DWT estimate. Missing days are not assumed to mean zero physical oil flow.",
