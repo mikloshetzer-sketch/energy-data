@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-11-16T06:34:18.083871+00:00",
+    "generated_at": "2026-11-16T18:35:34.236552+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,17 +39,17 @@
   },
   "regional_security": {
     "available": true,
-    "score": 33.9,
+    "score": 39.6,
     "risk_level": "LOW",
     "confidence": "MEDIUM",
-    "updated": "2026-11-16 06:33 UTC",
+    "updated": "2026-11-16 18:35 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
   "historical_context": {
     "available": true,
     "generated_at": "2026-11-06T15:49:53Z",
-    "age_days": 9,
+    "age_days": 10,
     "freshness": "STALE",
     "event_count": 289,
     "role": "historical_context_only"
@@ -63,14 +63,14 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 49.55,
+      "score": 50.49,
       "level": "ELEVATED",
       "confidence": "HIGH",
-      "event_signal": 52.31,
-      "regional_context_score": 33.9,
-      "security_events_7d": 7,
+      "event_signal": 52.41,
+      "regional_context_score": 39.6,
+      "security_events_7d": 6,
       "direct_hormuz_security_events_7d": 4,
-      "maritime_attack_events_7d": 6,
+      "maritime_attack_events_7d": 5,
       "closure_threat_events_7d": 0
     },
     "flow": {
@@ -93,7 +93,7 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 7,
+  "security_event_count_7d": 6,
   "flow_signal_count_7d": 0,
   "top_security_events": [
     {
@@ -217,37 +217,6 @@
       "security_event_type": "MARITIME_ATTACK",
       "security_score": 46.71,
       "relevance_level": "HIGH",
-      "flow_positive_signal": false,
-      "flow_negative_signal": false
-    },
-    {
-      "event_id": "2026-11-12-19735f79cd1c",
-      "date": "2026-11-12",
-      "title": "Oil tanker struck off UAE's Ras Al-Khaimah, all crew reported safe - Reuters",
-      "source": "Reuters (via Google News)",
-      "source_url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxOeDlHRUduYXpITEh6ZXlxdm9Zc3hiVXlhZXhzbzUySkFvNkMyQ1pFYWlxbnZKUmR4T0tieF9rZHhWYnFzUXI2a0J4M2VOLUZPcGt3ckxrUzNrSFFfeXpXNDJjRzVIS2p6OWI5d1BhMHVzVVY4TktOaWJQYTJpenFZOXpISzBiUDZ5ZG5vVGE2U0U5RnFjQmlaRmNnUDk0YV9DRnl6UVRkOEtGR1RJdUF2VmxNRmVpN1lDeXRINVdYQ0xabGJkMTMwazNR",
-      "category": "other",
-      "location": "United Arab Emirates",
-      "confidence": 0.55,
-      "age_days": 4,
-      "direct_hormuz": false,
-      "maritime": true,
-      "physical_attack": true,
-      "generic_attack": true,
-      "maritime_security": false,
-      "closure_threat": false,
-      "energy": true,
-      "energy_infrastructure": false,
-      "regional_maritime": false,
-      "regional_actor": true,
-      "aviation": false,
-      "distance_km": 424.5,
-      "geographic_relevance": 0.3,
-      "textual_relevance": 0.65,
-      "temporal_weight": 0.75,
-      "security_event_type": "MARITIME_ATTACK",
-      "security_score": 39.9,
-      "relevance_level": "MEDIUM",
       "flow_positive_signal": false,
       "flow_negative_signal": false
     },
