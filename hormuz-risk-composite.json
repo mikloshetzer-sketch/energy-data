@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Integrated Risk",
     "version": "3.3-portwatch-calendar-quality",
-    "generated_at": "2026-11-18T07:53:16.604968+00:00",
+    "generated_at": "2026-11-18T17:29:31.111131+00:00",
     "repository": "energy-data",
     "mode": "PROVISIONAL"
   },
@@ -20,8 +20,8 @@
       "file": "hormuz-risk.json",
       "available": true,
       "status": "FRESH",
-      "generated_at": "2026-11-18T07:33:04.039796+00:00",
-      "age_hours": 0.34,
+      "generated_at": "2026-11-18T17:17:40.262730+00:00",
+      "age_hours": 0.2,
       "max_age_hours": 6,
       "error": null,
       "observation_at": null,
@@ -31,33 +31,33 @@
     "portwatch": {
       "file": "hormuz-flow.json",
       "available": true,
-      "status": "STALE",
-      "generated_at": "2026-11-13T13:26:22.555928+00:00",
-      "age_hours": 114.45,
+      "status": "FRESH",
+      "generated_at": "2026-11-18T14:33:58.332412+00:00",
+      "age_hours": 2.93,
       "max_age_hours": 48,
       "error": null,
-      "observation_at": "2026-11-08T23:59:59.999999+00:00",
-      "observation_age_hours": 223.89,
+      "observation_at": "2026-11-15T23:59:59.999999+00:00",
+      "observation_age_hours": 65.49,
       "observation_status": "STALE"
     },
     "live_ais": {
       "file": "hormuz-live-ais.json",
       "available": true,
       "status": "STALE",
-      "generated_at": "2026-11-18T01:30:39.851248+00:00",
-      "age_hours": 6.38,
+      "generated_at": "2026-11-18T09:02:36.642165+00:00",
+      "age_hours": 8.45,
       "max_age_hours": 2,
       "error": null,
-      "observation_at": "2026-11-18T01:01:21+00:00",
-      "observation_age_hours": 6.87,
+      "observation_at": "2026-11-18T08:31:20+00:00",
+      "observation_age_hours": 8.97,
       "observation_status": "STALE"
     },
     "vessels": {
       "file": "hormuz-vessels.json",
       "available": true,
       "status": "STALE",
-      "generated_at": "2026-11-18T01:45:14.071636+00:00",
-      "age_hours": 6.13,
+      "generated_at": "2026-11-18T09:24:54.690992+00:00",
+      "age_hours": 8.08,
       "max_age_hours": 2,
       "error": null,
       "observation_at": null,
@@ -69,11 +69,11 @@
     "security": {
       "weight": 0.4,
       "status": "AVAILABLE",
-      "score": 45.54,
+      "score": 50.76,
       "level": "ELEVATED",
       "confidence": "HIGH",
       "events_7d": 6,
-      "direct_hormuz_events_7d": 2,
+      "direct_hormuz_events_7d": 3,
       "maritime_attacks_7d": 5,
       "closure_threats_7d": 0,
       "source_fresh": true,
@@ -85,219 +85,209 @@
       "score": null,
       "validated": false,
       "portwatch_observation": {
-        "status": "STALE",
+        "status": "FRESH",
         "indicator": "AIS_OBSERVED_DISRUPTION",
-        "latest_observation": "2026-11-08",
-        "observation_age_days": 5,
-        "observation_freshness": "RECENT",
+        "latest_observation": "2026-11-15",
+        "observation_age_days": 3,
+        "observation_freshness": "FRESH",
         "source_diagnostics": {
           "request_succeeded": true,
-          "requested_at": "2026-11-13T13:26:22.555928+00:00",
-          "latest_observation_date": "2026-11-08",
-          "observation_lag_calendar_days": 5,
-          "status": "SOURCE_DELAYED",
+          "requested_at": "2026-11-18T14:33:58.332412+00:00",
+          "latest_observation_date": "2026-11-15",
+          "observation_lag_calendar_days": 3,
+          "status": "SOURCE_CURRENT",
           "interpretation": "A successful API request does not imply recent source observations.",
           "latest_7d_coverage_pct": 100.0,
-          "current_7d_coverage_pct": 28.57
+          "current_7d_coverage_pct": 57.14
         },
         "source_delayed": true,
         "source_observation_status": "STALE",
         "current_observation_usable": false,
         "historical_only": true,
         "calendar_coverage": {
-          "current_7d_pct": 28.57,
-          "current_30d_pct": 83.33,
-          "current_7d_missing_days": 5,
-          "current_30d_missing_days": 5,
+          "current_7d_pct": 57.14,
+          "current_30d_pct": 90.0,
+          "current_7d_missing_days": 3,
+          "current_30d_missing_days": 3,
           "current_7d_missing_dates": [
-            "2026-11-09",
-            "2026-11-10",
-            "2026-11-11",
-            "2026-11-12",
-            "2026-11-13"
+            "2026-11-16",
+            "2026-11-17",
+            "2026-11-18"
           ],
           "current_30d_missing_dates": [
-            "2026-11-09",
-            "2026-11-10",
-            "2026-11-11",
-            "2026-11-12",
-            "2026-11-13"
+            "2026-11-16",
+            "2026-11-17",
+            "2026-11-18"
           ],
           "historical_7d_pct": 100.0,
           "historical_30d_pct": 100.0
         },
         "current_calendar_windows": {
           "7d": {
-            "days": 2,
+            "days": 4,
             "n_total": {
-              "observations": 2,
-              "average": 2.5,
-              "median": 2.5,
-              "min": 2.0,
-              "max": 3.0
-            },
-            "n_tanker": {
-              "observations": 2,
-              "average": 1.0,
+              "observations": 4,
+              "average": 1.25,
               "median": 1.0,
-              "min": 1.0,
-              "max": 1.0
-            },
-            "n_cargo": {
-              "observations": 2,
-              "average": 1.5,
-              "median": 1.5,
               "min": 1.0,
               "max": 2.0
             },
-            "capacity_total": {
-              "observations": 2,
-              "average": 396.0,
-              "median": 396.0,
+            "n_tanker": {
+              "observations": 4,
+              "average": 0.25,
+              "median": 0.0,
               "min": 0.0,
-              "max": 792.0
+              "max": 1.0
+            },
+            "n_cargo": {
+              "observations": 4,
+              "average": 1.0,
+              "median": 1.0,
+              "min": 0.0,
+              "max": 2.0
+            },
+            "capacity_total": {
+              "observations": 4,
+              "average": 9645.75,
+              "median": 3233.0,
+              "min": 0.0,
+              "max": 32117.0
             },
             "capacity_tanker_valid_only": {
-              "observations": 0,
-              "average": null,
-              "median": null,
-              "min": null,
-              "max": null
+              "observations": 4,
+              "average": 8029.25,
+              "median": 0.0,
+              "min": 0.0,
+              "max": 32117.0
             },
             "capacity_quality": {
-              "valid_days": 0,
-              "invalid_days": 2,
-              "valid_pct": 0.0
+              "valid_days": 4,
+              "invalid_days": 0,
+              "valid_pct": 100.0
             },
-            "start_date": "2026-11-07",
-            "end_date": "2026-11-13",
+            "start_date": "2026-11-12",
+            "end_date": "2026-11-18",
             "expected_days": 7,
-            "observed_days": 2,
-            "missing_days": 5,
+            "observed_days": 4,
+            "missing_days": 3,
             "missing_dates": [
-              "2026-11-09",
-              "2026-11-10",
-              "2026-11-11",
-              "2026-11-12",
-              "2026-11-13"
+              "2026-11-16",
+              "2026-11-17",
+              "2026-11-18"
             ],
-            "coverage_pct": 28.57,
+            "coverage_pct": 57.14,
             "window_type": "CALENDAR_DAYS",
             "reference": "RUN_DATE"
           },
           "30d": {
-            "days": 25,
+            "days": 27,
             "n_total": {
-              "observations": 25,
-              "average": 3.76,
-              "median": 4.0,
-              "min": 0.0,
+              "observations": 27,
+              "average": 3.44,
+              "median": 3.0,
+              "min": 1.0,
               "max": 8.0
             },
             "n_tanker": {
-              "observations": 25,
-              "average": 1.08,
+              "observations": 27,
+              "average": 0.93,
               "median": 1.0,
               "min": 0.0,
               "max": 4.0
             },
             "n_cargo": {
-              "observations": 25,
+              "observations": 27,
+              "average": 2.52,
+              "median": 2.0,
+              "min": 0.0,
+              "max": 7.0
+            },
+            "capacity_total": {
+              "observations": 27,
+              "average": 52025.22,
+              "median": 33562.0,
+              "min": 0.0,
+              "max": 207995.0
+            },
+            "capacity_tanker_valid_only": {
+              "observations": 18,
+              "average": 16001.17,
+              "median": 3249.5,
+              "min": 0.0,
+              "max": 85882.0
+            },
+            "capacity_quality": {
+              "valid_days": 18,
+              "invalid_days": 9,
+              "valid_pct": 66.67
+            },
+            "start_date": "2026-10-20",
+            "end_date": "2026-11-18",
+            "expected_days": 30,
+            "observed_days": 27,
+            "missing_days": 3,
+            "missing_dates": [
+              "2026-11-16",
+              "2026-11-17",
+              "2026-11-18"
+            ],
+            "coverage_pct": 90.0,
+            "window_type": "CALENDAR_DAYS",
+            "reference": "RUN_DATE"
+          },
+          "90d": {
+            "days": 87,
+            "n_total": {
+              "observations": 87,
+              "average": 3.67,
+              "median": 3.0,
+              "min": 0.0,
+              "max": 8.0
+            },
+            "n_tanker": {
+              "observations": 87,
+              "average": 0.99,
+              "median": 1.0,
+              "min": 0.0,
+              "max": 4.0
+            },
+            "n_cargo": {
+              "observations": 87,
               "average": 2.68,
               "median": 2.0,
               "min": 0.0,
               "max": 7.0
             },
             "capacity_total": {
-              "observations": 25,
-              "average": 59525.6,
-              "median": 37735.0,
-              "min": 0.0,
-              "max": 207995.0
-            },
-            "capacity_tanker_valid_only": {
-              "observations": 14,
-              "average": 17981.93,
-              "median": 5056.0,
-              "min": 0.0,
-              "max": 85882.0
-            },
-            "capacity_quality": {
-              "valid_days": 14,
-              "invalid_days": 11,
-              "valid_pct": 56.0
-            },
-            "start_date": "2026-10-15",
-            "end_date": "2026-11-13",
-            "expected_days": 30,
-            "observed_days": 25,
-            "missing_days": 5,
-            "missing_dates": [
-              "2026-11-09",
-              "2026-11-10",
-              "2026-11-11",
-              "2026-11-12",
-              "2026-11-13"
-            ],
-            "coverage_pct": 83.33,
-            "window_type": "CALENDAR_DAYS",
-            "reference": "RUN_DATE"
-          },
-          "90d": {
-            "days": 85,
-            "n_total": {
-              "observations": 85,
-              "average": 3.81,
-              "median": 4.0,
-              "min": 0.0,
-              "max": 8.0
-            },
-            "n_tanker": {
-              "observations": 85,
-              "average": 1.14,
-              "median": 1.0,
-              "min": 0.0,
-              "max": 4.0
-            },
-            "n_cargo": {
-              "observations": 85,
-              "average": 2.67,
-              "median": 2.0,
-              "min": 0.0,
-              "max": 7.0
-            },
-            "capacity_total": {
-              "observations": 85,
-              "average": 79876.68,
-              "median": 69956.0,
+              "observations": 87,
+              "average": 74206.25,
+              "median": 63309.0,
               "min": 0.0,
               "max": 439887.0
             },
             "capacity_tanker_valid_only": {
-              "observations": 62,
-              "average": 20451.87,
-              "median": 4771.0,
+              "observations": 66,
+              "average": 18691.74,
+              "median": 4764.5,
               "min": 0.0,
               "max": 119052.0
             },
             "capacity_quality": {
-              "valid_days": 62,
-              "invalid_days": 23,
-              "valid_pct": 72.94
+              "valid_days": 66,
+              "invalid_days": 21,
+              "valid_pct": 75.86
             },
-            "start_date": "2026-08-16",
-            "end_date": "2026-11-13",
+            "start_date": "2026-08-21",
+            "end_date": "2026-11-18",
             "expected_days": 90,
-            "observed_days": 85,
-            "missing_days": 5,
+            "observed_days": 87,
+            "missing_days": 3,
             "missing_dates": [
-              "2026-11-09",
-              "2026-11-10",
-              "2026-11-11",
-              "2026-11-12",
-              "2026-11-13"
+              "2026-11-16",
+              "2026-11-17",
+              "2026-11-18"
             ],
-            "coverage_pct": 94.44,
+            "coverage_pct": 96.67,
             "window_type": "CALENDAR_DAYS",
             "reference": "RUN_DATE"
           }
@@ -307,46 +297,46 @@
             "days": 7,
             "n_total": {
               "observations": 7,
-              "average": 3.86,
-              "median": 4.0,
-              "min": 2.0,
+              "average": 2.29,
+              "median": 1.0,
+              "min": 1.0,
               "max": 6.0
             },
             "n_tanker": {
               "observations": 7,
-              "average": 1.0,
-              "median": 1.0,
+              "average": 0.43,
+              "median": 0.0,
               "min": 0.0,
-              "max": 2.0
+              "max": 1.0
             },
             "n_cargo": {
               "observations": 7,
-              "average": 2.86,
-              "median": 2.0,
-              "min": 1.0,
+              "average": 1.86,
+              "median": 1.0,
+              "min": 0.0,
               "max": 5.0
             },
             "capacity_total": {
               "observations": 7,
-              "average": 62321.29,
-              "median": 74839.0,
+              "average": 31343.43,
+              "median": 4297.0,
               "min": 0.0,
-              "max": 168171.0
+              "max": 147259.0
             },
             "capacity_tanker_valid_only": {
-              "observations": 4,
-              "average": 5384.25,
-              "median": 3249.5,
+              "observations": 7,
+              "average": 17708.14,
+              "median": 0.0,
               "min": 0.0,
-              "max": 15038.0
+              "max": 68520.0
             },
             "capacity_quality": {
-              "valid_days": 4,
-              "invalid_days": 3,
-              "valid_pct": 57.14
+              "valid_days": 7,
+              "invalid_days": 0,
+              "valid_pct": 100.0
             },
-            "start_date": "2026-11-02",
-            "end_date": "2026-11-08",
+            "start_date": "2026-11-09",
+            "end_date": "2026-11-15",
             "expected_days": 7,
             "observed_days": 7,
             "missing_days": 0,
@@ -359,8 +349,8 @@
             "days": 30,
             "n_total": {
               "observations": 30,
-              "average": 3.77,
-              "median": 3.5,
+              "average": 3.37,
+              "median": 3.0,
               "min": 0.0,
               "max": 8.0
             },
@@ -373,32 +363,32 @@
             },
             "n_cargo": {
               "observations": 30,
-              "average": 2.83,
-              "median": 3.0,
+              "average": 2.43,
+              "median": 2.0,
               "min": 0.0,
               "max": 7.0
             },
             "capacity_total": {
               "observations": 30,
-              "average": 65122.77,
-              "median": 52749.5,
+              "average": 53662.3,
+              "median": 35120.5,
               "min": 0.0,
-              "max": 214117.0
+              "max": 207995.0
             },
             "capacity_tanker_valid_only": {
-              "observations": 19,
-              "average": 13493.84,
-              "median": 1728.0,
+              "observations": 20,
+              "average": 15359.2,
+              "median": 3249.5,
               "min": 0.0,
               "max": 85882.0
             },
             "capacity_quality": {
-              "valid_days": 19,
-              "invalid_days": 11,
-              "valid_pct": 63.33
+              "valid_days": 20,
+              "invalid_days": 10,
+              "valid_pct": 66.67
             },
-            "start_date": "2026-10-10",
-            "end_date": "2026-11-08",
+            "start_date": "2026-10-17",
+            "end_date": "2026-11-15",
             "expected_days": 30,
             "observed_days": 30,
             "missing_days": 0,
@@ -411,46 +401,46 @@
             "days": 90,
             "n_total": {
               "observations": 90,
-              "average": 3.89,
-              "median": 4.0,
+              "average": 3.73,
+              "median": 3.5,
               "min": 0.0,
-              "max": 9.0
+              "max": 8.0
             },
             "n_tanker": {
               "observations": 90,
-              "average": 1.17,
+              "average": 1.07,
               "median": 1.0,
               "min": 0.0,
               "max": 4.0
             },
             "n_cargo": {
               "observations": 90,
-              "average": 2.72,
+              "average": 2.67,
               "median": 2.0,
               "min": 0.0,
               "max": 7.0
             },
             "capacity_total": {
               "observations": 90,
-              "average": 80570.94,
-              "median": 70168.0,
+              "average": 77604.63,
+              "median": 68264.5,
               "min": 0.0,
               "max": 439887.0
             },
             "capacity_tanker_valid_only": {
-              "observations": 67,
-              "average": 19758.9,
+              "observations": 68,
+              "average": 20109.82,
               "median": 4771.0,
               "min": 0.0,
               "max": 119052.0
             },
             "capacity_quality": {
-              "valid_days": 67,
-              "invalid_days": 23,
-              "valid_pct": 74.44
+              "valid_days": 68,
+              "invalid_days": 22,
+              "valid_pct": 75.56
             },
-            "start_date": "2026-08-11",
-            "end_date": "2026-11-08",
+            "start_date": "2026-08-18",
+            "end_date": "2026-11-15",
             "expected_days": 90,
             "observed_days": 90,
             "missing_days": 0,
@@ -461,14 +451,14 @@
           }
         },
         "structural_baseline_tankers_per_day": 48.18,
-        "current_7d_tankers_per_day": 1.0,
+        "current_7d_tankers_per_day": 0.43,
         "current_30d_tankers_per_day": 0.93,
-        "ais_disruption_7d": 97.92,
+        "ais_disruption_7d": 99.11,
         "ais_disruption_30d": 98.07,
         "ais_disruption_reference": "LATEST_OBSERVATION_HISTORICAL",
         "physical_flow_disruption": null,
         "physical_flow_validated": false,
-        "warning": "PortWatch AIS disruption refers to the historical observation window ending 2026-11-08, not necessarily to the current calendar week. Missing AIS days are unknown, never zero traffic. AIS tanker counts do not measure physical oil throughput."
+        "warning": "PortWatch AIS disruption refers to the historical observation window ending 2026-11-15, not necessarily to the current calendar week. Missing AIS days are unknown, never zero traffic. AIS tanker counts do not measure physical oil throughput."
       }
     },
     "logistics": {
@@ -490,13 +480,13 @@
       "live_ais": {
         "status": "STALE",
         "source_status": "AVAILABLE",
-        "last_poll": "2026-11-18T01:01:21+00:00",
-        "ships_total": 3476,
-        "ships_in_strait": 3,
+        "last_poll": "2026-11-18T08:31:20+00:00",
+        "ships_total": 3661,
+        "ships_in_strait": 8,
         "crossings_24h": {
           "inbound": 16,
-          "outbound": 6,
-          "total": 22
+          "outbound": 11,
+          "total": 27
         },
         "crossing_statistics": {
           "7d": {
@@ -504,43 +494,43 @@
             "observed_days": 7,
             "start_day": "2026-11-11",
             "end_day": "2026-11-17",
-            "inbound_avg": 10.57,
-            "outbound_avg": 10,
-            "total_crossings_avg": 20.57,
+            "inbound_avg": 10.71,
+            "outbound_avg": 10.57,
+            "total_crossings_avg": 21.29,
             "in_strait_avg": 41.86,
-            "inbound_total": 74,
-            "outbound_total": 70,
-            "total_crossings": 144
+            "inbound_total": 75,
+            "outbound_total": 74,
+            "total_crossings": 149
           },
           "14d": {
             "requested_days": 14,
             "observed_days": 14,
             "start_day": "2026-11-04",
             "end_day": "2026-11-17",
-            "inbound_avg": 11.5,
-            "outbound_avg": 12,
-            "total_crossings_avg": 23.5,
+            "inbound_avg": 11.57,
+            "outbound_avg": 12.29,
+            "total_crossings_avg": 23.86,
             "in_strait_avg": 70,
-            "inbound_total": 161,
-            "outbound_total": 168,
-            "total_crossings": 329
+            "inbound_total": 162,
+            "outbound_total": 172,
+            "total_crossings": 334
           },
           "30d": {
             "requested_days": 30,
             "observed_days": 30,
             "start_day": "2026-10-19",
             "end_day": "2026-11-17",
-            "inbound_avg": 12.57,
+            "inbound_avg": 12.4,
             "outbound_avg": 12.67,
-            "total_crossings_avg": 25.23,
-            "in_strait_avg": 96.8,
-            "inbound_total": 377,
+            "total_crossings_avg": 25.07,
+            "in_strait_avg": 96.67,
+            "inbound_total": 372,
             "outbound_total": 380,
-            "total_crossings": 757
+            "total_crossings": 752
           },
           "trend": {
-            "outbound_7d_vs_30d_pct": -21.07,
-            "total_crossings_7d_vs_30d_pct": -18.47
+            "outbound_7d_vs_30d_pct": -16.57,
+            "total_crossings_7d_vs_30d_pct": -15.08
           }
         },
         "oil_export_proxy": {
@@ -578,19 +568,19 @@
               "2026-11-17"
             ],
             "completeness_pct": 80.0,
-            "observed_day_average_barrels": 1047565.08,
+            "observed_day_average_barrels": 1031548.46,
             "observed_day_average_crude_barrels": 640500.42,
-            "observed_day_average_petrochem_barrels": 407064.67,
-            "observed_total_barrels": 25141562.0,
+            "observed_day_average_petrochem_barrels": 391048.04,
+            "observed_total_barrels": 24757163.0,
             "observed_crude_barrels": 15372010.0,
-            "observed_petrochem_barrels": 9769552.0,
+            "observed_petrochem_barrels": 9385153.0,
             "observed_crude_ships": 13,
-            "observed_petrochem_ships": 39,
+            "observed_petrochem_ships": 38,
             "missing_days_treated_as_zero": false,
             "physical_flow_measurement": false
           },
           "trend": {
-            "observed_day_average_7d_vs_30d_pct": -33.26
+            "observed_day_average_7d_vs_30d_pct": -32.22
           },
           "status": "PARTIAL_OBSERVATION",
           "warning": "AIS-derived tanker/DWT estimate. Missing days are not assumed to mean zero physical oil flow.",
@@ -610,42 +600,46 @@
       "vessels": {
         "status": "STALE",
         "analysis": {
-          "total_vessels": 3401,
-          "identified_vessels": 3401,
-          "oil_related_vessels": 428,
-          "crude_related_vessels": 120,
-          "product_related_vessels": 302,
-          "large_oil_tankers": 104,
-          "vlcc_ulcc_count": 48,
-          "known_oil_tanker_dwt_count": 422,
-          "total_observed_oil_tanker_dwt": 31066648.0,
+          "total_vessels": 3736,
+          "identified_vessels": 3736,
+          "oil_related_vessels": 497,
+          "crude_related_vessels": 131,
+          "product_related_vessels": 356,
+          "large_oil_tankers": 112,
+          "vlcc_ulcc_count": 54,
+          "known_oil_tanker_dwt_count": 487,
+          "total_observed_oil_tanker_dwt": 33998997.0,
           "all_vessels_by_zone": {
-            "gulf_of_oman": 838,
-            "persian_gulf": 2560,
-            "strait": 3
+            "gulf_of_oman": 912,
+            "persian_gulf": 2816,
+            "strait": 8
           },
           "oil_tankers_by_zone": {
-            "gulf_of_oman": 292,
-            "persian_gulf": 136
+            "gulf_of_oman": 346,
+            "persian_gulf": 150,
+            "strait": 1
           },
           "crude_tankers_by_zone": {
-            "gulf_of_oman": 93,
-            "persian_gulf": 27
+            "gulf_of_oman": 104,
+            "persian_gulf": 26,
+            "strait": 1
           },
           "vlcc_ulcc_by_zone": {
-            "gulf_of_oman": 36,
-            "persian_gulf": 12
+            "gulf_of_oman": 43,
+            "persian_gulf": 11
           },
           "all_vessels_by_micro_zone": {
-            "hormuz_core": 2,
-            "hormuz_east": 14,
-            "hormuz_west": 56
+            "hormuz_core": 6,
+            "hormuz_east": 11,
+            "hormuz_west": 53
           },
           "oil_tankers_by_micro_zone": {
-            "hormuz_east": 6,
+            "hormuz_core": 1,
+            "hormuz_east": 5,
             "hormuz_west": 1
           },
           "crude_tankers_by_micro_zone": {
+            "hormuz_core": 1,
             "hormuz_east": 2
           },
           "vlcc_ulcc_by_micro_zone": {
@@ -653,106 +647,109 @@
           },
           "tanker_size_counts": {
             "AFRAMAX": 29,
-            "HANDYMAX_MR": 108,
-            "PANAMAX_LR1": 35,
-            "SMALL": 174,
-            "SUEZMAX": 28,
-            "ULCC": 4,
-            "UNKNOWN": 6,
-            "VLCC": 44
+            "HANDYMAX_MR": 113,
+            "PANAMAX_LR1": 38,
+            "SMALL": 223,
+            "SUEZMAX": 30,
+            "ULCC": 5,
+            "UNKNOWN": 10,
+            "VLCC": 49
           },
           "ship_category_counts": {
             "Accommodation Jack Up": 2,
-            "Accommodation Ship": 5,
+            "Accommodation Ship": 6,
             "Aggregates Carrier": 3,
-            "Anchor Handling Vessel": 25,
-            "Asphalt/Bitumen Tanker": 24,
+            "Anchor Handling Vessel": 20,
+            "Asphalt/Bitumen Tanker": 33,
             "Barge": 1,
             "Barge Carrier": 1,
-            "Bulk Carrier": 211,
+            "Bulk Carrier": 214,
             "Bunkering Tanker": 7,
             "Buoy-Laying Vessel": 2,
             "Cable Layer": 2,
-            "Cargo": 83,
-            "Chemical Tanker": 12,
-            "Container Ship": 102,
+            "Cargo": 75,
+            "Chemical Tanker": 14,
+            "Container Ship": 99,
             "Crane Barge": 1,
             "Crane Ship": 6,
-            "Crew Boat": 43,
-            "Crude Oil Tanker": 120,
+            "Crew Boat": 51,
+            "Crude Oil Tanker": 131,
             "Cutter Suction Dredger": 2,
-            "Deck Cargo Ship": 28,
-            "Diving Support Vessel": 9,
-            "Drilling Jack Up": 8,
-            "Fire Fighting Vessel": 27,
-            "Fishery Patrol Vessel": 1,
-            "Fishing": 689,
+            "Deck Cargo Ship": 26,
+            "Diving Support Vessel": 7,
+            "Drilling Jack Up": 7,
+            "Fire Fighting Vessel": 26,
+            "Fishery Patrol Vessel": 2,
+            "Fishing": 774,
             "Floating Crane": 1,
             "Floating Storage/Production": 2,
-            "General Cargo": 123,
-            "HSC": 4,
-            "Heavy Lift Vessel": 10,
+            "General Cargo": 118,
+            "HSC": 5,
+            "Heavy Lift Vessel": 11,
             "Heavy Load Carrier": 23,
             "Hopper Dredger": 15,
-            "Hydrofoil": 1,
             "Inland Passenger Ship": 1,
             "Inland, Ferry": 3,
-            "LNG Tanker": 8,
-            "LPG Tanker": 36,
-            "LPG/Chemical Tanker": 16,
-            "Landing Craft": 85,
+            "LNG Tanker": 7,
+            "LPG Tanker": 41,
+            "LPG/Chemical Tanker": 18,
+            "Landing Craft": 82,
+            "Limestone Carrier": 1,
             "Livestock Carrier": 2,
-            "Mooring Vessel": 2,
+            "Mooring Vessel": 3,
             "Motor Hopper": 1,
-            "Multi Purpose Offshore Vessel": 369,
-            "Navigation Aid": 160,
+            "Multi Purpose Offshore Vessel": 360,
+            "Navigation Aid": 147,
             "Offshore Construction Jack Up": 1,
             "Offshore Construction Vessel": 5,
             "Offshore Supply Ship": 46,
-            "Oil Products Tanker": 128,
-            "Oil/Chemical Tanker": 150,
+            "Oil Products Tanker": 154,
+            "Oil/Chemical Tanker": 169,
             "Ore Carrier": 1,
-            "Passenger": 13,
+            "Passenger": 22,
             "Passenger Ship": 2,
+            "Passenger/Cargo Ship": 1,
             "Pilot Ship": 2,
             "Pipe Layer": 1,
-            "Pipelay Crane Vessel": 5,
+            "Pipelay Crane Vessel": 6,
             "Pollution Control Vessel": 4,
             "Power Station Vessel": 1,
             "Pusher Tug": 3,
             "Replenishment Vessel": 1,
-            "Research/Survey Vessel": 6,
+            "Research/Survey Vessel": 5,
             "Ro-Ro Cargo": 4,
-            "Ro-Ro/Container Carrier": 3,
-            "Ro-Ro/Passenger Ship": 11,
+            "Ro-Ro/Container Carrier": 4,
+            "Ro-Ro/Passenger Ship": 10,
             "Self Discharging Bulk Carrier": 1,
-            "Service Vessel": 110,
-            "Suction Dredger": 6,
+            "Service Vessel": 118,
+            "Suction Dredger": 7,
             "Supply Vessel": 8,
-            "Tanker": 6,
-            "Towing Vessel": 11,
-            "Trailing Suction Hopper Dredger": 3,
-            "Tug": 166,
-            "Tug/Supply Vessel": 15,
-            "Unknown": 126,
-            "Utility Vessel": 17,
-            "Vehicles Carrier": 4,
+            "Tanker": 10,
+            "Towing Vessel": 10,
+            "Trailing Suction Hopper Dredger": 2,
+            "Tug": 172,
+            "Tug/Supply Vessel": 13,
+            "Unknown": 159,
+            "Utility Vessel": 21,
+            "Vehicles Carrier": 5,
             "Water Tanker": 1,
-            "Well Stimulation Vessel": 4,
-            "Work Vessel": 24,
-            "Yacht": 236
+            "Well Stimulation Vessel": 3,
+            "Wing In Ground Effect Vessel": 1,
+            "Work Pontoon": 1,
+            "Work Vessel": 27,
+            "Yacht": 382
           }
         },
         "tracking_summary": {
-          "current_observed_vessels": 3401,
-          "persistent_state_vessels": 18455,
-          "confirmed_present_vessels": 1294,
-          "temporarily_missing_vessels": 2458,
-          "confirmed_disappeared_vessels": 12596,
-          "raw_appeared_this_run": 2315,
-          "raw_missing_this_run": 17155,
-          "confirmed_new_this_run": 570,
-          "confirmed_disappeared_this_run": 2754,
+          "current_observed_vessels": 3736,
+          "persistent_state_vessels": 19145,
+          "confirmed_present_vessels": 1320,
+          "temporarily_missing_vessels": 2744,
+          "confirmed_disappeared_vessels": 12665,
+          "raw_appeared_this_run": 3041,
+          "raw_missing_this_run": 17760,
+          "confirmed_new_this_run": 275,
+          "confirmed_disappeared_this_run": 2435,
           "zone_changes_this_run": 0,
           "oil_tanker_zone_changes_this_run": 0,
           "large_tanker_zone_changes_this_run": 0,
@@ -765,7 +762,7 @@
           "confirmed_micro_transits_this_run": 0,
           "possible_direct_transits_this_run": 0,
           "possible_micro_skipped_core_transits_this_run": 0,
-          "pruned_state_records": 2101
+          "pruned_state_records": 2351
         },
         "data_quality": {
           "score": 80,
@@ -774,14 +771,14 @@
             "High snapshot churn detected; persistent confirmation logic is required.",
             "Very high snapshot churn; movement interpretation requires extra caution."
           ],
-          "snapshot_churn_pct": 94.72,
-          "source_count_change_pct": -2.77,
+          "snapshot_churn_pct": 96.77,
+          "source_count_change_pct": 9.85,
           "deduplication": {
-            "raw_records": 3401,
-            "unique_records": 3401,
+            "raw_records": 3736,
+            "unique_records": 3736,
             "duplicates_removed": 0,
             "identity_conflicts": 0,
-            "unverified_identity_records": 3401,
+            "unverified_identity_records": 3736,
             "method": "Exact valid MMSI/IMO; ambiguous records retained"
           },
           "interpretation": "AIS tracking usability, not physical oil-flow accuracy."
@@ -806,7 +803,7 @@
       "physical_flow",
       "logistics_score"
     ],
-    "security_score": 45.54,
+    "security_score": 50.76,
     "physical_flow_score": null,
     "logistics_score": null,
     "reason": "A final weighted risk score cannot be published without validated physical oil-flow disruption and calibrated logistics stress."
