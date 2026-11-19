@@ -2,7 +2,7 @@
   "meta": {
     "model": "Hormuz Risk Model",
     "version": "2.1-security-filter",
-    "generated_at": "2026-11-19T10:23:46.321960+00:00",
+    "generated_at": "2026-11-19T20:40:28.026764+00:00",
     "repository": "energy-data",
     "automatic": true
   },
@@ -39,17 +39,17 @@
   },
   "regional_security": {
     "available": true,
-    "score": 40.4,
+    "score": 40.0,
     "risk_level": "LOW",
     "confidence": "MEDIUM",
-    "updated": "2026-11-19 10:23 UTC",
+    "updated": "2026-11-19 20:40 UTC",
     "age_days": 0,
     "freshness": "FRESH"
   },
   "historical_context": {
     "available": true,
     "generated_at": "2026-11-06T15:49:53Z",
-    "age_days": 12,
+    "age_days": 13,
     "freshness": "STALE",
     "event_count": 289,
     "role": "historical_context_only"
@@ -63,14 +63,14 @@
     "security": {
       "weight": 0.4,
       "status": "ACTIVE",
-      "score": 45.58,
+      "score": 45.49,
       "level": "ELEVATED",
       "confidence": "HIGH",
-      "event_signal": 46.5,
-      "regional_context_score": 40.4,
-      "security_events_7d": 7,
+      "event_signal": 46.45,
+      "regional_context_score": 40.0,
+      "security_events_7d": 6,
       "direct_hormuz_security_events_7d": 2,
-      "maritime_attack_events_7d": 5,
+      "maritime_attack_events_7d": 4,
       "closure_threat_events_7d": 0
     },
     "flow": {
@@ -93,7 +93,7 @@
     "status": "WAITING_FOR_FLOW_AND_LOGISTICS",
     "method": "security 40% + flow 35% + logistics 25%"
   },
-  "security_event_count_7d": 7,
+  "security_event_count_7d": 6,
   "flow_signal_count_7d": 0,
   "top_security_events": [
     {
@@ -186,37 +186,6 @@
       "security_event_type": "MARITIME_ATTACK",
       "security_score": 47.88,
       "relevance_level": "HIGH",
-      "flow_positive_signal": false,
-      "flow_negative_signal": false
-    },
-    {
-      "event_id": "2026-11-19-dc8fbf9e7c03",
-      "date": "2026-11-19",
-      "title": "Oil prices steady as Middle East shipping attacks counter supply surplus outlook - Reuters",
-      "source": "Reuters (via Google News)",
-      "source_url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOMnV0bXBXX1ZzNHpkcHFmanlPQ2FmczM3Z2xCcXRqRjYwTVB6SlFhZ29vbGcyM3V5a3lOMHZ3OXprMDM0ang4RVEwQmhFMTZ2QU1GT2lQN0ZPUXQyZWJ4MHR1S0JQTmE5Y0Z5dkZlemdFU0V6TWFId0pZZlFtbHVzaU1EeVl1S2RiSFdrcE95d1ZqQW9NRWlZUFNHWU9QVHNXRlZiTmEtckdWZEpScFREcVpPQ0x3MDNQeFhiZHJHMUlVQXFRNkE",
-      "category": "military",
-      "location": "Middle East",
-      "confidence": 0.55,
-      "age_days": 0,
-      "direct_hormuz": false,
-      "maritime": true,
-      "physical_attack": false,
-      "generic_attack": true,
-      "maritime_security": false,
-      "closure_threat": false,
-      "energy": true,
-      "energy_infrastructure": false,
-      "regional_maritime": false,
-      "regional_actor": false,
-      "aviation": false,
-      "distance_km": 1407.7,
-      "geographic_relevance": 0.0,
-      "textual_relevance": 0.45,
-      "temporal_weight": 1.0,
-      "security_event_type": "MARITIME_ATTACK",
-      "security_score": 35.03,
-      "relevance_level": "MEDIUM",
       "flow_positive_signal": false,
       "flow_negative_signal": false
     },
