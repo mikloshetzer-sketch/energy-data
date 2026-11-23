@@ -1,35 +1,35 @@
 {
   "meta": {
-    "updated": "2026-11-22 21:42 UTC",
+    "updated": "2026-11-23 02:37 UTC",
     "source_mode": "live",
-    "generated_at": "2026-11-22T21:42:59.535014Z",
+    "generated_at": "2026-11-23T02:37:16.451760Z",
     "update_interval_minutes": 30,
     "data_mode": "periodic_market_snapshot",
     "is_streaming": false,
-    "fallback_used": true
+    "fallback_used": false
   },
   "prices": {
-    "market_brent": 92.59,
-    "market_wti": 83.41,
+    "market_brent": 89.54,
+    "market_wti": 83.04,
     "spot_brent": 92.94,
     "spot_wti": 89.53,
-    "live_brent": 92.59,
-    "live_wti": 83.41,
-    "live_source": "mixed_or_spot_fallback",
-    "market_source": "OilPriceAPI",
+    "live_brent": 89.54,
+    "live_wti": 83.04,
+    "live_source": "yahoo_futures",
+    "market_source": "Yahoo Finance chart",
     "spot_source": "EIA via oil-data.json",
     "market_symbol_brent": "BZ=F",
     "market_symbol_wti": "CL=F",
-    "market_timestamp_brent": "2026-11-20T21:59:18Z",
-    "market_timestamp_wti": "2026-11-20T21:59:59Z",
-    "brent_fallback_used": true,
+    "market_timestamp_brent": "2026-11-23T02:26:00Z",
+    "market_timestamp_wti": "2026-11-23T02:27:11Z",
+    "brent_fallback_used": false,
     "wti_fallback_used": false,
     "currency": "USD",
     "unit": "USD/barrel"
   },
   "source_status": {
     "brent": {
-      "status": "independent_market_fallback",
+      "status": "market_futures",
       "error": null
     },
     "wti": {
@@ -39,18 +39,18 @@
   },
   "risk": {
     "global_trade_risk_index": 45.2,
-    "middle_east_conflict_impact": 59.3,
+    "middle_east_conflict_impact": 59.1,
     "middle_east_conflict_label": "high",
     "daily_change": {
-      "global_trade_risk_index_change": -0.3,
-      "middle_east_conflict_impact_change": -0.6,
-      "direction_global": "down",
+      "global_trade_risk_index_change": 0.0,
+      "middle_east_conflict_impact_change": -0.2,
+      "direction_global": "flat",
       "direction_middle_east": "down"
     },
     "top_risks": [
       {
         "name": "Hormuzi-szoros",
-        "estimated_impact": 0.2493,
+        "estimated_impact": 0.2492,
         "status": "severe"
       },
       {
@@ -76,37 +76,37 @@
     ],
     "me_components": {
       "structural_score": 72.4,
-      "osint_signal_score": 37.4,
-      "osint_raw_total_risk": 93.6,
+      "osint_signal_score": 37.0,
+      "osint_raw_total_risk": 92.55,
       "osint_risk_level": "LOW",
       "osint_confidence": "MEDIUM",
-      "osint_total_events": 78,
+      "osint_total_events": 75,
       "osint_top_locations": [
         {
           "name": "Iran",
-          "risk": 29.35
+          "risk": 27.3
         },
         {
           "name": "Gaza Strip",
-          "risk": 11.25
+          "risk": 11.55
         },
         {
           "name": "Saudi Arabia",
-          "risk": 10.9
+          "risk": 10.3
         },
         {
           "name": "Iraq",
           "risk": 9.25
         },
         {
-          "name": "West Bank",
-          "risk": 7.75
+          "name": "Yemen",
+          "risk": 8.2
         }
       ],
-      "osint_updated": "2026-11-22 17:51 UTC",
+      "osint_updated": "2026-11-22 23:38 UTC",
       "osint_available": true,
       "osint_stale": false,
-      "osint_age_hours": 0.52,
+      "osint_age_hours": 0.5,
       "osint_used_in_blend": true,
       "conflict_signal_score": 18.8,
       "conflict_signal_raw_index": -0.94,
@@ -136,13 +136,13 @@
         "source_available": true,
         "source_stale": true,
         "source_updated": "2026-11-06T15:49:53Z",
-        "source_age_hours": 386.54,
+        "source_age_hours": 392.3,
         "source_event_count": 289,
         "used_in_model": false
       }
     },
     "risk_meta": {
-      "updated": "2026-11-22 18:22 UTC",
+      "updated": "2026-11-23 00:07 UTC",
       "method": "chokepoint structural impact model v8 + me osint signal v1 + conflict end matrix signal v2 + local security pressure v1",
       "uses_tanker_signal": true,
       "uses_me_security_signal": true,
