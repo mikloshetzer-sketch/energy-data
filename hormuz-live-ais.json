@@ -2,7 +2,7 @@
   "meta": {
     "collector": "Hormuz Live AIS Collector",
     "version": "1.1-live-analysis",
-    "generated_at": "2026-11-25T21:56:49.115952+00:00",
+    "generated_at": "2026-11-26T04:02:10.151108+00:00",
     "repository": "energy-data",
     "automatic": true,
     "mode": "LIVE_AIS_OBSERVATION"
@@ -36,15 +36,15 @@
   "summary": {
     "available": true,
     "period_hours": 24,
-    "last_poll": "2026-11-25T21:31:18+00:00",
-    "total_ships": 3848,
-    "persian_gulf_ships": 2908,
-    "gulf_of_oman_ships": 940,
-    "in_strait": 55,
+    "last_poll": "2026-11-26T03:31:21+00:00",
+    "total_ships": 3909,
+    "persian_gulf_ships": 2968,
+    "gulf_of_oman_ships": 941,
+    "in_strait": 54,
     "crossings": {
       "inbound": 14,
-      "outbound": 16,
-      "total": 30
+      "outbound": 15,
+      "total": 29
     },
     "estimated_oil_export": {
       "barrels": 0.0,
@@ -54,21 +54,21 @@
       "physical_flow_measurement": false
     },
     "raw": {
-      "gulf_of_oman_ships": 940,
-      "in_strait": 55,
+      "gulf_of_oman_ships": 941,
+      "in_strait": 54,
       "inbound": 14,
-      "last_poll": "2026-11-25T21:31:18+00:00",
+      "last_poll": "2026-11-26T03:31:21+00:00",
       "oil_export_barrels": 0,
       "oil_export_crude_barrels": 0,
       "oil_export_petrochem_barrels": 0,
-      "outbound": 16,
+      "outbound": 15,
       "outbound_iran": 2,
       "outbound_oman": 0,
-      "outbound_unidentified": 14,
+      "outbound_unidentified": 13,
       "period_hours": 24,
-      "persian_gulf_ships": 2908,
-      "total_crossings": 30,
-      "total_ships": 3848
+      "persian_gulf_ships": 2968,
+      "total_crossings": 29,
+      "total_ships": 3909
     }
   },
   "endpoint_results": {
@@ -95,18 +95,11 @@
   },
   "crossings_by_type": [
     {
-      "ship_category": "Landing Craft",
-      "direction": "in_strait",
-      "count": 5,
-      "total_dwt": 5507.0,
-      "avg_dwt": 1101.0
-    },
-    {
       "ship_category": "Bulk Carrier",
       "direction": "outbound",
-      "count": 3,
-      "total_dwt": 168355.0,
-      "avg_dwt": 56118.0
+      "count": 4,
+      "total_dwt": 266559.0,
+      "avg_dwt": 66640.0
     },
     {
       "ship_category": "Cargo",
@@ -117,10 +110,24 @@
     },
     {
       "ship_category": "Cargo",
+      "direction": "inbound",
+      "count": 3,
+      "total_dwt": null,
+      "avg_dwt": null
+    },
+    {
+      "ship_category": "Cargo",
       "direction": "outbound",
       "count": 3,
       "total_dwt": null,
       "avg_dwt": null
+    },
+    {
+      "ship_category": "Landing Craft",
+      "direction": "in_strait",
+      "count": 3,
+      "total_dwt": 3300.0,
+      "avg_dwt": 1100.0
     },
     {
       "ship_category": "Oil/Chemical Tanker",
@@ -135,20 +142,6 @@
       "count": 2,
       "total_dwt": 1460.0,
       "avg_dwt": 730.0
-    },
-    {
-      "ship_category": "Cargo",
-      "direction": "inbound",
-      "count": 2,
-      "total_dwt": null,
-      "avg_dwt": null
-    },
-    {
-      "ship_category": "LPG Tanker",
-      "direction": "outbound",
-      "count": 2,
-      "total_dwt": 83579.0,
-      "avg_dwt": 41790.0
     },
     {
       "ship_category": "Oil/Chemical Tanker",
@@ -207,13 +200,6 @@
       "avg_dwt": null
     },
     {
-      "ship_category": "General Cargo",
-      "direction": "inbound",
-      "count": 1,
-      "total_dwt": 31837.0,
-      "avg_dwt": 31837.0
-    },
-    {
       "ship_category": "HSC",
       "direction": "inbound",
       "count": 1,
@@ -228,11 +214,11 @@
       "avg_dwt": null
     },
     {
-      "ship_category": "LNG Tanker",
+      "ship_category": "LPG Tanker",
       "direction": "outbound",
       "count": 1,
-      "total_dwt": 89624.0,
-      "avg_dwt": 89624.0
+      "total_dwt": 53991.0,
+      "avg_dwt": 53991.0
     },
     {
       "ship_category": "Landing Craft",
@@ -321,29 +307,19 @@
   ],
   "daily_crossings": [
     {
-      "day": "2026-10-26",
-      "direction": "in_strait",
-      "count": 72
-    },
-    {
-      "day": "2026-10-26",
-      "direction": "inbound",
-      "count": 1
-    },
-    {
       "day": "2026-10-27",
       "direction": "in_strait",
-      "count": 129
+      "count": 127
     },
     {
       "day": "2026-10-27",
       "direction": "inbound",
-      "count": 10
+      "count": 9
     },
     {
       "day": "2026-10-27",
       "direction": "outbound",
-      "count": 15
+      "count": 13
     },
     {
       "day": "2026-10-28",
@@ -773,12 +749,22 @@
     {
       "day": "2026-11-25",
       "direction": "inbound",
-      "count": 11
+      "count": 12
     },
     {
       "day": "2026-11-25",
       "direction": "outbound",
       "count": 12
+    },
+    {
+      "day": "2026-11-26",
+      "direction": "in_strait",
+      "count": 56
+    },
+    {
+      "day": "2026-11-26",
+      "direction": "outbound",
+      "count": 2
     }
   ],
   "daily_oil_export": {
@@ -1064,55 +1050,55 @@
   },
   "live_ais_analysis": {
     "complete_day_logic": {
-      "current_utc_day": "2026-11-25",
+      "current_utc_day": "2026-11-26",
       "current_day_excluded_from_averages": true,
       "current_day_present_in_crossings": true,
-      "current_day": "2026-11-25",
+      "current_day": "2026-11-26",
       "complete_crossing_days_available": 30
     },
     "crossing_statistics": {
       "7d": {
         "requested_days": 7,
         "observed_days": 7,
-        "start_day": "2026-11-18",
-        "end_day": "2026-11-24",
+        "start_day": "2026-11-19",
+        "end_day": "2026-11-25",
         "inbound_avg": 13.29,
-        "outbound_avg": 11.43,
-        "total_crossings_avg": 24.71,
-        "in_strait_avg": 24.14,
+        "outbound_avg": 11.71,
+        "total_crossings_avg": 25,
+        "in_strait_avg": 32.14,
         "inbound_total": 93,
-        "outbound_total": 80,
-        "total_crossings": 173
+        "outbound_total": 82,
+        "total_crossings": 175
       },
       "14d": {
         "requested_days": 14,
         "observed_days": 14,
-        "start_day": "2026-11-11",
-        "end_day": "2026-11-24",
-        "inbound_avg": 12.07,
-        "outbound_avg": 11.07,
-        "total_crossings_avg": 23.14,
-        "in_strait_avg": 33,
-        "inbound_total": 169,
-        "outbound_total": 155,
-        "total_crossings": 324
+        "start_day": "2026-11-12",
+        "end_day": "2026-11-25",
+        "inbound_avg": 12.14,
+        "outbound_avg": 11.36,
+        "total_crossings_avg": 23.5,
+        "in_strait_avg": 32,
+        "inbound_total": 170,
+        "outbound_total": 159,
+        "total_crossings": 329
       },
       "30d": {
         "requested_days": 30,
         "observed_days": 30,
-        "start_day": "2026-10-26",
-        "end_day": "2026-11-24",
-        "inbound_avg": 11.83,
-        "outbound_avg": 12.37,
-        "total_crossings_avg": 24.2,
-        "in_strait_avg": 71.9,
-        "inbound_total": 355,
-        "outbound_total": 371,
-        "total_crossings": 726
+        "start_day": "2026-10-27",
+        "end_day": "2026-11-25",
+        "inbound_avg": 12.17,
+        "outbound_avg": 12.7,
+        "total_crossings_avg": 24.87,
+        "in_strait_avg": 71.77,
+        "inbound_total": 365,
+        "outbound_total": 381,
+        "total_crossings": 746
       },
       "trend": {
-        "outbound_7d_vs_30d_pct": -7.6,
-        "total_crossings_7d_vs_30d_pct": 2.11
+        "outbound_7d_vs_30d_pct": -7.8,
+        "total_crossings_7d_vs_30d_pct": 0.52
       }
     },
     "oil_export_proxy": {
@@ -1122,9 +1108,9 @@
         "observed_oil_days": 4,
         "missing_day_count": 3,
         "missing_days": [
-          "2026-11-18",
           "2026-11-23",
-          "2026-11-24"
+          "2026-11-24",
+          "2026-11-25"
         ],
         "completeness_pct": 57.14,
         "observed_day_average_barrels": 1638852.75,
@@ -1144,14 +1130,14 @@
         "observed_oil_days": 22,
         "missing_day_count": 8,
         "missing_days": [
-          "2026-10-26",
           "2026-11-01",
           "2026-11-06",
           "2026-11-10",
           "2026-11-17",
           "2026-11-18",
           "2026-11-23",
-          "2026-11-24"
+          "2026-11-24",
+          "2026-11-25"
         ],
         "completeness_pct": 73.33,
         "observed_day_average_barrels": 1258961.23,
